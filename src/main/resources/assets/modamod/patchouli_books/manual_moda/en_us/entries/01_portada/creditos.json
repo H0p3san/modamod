@@ -1,0 +1,21 @@
+{
+  "name": "Créditos",
+  "icon": "minecraft:cake",
+  "category": "modamod:01_portada",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Créditos",
+      "text": "Este ropero no se cosió solo.$(br2)$(l)Roger$() y $(l)Sosbaldo$() bancaron a la IA: pagaron parte de la que escribió el código y unos cuantos dibujos. Sin ellos, todavía estaríamos enhebrando la aguja."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l:https://www.twitch.tv/rozsier)Rozsier$(/l) y $(l)Galvhiar$() le dieron lugar al humano: me abrieron su servidor para probar, romper y volver a probar. Más de una capa salió volando por ahí antes de aprender a quedarse quieta.$(br2)¡Gracias por hacerlo posible!"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)¿Querés sumarte?$() Si sos modder, modelás en 3D, programás o hacés pixel art, la puerta está abierta. Pasate por el $(l:https://discord.gg/U3gHMNCzrk)Discord de El Hope-san$(/l): ahí se muestran outfits, se reportan bugs y se tejen ideas.$(br2)— H0p3san"
+    }
+  ]
+}

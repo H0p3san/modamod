@@ -43,6 +43,24 @@ Para el cliente de desarrollo (`./gradlew.bat runClient`) con Camerapture y 3D S
 `TRender-1.0.15-1.21.1-fabric-SNAPSHOT.jar` y ponerlos en `libs/` (no se versionan: son de terceros). Sin ellos el mod
 compila igual.
 
+## Agradecimientos
+
+- **Roger** y **Sosbaldo** bancaron a la IA: pagaron parte de la que se usó para hacer el mod.
+- **[Rozsier](https://www.twitch.tv/rozsier)** y **Galvhiar** le dieron lugar al humano: me abrieron su servidor para experimentar.
+
+¡Gracias por hacerlo posible!
+
+### Thanks
+
+- **Roger** and **Sosbaldo** backed the AI: they paid for part of the AI used to make this mod.
+- **[Rozsier](https://www.twitch.tv/rozsier)** and **Galvhiar** made room for the human: they opened their server for me to experiment.
+
+Thank you for making it possible!
+
+## Comunidad
+
+Outfits, bugs e ideas en el Discord **El Hope-san**: https://discord.gg/U3gHMNCzrk
+
 ## Licencia
 
 El código es [MIT](LICENSE). Los assets (texturas, modelos, animaciones, íconos, idiomas) tienen todos los derechos
