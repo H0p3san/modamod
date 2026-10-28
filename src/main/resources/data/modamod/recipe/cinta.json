@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "CCC",
+    "BAB"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:redstone_block"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "id": "modamod:cinta",
+    "count": 10
+  }
+}

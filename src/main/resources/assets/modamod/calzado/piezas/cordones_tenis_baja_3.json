@@ -1,0 +1,21 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "cordones_tenis_baja_3",
+  "eje": "cierre",
+  "forma": "cinta",
+  "zona": 2,
+  "puntos": [
+    [-0.85, 9.43, -3.1],
+    [0.85, 9.43, -3.1]
+  ],
+  "cerrada": false,
+  "normales": [
+    [-0.01, -0.8, -0.6],
+    [0.01, -0.8, -0.6]
+  ],
+  "ancho": 0.4,
+  "grosor": 0.25,
+  "apoyo": [
+    {"zona": 2, "min": [-0.85, 9.11, -3.41], "max": [0.85, 9.55, -2.94]}
+  ]
+}

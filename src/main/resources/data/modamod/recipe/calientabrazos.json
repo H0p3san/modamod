@@ -1,0 +1,18 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "B B",
+    "B B",
+    "A A"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:string"
+    },
+    "B": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "prenda": "calientabrazos",
+  "count": 3
+}

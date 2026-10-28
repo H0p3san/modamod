@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:plantilla_en_blanco"
+    },
+    {
+      "item": "minecraft:feather"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_aplique_mariposa",
+    "count": 1
+  }
+}

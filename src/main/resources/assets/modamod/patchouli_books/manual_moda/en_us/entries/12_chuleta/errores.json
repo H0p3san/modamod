@@ -1,0 +1,21 @@
+{
+  "name": "Errores clásicos",
+  "icon": "minecraft:barrier",
+  "category": "modamod:12_chuleta",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)“No me deja Modelar.”$() Revisá cuatro cosas: que haya prenda en la Entrada, que haya algo fijado, que tengas tijeras en la máquina y que la Salida esté libre. Casi siempre es la tercera.$(br2)$(l)“La máquina no abre.”$() Está trabajando. Esperá a que termine o apagá la línea del frente y probá de nuevo. No metas la mano.",
+      "title": "Errores clásicos"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)“La prenda se pasó de largo.”$() Con la línea prendida, una máquina que no tiene nada fijado para esa prenda la saltea. No es un bug: es una cadena de montaje con carácter.$(br2)$(l)“Mi patrón no aparece en la Modeladora.”$() Los patrones, los motivos y los colores viven en la Estación de Tintes. La Modeladora corta; Tintes pinta."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)“Las fotos no se ven.”$() La Sublimadora necesita Camerapture para tener fotos. Con el mod instalado, la foto sale de la cámara o del botón $(o)Escanear estampa$().$(br2)$(l)“Las medias salen al revés.”$() En todos los esquemas, la izquierda del dibujo es el lado derecho del jugador. Se lee como un espejo."
+    }
+  ]
+}

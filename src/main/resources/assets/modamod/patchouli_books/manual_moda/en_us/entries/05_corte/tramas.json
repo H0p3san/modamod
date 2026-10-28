@@ -1,0 +1,65 @@
+{
+  "name": "Tramas y materiales",
+  "icon": "modamod:molde_red_encaje",
+  "category": "modamod:05_corte",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/redes.png"
+      ],
+      "border": true,
+      "title": "Redes"
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/arneses.png"
+      ],
+      "border": true,
+      "title": "Arneses"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Perforar la tela, con estilo.$() El molde de red agujerea la tela ya teñida: deja ver la piel por los huecos y refuerza solo los bordes (cuello, puños, dobladillo y el borde del largo elegido) para que la prenda no parezca deshilachada.$(br2)$(li)$(l)Red fina:$() malla diagonal chica y apretada.$(li)$(l)Red gruesa:$() malla diagonal grande, bien abierta."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Red hexagonal:$() panal de abejas.$(li)$(l)Red perforada:$() tela sólida con agujeritos redondos, tipo broderie.$(li)$(l)Encaje:$() rombos grandes con un punto al centro.$(br2)$(li)$(l)Rayas caladas:$() franjas horizontales abiertas, con puentes alternados.$(li)$(l)Escocesa:$() cuadrícula recta."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Textura lisa:$() quita la red que tuviera la prenda.$(br2)$(l)Arneses.$() Son lo contrario de una red: todo queda abierto salvo las tiras. Cruzado (tiras en X con un anillo en el cruce), de tirantes (dos tirantes verticales y una banda al medio) y de bandas (bandas horizontales con anillo)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Siguen los bordes de corte reales: si acortás la remera a crop, el arnés se acomoda solo. Los anillos son plateados y no se tiñen.$(br2)$(l)Materiales.$() Tres moldes que dan tela en vez de agujeros: $(o)denim$() (sarga diagonal con desgaste a manchones), $(o)cuero$() (grano de poros con grietas y un brillo pintado) y $(o)pana$() (canaletas verticales, tipo corderoy)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(4)Fe de erratas:$() una prenda lleva una trama o un material, no los dos: hay un solo casillero. Elegí con orgullo."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_red_encaje,modamod:molde_red_escocesa,modamod:molde_red_fina,modamod:molde_red_gruesa,modamod:molde_red_hexagonal,modamod:molde_red_perforada,modamod:molde_red_rayas",
+      "title": "Redes",
+      "link_recipe": true,
+      "text": "$(l)Agujeros con intención.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_red_arnes_x,modamod:molde_red_arnes_tirantes,modamod:molde_red_arnes_bandas",
+      "title": "Arneses",
+      "link_recipe": true,
+      "text": "$(l)Todo abierto, salvo las tiras.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_material_denim,modamod:molde_material_cuero,modamod:molde_material_pana",
+      "title": "Materiales",
+      "link_recipe": true,
+      "text": "$(l)Denim, cuero y pana.$()$(br2)Una prenda lleva trama o material, no los dos."
+    }
+  ]
+}

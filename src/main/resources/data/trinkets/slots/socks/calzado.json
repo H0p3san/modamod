@@ -1,0 +1,6 @@
+{
+  "_comment": "Slot de calzado (2026-10-08, \"agreguemos un slot de calzado\"): en el grupo de las medias para no abrir un 4.º grupo sin slot_id, que Trinkets pondría afuera del inventario. Un solo par.",
+  "icon": "modamod:gui/slot/calzado",
+  "order": 1,
+  "amount": 1
+}

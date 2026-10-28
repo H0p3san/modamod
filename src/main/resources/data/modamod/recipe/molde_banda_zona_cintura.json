@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:molde_en_blanco"
+    },
+    {
+      "item": "minecraft:shears"
+    },
+    {
+      "item": "modamod:banda"
+    },
+    {
+      "item": "minecraft:leather"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_banda_zona_cintura",
+    "count": 1
+  }
+}

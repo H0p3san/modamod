@@ -1,0 +1,49 @@
+# Gradle / Loom
+build/
+.gradle/
+run/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Salida del plugin de Java de VSCode: compila en paralelo a Gradle y no debe
+# versionarse ni quedar en el classpath.
+bin/
+__pycache__/
+
+# Logs de crash de la JVM y capturas de revision
+hs_err_pid*.log
+replay_pid*.log
+*_review*.png
+
+# Grafo de graphify
+graphify-out/
+run-smoke/
+run-modeladora-linea/
+run-wearable-smoke/
+revision/
+
+# Herramientas locales
+.serena/
+.scratch_smoke/
+
+# Material de trabajo que no va al repo (2026-10-22, limpieza 0.1.0 alpha)
+.scratch_mpm/
+client_log.txt
+/*.zip
+assets_viejos/
+assets_nuevos_prueba/
+respaldos/
+calibracion/
+.claude/
+.vscode/
+
+# Jars de terceros para el cliente de desarrollo (ver README)
+libs/

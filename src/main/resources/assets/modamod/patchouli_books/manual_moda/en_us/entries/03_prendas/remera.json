@@ -1,0 +1,35 @@
+{
+  "name": "Remera, hoodie y saco",
+  "icon": "modamod:remera",
+  "category": "modamod:03_prendas",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:remera",
+      "title": "Remera",
+      "link_recipe": true,
+      "text": "$(l)Ocho lanas, mil versiones.$()$(br2)Hoodie, saco, campera y chaleco empiezan todos acá."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Una remera con aspiraciones.$() La remera es la única prenda de torso. Hoodie, saco, campera y chaleco no son ítems aparte: son rasgos que cualquier remera puede tener. No hay prendas nuevas; hay remeras que crecieron.$(br2)$(l)Cómo se llama.$() Cada prenda se nombra por su rasgo más fuerte. Por el corte: $(l)musculosa$(), $(l)remerón$(), $(l)croptop$(). Por el cuello: $(l)polera$(), $(l)camisa$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Con capucha: $(l)hoodie$(). Con solapas y sin capucha: $(l)saco$(). Con el frente abierto: $(l)campera$(). Sin mangas: $(l)chaleco$(). Manga larga lisa: $(l)buzo$(). El resto de los rasgos va al tooltip.$(br2)$(l)Dónde la llevás cambia dónde se dibuja.$() En el lugar $(o)Remera$() va debajo de la pollera. En el lugar $(o)Chaqueta$() (el de arriba, junto al muñeco) va por encima de todo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cualquier remera entra en los dos: así armás remera + saco sin comprar nada más.$(br2)$(l)Lo que se corta en la Modeladora.$() Capucha (con o sin, en estilo $(o)Cajas$() o $(o)Malla$(); $(l)H$() la sube y la baja), frente (cerrado, abierto, cruzado o abierto hasta el pecho; $(l)J$() lo abre y lo cierra), solapas (en pico, redondas o chal) y ruedo y puños ajustados."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Las solapas y la apertura siguen el borde real del escote: pegadas a la tela, no flotando por su cuenta.$(br2)$(l)El hoodie de fábrica no se craftea.$() Se arma desde una remera en la Modeladora: capucha, ruedo y puños ajustados, calce Oversize. Es la comodidad hecha prenda y no hace falta explicarla."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Un traje completo$() se arma con saco (frente abierto, sin capucha, remate recto y solapas), pantalón y remera de cuello camisa. La corbata es un aplique de la Estilista.$(br2)$(4)Fe de erratas:$() los hoodies y los moldes de chaqueta de versiones anteriores no se migraron. Si te quedó alguno viejo, rehacelo desde una remera."
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Apliques y correas",
+  "icon": "modamod:molde_aplique_mono",
+  "category": "modamod:11_recetario",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_bolsillo",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_bolsillo_jean"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_bolsillo_tapa",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_boton"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_botonera",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_canguro"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_corbata",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_cordones"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_flor",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_mariposa"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_mono",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_parche_corazon"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_parche_estrella",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_parche_rayo"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_aplique_tacha",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_aplique_tachas"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_correa_cadena",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_correa_cadena_fina"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_correa_cordon",
+      "title": "Apliques y correas",
+      "recipe2": "modamod:molde_correa_lisa"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_correa_ojalillos",
+      "title": "Apliques y correas"
+    }
+  ]
+}

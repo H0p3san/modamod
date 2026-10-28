@@ -1,0 +1,6 @@
+{
+  "_comment": "Sombrero de bruja del mod (2026-10-04, \"modelemos y agreguemos un sombrero de bruja\"): un lugar en el grupo de la cabeza de Trinkets, aparte del casco vanilla.",
+  "icon": "modamod:gui/slot/sombrero",
+  "order": 5,
+  "amount": 1
+}

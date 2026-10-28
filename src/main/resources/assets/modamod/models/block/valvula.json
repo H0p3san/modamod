@@ -1,0 +1,137 @@
+{
+  "textures": {
+    "cobre": "minecraft:block/cut_copper",
+    "oxidado": "minecraft:block/exposed_cut_copper",
+    "particle": "minecraft:block/cut_copper"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        4,
+        14
+      ],
+      "to": [
+        12,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cobre"
+        },
+        "south": {
+          "texture": "#cobre"
+        },
+        "east": {
+          "texture": "#cobre"
+        },
+        "west": {
+          "texture": "#cobre"
+        },
+        "up": {
+          "texture": "#cobre"
+        },
+        "down": {
+          "texture": "#cobre"
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        3,
+        8
+      ],
+      "to": [
+        13,
+        13,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#oxidado"
+        },
+        "south": {
+          "texture": "#oxidado"
+        },
+        "east": {
+          "texture": "#oxidado"
+        },
+        "west": {
+          "texture": "#oxidado"
+        },
+        "up": {
+          "texture": "#oxidado"
+        },
+        "down": {
+          "texture": "#oxidado"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cobre"
+        },
+        "south": {
+          "texture": "#cobre"
+        },
+        "east": {
+          "texture": "#cobre"
+        },
+        "west": {
+          "texture": "#cobre"
+        },
+        "up": {
+          "texture": "#cobre"
+        },
+        "down": {
+          "texture": "#cobre"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        5,
+        0
+      ],
+      "to": [
+        11,
+        11,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#oxidado"
+        },
+        "south": {
+          "texture": "#oxidado"
+        },
+        "east": {
+          "texture": "#oxidado"
+        },
+        "west": {
+          "texture": "#oxidado"
+        },
+        "up": {
+          "texture": "#oxidado"
+        },
+        "down": {
+          "texture": "#oxidado"
+        }
+      }
+    }
+  ]
+}

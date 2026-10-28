@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:molde_en_blanco"
+    },
+    {
+      "item": "minecraft:shears"
+    },
+    {
+      "item": "modamod:sombrero_bruja"
+    },
+    {
+      "item": "minecraft:slime_ball"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_sombrero_planta_redonda",
+    "count": 1
+  }
+}

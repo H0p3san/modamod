@@ -1,0 +1,49 @@
+{
+  "name": "Tramas y materiales",
+  "icon": "modamod:molde_red_encaje",
+  "category": "modamod:11_recetario",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_material_cuero",
+      "title": "Tramas y materiales",
+      "recipe2": "modamod:molde_material_denim"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_material_pana",
+      "title": "Tramas y materiales",
+      "recipe2": "modamod:molde_red_arnes_bandas"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_red_arnes_tirantes",
+      "title": "Tramas y materiales",
+      "recipe2": "modamod:molde_red_arnes_x"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_red_encaje",
+      "title": "Tramas y materiales",
+      "recipe2": "modamod:molde_red_escocesa"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_red_fina",
+      "title": "Tramas y materiales",
+      "recipe2": "modamod:molde_red_gruesa"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_red_hexagonal",
+      "title": "Tramas y materiales",
+      "recipe2": "modamod:molde_red_perforada"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_red_rayas",
+      "title": "Tramas y materiales"
+    }
+  ]
+}

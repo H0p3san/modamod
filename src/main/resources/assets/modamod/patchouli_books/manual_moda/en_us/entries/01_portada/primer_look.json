@@ -1,0 +1,31 @@
+{
+  "name": "Tu primer look",
+  "icon": "modamod:remera",
+  "category": "modamod:01_portada",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:remera,modamod:modelado,modamod:tinturas,modamod:sublimadora,modamod:estilista,modamod:guardarropas",
+      "title": "El kit de arranque",
+      "link_recipe": false,
+      "text": "$(l)Seis ítems, seis pasos.$()$(br2)Una remera y cinco máquinas de las que vas a hablar bien."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Seis pasos, sin drama.$() Es el camino más corto de la lana al outfit. Cada paso tiene su capítulo; esto es la versión de ascensor.$(br2)$(l)1. Remera.$() Ocho lanas en forma de remera (la grilla está en el Recetario). El color sale del promedio de las lanas que pongas: mezclá rojo con amarillo y tené fe."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)2. Vestila.$() Apretá $(l)K$() (o el botón $(o)Ropa$() del inventario) y poné la remera en su lugar. La primera vez te pide elegir cuerpo. Elegí con calma: es el único paso donde te pueden mirar.$(br2)$(l)3. Cortala.$() Craftéate una Mesa de Modelado, moldes en blanco y unas tijeras. Con un molde de rango y uno de calce, la remera pasa a ser croptop, remerón o musculosa."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)4. Teñila.$() La Estación de Tintes pinta por zonas y por capas. La alimentan los tintes de siempre: cian, magenta, amarillo y negro.$(br2)$(l)5. Estampala.$() Con una foto (hace falta Camerapture), la Sublimadora la plancha sobre la prenda. Sí, se puede poner la cara del amigo. No, no te vamos a frenar."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)6. Guardala.$() El Guardarropas guarda tu outfit con nombre y te lo pone entero cuando quieras.$(br2)$(l)Lo que lo cambia todo:$() cada máquina devuelve la prenda modificada y conserva tus moldes. Podés probar diez cortes en la misma remera hasta que uno te convenza.$(br2)$(4)Fe de erratas:$() la Modeladora no corta sin tijeras: gasta un uso por prenda. Llevá repuesto."
+    }
+  ]
+}

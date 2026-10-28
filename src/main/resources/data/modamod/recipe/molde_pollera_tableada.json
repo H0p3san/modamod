@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:molde_en_blanco"
+    },
+    {
+      "item": "minecraft:shears"
+    },
+    {
+      "item": "modamod:pollera"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_pollera_tableada",
+    "count": 1
+  }
+}

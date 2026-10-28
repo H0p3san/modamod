@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:molde_en_blanco"
+    },
+    {
+      "item": "minecraft:shears"
+    },
+    {
+      "item": "minecraft:feather"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_volado_recto",
+    "count": 1
+  }
+}

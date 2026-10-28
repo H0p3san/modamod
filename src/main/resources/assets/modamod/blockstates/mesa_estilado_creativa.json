@@ -1,0 +1,17 @@
+{
+  "_comment": "INVISIBLE: lo dibuja GeckoLib desde el block entity (styling_table.geo.json). El modelo solo aporta la textura de partículas.",
+  "variants": {
+    "facing=north": {
+      "model": "modamod:block/mesa_estilado"
+    },
+    "facing=south": {
+      "model": "modamod:block/mesa_estilado"
+    },
+    "facing=east": {
+      "model": "modamod:block/mesa_estilado"
+    },
+    "facing=west": {
+      "model": "modamod:block/mesa_estilado"
+    }
+  }
+}

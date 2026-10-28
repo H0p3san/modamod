@@ -1,0 +1,47 @@
+{
+  "name": "Cómo trabaja una máquina",
+  "icon": "modamod:modelado",
+  "category": "modamod:04_taller",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:modelado,modamod:tinturas,modamod:sublimadora,modamod:estilista,modamod:telar",
+      "title": "Las cinco hermanas",
+      "link_recipe": false,
+      "text": "$(l)Cinco máquinas, un mismo carácter.$()$(br2)Mismo esqueleto en todas: una entrada grande, una salida grande, un botón de acción en el medio y un visor 3D con vos puesto."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cada una tiene su metal: Tintes verdín, Modeladora cobre, Sublimadora oro, Estilista lila y Telar granate.$(br2)$(l)Configurar, fijar, ejecutar.$() Armás el ajuste y lo $(l)fijás$() (con la chincheta o un botón). Lo fijado es lo que se aplica; lo demás es borrador y solo vive en la vista previa. Poné la prenda en la $(l)Entrada$(), apretá el botón ($(o)Modelar$(), $(o)Teñir$(), $(o)Prensar$(), $(o)Aplicar$() o $(o)Tejer$()) y sale por la $(l)Salida$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cuánto tardan.$() Modelado 15 segundos, Tintes 10, Sublimadora 15, Estilista 13, Telar 12. Mientras trabajan se animan, suenan y se iluminan; al terminar, una campanita. Con redstone, se pausan.$(br2)$(l)Qué se gasta.$() $(o)Modeladora:$() un uso de tijera por prenda. $(o)Tintes:$() tinta CMYK. $(o)Sublimadora:$() tinta y papel. $(o)Estilista:$() hilo (apliques) y cuero (correas). $(o)Telar:$() lana e hilo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Los moldes, los patrones y las fotos no se gastan nunca.$(br2)$(l)Diseños guardados.$() Escribís un nombre y guardás todo lo fijado de esa prenda. Clic carga, clic derecho borra. Cada máquina tiene su propio cajón de diseños, así que el de la Modeladora no pisa al de Tintes.$(br2)$(l)Mientras trabajan, no se tocan.$() La pantalla se cierra sola y no se puede abrir hasta que termina."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Meter la mano en una máquina en marcha lastima: la Modeladora corta, la de Tintes marea con los vapores, la Sublimadora quema, la Estilista te pega con el pórtico y el Telar te engancha. Es un taller, no un spa."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Al romperlas, se guardan enteras.$() Como una shulker: el ítem conserva todo lo de adentro (prendas, moldes, diseños, fotos, tinta y hasta el trabajo a medias) y lo devuelve al colocarla. Vale también para las explosiones.$(br2)$(l)Línea: sí / no.$() Cada máquina tiene un botón de línea de producción, apagado de fábrica, en la pantalla y en el frente (un botoncito con un LED verde)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Apagada, la máquina se usa sola: no empuja la prenda terminada a la siguiente ni saltea las que le llegan por cinta o tolva. Prendida, trabaja en cadena. $(4)Truco:$() apagarla es el freno para poder abrir la pantalla."
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/modeladora_abierta.png"
+      ],
+      "border": true,
+      "title": "La Modeladora, por dentro"
+    }
+  ]
+}

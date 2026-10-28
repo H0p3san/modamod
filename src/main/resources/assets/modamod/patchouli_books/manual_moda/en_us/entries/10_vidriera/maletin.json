@@ -1,0 +1,31 @@
+{
+  "name": "Maletín de outfits",
+  "icon": "modamod:maletin",
+  "category": "modamod:10_vidriera",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:maletin",
+      "title": "Maletín de outfits",
+      "link_recipe": true,
+      "text": "$(l)Tu guardarropas, con asa.$()$(br2)Un maletín de cuero con cierres dorados para vestirte con los outfits de un Guardarropas desde cualquier lado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Vincular.$() Shift + clic sobre un Guardarropas. Desde ahí, el maletín usa el mismo almacenamiento que el mueble: lo que guardás en uno aparece en el otro. Funciona aunque el mueble esté lejos o descargado, porque los outfits viven en el mundo, no dentro del bloque.$(br2)$(l)Usarlo.$() Clic derecho abre una lista con solo los nombres de los outfits (sin muñeco, sin slots): tocás uno y te lo pone entero."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Shift + clic derecho te pone el siguiente al instante, con humo, destellos y una campanita. Repetido, hace la ronda por todos.$(br2)$(l)Apoyarlo.$() Clic derecho sobre un bloque lo deja parado, con la manija arriba, mirando hacia vos. Apoyado, el clic derecho abre la lista igual y Shift + clic derecho lo levanta. Al romperlo cae con todo: vínculo, colores, patrones y apliques."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Teñirlo y decorarlo.$() Tiene tres zonas, como el sombrero: cuero, costuras y manija, y herrajes. En la Estación de Tintes (categoría $(o)Maletín$()) lleva colores y patrones por zona; en la Estilista, colores y apliques sobre cualquier cara.$(br2)$(4)Fe de erratas:$() no sirve para guardar, combinar ni desarmar: eso se hace en el Guardarropas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "El maletín tampoco tiene candado propio: si el mueble está cerrado, igual viste con sus outfits."
+    }
+  ]
+}

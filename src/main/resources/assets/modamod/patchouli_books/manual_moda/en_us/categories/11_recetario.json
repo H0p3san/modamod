@@ -1,0 +1,6 @@
+{
+  "name": "Recetario",
+  "description": "Todas las grillas de crafteo, sin literatura. L = lana, H = hilo, C = cuero, T = tijeras, I = hierro, P = papel, R = redstone, M = tablones, V = vidrio.",
+  "icon": "minecraft:crafting_table",
+  "sortnum": 10
+}

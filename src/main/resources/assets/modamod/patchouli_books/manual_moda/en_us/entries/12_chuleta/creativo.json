@@ -1,0 +1,25 @@
+{
+  "name": "Solo creativo y operadores",
+  "icon": "minecraft:structure_block",
+  "category": "modamod:12_chuleta",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cosas que existen pero no se consiguen jugando.$() Las dejamos listadas para que no te vuelvas loco buscándolas.$(br2)$(l)Máquinas creativas.$() Una versión creativa de cada máquina: no esperan, no piden insumos y vienen cargadas una vez con un ejemplar de cada molde o patrón.",
+      "title": "Solo creativo y operadores"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Se distinguen por la madera violeta nacarada y los herrajes dorados. Vienen también tres $(o)kits$() en cajas de shulker: todos los patrones, todos los moldes e insumos.$(br2)$(l)Apliques de objeto.$() En la Estilista creativa, cualquier ítem o bloque de cualquier mod puede ser un aplique: calabazas talladas, cabezas, velas, una espada."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Se ajustan con un panel lateral de colocación (cara de contacto, profundidad, rotación, escala) y de movimiento (pivote, velocidad, amplitud).$(br2)$(l)Moldes personalizados.$() En la Estilista creativa, el botón $(o)Crear molde$() guarda un aplique con toda su configuración en un molde que se usa después en la Estilista normal."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Los moldes se guardan a tu nombre, y $(l)/modamod moldes$() los lista (hasta 50 por jugador)."
+    }
+  ]
+}

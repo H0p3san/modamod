@@ -1,0 +1,9 @@
+{
+  "_comment": "El bloque es INVISIBLE y lo dibuja GeckoLib entero desde el block entity (modelo garment_shaper), asi que este modelo nunca se ve en el mundo. Mismo patron que sublimadora.json: existe solo para que el cargador no tire warnings y como padre del modelo de item.",
+  "variants": {
+    "facing=north": { "model": "modamod:block/modelado" },
+    "facing=south": { "model": "modamod:block/modelado" },
+    "facing=east": { "model": "modamod:block/modelado" },
+    "facing=west": { "model": "modamod:block/modelado" }
+  }
+}

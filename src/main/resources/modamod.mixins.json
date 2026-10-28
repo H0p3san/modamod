@@ -1,0 +1,34 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.modamod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BannerBlockEntityMixin",
+    "BannerDropsMixin",
+    "ShieldDecorationRecipeMixin",
+    "LivingEntityCintaMixin",
+    "EntityCintaParadaMixin",
+    "SlotUnaPrendaMixin"
+  ],
+  "client": [
+    "AbstractClientPlayerEntityMixin",
+    "BipedEntityModelTwirlMixin",
+    "LivingEntityRendererMixin",
+    "PlayerEntityCapasSkinMixin",
+    "PlayerEntityRendererFirstPersonArmMixin",
+    "HandledScreenSlotInfoMixin",
+    "BustoEnModelosMixin",
+    "ArmaduraBustoMixin",
+    "PlayerEntityCosmeticosMixin",
+    "RopaOcultaEnInventarioMixin",
+    "TrinketScreenManagerMixin",
+    "HandledScreenAccessor",
+    "BannerRendererMixin",
+    "BuiltinModelItemRendererMixin",
+    "ClientPlayerEntityCintaMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

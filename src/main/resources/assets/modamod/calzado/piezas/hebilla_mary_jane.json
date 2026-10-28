@@ -1,0 +1,18 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "hebilla_mary_jane",
+  "eje": "cierre",
+  "forma": "secciones",
+  "zona": 2,
+  "columnas": 8,
+  "grosor": 0,
+  "tapas": [true, true],
+  "secciones": [
+    {"z": -1.45, "x0": -3.3, "x1": -2.95, "yTop": 10.1, "yBot": 10.75, "n": 4, "abre": null},
+    {"z": -1.95, "x0": -3.3, "x1": -2.95, "yTop": 10, "yBot": 10.65, "n": 4, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 2, "min": [-3.3, 10, -1.95], "max": [-2.95, 10.75, -1.45]}
+  ]
+}

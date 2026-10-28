@@ -1,0 +1,45 @@
+{
+  "name": "Patrones y motivos",
+  "icon": "modamod:pattern_vichy",
+  "category": "modamod:06_color",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/motivos.png"
+      ],
+      "border": true,
+      "title": "Corazones, de cuatro formas"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Los moldes de patrón son la despensa.$() Los rayados (rayas superiores, alternadas, tres rayas), los motivos repetidos (corazones, estrellas, lunares) y el vichy, que hace cuadros de tres tonos con un solo color.$(br2)$(l)Animales y clásicos.$() Leopardo, cebra, tigre, vaca, jirafa, serpiente y dálmata; tartán, leñador, pata de gallo, argyle, camuflaje, camuflaje digital, zigzag y ventana."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Las recetas están en el Recetario. Solo se usan en la Estación de Tintes.$(br2)$(l)Repetición de motivos.$() $(o)Grilla$() (filas parejas), $(o)Ladrillo$() (cada fila corrida media posición), $(o)Disperso$() (al azar, con huecos) y $(o)Único$() (un motivo grande en el frente de cada pieza, tipo logo). Los motivos se reparten para entrar justo alrededor de la pieza: el que cae en la costura sigue del otro lado sin cortarse."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:pattern_argyle,modamod:pattern_tartan,modamod:pattern_pata_de_gallo,modamod:pattern_lenador,modamod:pattern_vichy,modamod:pattern_rayas",
+      "title": "Clásicos",
+      "link_recipe": true,
+      "text": "$(l)Los que nunca pasan de moda.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:pattern_leopardo,modamod:pattern_cebra,modamod:pattern_tigre,modamod:pattern_vaca,modamod:pattern_jirafa,modamod:pattern_serpiente,modamod:pattern_dalmata",
+      "title": "Animales",
+      "link_recipe": true,
+      "text": "$(l)Pelaje de temporada.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:pattern_corazones,modamod:pattern_estrellas,modamod:pattern_lunares,modamod:pattern_zigzag,modamod:pattern_ventana,modamod:pattern_camuflaje,modamod:pattern_camuflaje_digital,modamod:pattern_diplomaticas",
+      "title": "Motivos y más",
+      "link_recipe": true,
+      "text": "$(l)Para el resto del carácter.$()"
+    }
+  ]
+}

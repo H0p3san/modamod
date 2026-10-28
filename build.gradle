@@ -1,0 +1,262 @@
+plugins {
+    id 'fabric-loom' version '1.17.21'
+}
+
+// El subproyecto tiene que estar evaluado antes de que la raiz referencie su
+// tarea remapJar, si no Gradle dice "Task with name 'remapJar' not found".
+
+version = project.mod_version
+group = project.maven_group
+
+loom {
+    mods {
+        modamod { sourceSet sourceSets.main }
+        modamod_pruebas { sourceSet sourceSets.test }
+    }
+    // Relieve (2026-10-01): acceso a las caras de ModelPart.Cuboid.
+    accessWidenerPath = file("src/main/resources/modamod.accesswidener")
+    runs {
+        // Pruebas automaticas (2026-10-19): clientes de desarrollo separados de la instancia personal. El codigo
+        // vive en src/test y nunca entra al jar. Correrlas de a una (comparten la GPU): ./gradlew.bat runSmoke y despues
+        // ./gradlew.bat runWearableSmoke. Resultados en run-smoke/pruebas y run-wearable-smoke/pruebas.
+        smoke {
+            client()
+            name 'ModaMod pantallas (smoke)'
+            source sourceSets.test
+            runDir 'run-smoke'
+            vmArg '-Dmodamod.suite=pantallas'
+            programArgs '--username', 'PruebaModa', '--width', '1920', '--height', '1080'
+        }
+        modeladoraLineaSmoke {
+            client()
+            source sourceSets.test
+            runDir 'run-modeladora-linea'
+            vmArg '-Dmodamod.suite=modeladora-linea'
+            programArgs '--username', 'PruebaModa', '--width', '1280', '--height', '720'
+        }
+        // Salon de pruebas para mirar a mano (2026-10-19, "haceme un maniqui con todas las prendas en cada calce"): arma el mundo
+        // "ModaMod Salon" en run/saves (el cliente de desarrollo, nunca el perfil de Modrinth) y se cierra. ./gradlew.bat runSalon
+        salon {
+            client()
+            name 'ModaMod salon de pruebas'
+            source sourceSets.test
+            runDir 'run'
+            vmArg '-Dmodamod.suite=salon'
+            programArgs '--username', 'H0p3san', '--width', '1280', '--height', '720'
+        }
+        // Modashow de los trims (2026-10-22, "haceme un modashow de prueba con todos los trims"): mundo "ModaMod Modashow" en
+        // run/saves con todos los patrones, los materiales y un conjunto completo, capturas de dia y de noche. ./gradlew.bat runModashow
+        modashow {
+            client()
+            name 'ModaMod modashow de trims'
+            source sourceSets.test
+            runDir 'run'
+            vmArg '-Dmodamod.suite=modashow'
+            programArgs '--username', 'H0p3san', '--width', '1280', '--height', '720'
+        }
+        // Entrar a mano al mundo del modashow, sin pruebas (2026-10-22, "abrimelo para que vea yo"). ./gradlew.bat runVerModashow
+        verModashow {
+            client()
+            name 'ModaMod ver el modashow'
+            runDir 'run'
+            programArgs '--username', 'H0p3san', '--quickPlaySingleplayer', 'ModaMod Modashow'
+        }
+        wearableSmoke {
+            client()
+            name 'ModaMod prenda equipada (wearable smoke)'
+            source sourceSets.test
+            runDir 'run-wearable-smoke'
+            vmArg '-Dmodamod.suite=prenda'
+            programArgs '--username', 'PruebaModa', '--width', '1920', '--height', '1080'
+        }
+        client {
+            // Nombre de jugador fijo. Sin esto Loom estrena uno al azar
+            // (Player947, Player532...) en cada arranque, y como el UUID
+            // offline sale del nombre, cada sesion entra al mundo como un
+            // jugador distinto y con el inventario vacio.
+            programArgs '--username', 'H0p3san'
+        }
+    }
+}
+
+repositories {
+    maven {
+        // Patchouli (2026-10-23, libro "Manual de Moda"); "FABRIC" va en mayúsculas en la versión.
+        name = "BlameJared"
+        url = "https://maven.blamejared.com"
+    }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
+        name = "Ladysnake"
+        url = "https://maven.ladysnake.org/releases"
+    }
+    maven {
+        // player-animation-lib, para compilar el puente con Emotecraft (el Maniquí hace los emotes).
+        name = "KosmX"
+        url = "https://maven.kosmx.dev/"
+    }
+    maven {
+        // Trinkets y las dependencias opcionales (GeckoLib, Camerapture, Emotecraft, 3DSL) via Modrinth Maven.
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // --- Trinkets (ORIGINAL, de emilyploszaj) v3.10.0 — CONFIRMADO para 1.21.1 ---
+    modImplementation "maven.modrinth:trinkets:3.10.0"
+
+    // --- Cardinal Components API v6.1.3 ---
+    // OJO: hay que declarar los MODULOS uno por uno, no el bundle de
+    // Modrinth. Con "maven.modrinth:cardinal-components-api" los modulos
+    // entran como dependencias Maven comunes, sin remapear ni registrar
+    // como mods, y en runtime Fabric Loader rechaza el arranque:
+    //   "Trinkets necesita cardinal-components-base, que no tienes".
+    // Trinkets 3.10.0 pide base + entity.
+    modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-base:6.1.3"
+    modImplementation "org.ladysnake.cardinal-components-api:cardinal-components-entity:6.1.3"
+
+    // Cosmetic Armor Updated y Armor Model API SACADAS (2026-10-22, "saquemos lo que no sirve asi lo largamos como version
+    // 0.1.0 alpha"): no las usaba ninguna clase; la armadura cosmetica la hace PlayerEntityCosmeticosMixin.
+
+    // Emotecraft SOLO para compilar (2026-10-04, "animacion del emotecraft si esta instalado"): el Maniquí lee los
+    // emotes cargados y los evalúa con la player-animation-lib (la del maven de KosmX: Emotecraft la trae anidada y
+    // Loom no expone los anidados). Opcional en runtime: todo el acceso va aislado en compat/EmotecraftCompat
+    // detrás de isModLoaded. daqt5qcK = emotecraft-for-MC1.21.1-2.4.12-fabric.jar
+    modCompileOnly "maven.modrinth:emotecraft:daqt5qcK"
+    modCompileOnly "dev.kosmx.player-anim:player-animation-lib-fabric:2.0.1+1.21.1"
+    // GeckoLib: la sublimadora es un bloque animado. Estuvo fijado en 4.7.7
+    // por un bug de render en 4.8.4 (uv_size parcial por cara) — resuelto
+    // río arriba para 4.9.3, confirmado jugando.
+    modImplementation "maven.modrinth:geckolib:tmxM7U4W"
+    // Camerapture: de aca sale el UUID de la foto que estampa la
+    // sublimadora. Opcional en runtime, el acceso va aislado detras de
+    // isModLoaded.
+    modCompileOnly "maven.modrinth:camerapture:RYOi2mzR"
+    modLocalRuntime "maven.modrinth:camerapture:RYOi2mzR"
+    // Patchouli SOLO en el cliente de desarrollo (2026-10-23, "y si hacemos un libro patchouli con una lana y un libro"):
+    // el libro es puro dato (data/ y assets/ patchouli_books), sin código, así que el mod no lo necesita para compilar.
+    modLocalRuntime "vazkii.patchouli:Patchouli:1.21.1-93-FABRIC"
+    // Camerapture trae webp4j como jar ANIDADO y Loom no lo extrae para
+    // modLocalRuntime: sacar una foto moria con
+    // NoClassDefFoundError dev/matrixlab/webp4j/WebPCodec. Mismo caso que las
+    // librerias de 3D Skin Layers. Solo para desarrollo, y solo si el jar está en libs/ (no se versiona: es de
+    // terceros; se saca del jar de Camerapture, META-INF/jars).
+    if (file("libs/webp4j-1.3.0.jar").exists()) modLocalRuntime files("libs/webp4j-1.3.0.jar")
+
+    // 3D Skin Layers SOLO para compilar: nuestra textura de skin implementa su
+    // interfaz HttpTextureAccessor para que pueda leerla. No es dependencia de
+    // runtime — sin el mod, la clase puente nunca se carga.
+    // Version 1.11.2 (Loom 1.13.469, por debajo de nuestro 1.15.3).
+    modCompileOnly "maven.modrinth:3dskinlayers:IrL0IGkV"
+
+    // Y tambien en el cliente de desarrollo, para poder probar de verdad que
+    // 3DSL lee nuestra skin compuesta y le saca la geometria 3D donde va la
+    // prenda. No entra al jar publicado.
+    modLocalRuntime "maven.modrinth:3dskinlayers:IrL0IGkV"   // Reactivado 2026-09-15 para diagnosticar el colgado — ver nota de mas abajo.
+
+    // 3DSL trae sus dos librerias como jars ANIDADOS, y Loom no las extrae
+    // para modLocalRuntime: el cliente arrancaba y moria con
+    // NoClassDefFoundError dev/tr7zw/transition/loader/ModLoaderUtil.
+    // Se sacan a mano del jar (META-INF/jars) y se cargan sueltas desde libs/, si están. Solo para desarrollo.
+    ["TRansition-1.0.21-1.21.1-fabric-SNAPSHOT.jar", "TRender-1.0.15-1.21.1-fabric-SNAPSHOT.jar"].each {
+        if (file("libs/$it").exists()) modLocalRuntime files("libs/$it")
+    }
+}
+
+processResources {
+    // Sello de build: el mod lo loguea al arrancar y, comparado contra
+    // build/resources/main/build.txt, contesta sin discutir si el cliente
+    // abierto trae los ultimos cambios.
+    //
+    // Sale del CONTENIDO de las fuentes y no del reloj. Con la hora, lanzar
+    // el cliente volvia a correr esta tarea y regeneraba el sello despues de
+    // haberlo leido: el chequeo daba distinto siempre aunque estuviera todo
+    // bien. Con un hash, dos builds del mismo codigo dan el mismo sello.
+    //
+    // Y tiene que ser un RECURSO y no un hash de las clases compiladas: en
+    // desarrollo Loom remapea el jar y los .class cambian de bytes aunque el
+    // codigo sea identico.
+    def huella = java.security.MessageDigest.getInstance("MD5")
+    fileTree("src/main").files.toSorted { it.path }.each { f ->
+        huella.update(f.path.bytes)
+        huella.update(f.bytes)
+    }
+    def sello = huella.digest().encodeHex().toString().substring(0, 12)
+    inputs.property "sello", sello
+    doLast {
+        new File(destinationDir, "build.txt").text = sello
+    }
+
+    inputs.property "version", project.version
+    filteringCharset "UTF-8"
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.release = 21
+}
+
+java {
+    // Sin jar de fuentes (2026-10-22, "sin jar de fuentes"): no publicamos en Maven y alargaba cada build.
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+// Licencias adentro del jar (2026-10-22, "Código MIT y assets con todos los derechos reservados").
+jar {
+    from("LICENSE", "LICENSE-ASSETS")
+}
+
+// Pruebas de motor: geometria y logica sin abrir el juego (clases de Minecraft sin cliente).
+tasks.register('motorTest', JavaExec) {
+    dependsOn testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.modamod.pruebas.MotorPruebas'
+    jvmArgs '-Djava.awt.headless=true'
+    workingDir = layout.buildDirectory.dir('motor-test').get().asFile
+    doFirst { workingDir.mkdirs() }
+}
+check.dependsOn motorTest
+tasks.named('test') { enabled = false }
+tasks.named('runModeladoraLineaSmoke') {
+    doFirst {
+        def opciones = file('run-modeladora-linea/options.txt')
+        if (!opciones.exists()) {
+            opciones.parentFile.mkdirs()
+            opciones.text = 'onboardAccessibility:false\nrenderDistance:5\nsimulationDistance:5\npauseOnLostFocus:false\n'
+        }
+    }
+}
+// Las dos de cliente nunca corren en paralelo: una sola GPU y un solo juego a la vez.
+tasks.matching { it.name == 'runWearableSmoke' }.configureEach { mustRunAfter 'runSmoke' }
+
+
+// Revision ocular (2026-10-19, "yo solo giro y miro"): corre todo de a uno y arma revision/hoja-N.png (una sola imagen
+// con todas las capturas rotuladas) y revision/pendientes.md. ./gradlew.bat runRevision
+tasks.register('hojaDeRevision', JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.modamod.pruebas.HojaRevision'
+    jvmArgs '-Djava.awt.headless=true'
+    args layout.projectDirectory.dir('revision').asFile.absolutePath, layout.projectDirectory.dir('run-smoke').asFile.absolutePath,
+            layout.projectDirectory.dir('run-wearable-smoke').asFile.absolutePath
+    mustRunAfter 'runSmoke', 'runWearableSmoke'
+    dependsOn testClasses
+}
+tasks.register('runRevision') {
+    dependsOn 'motorTest', 'runSmoke', 'runWearableSmoke', 'hojaDeRevision'
+}
+tasks.named('runSmoke') { mustRunAfter 'motorTest' }

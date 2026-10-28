@@ -1,0 +1,6 @@
+{
+  "_comment": "Slot individual dentro del grupo 'arms'. El icono es una silueta gris y translucida, no la textura del item: un item a color en el hueco vacio se lee como si hubiera algo equipado.",
+  "icon": "modamod:gui/slot/armwarmer",
+  "order": 0,
+  "amount": 3
+}

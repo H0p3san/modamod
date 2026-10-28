@@ -1,0 +1,23 @@
+{
+  "name": "Sombreros y bandas",
+  "icon": "modamod:sombrero_bruja",
+  "category": "modamod:03_prendas",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:sombrero_bruja,modamod:banda",
+      "title": "Sombreros y bandas",
+      "link_recipe": false,
+      "text": "$(l)Lo que te ponés cuando ya te pusiste todo.$()$(br2)El sombrero tiene su lugar propio (aparte del casco, así que se lleva con casco, con capucha y con apliques). El cinto y el collar son la misma prenda, la $(o)banda$(), en dos lugares distintos."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Sombrero.$() Tres zonas de color: ala, copa y cinta. Según los moldes que le pongas en la Modeladora sale gorra, boina, galera, sombrero vaquero o charro, tricornio, gorro de cocinero, gorro marinero, vincha, cofia o el clásico sombrero de bruja con la punta recta o doblada, que se mece con el movimiento.$(br2)$(l)Banda.$() Un aro que rodea la cintura (el $(o)cinto$()) o el pecho (el $(o)collar$()). Cada zona solo entra en su lugar."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Se arma con tres moldes: $(o)ancho$() (fino, medio, ancho), $(o)zona$() y $(o)herraje$() (ninguno, placa, aro o colgantes como campana, hueso, corazón y medalla)."
+    }
+  ]
+}

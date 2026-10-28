@@ -1,0 +1,43 @@
+{
+  "name": "Guardarropas",
+  "icon": "modamod:guardarropas",
+  "category": "modamod:10_vidriera",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:guardarropas",
+      "title": "Guardarropas",
+      "link_recipe": true,
+      "text": "$(l)Tu outfit completo, con nombre y apellido.$()$(br2)Guarda lo que llevás puesto y te lo vuelve a poner entero cuando quieras. Es un mueble con puerta: se abre hacia afuera mientras alguien mira adentro."
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/guardarropas_gui.png"
+      ],
+      "border": true,
+      "title": "El Guardarropas abierto"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La pantalla.$() A la izquierda, la misma pantalla de Ropa del jugador: los lugares de ropa del mod, la armadura real y la cosmética con sus interruptores, y tu inventario. A la derecha, la lista de outfits guardados. Hay lugar para doce."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Guardar.$() Escribís un nombre (si lo dejás vacío se llama $(o)Outfit N$()) y apretás $(o)Guardar$(): todo lo que llevás puesto, ropa del mod, armadura y cosmética, se mueve al mueble y te quedás sin esas prendas. Si ya hay uno con ese nombre, se le suma un número ($(o)Gala 2$())."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Verlo antes de ponértelo.$() Al tocar el nombre de un outfit, tu muñeco se ve con ese outfit puesto, de mentira: no te cambia nada.$(br2)$(l)Poner.$() Te pone el outfit entero de una vez. Lo que llevabas puesto no se pierde: si era un outfit guardado, vuelve a la lista con su nombre, al final."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Si era ropa suelta, queda guardado como $(o)Anterior$(), siempre el primero de la lista, con exactamente lo que tenías puesto. Tocarlo te lo devuelve. Si ya había un $(o)Anterior$() sin usar, pasa a $(o)Anterior 2$().$(br2)$(l)Compartido.$() Los outfits son de todos los que abren ese Guardarropas, y también de los Maletines vinculados a él."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Con el candado cerrado, solo el dueño, los operadores y los jugadores en creativo pueden guardar, poner o desarmar; los demás pueden abrirlo y ver la lista.$(br2)$(4)Fe de erratas:$() el mueble no te deja agarrar prendas sueltas: guarda y devuelve outfits enteros, y las tolvas ya no meten ni sacan nada."
+    }
+  ]
+}

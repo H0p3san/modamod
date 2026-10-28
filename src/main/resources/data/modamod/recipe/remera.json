@@ -1,0 +1,14 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "A A",
+    "AAA",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "prenda": "remera"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "id": "modamod",
+  "version": "${version}",
+  "name": "ModaMod",
+  "icon": "assets/modamod/icon.png",
+  "description": "Ropa craftable, tenible y compatible con cualquier tono de piel, y una sublimadora que le estampa fotos.",
+  "authors": [
+    "H0p3san"
+  ],
+  "contact": {
+    "homepage": "https://github.com/H0p3san/modamod",
+    "sources": "https://github.com/H0p3san/modamod",
+    "issues": "https://github.com/H0p3san/modamod/issues"
+  },
+  "license": [
+    "MIT",
+    "LicenseRef-All-Rights-Reserved"
+  ],
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.modamod.Modamod",
+      "com.modamod.sublimadora.SublimadoraMod"
+    ],
+    "client": [
+      "com.modamod.client.ModamodClient",
+      "com.modamod.sublimadora.SublimadoraModClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "1.21.1",
+    "fabric-api": ">=0.116.0",
+    "trinkets": ">=3.10.0",
+    "geckolib": ">=4.9.3",
+    "cardinal-components-base": "*",
+    "cardinal-components-entity": "*"
+  },
+  "accessWidener": "modamod.accesswidener",
+  "mixins": [
+    "modamod.mixins.json"
+  ],
+  "recommends": {
+    "camerapture": "*",
+    "patchouli": "*"
+  },
+  "suggests": {
+    "emotecraft": "*",
+    "skinlayers3d": "*"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "ABA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "prenda": "cinto"
+}

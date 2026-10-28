@@ -1,0 +1,21 @@
+{
+  "formato": "modamod-sombrero-malla-1",
+  "id": "cinta_marinero",
+  "tipo": "cinta",
+  "zona": 2,
+  "yBase": -5.6,
+  "columnas": 16,
+  "cierre": "abierto",
+  "grosor": 0,
+  "anillos": [
+    { "y": -0.1, "rx": 4.95, "rz": 4.95 },
+    { "y": -1.5, "rx": 4.99, "rz": 4.99 }
+  ],
+  "porColumna": {
+    "escala": [1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08]
+  },
+  "punta": null,
+  "apoyo": [
+    { "zona": 2, "min": [-4.99, -7.1, -4.99], "max": [4.99, -5.7, 4.99] }
+  ]
+}

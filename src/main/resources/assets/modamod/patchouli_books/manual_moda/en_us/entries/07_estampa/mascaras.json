@@ -1,0 +1,27 @@
+{
+  "name": "Máscaras y capas",
+  "icon": "modamod:molde_mascara_circulo",
+  "category": "modamod:07_estampa",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_mascara_circulo,modamod:molde_mascara_cuadrado,modamod:molde_mascara_estrella,modamod:molde_mascara_franja,modamod:molde_mascara_triangulo",
+      "title": "Máscaras de sublimado",
+      "link_recipe": true,
+      "text": "$(l)La foto, con forma.$()$(br2)Cinco formas, un molde por cada una."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La foto, con forma.$() Con un molde de máscara en su casillero (columna derecha, abajo), la foto se estampa solo adentro de una forma: cuadrado, franja, círculo, estrella o triángulo. El molde no se gasta.$(br2)$(l)Editar: imagen / máscara.$() Este botón decide qué mueven $(o)Escala$(), $(o)X$(), $(o)Y$() y $(o)Ángulo$(). En $(o)imagen$(), mueven la foto adentro de la máscara (escala 100 % = la foto cubre la máscara)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "En $(o)máscara$(), mueven la forma sobre la prenda. Cada cara tiene su propio ajuste.$(br2)$(l)La chincheta cambia de oficio.$() Con máscara, ya no fija la cara entera: $(l)agrega una capa$() con esa foto, esa forma y esos ajustes. La foto queda en su casillero, así podés fijar otra capa con la misma foto, cambiar de forma o cambiar de foto."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Hasta 12 capas$() entre frente y espalda. La lista $(o)Capas (n/12)$() las muestra en orden: “3F” es la capa 3 del frente y “5E” la 5 de la espalda. La de más arriba en la lista se pinta encima. Clic elige una capa, ▲▼ la mueven y ✕ la borra.$(br2)$(4)Fe de erratas:$() los moldes de máscara, por ahora, solo se consiguen en la pestaña creativa."
+    }
+  ]
+}

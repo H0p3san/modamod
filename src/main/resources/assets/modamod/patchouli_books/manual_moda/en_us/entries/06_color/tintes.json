@@ -1,0 +1,34 @@
+{
+  "name": "Tinta y color",
+  "icon": "modamod:tinturas",
+  "category": "modamod:06_color",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:tinturas",
+      "title": "Estación de Tintes",
+      "link_recipe": true,
+      "text": "$(l)Cuatro colores y una transparencia.$()$(br2)La Estación de Tintes trabaja con tinta CMYK: cian, magenta, amarillo y negro, cargados con los tintes de siempre. Clic derecho con el tinte en la mano, o por tolva desde atrás."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Los tanques.$() Cada uno guarda hasta 64 dosis. Un teñido gasta una dosis de cada canal que use alguno de los colores fijados. El nivel se ve dentro de cada slider: el fondo se llena con el color de la tinta y a la derecha dice $(o)n/64$() (en rojo si está vacío).$(br2)$(l)Un color son cinco sliders:$() Cyan, Magenta, Yellow, Key (negro) y Transparencia, de 0 a 100 % en pasos de 5."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Transparencia.$() No gasta tinta. Al 100 % hace un agujero en la tela; en el medio, la tela queda translúcida de verdad, como un tul. Va por color: podés calar solo los corazones de un patrón. Las muestras con transparencia se ven sobre fondo a cuadros."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Muestras de color.$() $(o)Envasar$() gasta un frasco de vidrio y te da una Muestra de color con la mezcla que estás editando; el tooltip dice el código y los porcentajes. $(o)Usar muestra$() copia esa mezcla al color que estás editando. La muestra es solo la receta: no trae tinta ni se gasta. Es el único regalo que no se rompe."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:tinte_mezcla",
+      "title": "Muestra de color",
+      "link_recipe": false,
+      "text": "$(l)El color, en frasco.$()$(br2)Es solo la receta: no trae tinta."
+    }
+  ]
+}

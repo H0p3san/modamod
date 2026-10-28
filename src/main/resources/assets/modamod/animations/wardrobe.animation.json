@@ -1,0 +1,95 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.wardrobe.abrir": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.42,
+      "bones": {
+        "door": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "0.34": [
+              0,
+              104,
+              0
+            ],
+            "0.42": [
+              0,
+              100,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.wardrobe.abierta": {
+      "loop": true,
+      "animation_length": 0.4,
+      "bones": {
+        "door": {
+          "rotation": {
+            "0": [
+              0,
+              100,
+              0
+            ],
+            "0.4": [
+              0,
+              100,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.wardrobe.cerrar": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.36,
+      "bones": {
+        "door": {
+          "rotation": {
+            "0": [
+              0,
+              100,
+              0
+            ],
+            "0.3": [
+              0,
+              -3,
+              0
+            ],
+            "0.36": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.wardrobe.cerrada": {
+      "loop": true,
+      "animation_length": 0.4,
+      "bones": {
+        "door": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    }
+  }
+}

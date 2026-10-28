@@ -1,0 +1,5 @@
+{
+  "_comment": "Provisorio (2026-10-01): lana blanca teñida con la zona 1 hasta que haya ícono propio.",
+  "parent": "minecraft:item/generated",
+  "textures": { "layer0": "minecraft:block/white_wool" }
+}

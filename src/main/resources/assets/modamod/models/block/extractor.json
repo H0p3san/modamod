@@ -1,0 +1,105 @@
+{
+  "textures": {
+    "cobre": "minecraft:block/cut_copper",
+    "rejilla": "minecraft:block/copper_grate",
+    "particle": "minecraft:block/cut_copper"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        2,
+        12
+      ],
+      "to": [
+        14,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cobre"
+        },
+        "south": {
+          "texture": "#cobre"
+        },
+        "east": {
+          "texture": "#cobre"
+        },
+        "west": {
+          "texture": "#cobre"
+        },
+        "up": {
+          "texture": "#cobre"
+        },
+        "down": {
+          "texture": "#cobre"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        12,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rejilla"
+        },
+        "south": {
+          "texture": "#rejilla"
+        },
+        "east": {
+          "texture": "#rejilla"
+        },
+        "west": {
+          "texture": "#rejilla"
+        },
+        "up": {
+          "texture": "#rejilla"
+        },
+        "down": {
+          "texture": "#rejilla"
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        5.5,
+        0
+      ],
+      "to": [
+        10.5,
+        10.5,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cobre"
+        },
+        "south": {
+          "texture": "#cobre"
+        },
+        "east": {
+          "texture": "#cobre"
+        },
+        "west": {
+          "texture": "#cobre"
+        },
+        "up": {
+          "texture": "#cobre"
+        },
+        "down": {
+          "texture": "#cobre"
+        }
+      }
+    }
+  ]
+}

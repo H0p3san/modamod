@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "modamod:block/valvula"
+    },
+    "facing=east": {
+      "model": "modamod:block/valvula",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "modamod:block/valvula",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "modamod:block/valvula",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "modamod:block/valvula",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "modamod:block/valvula",
+      "x": 90
+    }
+  }
+}

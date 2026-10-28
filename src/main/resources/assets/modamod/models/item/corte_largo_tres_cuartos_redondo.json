@@ -1,0 +1,7 @@
+{
+  "_comment": "El aspecto real del corte. Lo dibuja vanilla adentro de RemeraItemRenderer, que despues le pega la estampa. No lo referencia ningun item, asi que hay que pedirlo con ModelLoadingPlugin.addModels o no se hornea.",
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "modamod:item/corte_largo_tres_cuartos_redondo"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Piernas y brazos",
+  "icon": "modamod:pantalon",
+  "category": "modamod:03_prendas",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:pantalon,modamod:socks_solid,modamod:calientabrazos",
+      "title": "Piernas y brazos",
+      "link_recipe": true,
+      "text": "$(l)Tres prendas, cuatro extremidades y varias opiniones.$()$(br2)Cada lado se corta por su cuenta."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Por cada pierna y cada brazo, una decisión.$() Pantalón, medias y calientabrazos se cortan por lado: el izquierdo y el derecho pueden ser distintos. Sí, se puede un pantalón con una botamanga larga y otra corta. Se llama asimetría y en la pasarela le dicen “propuesta”."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El nombre depende del largo.$() Pantalón: shorts, bermudas, 3/4, 7/8 o pantalón (si las dos piernas no coinciden, queda el genérico). Medias con pie: soquetes, medias, medias 3/4 o bucaneras. Sin pie: calzas (cortas si no pasan la rodilla) o calientapiernas. Calientabrazos: guantes si llegan a la mano, guantes largos si pasan el antebrazo, brazalete si es una tira angosta."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cómo se corta cada uno.$() Pantalón y manga de remera tienen un solo corte por lado: dónde $(o)termina$(), medido desde la cintura o el hombro. Medias y calientabrazos tienen dos: el de arriba marca dónde $(o)empieza$() la tela y el de abajo dónde $(o)termina$(). Así salen desde zoquetes hasta medias al muslo, o un calientabrazos que solo cubre el antebrazo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Para no marearte.$() En los esquemas de las máquinas, el casillero de la izquierda del dibujo es el lado $(o)derecho$() del jugador: se lee de frente, como un espejo. Pasa en todas, así que memorizalo una vez y listo."
+    }
+  ]
+}

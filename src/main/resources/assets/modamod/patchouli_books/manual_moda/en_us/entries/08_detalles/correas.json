@@ -1,0 +1,31 @@
+{
+  "name": "Correas y cadenas",
+  "icon": "modamod:molde_correa_cadena",
+  "category": "modamod:08_detalles",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_correa_lisa,modamod:molde_correa_cadena,modamod:molde_correa_cadena_fina,modamod:molde_correa_ojalillos,modamod:molde_correa_cordon",
+      "title": "Moldes de correa",
+      "link_recipe": true,
+      "text": "$(l)Cinco estilos para lo que cuelga.$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Para cuando un aplique no alcanza.$() Una correa es una cinta o cadena que recorre una prenda entre dos puntos, o que cuelga de uno solo. Se hacen con un molde de correa en el casillero del molde, y se pagan en cuero. Hasta ocho por prenda.$(br2)$(l)Cuatro modos.$()$(li)$(l)Pegada:$() da la vuelta por la superficie entre dos puntos, como un arnés."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Colgante:$() el primer punto la sujeta y cuelga hacia el segundo con tela blanda.$(li)$(l)Anclada:$() un solo clic; cuelga hacia abajo con el largo elegido y se balancea.$(li)$(l)Colgada:$() dos clics y cuelga en curva con la gravedad."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Ancho y largo.$() El ancho va de 1 a 4 px. El largo (solo en Anclada y Colgada) va de 2 a 32 px, de a 2. Con una correa elegida de la lista, $(o)Modo$(), $(o)Ancho$() y $(o)Largo$() cambian esa correa; $(o)Recolorear$() le pasa los colores del retazo y $(o)Quitar$() la saca."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cinco estilos.$() $(o)Lisa$() (cuero o tela con borde y puntadas), $(o)cadena$() (eslabones alternados), $(o)cadena fina$() (bolitas de metal), $(o)ojalillos$() (tira con agujeros) y $(o)cordón$() (con puntas de herraje: ideal para la capucha de un hoodie)."
+    }
+  ]
+}

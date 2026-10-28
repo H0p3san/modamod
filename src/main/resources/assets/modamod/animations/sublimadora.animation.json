@@ -1,0 +1,113 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.sublimadora.cerrada": {
+      "loop": true,
+      "animation_length": 0.5,
+      "bones": {
+        "tapa": {
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.sublimadora.abrir": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.35,
+      "bones": {
+        "tapa": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                0,
+                0,
+                0
+              ]
+            },
+            "0.12": {
+              "vector": [
+                -74.88,
+                0,
+                0
+              ],
+              "easing": "easeOutQuad"
+            },
+            "0.28": {
+              "vector": [
+                -108.16,
+                0,
+                0
+              ],
+              "easing": "easeOutQuad"
+            },
+            "0.35": {
+              "vector": [
+                -104,
+                0,
+                0
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        }
+      }
+    },
+    "animation.sublimadora.abierta": {
+      "loop": true,
+      "animation_length": 0.5,
+      "bones": {
+        "tapa": {
+          "rotation": [
+            -104,
+            0,
+            0
+          ]
+        }
+      }
+    },
+    "animation.sublimadora.cerrar": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.3,
+      "bones": {
+        "tapa": {
+          "rotation": {
+            "0.0": {
+              "vector": [
+                -104,
+                0,
+                0
+              ]
+            },
+            "0.22": {
+              "vector": [
+                -8,
+                0,
+                0
+              ],
+              "easing": "easeInQuad"
+            },
+            "0.27": {
+              "vector": [
+                3,
+                0,
+                0
+              ],
+              "easing": "easeOutQuad"
+            },
+            "0.3": {
+              "vector": [
+                0,
+                0,
+                0
+              ],
+              "easing": "easeOutQuad"
+            }
+          }
+        }
+      }
+    }
+  }
+}

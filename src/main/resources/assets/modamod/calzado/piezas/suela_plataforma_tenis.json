@@ -1,0 +1,31 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "suela_plataforma_tenis",
+  "eje": "suela",
+  "forma": "secciones",
+  "zona": 1,
+  "columnas": 10,
+  "grosor": 3.5,
+  "plantilla": [
+    [3.2, 8.5],
+    [2.4, 8.5],
+    [-3, 8.5],
+    [-4.9, 8.5],
+    [-5.75, 8.5]
+  ],
+  "tapas": [true, true],
+  "secciones": [
+    {"z": 3.2, "x0": -1.63, "x1": 1.63, "yTop": 8.5, "yBot": 12, "n": 3.2, "abre": null},
+    {"z": 2.4, "x0": -2.99, "x1": 2.99, "yTop": 8.5, "yBot": 12, "n": 3.2, "abre": null},
+    {"z": -3, "x0": -3.1, "x1": 3.1, "yTop": 8.5, "yBot": 12, "n": 3.2, "abre": null},
+    {"z": -4.9, "x0": -2.73, "x1": 2.73, "yTop": 8.5, "yBot": 12, "n": 3.2, "abre": null},
+    {"z": -5.75, "x0": -1.26, "x1": 1.26, "yTop": 8.5, "yBot": 12, "n": 3.2, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 1, "min": [-2.9, 8.5, 2.4], "max": [2.9, 12, 3.2]},
+    {"zona": 1, "min": [-3, 8.5, -3], "max": [3, 12, 2.4]},
+    {"zona": 1, "min": [-3, 8.5, -4.9], "max": [3, 12, -3]},
+    {"zona": 1, "min": [-2.65, 8.5, -5.75], "max": [2.65, 12, -4.9]}
+  ]
+}

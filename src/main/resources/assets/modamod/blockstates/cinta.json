@@ -1,0 +1,154 @@
+{
+  "variants": {
+    "facing=north,forma=recta,powered=false": {
+      "model": "modamod:block/cinta_recta"
+    },
+    "facing=north,forma=recta,powered=true": {
+      "model": "modamod:block/cinta_recta_quieta"
+    },
+    "facing=east,forma=recta,powered=false": {
+      "model": "modamod:block/cinta_recta",
+      "y": 90
+    },
+    "facing=east,forma=recta,powered=true": {
+      "model": "modamod:block/cinta_recta_quieta",
+      "y": 90
+    },
+    "facing=south,forma=recta,powered=false": {
+      "model": "modamod:block/cinta_recta",
+      "y": 180
+    },
+    "facing=south,forma=recta,powered=true": {
+      "model": "modamod:block/cinta_recta_quieta",
+      "y": 180
+    },
+    "facing=west,forma=recta,powered=false": {
+      "model": "modamod:block/cinta_recta",
+      "y": 270
+    },
+    "facing=west,forma=recta,powered=true": {
+      "model": "modamod:block/cinta_recta_quieta",
+      "y": 270
+    },
+    "facing=north,forma=curva_izq,powered=false": {
+      "model": "modamod:block/cinta_curva_izq"
+    },
+    "facing=north,forma=curva_izq,powered=true": {
+      "model": "modamod:block/cinta_curva_izq_quieta"
+    },
+    "facing=east,forma=curva_izq,powered=false": {
+      "model": "modamod:block/cinta_curva_izq",
+      "y": 90
+    },
+    "facing=east,forma=curva_izq,powered=true": {
+      "model": "modamod:block/cinta_curva_izq_quieta",
+      "y": 90
+    },
+    "facing=south,forma=curva_izq,powered=false": {
+      "model": "modamod:block/cinta_curva_izq",
+      "y": 180
+    },
+    "facing=south,forma=curva_izq,powered=true": {
+      "model": "modamod:block/cinta_curva_izq_quieta",
+      "y": 180
+    },
+    "facing=west,forma=curva_izq,powered=false": {
+      "model": "modamod:block/cinta_curva_izq",
+      "y": 270
+    },
+    "facing=west,forma=curva_izq,powered=true": {
+      "model": "modamod:block/cinta_curva_izq_quieta",
+      "y": 270
+    },
+    "facing=north,forma=curva_der,powered=false": {
+      "model": "modamod:block/cinta_curva_der"
+    },
+    "facing=north,forma=curva_der,powered=true": {
+      "model": "modamod:block/cinta_curva_der_quieta"
+    },
+    "facing=east,forma=curva_der,powered=false": {
+      "model": "modamod:block/cinta_curva_der",
+      "y": 90
+    },
+    "facing=east,forma=curva_der,powered=true": {
+      "model": "modamod:block/cinta_curva_der_quieta",
+      "y": 90
+    },
+    "facing=south,forma=curva_der,powered=false": {
+      "model": "modamod:block/cinta_curva_der",
+      "y": 180
+    },
+    "facing=south,forma=curva_der,powered=true": {
+      "model": "modamod:block/cinta_curva_der_quieta",
+      "y": 180
+    },
+    "facing=west,forma=curva_der,powered=false": {
+      "model": "modamod:block/cinta_curva_der",
+      "y": 270
+    },
+    "facing=west,forma=curva_der,powered=true": {
+      "model": "modamod:block/cinta_curva_der_quieta",
+      "y": 270
+    },
+    "facing=north,forma=rampa_sube,powered=false": {
+      "model": "modamod:block/cinta_rampa_sube"
+    },
+    "facing=north,forma=rampa_sube,powered=true": {
+      "model": "modamod:block/cinta_rampa_sube_quieta"
+    },
+    "facing=east,forma=rampa_sube,powered=false": {
+      "model": "modamod:block/cinta_rampa_sube",
+      "y": 90
+    },
+    "facing=east,forma=rampa_sube,powered=true": {
+      "model": "modamod:block/cinta_rampa_sube_quieta",
+      "y": 90
+    },
+    "facing=south,forma=rampa_sube,powered=false": {
+      "model": "modamod:block/cinta_rampa_sube",
+      "y": 180
+    },
+    "facing=south,forma=rampa_sube,powered=true": {
+      "model": "modamod:block/cinta_rampa_sube_quieta",
+      "y": 180
+    },
+    "facing=west,forma=rampa_sube,powered=false": {
+      "model": "modamod:block/cinta_rampa_sube",
+      "y": 270
+    },
+    "facing=west,forma=rampa_sube,powered=true": {
+      "model": "modamod:block/cinta_rampa_sube_quieta",
+      "y": 270
+    },
+    "facing=north,forma=rampa_baja,powered=false": {
+      "model": "modamod:block/cinta_rampa_baja"
+    },
+    "facing=north,forma=rampa_baja,powered=true": {
+      "model": "modamod:block/cinta_rampa_baja_quieta"
+    },
+    "facing=east,forma=rampa_baja,powered=false": {
+      "model": "modamod:block/cinta_rampa_baja",
+      "y": 90
+    },
+    "facing=east,forma=rampa_baja,powered=true": {
+      "model": "modamod:block/cinta_rampa_baja_quieta",
+      "y": 90
+    },
+    "facing=south,forma=rampa_baja,powered=false": {
+      "model": "modamod:block/cinta_rampa_baja",
+      "y": 180
+    },
+    "facing=south,forma=rampa_baja,powered=true": {
+      "model": "modamod:block/cinta_rampa_baja_quieta",
+      "y": 180
+    },
+    "facing=west,forma=rampa_baja,powered=false": {
+      "model": "modamod:block/cinta_rampa_baja",
+      "y": 270
+    },
+    "facing=west,forma=rampa_baja,powered=true": {
+      "model": "modamod:block/cinta_rampa_baja_quieta",
+      "y": 270
+    }
+  }
+}

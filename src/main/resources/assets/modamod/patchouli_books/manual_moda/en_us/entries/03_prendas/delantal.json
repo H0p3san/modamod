@@ -1,0 +1,27 @@
+{
+  "name": "Delantal",
+  "icon": "modamod:delantal",
+  "category": "modamod:03_prendas",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:delantal",
+      "title": "Delantal",
+      "link_recipe": true,
+      "text": "$(l)Cinco lanas y a cocinar (o a fingir).$()"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La prenda que dice “estoy cocinando” aunque no sea verdad.$() Se craftea con cinco lanas (la grilla está en el Recetario) y va en su propio lugar de la pantalla de Ropa, por encima de la remera, la chaqueta y la pollera, del pecho hacia abajo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)En la Modeladora$() tiene su propia pestaña con casilleros para la $(o)forma$() (recto, trapecio, peto, corazón o festón), $(o)desde$() y $(o)hasta$() (de dónde a dónde cubre), la $(o)cobertura$() (envolvente, solo el frente o angosto), los $(o)tirantes$() (rectos o cruzados), las $(o)esquinas$(), los $(o)volados$() (de los costados y de arriba) y el $(o)ruedo$(). El ruedo Redondeado redondea las esquinas de abajo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Se tiñe en dos zonas,$() $(o)peto$() y $(o)falda$(), en la Estación de Tintes."
+    }
+  ]
+}

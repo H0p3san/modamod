@@ -1,0 +1,17 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "AAA",
+    "BBB",
+    "BBB"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:string"
+    },
+    "B": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "prenda": "pollera"
+}

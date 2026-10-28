@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DBD",
+    "AEA",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:redstone_block"
+    },
+    "B": {
+      "item": "minecraft:leather"
+    },
+    "C": {
+      "tag": "minecraft:planks"
+    },
+    "D": {
+      "item": "minecraft:shears"
+    },
+    "E": {
+      "item": "minecraft:loom"
+    }
+  },
+  "result": {
+    "id": "modamod:estilista",
+    "count": 1
+  }
+}

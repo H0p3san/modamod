@@ -1,0 +1,21 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "cordones_borcego_alta_4",
+  "eje": "cierre",
+  "forma": "cinta",
+  "zona": 2,
+  "puntos": [
+    [-0.85, 3.6, -2.56],
+    [0.85, 3.6, -2.56]
+  ],
+  "cerrada": false,
+  "normales": [
+    [0, -0.1, -1],
+    [0, -0.1, -1]
+  ],
+  "ancho": 0.4,
+  "grosor": 0.25,
+  "apoyo": [
+    {"zona": 2, "min": [-0.85, 3.38, -2.83], "max": [0.85, 3.8, -2.53]}
+  ]
+}

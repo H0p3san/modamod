@@ -1,0 +1,5 @@
+{
+  "_comment": "2026-09-30, \"los slots para vestir al personaje estan acomodados raros\": Trinkets pone los grupos sueltos (sin slot_id) en una columna de 3 al lado del muñeco, de abajo hacia arriba por order ascendente, y del 4.º en adelante AFUERA del inventario, a la izquierda. Con 5 grupos quedaban 2 colgando. Ahora: medias (1, abajo), piernas (2), torso (3, arriba); la capa cuelga del slot de pechera (6, como los élitros) y los calentadores del de la mano secundaria (45).",
+  "slot_id": 6,
+  "order": 4
+}

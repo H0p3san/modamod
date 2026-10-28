@@ -1,0 +1,22 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "punta_redonda",
+  "eje": "punta",
+  "forma": "secciones",
+  "zona": 0,
+  "columnas": 10,
+  "grosor": 0.4,
+  "tapas": [false, true],
+  "secciones": [
+    {"z": -3.2, "x0": -2.75, "x1": 2.75, "yTop": 9.7, "yBot": 11.55, "n": 3.5, "abre": null},
+    {"z": -4, "x0": -2.6, "x1": 2.6, "yTop": 10, "yBot": 11.55, "n": 3, "abre": null},
+    {"z": -4.8, "x0": -2.05, "x1": 2.05, "yTop": 10.35, "yBot": 11.55, "n": 2.6, "abre": null},
+    {"z": -5.25, "x0": -1.1, "x1": 1.1, "yTop": 10.7, "yBot": 11.55, "n": 2.2, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 0, "min": [-2.67, 9.7, -4], "max": [2.67, 11.55, -3.2]},
+    {"zona": 0, "min": [-2.51, 10, -4.8], "max": [2.51, 11.55, -4]},
+    {"zona": 0, "min": [-1.97, 10.35, -5.25], "max": [1.97, 11.55, -4.8]}
+  ]
+}

@@ -1,0 +1,187 @@
+{
+ "formato": "modamod-calzado-presets-1",
+ "ejes": {
+  "capellada": {
+   "borcego_baja": [
+    "cap_borcego_baja"
+   ],
+   "borcego_media": [
+    "cap_borcego_media"
+   ],
+   "borcego_alta": [
+    "cap_borcego_alta"
+   ],
+   "bota_alta": [
+    "cap_bota_alta"
+   ],
+   "zapato": [
+    "cap_zapato"
+   ],
+   "mocasin": [
+    "cap_mocasin"
+   ],
+   "bailarina": [
+    "cap_bailarina"
+   ],
+   "taco": [
+    "cap_taco"
+   ],
+   "tenis_baja": [
+    "cap_tenis_baja"
+   ],
+   "tenis_alta": [
+    "cap_tenis_alta"
+   ],
+   "pantufla": [
+    "cap_pantufla"
+   ],
+   "ninguna": []
+  },
+  "suela": {
+   "chata": [
+    "suela_chata"
+   ],
+   "plataforma": [
+    "suela_plataforma"
+   ],
+   "fina": [
+    "suela_fina"
+   ],
+   "taco_chico": [
+    "suela_taco_chico"
+   ],
+   "cuna": [
+    "suela_cuna"
+   ],
+   "goma_tenis": [
+    "suela_tenis"
+   ],
+   "plataforma_tenis": [
+    "suela_plataforma_tenis"
+   ],
+   "chancla": [
+    "suela_chancla"
+   ],
+   "sandalia": [
+    "suela_sandalia"
+   ],
+   "tela": [
+    "suela_tela"
+   ]
+  },
+  "punta": {
+   "redonda": [
+    "punta_redonda"
+   ],
+   "alargada": [
+    "punta_alargada"
+   ],
+   "cuadrada": [
+    "punta_cuadrada"
+   ],
+   "fina": [
+    "punta_fina"
+   ],
+   "ancha": [
+    "punta_ancha"
+   ],
+   "goma": [
+    "punta_redonda",
+    "puntera_goma"
+   ],
+   "cuero": [
+    "punta_redonda",
+    "puntera_cuero"
+   ],
+   "descubierta": []
+  },
+  "cierre": {
+   "cordones": {
+    "porCapellada": {
+     "borcego_baja": [
+      "cordones_borcego_baja_1",
+      "cordones_borcego_baja_2"
+     ],
+     "borcego_media": [
+      "cordones_borcego_media_1",
+      "cordones_borcego_media_2",
+      "cordones_borcego_media_3"
+     ],
+     "borcego_alta": [
+      "cordones_borcego_alta_1",
+      "cordones_borcego_alta_2",
+      "cordones_borcego_alta_3",
+      "cordones_borcego_alta_4"
+     ],
+     "tenis_alta": [
+      "cordones_tenis_alta_1",
+      "cordones_tenis_alta_2",
+      "cordones_tenis_alta_3"
+     ],
+     "zapato": [
+      "cordones_zapato_1",
+      "cordones_zapato_2",
+      "cordones_zapato_3",
+      "cordones_zapato_4"
+     ],
+     "tenis_baja": [
+      "cordones_tenis_baja_1",
+      "cordones_tenis_baja_2",
+      "cordones_tenis_baja_3"
+     ]
+    }
+   },
+   "velcro": {
+    "porCapellada": {
+     "tenis_baja": [
+      "velcro_tenis_baja_1",
+      "velcro_tenis_baja_2"
+     ]
+    }
+   },
+   "tira_hebilla": [
+    "tira_mary_jane",
+    "hebilla_mary_jane"
+   ],
+   "tira_v": [
+    "tira_v",
+    "dedo"
+   ],
+   "tobillera": [
+    "tira_empeine",
+    "tira_dedos",
+    "tira_tobillo",
+    "tira_talon"
+   ],
+   "gladiadora": [
+    "tira_empeine",
+    "tira_dedos",
+    "gladiadora_anillo_1",
+    "gladiadora_anillo_2",
+    "gladiadora_anillo_3",
+    "gladiadora_frente",
+    "gladiadora_talon"
+   ],
+   "costura_lateral": {
+    "porCapellada": {
+     "bota_alta": [
+      "costura_lateral_bota"
+     ]
+    }
+   },
+   "sin": []
+  },
+  "detalle": {
+   "ninguno": [],
+   "lengueta": [
+    "lengueta_tenis"
+   ],
+   "parche": [
+    "parche_lateral"
+   ],
+   "costura_empeine": [
+    "costura_mocasin"
+   ]
+  }
+ }
+}

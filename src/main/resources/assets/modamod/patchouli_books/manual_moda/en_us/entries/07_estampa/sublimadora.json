@@ -1,0 +1,35 @@
+{
+  "name": "Fotos en tu ropa",
+  "icon": "modamod:sublimadora",
+  "category": "modamod:07_estampa",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:sublimadora",
+      "title": "Sublimadora",
+      "link_recipe": true,
+      "text": "$(l)Tu foto, tu remera, tu responsabilidad.$()$(br2)La Sublimadora imprime fotos del mod $(o)Camerapture$() sobre remeras, pantalones, medias, calientabrazos, polleras y capas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Paso a paso.$()$(br)1. Elegí la prenda (o ponela en la Entrada: la categoría la sigue sola).$(br)2. Poné una foto en $(o)Frente$() o $(o)Espalda$(). Tocar un casillero elige esa cara.$(br)3. Ajustá $(o)Escala$(), $(o)X$(), $(o)Y$() y $(o)Ángulo$().$(br2)4. Fijá con la chincheta cada cara que quieras imprimir: solo se estampan las caras fijadas que tienen foto."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "5. Prenda en la Entrada y $(l)Prensar$(): la tapa baja y arranca. Cerrar la tapa a mano también arranca.$(br2)$(l)Escala.$() A escala mínima la foto queda chica y centrada, tipo logo. A escala máxima cubre la prenda entera, recortada a la silueta: es el full print, para quienes no creen en los márgenes."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Escanear estampa.$() Abre el explorador de archivos de tu compu (PNG, JPG, WebP, BMP o GIF), igual que $(o)Cargar imagen$() de la cámara, pero sin la cámara. La imagen se achica y se comprime con los mismos límites, se vuelve una foto de Camerapture firmada por vos y gasta una hoja del tanque de papel. Queda en $(o)Frente$() si está vacío; si no, en $(o)Espalda$(); si tampoco, en el almacén."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Más cosas con foto.$() Los banners, las máscaras y el barbijo también llevan una foto en el frente (sin espalda ni capas con máscara).$(br2)$(l)Qué se gasta.$() Cada cara estampada gasta una dosis de cada color de tinta, y cada prensado, una hoja de papel. Las fotos nunca se gastan: quedan cargadas para reimprimir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Simetría lateral.$() En medias y calientabrazos, con $(o)Simetría: Sí$() el lado izquierdo lleva el espejo de la derecha: un logo corrido hacia afuera queda hacia afuera en las dos piernas. $(4)Ojo:$() un texto dentro de la foto se lee al revés en el lado espejado."
+    }
+  ]
+}

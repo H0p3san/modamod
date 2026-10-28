@@ -1,0 +1,6 @@
+{
+  "_comment": "4 slots de torso (amount) a pedido del Guardarropas (2026-09-20, 'combinar un croptop con un remeron largo'): antes era 1 solo compartido y mutuamente excluyente. El orden de dibujo entre las prendas puestas a la vez lo sigue decidiendo Capa, no el indice de Trinkets.",
+  "icon": "modamod:gui/slot/remera",
+  "order": 0,
+  "amount": 3
+}

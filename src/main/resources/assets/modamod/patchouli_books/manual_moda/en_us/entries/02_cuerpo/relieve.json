@@ -1,0 +1,32 @@
+{
+  "name": "Relieve, busto y volumen",
+  "icon": "minecraft:player_head",
+  "category": "modamod:02_cuerpo",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Ropa con volumen, y en serio.$() El cuerpo y la ropa no son cajas planas: los costados de torso, brazos y piernas tienen relieve. Atlético y Musculoso marcan pectorales, abdominales y brazos; Gordito, Osito y Panda tienen panza; los femeninos suman cintura y nalgas; Lobo y Zorro, pecho de pelaje.",
+      "title": "Relieve, busto y volumen"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La ropa sigue al cuerpo según el calce.$() Pegado lo copia como una segunda piel; Ajustado casi igual; Normal marca lo que sobresale; Suelto y Oversize apenas. Una prenda nunca queda por dentro de la de abajo.$(br2)$(l)Busto.$() Dos estilos: $(o)Redondo$() (dos cúpulas) o $(o)Cuadrado$() (una caja por pecho, al estilo cúbico de Minecraft). Los cuerpos femeninos traen uno de fábrica."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Tiene física: rebota al saltar, al caminar y al girar, y la ropa de encima rebota con él.$(br2)$(l)Estrógenos y Testosterona.$() Dos pociones que se le compran al clérigo aprendiz, a 6 esmeraldas cada una (no tienen receta). Cada Estrógenos sube un talle, hasta siete tomas. Cada Testosterona baja uno. No vencen: te quedás con el talle hasta que decidas cambiarlo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Volumen.$() El cuerpo y la tela pueden ser $(o)Redondeados$() (suaves, de fábrica), $(o)Voxel$() (bloquecitos de medio píxel, estilo 3D Skin Layers) o $(o)Voxel grueso$() (bloques de 1 px). Se elige en la pantalla de cuerpo y lo ven los demás jugadores."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:estrogenos,modamod:testosterona",
+      "title": "Estrógenos y Testosterona",
+      "link_recipe": false,
+      "text": "$(l)Dos frasquitos, cero recetas.$()$(br2)Se le compran al clérigo aprendiz: 6 esmeraldas cada uno."
+    }
+  ]
+}

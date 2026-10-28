@@ -1,0 +1,27 @@
+{
+  "name": "Moldes en blanco",
+  "icon": "modamod:molde_en_blanco",
+  "category": "modamod:04_taller",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_en_blanco,modamod:patron_en_blanco,modamod:mascara_en_blanco,modamod:trama_en_blanco,modamod:plantilla_en_blanco,modamod:diseno_en_blanco",
+      "title": "Los seis en blanco",
+      "link_recipe": true,
+      "text": "$(l)El papel antes de ser molde.$()$(br2)Cada receta rinde cuatro. Después de esto, todo molde es una variación."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Todo molde nace en blanco.$() Cinco papeles en blanco, y cada receta rinde cuatro:$(li)$(l)Molde:$() papel y carbón alrededor de unas tijeras.$(li)$(l)Patrón:$() hilo y tinta entre dos filas de papel.$(li)$(l)Máscara:$() papel y tinta alrededor de unas tijeras.$(li)$(l)Trama:$() hilo alrededor de un papel.$(li)$(l)Plantilla:$() papel y cuero alrededor de unas tijeras."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Se suma el $(o)Diseño en blanco$() (ocho papeles alrededor de un carbón): se gasta al exportar un diseño de la máquina. Las grillas exactas están en el Recetario.$(br2)$(l)Del blanco al molde de corte.$() Se combina el molde en blanco con tijeras y un ingrediente que decide cuál sale. $(l)Rango:$() de 1 a 7 hilos, del Más alto al Más bajo. $(l)Calce:$() lana (1 pegado, 2 ajustado, 4 suelto, 5 oversize; el normal es el blanco)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Ruedo:$() cuero (1 ajustado, 2 campana, 3 ondulado, 4 festoneado, 5 pico, 6 redondeado, 7 con cola). $(l)Volado:$() plumas (1 recto, 2 circular).$(br2)$(4)Fe de erratas:$() el resto de los moldes (cuellos, formas de pollera, calzado, delantal, correas, máscaras de sublimado) tiene su propia receta. Si no la encontrás acá, buscá su nombre en el libro de recetas del inventario."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "_comment": "Barbijo: aparte de la máscara, se pueden usar juntos. Ícono propio de barbijo.",
+  "icon": "modamod:gui/slot/barbijo",
+  "order": 8,
+  "amount": 1
+}

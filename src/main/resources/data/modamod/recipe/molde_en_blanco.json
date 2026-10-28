@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PKP",
+    "PTP",
+    "PKP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "K": {
+      "tag": "minecraft:coals"
+    },
+    "T": {
+      "item": "minecraft:shears"
+    }
+  },
+  "result": {
+    "id": "modamod:molde_en_blanco",
+    "count": 4
+  }
+}

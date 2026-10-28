@@ -1,0 +1,26 @@
+{
+  "name": "Cintas y tubos",
+  "icon": "modamod:cinta",
+  "category": "modamod:11_recetario",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:cinta",
+      "title": "Cintas y tubos",
+      "recipe2": "modamod:empalme"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:tubo",
+      "title": "Cintas y tubos",
+      "recipe2": "modamod:empalme_tubo"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:extractor",
+      "title": "Cintas y tubos",
+      "recipe2": "modamod:valvula"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Máscaras y barbijo",
+  "icon": "modamod:antifaz",
+  "category": "modamod:03_prendas",
+  "sortnum": 7,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:antifaz,modamod:media_mascara,modamod:mascara_completa,modamod:barbijo",
+      "title": "Máscaras y barbijo",
+      "link_recipe": true,
+      "text": "$(l)Para esconder la cara con estilo.$()$(br2)Tres máscaras y un barbijo que se usan juntos o por separado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cuatro prendas.$() El $(o)antifaz$() (una franja sobre los ojos con puntitas a los costados), la $(o)media máscara$() (de la frente a la nariz), la $(o)máscara completa$() (toda la cara, con ojos y una ranura en la boca) y el $(o)barbijo$() (de la nariz al mentón, con pliegues, alambre en la nariz y elásticos a las orejas)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Dónde van.$() Las tres máscaras comparten el lugar $(o)Máscara$() de la cabeza. El barbijo tiene su propio lugar, así que se puede llevar encima de una máscara.$(br2)$(l)Se hacen con lana e hilo.$() Antifaz: hilo, lana, hilo en una fila. Media máscara: tres lanas sobre hilo, lana, hilo. Máscara completa: esa misma grilla con otra fila de tres lanas abajo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Barbijo: hilo, vacío, hilo sobre tres lanas. Las grillas están en el Recetario.$(br2)$(l)Salen blancas.$() Se tiñen en la Estación de Tintes, en las categorías $(o)Máscara$() y $(o)Barbijo$(), con tres cuadraditos de prenda entera, y llevan una foto de la Sublimadora en el frente (sin espalda ni capas con máscara)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Y el 3D Skin Layers?$() Si lo usás, la máscara y el barbijo le apagan el volumen justo donde tapan, como hace el sombrero. Nada de pelos de la skin atravesando el antifaz como si fuera una puerta giratoria."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "formato": "modamod-sombrero-malla-1",
+  "id": "mono_cofia",
+  "tipo": "cinta",
+  "zona": 2,
+  "yBase": -9.4,
+  "columnas": 8,
+  "cierre": "tapa",
+  "grosor": 0,
+  "anillos": [
+    { "y": 0.8, "rx": 0.2, "rz": 0.2 },
+    { "y": 0, "rx": 1.2, "rz": 1.2 },
+    { "y": -0.8, "rx": 0.2, "rz": 0.2 }
+  ],
+  "porColumna": {
+    "escala": [0.35, 0.7, 1.6, 0.7, 0.35, 0.7, 1.6, 0.7]
+  },
+  "punta": null,
+  "centro": [3.9, -3.9],
+  "apoyo": [
+    { "zona": 2, "min": [1.98, -9.4, -4.49], "max": [5.82, -8.6, -3.31] },
+    { "zona": 2, "min": [1.98, -10.2, -4.49], "max": [5.82, -9.4, -3.31] }
+  ]
+}

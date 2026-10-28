@@ -1,0 +1,6 @@
+{
+  "_comment": "Slot unico de medias. El icono es la silueta que Trinkets dibuja en el hueco vacio; sin este campo pide 'minecraft:textures/.png' y llena el log de FileNotFoundException.",
+  "icon": "modamod:gui/slot/socks",
+  "order": 0,
+  "amount": 3
+}

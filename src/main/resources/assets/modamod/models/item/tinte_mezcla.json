@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "modamod:item/tinte_mezcla_liquido",
+    "layer1": "modamod:item/tinte_mezcla"
+  }
+}

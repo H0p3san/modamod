@@ -1,0 +1,21 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "cordones_zapato_4",
+  "eje": "cierre",
+  "forma": "cinta",
+  "zona": 2,
+  "puntos": [
+    [-0.85, 9.48, -3.15],
+    [0.85, 9.48, -3.15]
+  ],
+  "cerrada": false,
+  "normales": [
+    [-0.01, -0.92, -0.4],
+    [0.01, -0.92, -0.4]
+  ],
+  "ancho": 0.4,
+  "grosor": 0.25,
+  "apoyo": [
+    {"zona": 2, "min": [-0.85, 9.17, -3.43], "max": [0.85, 9.56, -2.97]}
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "EBE",
+    "ADA",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:redstone_block"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "tag": "minecraft:planks"
+    },
+    "D": {
+      "item": "minecraft:cauldron"
+    },
+    "E": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "id": "modamod:tinturas",
+    "count": 1
+  }
+}

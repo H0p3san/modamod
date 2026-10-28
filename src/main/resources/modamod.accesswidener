@@ -1,0 +1,8 @@
+accessWidener v2 named
+# Relieve (2026-10-01): RelieveRender lee las caras de los cuboides de
+# CuerpoGeometria para dibujarlas desplazadas en vez de planas.
+accessible class net/minecraft/client/model/ModelPart$Quad
+accessible class net/minecraft/client/model/ModelPart$Vertex
+accessible field net/minecraft/client/model/ModelPart$Cuboid sides [Lnet/minecraft/client/model/ModelPart$Quad;
+# Busto en modelos de otros mods (2026-10-02): las UV del torso de cualquier modelo humanoide.
+accessible field net/minecraft/client/model/ModelPart cuboids Ljava/util/List;

@@ -1,0 +1,29 @@
+{
+  "_comment": "El bloque es INVISIBLE y lo dibuja GeckoLib desde el block entity (telar.geo.json).",
+  "variants": {
+    "facing=north,lit=true": {
+      "model": "modamod:block/telar"
+    },
+    "facing=north,lit=false": {
+      "model": "modamod:block/telar"
+    },
+    "facing=south,lit=true": {
+      "model": "modamod:block/telar"
+    },
+    "facing=south,lit=false": {
+      "model": "modamod:block/telar"
+    },
+    "facing=east,lit=true": {
+      "model": "modamod:block/telar"
+    },
+    "facing=east,lit=false": {
+      "model": "modamod:block/telar"
+    },
+    "facing=west,lit=true": {
+      "model": "modamod:block/telar"
+    },
+    "facing=west,lit=false": {
+      "model": "modamod:block/telar"
+    }
+  }
+}

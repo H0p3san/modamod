@@ -1,0 +1,17 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "B B",
+    "A A",
+    "A A"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "item": "minecraft:string"
+    }
+  },
+  "prenda": "borcegos"
+}

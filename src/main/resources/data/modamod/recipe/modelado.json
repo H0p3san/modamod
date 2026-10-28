@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DBD",
+    "AEA",
+    "CCC"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:redstone_block"
+    },
+    "B": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "tag": "minecraft:planks"
+    },
+    "D": {
+      "item": "minecraft:paper"
+    },
+    "E": {
+      "item": "minecraft:shears"
+    }
+  },
+  "result": {
+    "id": "modamod:modelado",
+    "count": 1
+  }
+}

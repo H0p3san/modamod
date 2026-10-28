@@ -1,0 +1,50 @@
+{
+  "name": "Prendas",
+  "icon": "modamod:remera",
+  "category": "modamod:11_recetario",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:remera",
+      "title": "Prendas",
+      "recipe2": "modamod:pantalon"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pollera",
+      "title": "Prendas",
+      "recipe2": "modamod:capa"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:socks_solid",
+      "title": "Prendas",
+      "recipe2": "modamod:calientabrazos"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:delantal",
+      "title": "Prendas",
+      "recipe2": "modamod:sombrero_bruja"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:borcegos",
+      "title": "Prendas",
+      "recipe2": "modamod:cinto"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:antifaz",
+      "title": "Prendas",
+      "recipe2": "modamod:media_mascara"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:mascara_completa",
+      "title": "Prendas",
+      "recipe2": "modamod:barbijo"
+    }
+  ]
+}

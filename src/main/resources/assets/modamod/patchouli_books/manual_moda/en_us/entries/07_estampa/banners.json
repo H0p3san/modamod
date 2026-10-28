@@ -1,0 +1,29 @@
+{
+  "name": "Banners y escudos con foto",
+  "icon": "minecraft:white_banner",
+  "category": "modamod:07_estampa",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Para la gente que quiere flamear una foto.$() Un banner puede llevar una foto de Camerapture, dibujada con dieciséis veces la resolución de vanilla. Un escudo hecho en la mesa de crafteo con ese banner hereda la foto.",
+      "title": "Banners y escudos con foto"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cómo.$() En la Sublimadora, cargá el banner como si fuera una prenda y poné la foto en $(o)Frente$(): el banner no tiene espalda. Ajustás escala, posición y ángulo como siempre y la vista previa te muestra el banner terminado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Al romper el banner, la foto se conserva. En la Estación de Tintes el banner tiene su propia categoría, con tres cuadraditos apilados (un liso de fondo y patrones encima) sobre el color del banner, en las dos caras del paño. El orden es: primero el tinte, después los diseños del telar de vanilla y arriba de todo la foto. El tinte queda en el ítem, en el banner colocado y al romperlo, y el escudo lo hereda."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Lo que no existe es estamparlo sobre una prenda: son dos cosas distintas con la misma máquina."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Gorras con foto.$() Las gorras con visera (curva, chata o corta) también pasan por la prensa: la foto va al $(l)frente de la copa$(), a 16 veces la resolución y encima del tinte. Categoría $(o)Sombrero$(). Por fin la gorra del club con tu cara, como corresponde."
+    }
+  ]
+}

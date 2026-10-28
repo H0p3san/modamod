@@ -1,0 +1,31 @@
+{
+  "name": "Papelería",
+  "icon": "modamod:molde_en_blanco",
+  "category": "modamod:11_recetario",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:molde_en_blanco",
+      "title": "Papelería",
+      "recipe2": "modamod:patron_en_blanco"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:mascara_en_blanco",
+      "title": "Papelería",
+      "recipe2": "modamod:trama_en_blanco"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:plantilla_en_blanco",
+      "title": "Papelería",
+      "recipe2": "modamod:diseno_en_blanco"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:retazo_aplique",
+      "title": "Papelería"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Controles finos",
+  "icon": "modamod:tinturas",
+  "category": "modamod:06_color",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Todo cuadradito tiene opiniones.$()$(li)$(l)Mezcla:$() Normal (tapa lo de abajo), Multiplicar (oscurece: ideal para un patrón sobre otros colores) o Superponer (contraste).$(li)$(l)Opacidad:$() de 10 a 100 %.$(li)$(l)Capa n/N ▲▼:$() el orden de pintado.$(li)$(l)Tamaño:$() de extra chico a extra grande.",
+      "title": "Controles finos"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Ángulo:$() gira las rayas de a 15°. En motivos gira toda la grilla, como girar la tela.$(li)$(l)Giro:$() solo motivos; gira cada motivo en su lugar.$(li)$(l)↔ y ↕:$() distancia horizontal y vertical entre motivos, de 50 % (pegados) a 300 %.$(li)$(l)Espejo:$() da vuelta cada motivo, ↔, ↕ o los dos."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Alternar:$() de por medio, el motivo sale espejado, por filas, columnas o damero. Con $(o)Giro$() arma un zigzag tipo tejido.$(li)$(l)Simetría:$() en el torso, la mitad izquierda es el reflejo de la derecha: las rayas en diagonal quedan en V.$(li)$(l)Posición:$() corre el patrón."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Forma:$() rayas (Alternado, Arriba, Abajo, Medio, Tres rayas) o repetición de motivos (Grilla, Ladrillo, Disperso, Único).$(li)$(l)Azar:$() nueva tirada al azar.$(li)$(l)Invertir:$() pinta el negativo del patrón.$(li)$(l)Fondo:$() con patrón, el último color activo pinta liso toda la zona de abajo y el patrón usa los otros."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Sirve donde hay un solo cuadradito por zona (capa, sombrero, cinto, maletín, calzado, máscaras).$(br2)$(l)Varios colores en una capa.$() Sobre la muestra grande hay tres muestras de color: clic en una elige cuál editan los sliders. $(o)Colores 1/2/3$() dice cuántos usa la capa. $(o)Contorno$() dibuja una línea alrededor de cada motivo con el último color activo (hacen falta al menos dos)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Variación.$() $(o)Fijo:$() todo el relleno del Color 1. $(o)Alternar:$() cada motivo, raya o cuadro toma el color siguiente. $(o)Aleatorio:$() cada uno toma un color al azar ($(o)Azar$() vuelve a sortear). $(o)Degradé:$() pasa de un color al otro de arriba abajo, también en capas lisas."
+    }
+  ]
+}

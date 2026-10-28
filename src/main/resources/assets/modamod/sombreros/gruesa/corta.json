@@ -1,0 +1,19 @@
+{
+  "formato": "modamod-sombrero-malla-1",
+  "id": "corta",
+  "tipo": "ala",
+  "zona": 0,
+  "yBase": -5.4,
+  "columnas": 16,
+  "cierre": "abierto",
+  "grosor": 0.9,
+  "anillos": [
+    { "y": 0, "rx": 4.4, "rz": 4.4 },
+    { "y": 0, "rx": 6.5, "rz": 6.5 }
+  ],
+  "porColumna": null,
+  "punta": null,
+  "apoyo": [
+    { "zona": 0, "min": [-6.5, -5.4, -6.5], "max": [6.5, -4.5, 6.5] }
+  ]
+}

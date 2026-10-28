@@ -1,0 +1,21 @@
+{
+  "name": "Tu primera línea",
+  "icon": "modamod:cinta",
+  "category": "modamod:09_serie",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)De lana a outfit sin tocar nada.$() Un esquema posible, de izquierda a derecha, para armar con las cinco máquinas y unas cintas:$(br2)$(l)1. Telar.$() Teje la prenda básica con lana e hilo que le llegan por tolva.$(br)$(l)2. Modeladora.$() Recibe la prenda por su cara izquierda y aplica el corte guardado. Necesita tijeras.",
+      "title": "Tu primera línea"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)3. Tintes.$() La pinta con el diseño fijado.$(br)$(l)4. Sublimadora.$() Le imprime la foto.$(br)$(l)5. Estilista.$() Le pega los detalles. La prenda sale por la derecha, a un cofre.$(br2)$(l)Reglas de la cadena.$() Con la $(l)línea prendida$() en cada máquina, la prenda pasa directo a la siguiente."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Una máquina que no tiene nada fijado para esa prenda (sin corte, sin cuadraditos, sin fotos, sin diseño) la saltea y la prenda sigue de largo. La Sublimadora, con fotos fijadas, espera a que cierre su tapa.$(br2)$(4)Fe de erratas:$() la línea viene apagada de fábrica en cada máquina. Si tu cadena no avanza, revisá el botón de línea de cada una antes de culpar a la cinta."
+    }
+  ]
+}

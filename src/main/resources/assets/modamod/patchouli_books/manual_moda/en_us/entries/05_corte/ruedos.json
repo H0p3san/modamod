@@ -1,0 +1,41 @@
+{
+  "name": "Ruedos, volados y formas",
+  "icon": "modamod:molde_pollera_tubo",
+  "category": "modamod:05_corte",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido",
+      "title": "Ruedos",
+      "link_recipe": true,
+      "text": "$(l)Cómo termina cada borde.$()$(br2)Cada casillero acepta solo los que le corresponden."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El ruedo es el remate de todo borde libre:$() torso, puños, botamangas, bordes de medias y calientabrazos, pollera, capa y delantal. Una sola familia de moldes decide cómo termina cada uno.$(br2)$(l)Ajustado:$() elástico; la última fila aprieta, la tela no cuelga y se pinta un rib. $(l)En campana:$() las últimas filas se abren hacia afuera."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Ondulado, festoneado y con pico:$() bordes decorativos, solo en la pollera. $(l)Redondeado:$() las esquinas de abajo de la capa y del delantal. $(l)Con cola:$() la cola de la capa, diez píxeles más que arrastran por el piso.$(br2)$(l)Fruncido:$() en medias y calientabrazos, la tela se arma como una malla con pliegues redondeados en las ocho filas cerca del borde. No funciona en torso, puños, botamangas ni pollera."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Volados.$() Dos moldes, $(o)recto$() (tira fruncida con muchas ondas chicas y poca apertura) y $(o)circular$() (ruedo abierto con pocas ondas grandes). Valen en cualquier casillero de ruedo y en $(o)Toda la pollera$(), que pone tres filas parejas de arriba a abajo. Si ponés los dos, el del ruedo manda en la última fila."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_volado_recto,modamod:molde_volado_circular",
+      "title": "Volados",
+      "link_recipe": true,
+      "text": "$(l)Fruncidos para pollera.$()$(br2)Recto: muchas ondas chicas. Circular: pocas y grandes."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_pollera_tubo,modamod:molde_pollera_globo,modamod:molde_pollera_circular,modamod:molde_pollera_tableada",
+      "title": "Formas de pollera",
+      "link_recipe": true,
+      "text": "$(l)Cuatro moldes, más la campana de fábrica.$()"
+    }
+  ]
+}

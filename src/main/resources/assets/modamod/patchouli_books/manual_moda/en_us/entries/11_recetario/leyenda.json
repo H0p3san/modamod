@@ -1,0 +1,21 @@
+{
+  "name": "Cómo leer las recetas",
+  "icon": "minecraft:crafting_table",
+  "category": "modamod:11_recetario",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La clave de las grillas.$() L = lana de cualquier color, H = hilo, C = cuero, T = tijeras, I = lingote de hierro, P = papel, R = bloque de redstone, M = tablones, V = vidrio.",
+      "title": "Cómo leer las recetas"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Las prendas de lana toman el color del promedio de las lanas. Las medias y los calentadores de brazo salen de a tres. Las cintas, de a diez.$(br2)$(l)Dos cosas sin receta.$() El hoodie no se craftea: se arma desde una remera en la Modeladora. Los Estrógenos y la Testosterona se le compran al clérigo aprendiz (6 esmeraldas cada una)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(4)Fe de erratas:$() las máquinas creativas, los kits y los moldes personalizados no tienen receta a propósito."
+    }
+  ]
+}

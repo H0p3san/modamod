@@ -1,0 +1,60 @@
+{
+  "textures": {
+    "vidrio": "minecraft:block/white_stained_glass",
+    "cobre": "minecraft:block/cut_copper",
+    "agua": "minecraft:block/light_blue_stained_glass",
+    "particle": "minecraft:block/cut_copper"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        5,
+        11
+      ],
+      "to": [
+        11,
+        11,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#vidrio",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#vidrio",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#vidrio",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#vidrio",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    }
+  ]
+}

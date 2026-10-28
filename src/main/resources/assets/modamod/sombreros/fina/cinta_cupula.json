@@ -1,0 +1,21 @@
+{
+  "formato": "modamod-sombrero-malla-1",
+  "id": "cinta_cupula",
+  "tipo": "cinta",
+  "zona": 2,
+  "yBase": -5.4,
+  "columnas": 16,
+  "cierre": "abierto",
+  "grosor": 0,
+  "anillos": [
+    { "y": -0.1, "rx": 5.05, "rz": 5.05 },
+    { "y": -1.5, "rx": 5.05, "rz": 5.05 }
+  ],
+  "porColumna": {
+    "escala": [1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08]
+  },
+  "punta": null,
+  "apoyo": [
+    { "zona": 2, "min": [-5.05, -6.9, -5.05], "max": [5.05, -5.5, 5.05] }
+  ]
+}

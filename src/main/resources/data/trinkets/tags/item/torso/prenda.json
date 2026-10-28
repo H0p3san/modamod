@@ -1,0 +1,6 @@
+{
+  "_comment": "Que entra al slot de torso. La remera de la sublimadora es la unica por ahora: dos prendas dibujadas sobre el mismo pedazo de cuerpo se pisarian, asi que el slot es de a una.",
+  "values": [
+    "modamod:remera"
+  ]
+}

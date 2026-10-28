@@ -1,0 +1,17 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    " B ",
+    " B ",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:leather"
+    },
+    "B": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "prenda": "sombrero"
+}

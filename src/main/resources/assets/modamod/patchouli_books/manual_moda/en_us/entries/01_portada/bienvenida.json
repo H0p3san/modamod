@@ -1,0 +1,39 @@
+{
+  "name": "Bienvenida",
+  "icon": "modamod:remera",
+  "category": "modamod:01_portada",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:remera,modamod:pantalon,modamod:pollera,modamod:capa,modamod:borcegos",
+      "title": "ModaMod",
+      "link_recipe": false,
+      "text": "$(l)La ropa se viste sobre vos, no a tu lado.$()$(br2)Remeras, pantalones, polleras, capas, borcegos y hasta sombreros: todo se dibuja en capas sobre tu cuerpo, se superpone con criterio y se rehace cuantas veces quieras."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Este manual es el camino de “lana cruda” a “eso lo hice yo”.$(br2)$(l)Cinco oficios, un solo ropero.$()$(li)$(l)Corte:$() la Mesa de Modelado decide largo, mangas, cuello y calce.$(li)$(l)Color:$() la Estación de Tintes pinta por zonas y por capas.$(li)$(l)Estampa:$() la Sublimadora imprime fotos.$(li)$(l)Detalle:$() la Estilista pega apliques, correas y acabados."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Producción:$() el Telar, las cintas y los tubos lo hacen todo solos.$(br2)$(l)La regla de oro.$() Las máquinas no se comen tus prendas ni tus moldes. La prenda sale modificada; los moldes se reusan para siempre. Lo que se gasta son los insumos: tinta, papel, hilo, cuero, tijeras. Traducción: equivocarse sale barato, y vas a equivocarte."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cómo leer esto.$() Si recién llegás, seguí el orden: $(o)Portada$(), $(o)Tu cuerpo$(), $(o)Fondo de armario$() y $(o)El taller$(); de ahí, a la máquina que te dé curiosidad. Si buscás una receta, andá al $(o)Recetario$(). Si algo salió mal, la $(o)Chuleta$() tiene los errores clásicos. Nadie te va a tomar examen."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(4)Fe de erratas:$() el manual sabe más de lo que el servidor te deja hacer. Algunas cosas existen solo en creativo o para operadores; las marcamos para que no las busques en vano."
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/look_ejemplo.png"
+      ],
+      "border": true,
+      "title": "Un look de ModaMod"
+    }
+  ]
+}

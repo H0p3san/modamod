@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "L L",
+    " B ",
+    "LTL"
+  ],
+  "key": {
+    "B": {
+      "item": "modamod:trama_en_blanco"
+    },
+    "T": {
+      "item": "minecraft:shears"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "id": "modamod:molde_red_arnes_x",
+    "count": 1
+  }
+}

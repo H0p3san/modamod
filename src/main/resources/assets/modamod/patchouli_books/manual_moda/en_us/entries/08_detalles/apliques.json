@@ -1,0 +1,68 @@
+{
+  "name": "Apliques",
+  "icon": "modamod:molde_aplique_mono",
+  "category": "modamod:08_detalles",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El aplique es el pequeño crimen del outfit.$() Un modelo 3D que se pega sobre la tela, mira hacia afuera de la cara que tocaste y se mueve con vos. Cada uno nace de una plantilla (una por forma) y de un retazo de tres colores. Hasta doce por prenda.",
+      "title": "Apliques"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Moños y compañía.$() $(o)Moño$() (con dos cintas anchas de punta en V), $(o)mariposa$() (las alas baten solas), $(o)flor$() (pétalos, centro y hojas), $(o)canguro$() (el bolsillo del hoodie, en parche) y $(o)corbata$() (nudo y hoja que cuelga y se curva).$(br2)$(l)Botones y bolsillos.$() $(o)Botón$(), $(o)botonera$() (cuatro botones en fila), $(o)bolsillo parche$(), $(o)bolsillo con tapa$() y $(o)bolsillo trasero de jean$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Tachas y parches:$() $(o)tacha$(), $(o)tira de tachas$() y parches bordados de corazón, estrella y rayo. También hay $(o)cordones$().$(br2)$(l)En la capucha.$() El clic también acierta sobre la capucha (de un Top o de una capa): el aplique queda en su tela y la sigue puesta o caída. El botón espejo no mueve los apliques de la capucha."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Retazos.$() El color de cada aplique sale de un retazo de tres zonas. Se craftea con lana e hilo (da cuatro blancos) y se tiñe en la Estación de Tintes, en la categoría $(o)Retazo de aplique$(): poné el retazo en la entrada, elegí los cuadraditos 1, 2 y 3 y teñí. Las zonas sin fijar conservan el color."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Tela blanda.$() Con $(o)Blandura$() mayor a cero, el aplique se mueve con la inercia de quien lo lleva: las colas del moño se curvan, las alas de la mariposa baten, los pétalos se inclinan y las hojas cuelgan. A cero, queda rígido. $(o)Sacudir$() alterna sacudones fuertes para ver cómo pendulea."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Giro, tamaño y fila.$() Con un aplique elegido de la lista: $(o)Giro$() de a 15°, $(o)Tamaño$() de 50 a 250 %, $(o)Quitar$() (devuelve el retazo) y $(o)Fila$(), que repite el aplique hasta ocho veces hacia abajo con la separación que quieras."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_aplique_mono,modamod:molde_aplique_mariposa,modamod:molde_aplique_flor",
+      "title": "Moños, mariposas y flores",
+      "link_recipe": true,
+      "text": "$(l)El clásico del taller.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_aplique_canguro,modamod:molde_aplique_bolsillo,modamod:molde_aplique_bolsillo_tapa,modamod:molde_aplique_bolsillo_jean",
+      "title": "Bolsillos",
+      "link_recipe": true,
+      "text": "$(l)Para guardar poco y lucir mucho.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_aplique_boton,modamod:molde_aplique_botonera,modamod:molde_aplique_cordones,modamod:molde_aplique_corbata",
+      "title": "Botones, cordones y corbata",
+      "link_recipe": true,
+      "text": "$(l)Los que cierran, atan y anudan.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_aplique_tacha,modamod:molde_aplique_tachas,modamod:molde_aplique_parche_corazon,modamod:molde_aplique_parche_estrella,modamod:molde_aplique_parche_rayo",
+      "title": "Tachas y parches",
+      "link_recipe": true,
+      "text": "$(l)Un poco de actitud.$()"
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:retazo_aplique",
+      "title": "Retazo de aplique",
+      "link_recipe": true,
+      "text": "$(l)El color de cada aplique.$()$(br2)Tres zonas; se tiñe en la Estación de Tintes."
+    }
+  ]
+}

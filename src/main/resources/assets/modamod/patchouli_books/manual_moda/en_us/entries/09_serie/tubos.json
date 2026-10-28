@@ -1,0 +1,39 @@
+{
+  "name": "Tubos, extractor y válvula",
+  "icon": "modamod:tubo",
+  "category": "modamod:09_serie",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:tubo,modamod:extractor,modamod:valvula,modamod:empalme_tubo",
+      "title": "Tubos de transporte",
+      "link_recipe": true,
+      "text": "$(l)Cañerías de cristal para ítems con rumbo.$()$(br2)Los tubos llevan ítems en vertical y en cualquier dirección, y se conectan solos con los tubos y empalmes vecinos."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El tubo.$() Un caño de vidrio liso, sin sentido propio: donde conecta, el vidrio sigue sin borde; en las puntas libres lleva una tapa de cobre. Con un vecino es tramo recto, con dos es recto o codo, con más es un nudo. Cada punta muestra qué hace: una $(o)boca$() (aro de cobre con agujero) larga o toma cosas de un contenedor; una $(o)tapa cerrada$() no da a nada."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cerrar una cara.$() Shift + clic derecho con la mano vacía sobre un brazo del tubo lo cierra con una tapa de cobre; otra vez, lo abre. Sirve para separar dos tramos que corren pegados."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Agua.$() En los tramos verticales, el sentido lo manda el agua: con un balde de agua, el tubo (y toda la columna conectada) se llena de burbujitas y los ítems suben, más despacio; con un balde vacío se vacía y los ítems bajan. Es un estado del bloque, no agua real: no se derrama."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Empalme de tubo.$() Un nudo de seis caras con un casillero de filtro por cara. Con un ítem en la mano apuntando a la cara, lo pone de filtro; con la mano vacía lo borra; con shift y mano vacía filtra por $(o)tag$(). Un ítem registrado sale por las caras cuyo filtro lo deja pasar; uno no registrado se reparte entre las caras sin filtro. Nunca sale por donde entró."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Extractor.$() Se pega a la cara del contenedor que apuntás (agachado, al revés) y cada ocho ticks saca un ítem para pasarlo al de adelante: tubo, cinta, cofre o máquina. Saca de costado o hacia arriba, cosa que la tolva no hace. Tiene filtro (por ítem o por tag) y se pausa con redstone. De las máquinas del mod saca solo lo que ellas dejan sacar."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Válvula antirretorno.$() Un tramo de tubo con sentido fijo, en forma de embudo: recibe solo por atrás y entrega solo por el pico, que apunta hacia donde mirás al ponerla (agachado, al revés). Un tubo nunca le manda nada por el pico.$(br2)$(4)Fe de erratas:$() los tubos todavía no se pausan con redstone, y el hielo no los afecta: eso vale solo para las cintas."
+    }
+  ]
+}

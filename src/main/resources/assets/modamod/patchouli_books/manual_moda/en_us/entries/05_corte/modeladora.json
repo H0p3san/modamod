@@ -1,0 +1,47 @@
+{
+  "name": "La Mesa de Modelado",
+  "icon": "modamod:modelado",
+  "category": "modamod:05_corte",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:modelado",
+      "title": "Mesa de Modelado",
+      "link_recipe": true,
+      "text": "$(l)El corte es destino.$()$(br2)La Modeladora cambia el corte de la prenda: largo, mangas, cuello, calce, ruedo y trama."
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/modeladora_abierta.png"
+      ],
+      "border": true,
+      "title": "La Modeladora abierta"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El visor y la tira de zonas.$() A la izquierda, tu personaje con la prenda. Debajo, una tira de zonas (Cabeza y cuello, Torso, Brazos, Prenda entera...) con números y flechas. Al cambiar de zona, la cámara se acerca y a la derecha aparecen solo los casilleros de esa zona, cada uno con su nombre y su chincheta. Un puntito verde marca que ya hay algo fijado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Paso a paso.$()$(br)1. Elegí la prenda con el botón de arriba a la derecha del visor.$(br)2. Elegí una zona.$(br)3. Clic en la fila del casillero que querés cambiar: se abre la lista de moldes que acepta.$(br)4. Clic en un molde: queda puesto y fijado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "5. Poné la prenda en la Entrada y apretá $(l)Modelar$(). Hace falta prenda, algo fijado, tijeras y la Salida libre. Un clic en la chincheta de un casillero fijado lo quita.$(br2)$(l)La bolsa de moldes.$() Ya no hay almacenes con lugares contados: soltá tus moldes en el casillero $(o)Bolsa de moldes$() (o con shift-clic desde el inventario)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Elegir un molde no lo gasta: el mismo sirve en todos los casilleros del mismo tipo. Clic derecho sobre uno de la lista saca uno a tu inventario.$(br2)$(l)Diseños de corte.$() El botón ★ $(o)Último$() recarga los cortes de la última prenda de esa categoría."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Para guardar el actual, escribí un nombre y apretá $(l)+$(): fabrica un ítem $(o)Diseño de corte$() (gasta un Diseño en blanco) que podés guardar en un cofre o regalar. Se cargan soltándolos en el casillero $(o)Bolsa$().$(br2)$(l)La tijera.$() Es el insumo de la Modeladora: tijeras de vanilla, y cada $(o)Modelar$() gasta un uso. La pantallita del frente muestra la tijera puesta y su durabilidad en una barra verde."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Se cargan con la tijera en la mano sobre el bloque, con shift-clic o por tolva. Agachado y con la mano vacía, la recuperás.$(br2)$(4)Fe de erratas:$() los patrones de color (rayas, corazones, estrellas, lunares...) no van acá: viven en la Estación de Tintes."
+    }
+  ]
+}

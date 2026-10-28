@@ -1,0 +1,47 @@
+{
+  "name": "Acabados con trims",
+  "icon": "minecraft:netherite_upgrade_smithing_template",
+  "category": "modamod:08_detalles",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Brillo, reflejos y movimiento. En una remera.$() Un molde de trim de vanilla, puesto en el casillero del molde, le da a la prenda entera un acabado animado, con un efecto propio por patrón. El botón de acabado lo pone (y gasta el molde) o lo quita si la prenda ya lo lleva.",
+      "title": "Acabados con trims"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Los dieciocho efectos.$() $(o)Sentry$() acero con barrido de luz; $(o)Dune$() arena que centellea; $(o)Coast$() espuma de olas; $(o)Wild$() venas de hoja; $(o)Ward$() latido de sculk; $(o)Eye$() ojos del End que parpadean; $(o)Vex$() niebla espectral; $(o)Tide$() cáusticas profundas; $(o)Snout$() magma; $(o)Rib$() brasas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(o)Spire$() iridiscencia del End; $(o)Wayfinder$() haz de brújula que gira; $(o)Shaper$() líneas de cantera con pulso; $(o)Silence$() oscuridad con puntitos pálidos; $(o)Raiser$() calor que asciende; $(o)Host$() runas que se encienden de a una; $(o)Flow$() remolinos de viento; $(o)Bolt$() arcos de cobre. Los patrones de otros mods dan brillo metálico."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Material (opcional).$() Un material de trim en su casillero (hierro, cobre, oro, netherita, cuarzo, redstone, lapislázuli, esmeralda, diamante o amatista) cambia los colores del efecto. Gasta una unidad. Sin material, cada patrón usa su paleta de fábrica. Con molde y sin material nuevo, el botón cambia solo el material."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Dónde funciona.$() En cualquier prenda del mod, en el sombrero, en las bandas y en los borcegos. Todo se calcula a la resolución de la propia tela y se anima a diez cuadros por segundo. Cada efecto suelta además sus propias partículas alrededor de quien lo lleva, y también del Maniquí."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Texturas de tela.$() Los moldes de textura ($(o)fruncido$() y $(o)acolchado$()) se ponen igual, en el casillero del molde: el botón $(o)Textura$() le da relieve a la prenda, o se lo saca. El molde no se gasta."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "minecraft:sentry_armor_trim_smithing_template,minecraft:dune_armor_trim_smithing_template,minecraft:coast_armor_trim_smithing_template,minecraft:wild_armor_trim_smithing_template,minecraft:ward_armor_trim_smithing_template,minecraft:eye_armor_trim_smithing_template,minecraft:vex_armor_trim_smithing_template,minecraft:tide_armor_trim_smithing_template,minecraft:snout_armor_trim_smithing_template,minecraft:rib_armor_trim_smithing_template,minecraft:spire_armor_trim_smithing_template,minecraft:wayfinder_armor_trim_smithing_template,minecraft:shaper_armor_trim_smithing_template,minecraft:silence_armor_trim_smithing_template,minecraft:raiser_armor_trim_smithing_template,minecraft:host_armor_trim_smithing_template,minecraft:flow_armor_trim_smithing_template,minecraft:bolt_armor_trim_smithing_template",
+      "title": "Los dieciocho",
+      "link_recipe": false,
+      "text": "$(l)Moldes de vanilla, efectos de ModaMod.$()$(br2)Lo nuevo no es el molde: es lo que le hace a tu remera."
+    },
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_textura_fruncido,modamod:molde_textura_acolchado",
+      "title": "Texturas de tela",
+      "link_recipe": true,
+      "text": "$(l)Relieve de regalo.$()"
+    }
+  ]
+}

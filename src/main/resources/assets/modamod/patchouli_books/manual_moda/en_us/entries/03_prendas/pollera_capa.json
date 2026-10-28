@@ -1,0 +1,39 @@
+{
+  "name": "Pollera y capa",
+  "icon": "modamod:pollera",
+  "category": "modamod:03_prendas",
+  "sortnum": 3,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:pollera,modamod:capa",
+      "title": "Pollera y capa",
+      "link_recipe": false,
+      "text": "$(l)La pollera no es una caja con ganas: es tela.$()$(br2)Una malla propia que baja de la cintura y se mueve con vos: choca con tus piernas, se abre al caer, se achica al saltar y se balancea de costado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cinco formas.$() $(o)Campana$() (lisa, la de siempre), $(o)tableada$() (pliegues en V), $(o)tubo$() (recta, casi sin vuelo), $(o)globo$() (ancha al medio y cerrada en el ruedo) y $(o)circular$() (círculo completo: la que más vuela). Siete largos, del ultramicro al tobillo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Varias a la vez.$() Podés llevar hasta tres polleras: se dibujan en el orden de los lugares y cada una sale un poquito más afuera que la de abajo. Los patrones se ven a resolución completa.$(br2)$(l)Twirl.$() Apretá $(l)R$() con una pollera puesta: das una vuelta entera con los brazos abiertos, la pollera se abre casi horizontal y gira arrastrada. Los demás jugadores lo ven."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Utilidad práctica: ninguna. Valor social: incalculable.$(br2)$(l)La capa.$() Cuelga de los hombros y se mueve como tela: se levanta al correr, rebota con los saltos y se abre al agacharte. Siete largos (del capelet al tobillo), ruedo recto, redondeado o con cola (arrastra por el piso), capucha ($(l)H$()) y cuello alto. El forro se tiñe y se estampa aparte del exterior."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El embozo$() es una esclavina que cubre los hombros, con su propio molde en la Modeladora y siete largos (de 2 px hasta el piso). Choca con las piernas y los brazos como la pollera y, desde los 12 px, hace de capa: el paño de atrás deja de dibujarse y los apliques y correas pasan al embozo. Con $(l)J$() se abre en el cuello y cae en diagonal por los hombros. Un segundo molde le pone borde, que se tiñe con la zona $(o)Detalles$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La capucha de la capa$() puede ser de malla o de cajas, según su molde. Va abierta abajo, por fuera del paño o del embozo, y también lleva apliques.$(br2)$(l)Reglas de convivencia.$() La capa del mod manda sobre la capa vanilla, incluidas las de Optifine y Minecon. Con élitros puestos pasa al revés: se ven los élitros y la capa se esconde."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Con un hoodie, la capa cuelga por fuera y no dibuja su capucha ni su cuello alto.$(br2)$(4)Fe de erratas:$() en la pollera, el patrón todavía puede mostrar un corte justo en el centro de la espalda, donde se juntan los extremos de la tela."
+    }
+  ]
+}

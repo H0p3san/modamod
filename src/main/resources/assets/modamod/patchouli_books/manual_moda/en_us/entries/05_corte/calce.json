@@ -1,0 +1,27 @@
+{
+  "name": "Calce, cuellos y cajones",
+  "icon": "modamod:molde_calce_oversize",
+  "category": "modamod:05_corte",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_calce_pegado,modamod:molde_calce_ajustado,modamod:molde_calce_suelto,modamod:molde_calce_oversize",
+      "title": "Calces",
+      "link_recipe": true,
+      "text": "$(l)Cuatro moldes, y el quinto es el blanco.$()$(br2)El Normal no se fabrica: es el molde en blanco."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El calce es lo que separa una remera de una carpa.$() Cinco niveles:$(li)$(l)Pegado:$() reemplaza la piel; la tela va justo donde estaba la skin.$(li)$(l)Ajustado:$() aprieta, medio píxel menos; se nota el escalón donde corta.$(li)$(l)Normal:$() un cuarto de píxel de aire."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)Suelto:$() más holgado; se abre hacia el ruedo y cuelga un píxel por debajo del corte.$(li)$(l)Oversize:$() el doble de abierto hacia el ruedo y cuelga dos píxeles.$(br)El calce Normal es el molde en blanco: no hace falta fabricarlo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cajones.$() Los casilleros que tienen un par llevan un botón ▾: manga con puño, cuello con solapa y, en pantalón, medias y calientabrazos, corte con ruedo. Al abrirlo aparece el segundo casillero, y los dos aceptan cualquiera de los dos moldes. El cajón se abre solo si ya hay un molde puesto."
+    }
+  ]
+}

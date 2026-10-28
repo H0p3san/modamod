@@ -1,0 +1,25 @@
+{
+  "name": "Teclas y comandos",
+  "icon": "minecraft:command_block",
+  "category": "modamod:12_chuleta",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Las cuatro teclas.$() $(l)K$() abre la pantalla de Ropa. $(l)H$() sube y baja la capucha. $(l)J$() abre y cierra la chaqueta (y el embozo). $(l)R$() hace girar la pollera. Se cambian en $(o)Controles → ModaMod$().",
+      "title": "Teclas y comandos"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Para todos los jugadores:$() $(l)/modamod elegir$() reabre la pantalla de elegir cuerpo. Es el único comando sin permisos especiales.$(br2)$(l)Para operadores (nivel 2, o en un mundo propio con trucos activados):$()$(li)$(l)/modamod cuerpo <tipo>:$() cambia el cuerpo directo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)/modamod interior arriba|abajo|color:$() ropa interior.$(li)$(l)/modamod tono skin|<número>:$() tono de piel.$(li)$(l)/modamod busto <0..7>:$() talle de busto (0 vuelve al del cuerpo)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(li)$(l)/modamod definicion <0..200>:$() cuánto se marcan los músculos.$(li)$(l)/modamod volumen redondeado|voxel|grueso:$() volumen del cuerpo y la tela.$(li)$(l)/modamod ver:$() muestra tu configuración.$(li)$(l)/modamod reset:$() todo vuelve al valor por defecto.$(li)$(l)/modamod moldes:$() tus moldes personalizados, y los de otros jugadores."
+    }
+  ]
+}

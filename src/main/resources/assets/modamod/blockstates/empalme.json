@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,powered=false": {
+      "model": "modamod:block/empalme"
+    },
+    "facing=north,powered=true": {
+      "model": "modamod:block/empalme_quieta"
+    },
+    "facing=east,powered=false": {
+      "model": "modamod:block/empalme",
+      "y": 90
+    },
+    "facing=east,powered=true": {
+      "model": "modamod:block/empalme_quieta",
+      "y": 90
+    },
+    "facing=south,powered=false": {
+      "model": "modamod:block/empalme",
+      "y": 180
+    },
+    "facing=south,powered=true": {
+      "model": "modamod:block/empalme_quieta",
+      "y": 180
+    },
+    "facing=west,powered=false": {
+      "model": "modamod:block/empalme",
+      "y": 270
+    },
+    "facing=west,powered=true": {
+      "model": "modamod:block/empalme_quieta",
+      "y": 270
+    }
+  }
+}

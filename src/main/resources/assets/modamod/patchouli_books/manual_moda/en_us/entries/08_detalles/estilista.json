@@ -1,0 +1,31 @@
+{
+  "name": "La Estilista",
+  "icon": "modamod:estilista",
+  "category": "modamod:08_detalles",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:estilista",
+      "title": "Estilista",
+      "link_recipe": true,
+      "text": "$(l)Los detalles son el 90 % del outfit.$()$(br2)La Estilista pega apliques 3D, correas y acabados sobre cualquier prenda. Trabaja con hilo y cuero, y recuerda lo que hiciste con cada tipo de prenda."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El editor.$() Poné la prenda en la $(l)Entrada$(): esa prenda es la muestra. A la izquierda tenés la vista 3D grande y tres pestañas ($(o)Aplique$(), $(o)Correa$() y $(o)Acabado$()); a la derecha, el panel de la máquina con entrada, salida y $(o)Aplicar$(). Editar es gratis: el costo real se paga al aplicar.$(br2)$(l)Último por prenda.$() Cada tipo de prenda tiene un diseño $(o)Último$() que se guarda solo: es lo que se aplica cada vez."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Al poner una prenda nueva sin diseño, la muestra arranca con el último de su tipo.$(br2)$(l)Diseños con nombre.$() Hasta ocho por tipo de prenda. Escribís el nombre, apretás $(o)Guardar con nombre$() y queda en la lista. Clic en uno lo carga en el editor y pasa a ser el último. La ✕ lo borra."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Qué cuesta.$() Los insumos se cargan en dos contadores, hilo y cuero, de hasta 64 unidades cada uno (soltando el ítem sobre el contador, con shift-clic, con la mano sobre el bloque o por tolva o cinta). Un hilo rinde cuatro apliques; un cuero, dos correas. Al aplicar, lo que la prenda ya traía vuelve a los contadores."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Entrada y salida.$() La prenda entra por arriba o por la izquierda (cinta, tolva o la máquina de al lado) y sale por la derecha. Con la línea prendida, una prenda que llega con diseño arranca sola (13 segundos de pórtico); sin diseño, pasa de largo. Si falta algo, espera en la entrada hasta que lo repongas."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Telar automático",
+  "icon": "modamod:telar",
+  "category": "modamod:09_serie",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:telar",
+      "title": "Telar automático",
+      "link_recipe": true,
+      "text": "$(l)Una fábrica de prendas básicas, con lana e hilo.$()$(br2)Teje remera, pantalón, medias, calientabrazos, pollera, capa, delantal, borcegos, cinto y sombrero. Lisas, del color de la lana."
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/telar_abierto.png"
+      ],
+      "border": true,
+      "title": "El telar abierto"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Paso a paso.$()$(br)1. Cargá $(l)lana$() (cualquiera de las 16) e $(l)hilo$() en sus dos casilleros: a mano, con shift-clic, con el ítem en la mano sobre el bloque, o por tolva o cinta desde cualquier lado menos la derecha.$(br)2. Tildá las prendas que querés: son casillas, podés elegir varias. Las teje de a una, en orden, y salta la que no alcance."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "3. Elegí el $(l)lote$(): la cantidad total de prendas (−10, −, +, +10; 0 es sin límite). Al terminar, la máquina se detiene; ↻ lo reinicia.$(br)4. La prenda sale por la $(l)derecha$() (a la cinta o a la próxima máquina) o la retirás con la mano vacía."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Lo que cuesta.$() Lo mismo que su receta de crafteo: remera 7 lanas, pantalón 7, medias 2 lanas y 1 hilo, calientabrazos 2 y 1, pollera 6 y 3, capa 7 y 2, delantal 5, borcegos 2 hilos y 4 cueros, cinto 2 cueros, sombrero 2 lanas y 3 cueros.$(br2)$(4)Fe de erratas:$() con la línea prendida, el telar arranca la prenda siguiente apenas termina, así que con stock casi no se puede abrir la pantalla."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Apagá la línea (botón del frente) si necesitás meter mano."
+    }
+  ]
+}

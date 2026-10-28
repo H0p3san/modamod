@@ -1,0 +1,302 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "extremo_north": "abierto|tapa|boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_brazo_north"
+      }
+    },
+    {
+      "when": {
+        "extremo_north": "sin"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_nucleo_north"
+      }
+    },
+    {
+      "when": {
+        "extremo_north": "tapa"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_tapa_north"
+      }
+    },
+    {
+      "when": {
+        "extremo_north": "boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_boca_north"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "agua": "true"
+          },
+          {
+            "extremo_north": "abierto|tapa|boca"
+          }
+        ]
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_north"
+      }
+    },
+    {
+      "when": {
+        "extremo_south": "abierto|tapa|boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_brazo_south"
+      }
+    },
+    {
+      "when": {
+        "extremo_south": "sin"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_nucleo_south"
+      }
+    },
+    {
+      "when": {
+        "extremo_south": "tapa"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_tapa_south"
+      }
+    },
+    {
+      "when": {
+        "extremo_south": "boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_boca_south"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "agua": "true"
+          },
+          {
+            "extremo_south": "abierto|tapa|boca"
+          }
+        ]
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_south"
+      }
+    },
+    {
+      "when": {
+        "extremo_east": "abierto|tapa|boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_brazo_east"
+      }
+    },
+    {
+      "when": {
+        "extremo_east": "sin"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_nucleo_east"
+      }
+    },
+    {
+      "when": {
+        "extremo_east": "tapa"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_tapa_east"
+      }
+    },
+    {
+      "when": {
+        "extremo_east": "boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_boca_east"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "agua": "true"
+          },
+          {
+            "extremo_east": "abierto|tapa|boca"
+          }
+        ]
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_east"
+      }
+    },
+    {
+      "when": {
+        "extremo_west": "abierto|tapa|boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_brazo_west"
+      }
+    },
+    {
+      "when": {
+        "extremo_west": "sin"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_nucleo_west"
+      }
+    },
+    {
+      "when": {
+        "extremo_west": "tapa"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_tapa_west"
+      }
+    },
+    {
+      "when": {
+        "extremo_west": "boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_boca_west"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "agua": "true"
+          },
+          {
+            "extremo_west": "abierto|tapa|boca"
+          }
+        ]
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_west"
+      }
+    },
+    {
+      "when": {
+        "extremo_up": "abierto|tapa|boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_brazo_up"
+      }
+    },
+    {
+      "when": {
+        "extremo_up": "sin"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_nucleo_up"
+      }
+    },
+    {
+      "when": {
+        "extremo_up": "tapa"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_tapa_up"
+      }
+    },
+    {
+      "when": {
+        "extremo_up": "boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_boca_up"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "agua": "true"
+          },
+          {
+            "extremo_up": "abierto|tapa|boca"
+          }
+        ]
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_up"
+      }
+    },
+    {
+      "when": {
+        "extremo_down": "abierto|tapa|boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_brazo_down"
+      }
+    },
+    {
+      "when": {
+        "extremo_down": "sin"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_nucleo_down"
+      }
+    },
+    {
+      "when": {
+        "extremo_down": "tapa"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_tapa_down"
+      }
+    },
+    {
+      "when": {
+        "extremo_down": "boca"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_boca_down"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "agua": "true"
+          },
+          {
+            "extremo_down": "abierto|tapa|boca"
+          }
+        ]
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_down"
+      }
+    },
+    {
+      "when": {
+        "agua": "true"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_agua_nucleo"
+      }
+    },
+    {
+      "when": {
+        "esquina": "true"
+      },
+      "apply": {
+        "model": "modamod:block/tubo_esquina"
+      }
+    }
+  ]
+}

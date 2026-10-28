@@ -1,0 +1,51 @@
+{
+  "name": "Maniquí",
+  "icon": "modamod:maniqui",
+  "category": "modamod:10_vidriera",
+  "sortnum": 2,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:maniqui",
+      "title": "Maniquí",
+      "link_recipe": true,
+      "text": "$(l)Un outfit sin nadie adentro, pero con mucho carácter.$()$(br2)Exhibe un outfit completo en el mundo. La figura es de tamaño normal: con el plato mide casi dos bloques y medio, así que necesita lugar libre arriba."
+    },
+    {
+      "type": "patchouli:image",
+      "images": [
+        "modamod:textures/gui/libro/maniqui_gui.png"
+      ],
+      "border": true,
+      "title": "La pantalla del Maniquí"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Qué lleva.$() Tres lugares por categoría de prenda, la columna de armadura y lugares para sombrero, calzado, delantal, capa, cinto y collar. Todo se ve puesto en la figura.$(br2)$(l)Cómo se usa.$() $(o)Clic derecho con una prenda o armadura:$() se la pone en el primer lugar libre de su categoría. $(o)Mano vacía:$() abre la pantalla. $(o)Agachado con la mano vacía$() (o el botón $(o)Girar$()): el plato gira, una vuelta cada 14 segundos."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(o)Intercambiar conmigo:$() la ropa del maniquí pasa a vos y la tuya a él, lugar por lugar. No se pierde nada.$(br2)$(l)Pose.$() Parado, En jarra, Saludo, Brazos abiertos, Pasarela o Sentado. Los sliders de la derecha mueven cabeza, brazos y piernas por separado; al tocar uno, la pose pasa a $(o)Libre$()."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Figura.$() $(o)Maniquí$() (liso, color madera), $(o)tu skin$(), las nueve skins de Mojang (Steve, Alex, Ari, Efe, Kai, Makena, Noor, Sunny y Zuri) o la $(l)skin de otro jugador$(): escribís el nombre y apretás $(o)Ir$(). El servidor la busca; tiene que existir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Candado.$() Quien coloca el Maniquí es el dueño. Cerrado, solo el dueño, los operadores y los jugadores en creativo pueden poner o sacar ropa, intercambiar, girar o romperlo; las tolvas no meten ni sacan y las explosiones no lo rompen. Los demás ven en la vista previa $(l)su propio personaje con el outfit puesto$(), para probárselo. Ideal para tiendas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Armadura.$() Se ve como en un jugador, con el teñido del cuero, los trims y el brillo del encantamiento. La calabaza, las cabezas y los bloques van en la cabeza. Los élitros todavía no se dibujan. Al romperlo, todo cae al piso."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Mismo orden en todos lados.$() La pantalla de Ropa, el Guardarropas y el Maniquí ponen todo igual: arriba sombrero, máscara y barbijo; después collar y capa; una fila por prenda y, abajo, delantal, cinto y calzado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Pasá el mouse por un lugar vacío y te dice qué va ahí, para que no termines poniéndole el barbijo al maniquí en los pies. El Maniquí también se pone máscara y barbijo, y los intercambia con vos."
+    }
+  ]
+}

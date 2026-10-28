@@ -1,0 +1,6 @@
+{
+  "_comment": "Modelo vacío a propósito: el bloque es INVISIBLE y lo dibuja GeckoLib (mannequin.geo.json).",
+  "textures": {
+    "particle": "modamod:block/mannequin_atlas"
+  }
+}

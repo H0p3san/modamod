@@ -1,0 +1,29 @@
+{
+  "_comment": "El bloque es INVISIBLE y lo dibuja GeckoLib desde el block entity (estilista.geo.json).",
+  "variants": {
+    "facing=north,lit=true": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=north,lit=false": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=south,lit=true": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=south,lit=false": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=east,lit=true": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=east,lit=false": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=west,lit=true": {
+      "model": "modamod:block/estilista"
+    },
+    "facing=west,lit=false": {
+      "model": "modamod:block/estilista"
+    }
+  }
+}

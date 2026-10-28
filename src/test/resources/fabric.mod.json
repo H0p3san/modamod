@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "modamod_pruebas",
+  "version": "1.0.0",
+  "name": "ModaMod pruebas automaticas",
+  "environment": "client",
+  "entrypoints": {"client": ["com.modamod.pruebas.PruebasClient"]},
+  "depends": {"modamod": "*"}
+}

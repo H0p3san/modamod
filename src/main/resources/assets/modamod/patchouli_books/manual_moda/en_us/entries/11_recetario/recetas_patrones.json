@@ -1,0 +1,73 @@
+{
+  "name": "Patrones y motivos",
+  "icon": "modamod:pattern_vichy",
+  "category": "modamod:11_recetario",
+  "sortnum": 6,
+  "pages": [
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_argyle",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_camuflaje"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_camuflaje_digital",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_cebra"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_corazones",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_dalmata"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_diplomaticas",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_estrellas"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_jirafa",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_lenador"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_leopardo",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_lunares"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_pata_de_gallo",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_rayas"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_serpiente",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_tartan"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_tigre",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_vaca"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_ventana",
+      "title": "Patrones y motivos",
+      "recipe2": "modamod:pattern_vichy"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:pattern_zigzag",
+      "title": "Patrones y motivos"
+    }
+  ]
+}

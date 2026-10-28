@@ -1,0 +1,6 @@
+{
+  "_comment": "Modelo vac\u00edo a prop\u00f3sito: el bloque es INVISIBLE (GeckoLib). Solo la textura de part\u00edculas.",
+  "textures": {
+    "particle": "modamod:block/estilista_atlas"
+  }
+}

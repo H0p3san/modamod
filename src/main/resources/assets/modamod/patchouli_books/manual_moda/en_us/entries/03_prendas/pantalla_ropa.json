@@ -1,0 +1,25 @@
+{
+  "name": "Pantalla de Ropa",
+  "icon": "minecraft:iron_chestplate",
+  "category": "modamod:03_prendas",
+  "sortnum": 8,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Un solo lugar para todo lo que te ponés.$() Los lugares de ropa del mod ya no están en el inventario de siempre: se abren con el botón $(o)Ropa$() del inventario o con $(l)K$() (también en creativo, y vuelve a cerrar).",
+      "title": "Pantalla de Ropa"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Qué muestra.$() Tu personaje, los lugares de ropa del mod, la $(l)armadura real$() (la que da las estadísticas), la $(l)armadura cosmética$() (solo se ve; casco, pechera, pantalón y botas) y tu inventario. La pechera cosmética acepta élitros y el casco acepta calabazas y cabezas."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Dos interruptores por pieza.$() $(o)Cosm.$() muestra el ítem cosmético en lugar de la armadura real; $(o)Ocultar$() no dibuja nada. Si $(o)Cosm.$() está prendido y el lugar cosmético está vacío, la pieza se ve oculta. Con los dos apagados, ves la armadura real, como siempre.$(br2)Los demás jugadores ven lo mismo que vos, y todo se guarda con el personaje, también al morir."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Las estadísticas siempre salen de la armadura real: estar a la moda no te hace más resistente. Todavía."
+    }
+  ]
+}

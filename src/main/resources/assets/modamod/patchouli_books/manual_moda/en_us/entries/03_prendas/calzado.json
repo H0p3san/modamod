@@ -1,0 +1,31 @@
+{
+  "name": "Borcegos y calzado",
+  "icon": "modamod:borcegos",
+  "category": "modamod:03_prendas",
+  "sortnum": 5,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:borcegos",
+      "title": "Borcegos",
+      "link_recipe": false,
+      "text": "$(l)Zapatos con carácter, y con cajas.$()$(br2)Un par de botas de cuero con caña, puntera, suela gruesa y cordones, armadas con cajas: se ven los dos pies. Van en un lugar de calzado propio, junto al cinto en la pantalla de Ropa."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Tres zonas de color.$() $(o)Cuero$(), $(o)Suela$() y $(o)Cordones$(), cada una con su color y su dibujo. De fábrica: cuero marrón, suela casi negra, cordones crema. Se pintan en la Estación de Tintes o en la Estilista, y admiten apliques y correas.$(br2)$(l)Cada pie por su cuenta.$() El izquierdo y el derecho tienen cada uno su caña, su suela y su botamanga (seis casilleros en la Modeladora, como las mangas)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Con la simetría activa, un molde manda a los dos. En la Estilista, el botón $(o)Espejar$() repite en el otro pie lo que hagas en uno."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Los moldes del calzado$() vienen en cinco familias: $(o)caña$() (baja, alta, bota, tenis, zapato, mocasín, bailarina, pantufla, taco o ninguna), $(o)suela$() (chata, plataforma, cuña, goma, taco chico, sandalia o chancla), $(o)punta$() (fina, ancha, redonda, cuadrada, alargada, de goma o descubierta), $(o)cierre$() (hebilla, velcro, tira en V, tobillera, gladiadora, costura lateral o ninguno) y $(o)detalle$() (lengüeta, parche, costura en el empeine)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)La botamanga.$() Un casillero define cómo se lleva el pantalón: por dentro de la caña (el pantalón se corta donde empieza la caña y se ven el cuero y los cordones) o por fuera (baja entero y se ensancha sobre la caña)."
+    }
+  ]
+}

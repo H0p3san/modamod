@@ -1,0 +1,22 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "puntera_cuero",
+  "eje": "punta",
+  "forma": "secciones",
+  "zona": 0,
+  "columnas": 10,
+  "grosor": 0.2,
+  "tapas": [false, true],
+  "secciones": [
+    {"z": -4.4, "x0": -2.72, "x1": 2.72, "yTop": 9.78, "yBot": 11.55, "n": 2.8, "abre": null},
+    {"z": -4.8, "x0": -2.45, "x1": 2.45, "yTop": 9.95, "yBot": 11.55, "n": 2.6, "abre": null},
+    {"z": -5.25, "x0": -1.5, "x1": 1.5, "yTop": 10.3, "yBot": 11.55, "n": 2.2, "abre": null},
+    {"z": -5.7, "x0": -0.66, "x1": 0.66, "yTop": 10.55, "yBot": 11.55, "n": 2.2, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 0, "min": [-2.62, 9.78, -4.8], "max": [2.62, 11.55, -4.4]},
+    {"zona": 0, "min": [-2.36, 9.95, -5.25], "max": [2.36, 11.55, -4.8]},
+    {"zona": 0, "min": [-1.43, 10.3, -5.7], "max": [1.43, 11.55, -5.25]}
+  ]
+}

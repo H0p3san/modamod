@@ -1,0 +1,31 @@
+{
+  "name": "El ropero completo",
+  "icon": "modamod:remera",
+  "category": "modamod:03_prendas",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:remera,modamod:pantalon,modamod:socks_solid,modamod:calientabrazos,modamod:pollera,modamod:capa,modamod:delantal,modamod:borcegos,modamod:sombrero_bruja,modamod:banda",
+      "title": "El ropero completo",
+      "link_recipe": false,
+      "text": "$(l)Diez prendas y un orden de llegada.$()$(br2)Remera, pantalón, medias, calientabrazos, pollera, capa, delantal, borcegos, sombrero y cinto. Cada una tiene su lugar en la pantalla de Ropa."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Quién va debajo de quién.$() Las prendas se dibujan en orden fijo: cuerpo, medias, calientabrazos, pantalón, remera, pollera y, por último, lo que lleves en el lugar de chaqueta. Donde una prenda no tiene tela (una media corta, una remera sin mangas) se ve lo de abajo. Una prenda de arriba nunca queda por dentro de otra."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Dónde se ponen.$() Apretá $(l)K$() o el botón $(o)Ropa$() del inventario, junto al libro de recetas. Hay tres lugares por prenda (un croptop sobre un remerón, medias de red bajo unas cortas) y un solo ítem por lugar. Hasta 16 prendas idénticas (mismo corte, color, estampa y apliques) se apilan en el inventario."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Las teclas.$() $(l)K$() abre la pantalla de Ropa. $(l)H$() sube y baja la capucha del hoodie y de la capa. $(l)J$() abre y cierra el frente de la chaqueta y del embozo. $(l)R$() hace girar la pollera. Se cambian en $(o)Controles → ModaMod$().$(br2)$(4)Fe de erratas:$() las Medias 3/4, las Medias de red y el Traje de Maid de versiones viejas ya no se craftean (las que existían siguen andando)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Hoy las medias salen con el largo que quieras y la trama de red va en la Modeladora."
+    }
+  ]
+}

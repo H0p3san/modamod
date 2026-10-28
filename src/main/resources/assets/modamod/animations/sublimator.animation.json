@@ -1,0 +1,115 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.sublimator.abrir": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.35,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "0.28": [
+              -110,
+              0,
+              0
+            ],
+            "0.35": [
+              -104,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.sublimator.abierta": {
+      "loop": true,
+      "animation_length": 0.4,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0": [
+              -104,
+              0,
+              0
+            ],
+            "0.4": [
+              -104,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.sublimator.cerrar": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 0.3,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0": [
+              -104,
+              0,
+              0
+            ],
+            "0.24": [
+              4,
+              0,
+              0
+            ],
+            "0.3": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.sublimator.cerrada": {
+      "loop": true,
+      "animation_length": 0.4,
+      "bones": {
+        "lid": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "0.4": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "animation.sublimator.en_marcha": {
+      "loop": true,
+      "animation_length": 1.6,
+      "bones": {
+        "fan": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "1.6": [
+              0,
+              0,
+              360
+            ]
+          }
+        }
+      }
+    }
+  }
+}

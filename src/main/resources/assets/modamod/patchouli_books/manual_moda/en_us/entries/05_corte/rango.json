@@ -1,0 +1,35 @@
+{
+  "name": "Rango: la regla de siete",
+  "icon": "modamod:molde_rango_cero",
+  "category": "modamod:05_corte",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:molde_rango_cero,modamod:molde_rango_minimo,modamod:molde_rango_corto,modamod:molde_rango_medio,modamod:molde_rango_mediolargo,modamod:molde_rango_largo,modamod:molde_rango_maximo",
+      "title": "Los siete rangos",
+      "link_recipe": true,
+      "text": "$(l)Siete marcas para medirlo todo.$()$(br2)De la línea más alta a la más baja."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Una regla, siete marcas.$() El molde de rango mide una línea desde arriba hacia abajo, en siete niveles: el nivel $(o)k$() está a $(o)2k$() filas desde el hombro o la cintura. Se llaman Más alto, Muy alto, Alto, Medio, Bajo, Muy bajo y Más bajo. Sirve para todo: mangas, piernas, largo de remera, tiro, largo de pollera, largo de capa y largo de embozo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Cada prenda traduce el mismo nivel a su propia medida. El nivel 3, por ejemplo, es una manga media, una pantorrilla o una pollera a la rodilla. Y el nivel 0 es la línea más alta: manga sin nada, pierna sin nada, top.$(br2)$(l)Largo de remera,$() del Más alto al Más bajo: top, crop, corto, normal, cadera alta, cadera y largo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Tiro del pantalón:$() hombros, pecho, bajo el pecho, muy alto, alto, medio y cadera (el último, sin banda)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Pollera,$() px desde la cintura: ultramicro 3, micro 5, mini 7, a la rodilla 9, midi 11, larga 13 y hasta el tobillo 15. $(l)Capa,$() px desde los hombros: capelet 6, a la cintura 9, a la cadera 12, clásica 16, a la rodilla 18, larga 21 y hasta el tobillo 24. $(l)Embozo,$() px desde los hombros: 2, 5, 8, 12, 16, 20 y hasta el piso."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cómo se lee cada corte.$() Un solo pin en pantalón y manga de remera: dónde termina. Dos pines en medias y calientabrazos: arriba dice dónde $(o)empieza$() la tela y abajo dónde $(o)termina$(). Sin pin de arriba, la tela arranca arriba de todo."
+    }
+  ]
+}

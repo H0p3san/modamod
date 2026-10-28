@@ -1,0 +1,31 @@
+{
+  "name": "Cintas y empalmes",
+  "icon": "modamod:cinta",
+  "category": "modamod:09_serie",
+  "sortnum": 1,
+  "pages": [
+    {
+      "type": "patchouli:spotlight",
+      "item": "modamod:cinta,modamod:empalme",
+      "title": "Cintas y empalmes",
+      "link_recipe": true,
+      "text": "$(l)Un camino de lana para tu lana.$()$(br2)La cinta lleva un ítem por bloque hacia adelante y lo entrega al inventario de enfrente: otra cinta, una máquina, un cofre o una tolva."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Se arma sola.$() Las curvas se forman como un riel: si por atrás no le llega nada y por un costado sí, la cinta se curva hacia ese lado. Las rampas aparecen cuando adelante, a la misma altura, no hay nada pero sí una cinta o máquina un nivel más arriba (rampa de subida) o más abajo (de bajada). No se curva y sube a la vez: primero rampa y después curva."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cómo entra y sale.$() Recibe por atrás, por los costados y por arriba (tolvas). Entra a una máquina por su cara izquierda y sale de la máquina por la derecha. Clic derecho con la mano vacía saca lo que lleva; con un ítem en la mano, lo pone si está libre. Lleva cualquier ítem, de a uno por bloque."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)El empalme.$() Junta hasta tres entradas (atrás y los dos costados) y una tolva por arriba, y las saca por una sola salida, el frente. Es rotativo: alterna entre las entradas que tienen algo esperando. También se frena con redstone.$(br2)$(l)Subite, no pasa nada.$() La cinta lleva a quien se para encima, sin que camine: te deslizás con las piernas quietas, como sobre hielo."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Con hielo compacto debajo, el empuje es doble; con hielo azul, triple (los ítems también viajan más rápido). Con la cinta parada por redstone, caminás normal."
+    }
+  ]
+}

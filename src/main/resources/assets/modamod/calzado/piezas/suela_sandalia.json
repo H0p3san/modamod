@@ -1,0 +1,31 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "suela_sandalia",
+  "eje": "suela",
+  "forma": "secciones",
+  "zona": 1,
+  "columnas": 10,
+  "grosor": 0.8,
+  "plantilla": [
+    [3, 11.2],
+    [2.2, 11.2],
+    [-2.8, 11.2],
+    [-4.8, 11.2],
+    [-5.5, 11.2]
+  ],
+  "tapas": [true, true],
+  "secciones": [
+    {"z": 3, "x0": -1.6, "x1": 1.6, "yTop": 11.2, "yBot": 12, "n": 3, "abre": null},
+    {"z": 2.2, "x0": -2.8, "x1": 2.8, "yTop": 11.2, "yBot": 12, "n": 3, "abre": null},
+    {"z": -2.8, "x0": -3, "x1": 3, "yTop": 11.2, "yBot": 12, "n": 3, "abre": null},
+    {"z": -4.8, "x0": -2.7, "x1": 2.7, "yTop": 11.2, "yBot": 12, "n": 3, "abre": null},
+    {"z": -5.5, "x0": -1.5, "x1": 1.5, "yTop": 11.2, "yBot": 12, "n": 3, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 1, "min": [-2.71, 11.2, 2.2], "max": [2.71, 12, 3]},
+    {"zona": 1, "min": [-2.9, 11.2, -2.8], "max": [2.9, 12, 2.2]},
+    {"zona": 1, "min": [-2.9, 11.2, -4.8], "max": [2.9, 12, -2.8]},
+    {"zona": 1, "min": [-2.61, 11.2, -5.5], "max": [2.61, 12, -4.8]}
+  ]
+}

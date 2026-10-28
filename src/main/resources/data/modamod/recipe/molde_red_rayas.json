@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    " B ",
+    " T "
+  ],
+  "key": {
+    "B": {
+      "item": "modamod:trama_en_blanco"
+    },
+    "T": {
+      "item": "minecraft:shears"
+    },
+    "S": {
+      "item": "minecraft:string"
+    }
+  },
+  "result": {
+    "id": "modamod:molde_red_rayas",
+    "count": 1
+  }
+}

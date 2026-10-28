@@ -1,0 +1,24 @@
+{
+  "formato": "modamod-sombrero-malla-1",
+  "id": "mono_vincha",
+  "tipo": "cinta",
+  "zona": 2,
+  "yBase": -9.6,
+  "columnas": 8,
+  "cierre": "tapa",
+  "grosor": 0,
+  "anillos": [
+    { "y": 0.9, "rx": 0.2, "rz": 0.2 },
+    { "y": 0, "rx": 1.4, "rz": 1.4 },
+    { "y": -0.9, "rx": 0.2, "rz": 0.2 }
+  ],
+  "porColumna": {
+    "escala": [0.35, 0.7, 1.6, 0.7, 0.35, 0.7, 1.6, 0.7]
+  },
+  "punta": null,
+  "centro": [3.1, -1.2],
+  "apoyo": [
+    { "zona": 2, "min": [0.86, -9.6, -1.89], "max": [5.34, -8.7, -0.51] },
+    { "zona": 2, "min": [0.86, -10.5, -1.89], "max": [5.34, -9.6, -0.51] }
+  ]
+}

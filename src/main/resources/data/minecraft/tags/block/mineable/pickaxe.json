@@ -1,0 +1,5 @@
+{
+  "_comment": "El bloque se declara con requiresTool(), asi que sin estar en ninguna etiqueta de herramienta NINGUNA herramienta cuenta como la correcta y no dropea nunca, ni con pico de netherita.",
+  "replace": false,
+  "values": ["modamod:sublimadora"]
+}

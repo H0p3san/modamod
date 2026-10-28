@@ -1,0 +1,23 @@
+{
+  "formato": "modamod-sombrero-malla-1",
+  "id": "cinta_panadero",
+  "tipo": "cinta",
+  "zona": 2,
+  "yBase": -5.4,
+  "columnas": 16,
+  "cierre": "abierto",
+  "grosor": 0,
+  "anillos": [
+    { "y": -0.1, "rx": 5.12, "rz": 5.13 },
+    { "y": -1.2, "rx": 5.85, "rz": 6.05 },
+    { "y": -1.5, "rx": 5.95, "rz": 6.15 }
+  ],
+  "porColumna": {
+    "escala": [1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08, 1, 1.08, 1.2, 1.08]
+  },
+  "punta": null,
+  "apoyo": [
+    { "zona": 2, "min": [-5.85, -6.6, -6.05], "max": [5.85, -5.5, 6.05] },
+    { "zona": 2, "min": [-5.95, -6.9, -6.15], "max": [5.95, -6.6, 6.15] }
+  ]
+}

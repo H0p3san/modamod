@@ -1,0 +1,8 @@
+{
+  "_comment": "El bloque es INVISIBLE y lo dibuja GeckoLib entero desde el block entity, asi que este modelo no se ve nunca en el mundo. El blockstate igual tiene que existir y cubrir todos los estados o el cargador de modelos escupe warnings, y block/sublimadora sigue vivo porque es el padre del modelo de item (el icono del inventario). Un multipart sin 'when' aplica a cualquier combinacion de facing/open, asi no hay que enumerar las ocho.",
+  "multipart": [
+    {
+      "apply": { "model": "modamod:block/sublimadora" }
+    }
+  ]
+}

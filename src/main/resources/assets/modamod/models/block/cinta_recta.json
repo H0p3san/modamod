@@ -1,0 +1,128 @@
+{
+  "textures": {
+    "marco": "modamod:block/cinta_marco",
+    "banda": "modamod:block/cinta_banda",
+    "particle": "modamod:block/cinta_marco"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        4.3,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#marco"
+        },
+        "south": {
+          "texture": "#marco"
+        },
+        "east": {
+          "texture": "#marco"
+        },
+        "west": {
+          "texture": "#marco"
+        },
+        "up": {
+          "texture": "#marco"
+        },
+        "down": {
+          "texture": "#marco"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        4,
+        0
+      ],
+      "to": [
+        2,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#marco"
+        },
+        "south": {
+          "texture": "#marco"
+        },
+        "east": {
+          "texture": "#marco"
+        },
+        "west": {
+          "texture": "#marco"
+        },
+        "up": {
+          "texture": "#marco"
+        },
+        "down": {
+          "texture": "#marco"
+        }
+      }
+    },
+    {
+      "from": [
+        14,
+        4,
+        0
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#marco"
+        },
+        "south": {
+          "texture": "#marco"
+        },
+        "east": {
+          "texture": "#marco"
+        },
+        "west": {
+          "texture": "#marco"
+        },
+        "up": {
+          "texture": "#marco"
+        },
+        "down": {
+          "texture": "#marco"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        4.32,
+        0
+      ],
+      "to": [
+        16,
+        4.32,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#banda"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "cordones_tenis_alta_1",
+  "eje": "cierre",
+  "forma": "cinta",
+  "zona": 2,
+  "puntos": [
+    [-0.85, 9.2, -2.7],
+    [0.85, 9.2, -2.7]
+  ],
+  "cerrada": false,
+  "normales": [
+    [0, -0.1, -1],
+    [0, -0.1, -1]
+  ],
+  "ancho": 0.4,
+  "grosor": 0.25,
+  "apoyo": [
+    {"zona": 2, "min": [-0.85, 8.98, -2.97], "max": [0.85, 9.4, -2.67]}
+  ]
+}

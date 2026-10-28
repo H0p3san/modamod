@@ -1,0 +1,18 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "lengueta_tenis",
+  "eje": "detalle",
+  "forma": "secciones",
+  "zona": 2,
+  "columnas": 8,
+  "grosor": 0,
+  "tapas": [true, true],
+  "secciones": [
+    {"z": -2.28, "x0": -1.2, "x1": 1.2, "yTop": 8.1, "yBot": 9.6, "n": 3, "abre": null},
+    {"z": -2.45, "x0": -1.15, "x1": 1.15, "yTop": 8.35, "yBot": 9.8, "n": 3, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 2, "min": [-1.2, 8.1, -2.51], "max": [1.2, 9.8, -2.22]}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "parche_lateral",
+  "eje": "detalle",
+  "forma": "secciones",
+  "zona": 2,
+  "columnas": 8,
+  "grosor": 0,
+  "tapas": [true, true],
+  "secciones": [
+    {"z": 0.95, "x0": 2.9, "x1": 3.05, "yTop": 7.85, "yBot": 8.15, "n": 2, "abre": null},
+    {"z": 0.5, "x0": 2.9, "x1": 3.15, "yTop": 7.35, "yBot": 8.65, "n": 2, "abre": null},
+    {"z": -0.5, "x0": 2.9, "x1": 3.15, "yTop": 7.35, "yBot": 8.65, "n": 2, "abre": null},
+    {"z": -0.95, "x0": 2.9, "x1": 3.05, "yTop": 7.85, "yBot": 8.15, "n": 2, "abre": null}
+  ],
+  "porColumna": null,
+  "apoyo": [
+    {"zona": 2, "min": [2.87, 7.35, 0.5], "max": [3.17, 8.65, 0.95]},
+    {"zona": 2, "min": [2.88, 7.35, -0.5], "max": [3.18, 8.65, 0.5]},
+    {"zona": 2, "min": [2.87, 7.35, -0.95], "max": [3.17, 8.65, -0.5]}
+  ]
+}

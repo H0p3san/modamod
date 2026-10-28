@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PNP",
+    "PTP",
+    "PNP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "N": {
+      "item": "minecraft:ink_sac"
+    },
+    "T": {
+      "item": "minecraft:shears"
+    }
+  },
+  "result": {
+    "id": "modamod:mascara_en_blanco",
+    "count": 4
+  }
+}

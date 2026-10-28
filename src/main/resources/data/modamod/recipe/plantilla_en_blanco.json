@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PLP",
+    "LTL",
+    "PLP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "T": {
+      "item": "minecraft:shears"
+    }
+  },
+  "result": {
+    "id": "modamod:plantilla_en_blanco",
+    "count": 4
+  }
+}

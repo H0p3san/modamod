@@ -1,0 +1,6 @@
+{
+  "_comment": "Modelo vacio a proposito -mismo criterio que sublimadora.json-: el bloque es INVISIBLE y lo dibuja GeckoLib desde el block entity (garment_shaper.geo.json). Solo hace falta la textura de particulas.",
+  "textures": {
+    "particle": "modamod:block/garment_shaper_atlas"
+  }
+}

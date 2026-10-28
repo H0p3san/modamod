@@ -1,0 +1,16 @@
+{
+  "name": "Manual de Moda",
+  "landing_text": "$(l)ModaMod$(): manual de moda y otros delitos textiles.$(br2)Acá aprendés a cortar, teñir, estampar y presumir, en ese orden y sin que nadie te juzgue (salvo el espejo).$(br2)Empezá por $(l)Portada$(). Después, a la máquina que más curiosidad te dé.",
+  "subtitle": "Del hilo al outfit",
+  "version": 2,
+  "creative_tab": "modamod:modamod",
+  "model": "modamod:manual_moda",
+  "book_texture": "modamod:textures/gui/manual_moda.png",
+  "use_resource_pack": true,
+  "show_progress": false,
+  "filler_texture": "modamod:textures/gui/moda_filler.png",
+  "header_color": "63345e",
+  "link_color": "963e86",
+  "advancements_enabled": false,
+  "dont_generate_book": false
+}

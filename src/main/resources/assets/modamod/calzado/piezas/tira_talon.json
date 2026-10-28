@@ -1,0 +1,24 @@
+{
+  "formato": "modamod-calzado-malla-1",
+  "id": "tira_talon",
+  "eje": "cierre",
+  "forma": "cinta",
+  "zona": 0,
+  "puntos": [
+    [0, 8.9, 2.85],
+    [0, 10, 2.95],
+    [0, 10.95, 3]
+  ],
+  "cerrada": false,
+  "normales": [
+    [0, 0, 1],
+    [0, 0, 1],
+    [0, 0, 1]
+  ],
+  "ancho": 0.7,
+  "grosor": 0.3,
+  "apoyo": [
+    {"zona": 0, "min": [-0.35, 8.87, 2.85], "max": [0.35, 10, 3.25]},
+    {"zona": 0, "min": [-0.35, 9.98, 2.95], "max": [0.35, 10.95, 3.3]}
+  ]
+}

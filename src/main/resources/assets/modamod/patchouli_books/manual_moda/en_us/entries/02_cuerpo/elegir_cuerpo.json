@@ -1,0 +1,33 @@
+{
+  "name": "Elegir cuerpo",
+  "icon": "minecraft:player_head",
+  "category": "modamod:02_cuerpo",
+  "sortnum": 0,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Antes de la ropa, el maniquí sos vos.$() ModaMod dibuja un cuerpo base debajo de la ropa, en lugar de tu skin pintada. Por eso la tela se pega al cuerpo y la piel asoma donde no hay prenda. La cabeza sigue siendo la tuya: acá nadie te reemplaza la cara.",
+      "title": "Elegir cuerpo"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "La primera vez que te ponés una prenda del mod se abre $(l)Elegí tu cuerpo$(). Si la cerrás con $(o)Ahora no$(), vuelve a aparecer la próxima vez que entres. Para reabrirla cuando quieras: $(l)/modamod elegir$().$(br2)$(l)El catálogo.$() $(o)Mi propia skin$() (lisa, con tu tono) y 19 cuerpos dibujados. Humanos: Estándar, Delgado, Atlético, Musculoso, Gordito, Velludo, Fem estándar, Fem atlética, Fem con curvas y Fem gordita."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Animales: Cebra, Dálmata, Leopardo, Lobo, Osito, Panda, Tigre, Vaca y Zorro. Sí, hay un cuerpo de vaca. Sí, es una decisión de diseño.$(br2)$(l)Colores por zona.$() $(o)Base$() (piel o pelaje), $(o)Clara$() (panza, hocico: solo animales), $(o)Oscura$() (rayas y manchas: solo animales) y $(o)Rubor$() (rodillas, codos, pecho y cara)."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "Base sale de tu skin; las otras salen solas del color Base y las marca una “A”. El botón $(o)Automática$() las devuelve a ese estado.$(br2)$(l)De tu skin.$() Una paleta con hasta cinco colores sacados de tu skin. Un clic y se lo asignás a la zona elegida: con una skin de osito, el marrón del pelaje va a Base y el beige de la pancita a Clara."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Ropa interior.$() Dos partes que se eligen por separado, cada una con su color: arriba (Nada, Bralette, Deportivo, Binder) y abajo (Nada, Slip, Culotte, Boxer). Es el mínimo indispensable; lo lindo (encaje, estampas, fotos) se hace con prendas.$(br2)$(l)Skin siempre.$() Con $(o)Sí$(), tu cuerpo elegido se ve aunque no lleves nada del mod. Con $(o)No$(), solo aparece debajo de la ropa del mod."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Confirmar$() guarda todo y la pantalla no vuelve sola."
+    }
+  ]
+}

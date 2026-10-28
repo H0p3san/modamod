@@ -1,0 +1,6 @@
+{
+  "_comment": "Modelo vacio a proposito. El bloque es INVISIBLE y lo dibuja GeckoLib desde el block entity, y el icono del inventario tambien pasa por GeckoLib via builtin/entity. Lo unico que sigue haciendo falta de un modelo vanilla es la textura de particulas: la que salta al romper el bloque y bajo los pies. Antes aca vivia una copia entera de la maquina en 33 elementos con trece PNG propios, que era la que hacia que el icono ignorara lo editado en Blockbench.",
+  "textures": {
+    "particle": "minecraft:block/iron_block"
+  }
+}

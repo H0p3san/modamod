@@ -1,0 +1,21 @@
+{
+  "name": "Cuatro recetas de color",
+  "icon": "modamod:pattern_corazones",
+  "category": "modamod:06_color",
+  "sortnum": 4,
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Recetas que no necesitan horno.$() Cuatro combinaciones para copiar sin vergüenza. Se editan en la Estación de Tintes, cuadradito por cuadradito.$(br2)$(l)1. Remera en degradé.$() Un cuadradito de prenda entera, sin molde. Dos colores. $(o)Variación: Degradé$(). El color pasa de arriba a abajo sin que nadie se lo pida.",
+      "title": "Cuatro recetas de color"
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)2. Rayas multicolor.$() Molde de rayas en el cuadradito. Tres colores. $(o)Variación: Alternar$(). Cada raya toma el color siguiente: efecto circo con intención.$(br2)$(l)3. Corazones rojos y rosas con contorno negro.$() Molde de corazones, tres colores (rojo, rosa y negro al final), $(o)Contorno: sí$(), $(o)Variación: Alternar$(). Con $(o)Ladrillo$() queda más tejido; con $(o)Disperso$(), más desordenado."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)4. Corazones calados.$() En una capa de corazones, $(o)Transparencia$() al 100 % en uno de los colores: la tela queda agujereada con forma de corazón. Es la única vez que un agujero en la ropa es una decisión de diseño."
+    }
+  ]
+}

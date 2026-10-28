@@ -1,0 +1,18 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "A A",
+    "B B",
+    "B B"
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:string"
+    },
+    "B": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "prenda": "medias",
+  "count": 3
+}

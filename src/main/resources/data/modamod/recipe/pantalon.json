@@ -1,0 +1,14 @@
+{
+  "type": "modamod:prenda_tenida",
+  "pattern": [
+    "AAA",
+    "A A",
+    "A A"
+  ],
+  "key": {
+    "A": {
+      "tag": "minecraft:wool"
+    }
+  },
+  "prenda": "pantalon"
+}

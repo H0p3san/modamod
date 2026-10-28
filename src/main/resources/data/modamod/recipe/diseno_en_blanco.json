@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "PKP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "K": {
+      "tag": "minecraft:coals"
+    }
+  },
+  "result": {
+    "id": "modamod:diseno_en_blanco",
+    "count": 1
+  }
+}
