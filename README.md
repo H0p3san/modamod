@@ -47,3 +47,5 @@ compila igual.
 
 El código es [MIT](LICENSE). Los assets (texturas, modelos, animaciones, íconos, idiomas) tienen todos los derechos
 reservados: ver [LICENSE-ASSETS](LICENSE-ASSETS).
+
+La forma del collar sale de Leashable Collars (jlortiz, MIT): ver [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
