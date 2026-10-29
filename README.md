@@ -62,7 +62,8 @@ Thank you for making it possible!
 Outfits, bugs e ideas en el Discord **El Hope-san**: https://discord.gg/U3gHMNCzrk
 
 ¿Querés darme una mano? Las donaciones ayudan a pagar la IA y a sumar artistas que rehagan el arte a mano:
-☕ https://cafecito.app/elhopesan
+☕ Desde Argentina, en pesos: https://cafecito.app/elhopesan
+💵 Desde afuera, en dólares: https://www.paypal.com/donate/?hosted_button_id=AJQNCU4YH4DFJ
 
 ## Licencia
 
