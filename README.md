@@ -61,6 +61,9 @@ Thank you for making it possible!
 
 Outfits, bugs e ideas en el Discord **El Hope-san**: https://discord.gg/U3gHMNCzrk
 
+¿Querés darme una mano? Las donaciones ayudan a pagar la IA y a sumar artistas que rehagan el arte a mano:
+☕ https://cafecito.app/elhopesan
+
 ## Licencia
 
 Todo el mod es [MIT](LICENSE): el código y los assets (texturas, modelos, animaciones, íconos, idiomas y el libro).
