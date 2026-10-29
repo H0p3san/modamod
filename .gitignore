@@ -47,3 +47,6 @@ calibracion/
 
 # Jars de terceros para el cliente de desarrollo (ver README)
 libs/
+
+# Textos y checklist para subir a Modrinth y CurseForge (no van a la repo)
+publicar/
