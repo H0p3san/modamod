@@ -2,7 +2,7 @@
 
 Versión del mod: 0.1.0-alpha · Minecraft 1.21.1 (Fabric) · Manual actualizado: 2026-10-28
 
-Licencia: el código es MIT (`LICENSE`); los assets (texturas, modelos, animaciones, íconos, idiomas) tienen todos los derechos reservados (`LICENSE-ASSETS`).
+Licencia: todo el mod es MIT (`LICENSE`), el código y los assets.
 
 ![Personaje vestido con prendas del mod](img/captura_jugador_1.png)
 

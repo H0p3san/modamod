@@ -216,9 +216,9 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-// Licencias adentro del jar (2026-10-22, "Código MIT y assets con todos los derechos reservados").
+// Licencias adentro del jar (2026-10-22; todo MIT desde 2026-10-28, "vamos con todo a mit").
 jar {
-    from("LICENSE", "LICENSE-ASSETS", "THIRD-PARTY-NOTICES.md")
+    from("LICENSE", "THIRD-PARTY-NOTICES.md")
 }
 
 // Pruebas de motor: geometria y logica sin abrir el juego (clases de Minecraft sin cliente).

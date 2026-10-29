@@ -24,10 +24,7 @@
     "sources": "https://github.com/H0p3san/modamod",
     "issues": "https://github.com/H0p3san/modamod/issues"
   },
-  "license": [
-    "MIT",
-    "LicenseRef-All-Rights-Reserved"
-  ],
+  "license": "MIT",
   "environment": "*",
   "entrypoints": {
     "main": [

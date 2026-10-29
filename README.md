@@ -63,7 +63,6 @@ Outfits, bugs e ideas en el Discord **El Hope-san**: https://discord.gg/U3gHMNCz
 
 ## Licencia
 
-El código es [MIT](LICENSE). Los assets (texturas, modelos, animaciones, íconos, idiomas) tienen todos los derechos
-reservados: ver [LICENSE-ASSETS](LICENSE-ASSETS).
+Todo el mod es [MIT](LICENSE): el código y los assets (texturas, modelos, animaciones, íconos, idiomas y el libro).
 
 La forma del collar sale de Leashable Collars (jlortiz, MIT): ver [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
