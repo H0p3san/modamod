@@ -6,6 +6,8 @@ Mod de ropa para **Minecraft 1.21.1 (Fabric)**: ropa que se viste pegada al cuer
 máquinas para cortarla, teñirla, estamparle fotos y decorarla con apliques. Versión **0.1.0-alpha**: puede tener bugs y
 los mundos de una alpha pueden no cargar bien en versiones futuras.
 
+**Bajalo en [CurseForge](https://www.curseforge.com/minecraft/mc-mods/modamod)** · Download it on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/modamod).
+
 ## Requisitos
 
 | Mod | Versión |
