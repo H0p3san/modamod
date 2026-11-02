@@ -53,3 +53,7 @@ publicar/
 
 # Rediseno: registro del punto de control
 punto_de_control.log
+
+# salidas de pruebas corridas desde la raíz
+/logs/
+/pruebas/
