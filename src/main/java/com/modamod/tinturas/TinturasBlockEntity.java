@@ -1851,7 +1851,7 @@ public class TinturasBlockEntity extends BlockEntity
     }
 
     private static void pintarStack(ItemStack stack, List<RegionResolver.CapaPatron> capas) {
-        RegionResolver.quitarPatron(stack, Lado.AMBAS);
+        RegionResolver.quitarCapas(stack);
         if (capas.isEmpty()) return;
         // Color base = la capa lisa de prenda entera, a pleno y en modo
         // Normal, que quede más arriba (2026-09-28): es lo que muestra el
@@ -1865,7 +1865,7 @@ public class TinturasBlockEntity extends BlockEntity
                 if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
                     stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(c.color() & 0xFFFFFF, false));
                 } else {
-                    RegionResolver.ponerColorBase(stack, Lado.AMBAS, c.color() & 0xFFFFFF);
+                    RegionResolver.ponerColorBase(stack, c.color() & 0xFFFFFF);
                 }
                 break;
             }

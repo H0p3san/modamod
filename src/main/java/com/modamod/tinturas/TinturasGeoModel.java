@@ -163,7 +163,7 @@ public class TinturasGeoModel extends GeoModel<TinturasBlockEntity> {
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
             return com.modamod.sublimadora.RemeraItem.color(stack);
         }
-        return com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+        return com.modamod.region.RegionResolver.colorBase(stack);
     }
 
     /** Pinta el color plano de la prenda en curso sobre el rect dedicado — comparar antes de pintar, mismo criterio que {@link #pintarViales}. */

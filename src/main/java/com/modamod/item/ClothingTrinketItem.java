@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 import java.util.List;
 
@@ -61,28 +60,15 @@ public class ClothingTrinketItem extends TrinketItem {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
 
-        if (RegionResolver.parejo(stack)) {
-            tooltip.add(patternLine(stack, Lado.IZQUIERDA, null));
-        } else {
-            tooltip.add(patternLine(stack, Lado.IZQUIERDA, "modamod.tooltip.left"));
-            tooltip.add(patternLine(stack, Lado.DERECHA, "modamod.tooltip.right"));
-        }
+        tooltip.add(patternLine(stack));
     }
 
-    /**
-     * Publico porque RemeraItem tambien lo necesita: el patron ya no es
-     * exclusivo de las prendas bilaterales. Remera lo llama con
-     * Lado.AMBAS y sideKey null (una sola linea, sin "izquierda/derecha"
-     * porque no tiene sentido para una prenda que no es por lado).
-     */
-    public static Text patternLine(ItemStack stack, Lado lado, String sideKey) {
-        Identifier pattern = RegionResolver.patronId(stack, lado);
-        Text name = pattern == null
+    /** El nombre del primer molde de Tintes en su color; también lo usa la remera. */
+    public static Text patternLine(ItemStack stack) {
+        RegionResolver.CapaPatron capa = RegionResolver.primerPatron(stack);
+        return capa == null
                 ? Text.translatable("modamod.pattern.none").formatted(Formatting.DARK_GRAY)
-                : Text.translatable("modamod.pattern." + pattern.getPath())
-                        .styled(st -> st.withColor(RegionResolver.colorPatron(stack, lado)));
-
-        if (sideKey == null) return name;
-        return Text.translatable(sideKey).formatted(Formatting.GRAY).append(" ").append(name);
+                : Text.translatable("modamod.pattern." + capa.patronId().getPath())
+                        .styled(st -> st.withColor(capa.color() & 0xFFFFFF));
     }
 }

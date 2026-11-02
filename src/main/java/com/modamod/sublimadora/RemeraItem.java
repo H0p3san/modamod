@@ -202,12 +202,8 @@ public class RemeraItem extends Item {
                 Text.translatable("modamod.sublimadora.cuello." + v.cuello().clave))
                 .formatted(Formatting.GRAY));
 
-        // Mismo mecanismo que las medias: el nombre del patron EN su color,
-        // reusado de ClothingTrinketItem porque no hay nada especifico de
-        // prenda en esa linea. Lado.AMBAS y sideKey null porque la remera
-        // tiene un solo patron para toda la prenda, no por lado.
-        tooltip.add(com.modamod.item.ClothingTrinketItem.patternLine(
-                stack, com.modamod.region.Lado.AMBAS, null));
+        // El nombre del primer molde EN su color, igual que las medias.
+        tooltip.add(com.modamod.item.ClothingTrinketItem.patternLine(stack));
 
         tooltipEstampa(stack, tooltip);
     }

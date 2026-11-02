@@ -99,7 +99,7 @@ public final class CuelloYCapucha {
         ItemStack capa = GarmentFeatureRenderer.capaDe(prendas);
         if (chaqueta == null && capa != null && com.modamod.item.CapaItem.capucha(capa)
                 && TopCorte.capuchaArriba(capa) && CabezaCaras.visible(biped)) {
-            int color = com.modamod.region.RegionResolver.colorBase(capa, com.modamod.region.Lado.IZQUIERDA);
+            int color = com.modamod.region.RegionResolver.colorBase(capa);
             // Zona Detalles, como la capucha caída (2026-10-23, "la capucha no esta agarrando color").
             Identifier tela = telaDePieza(capa, color, false, com.modamod.region.RegionPintura.CAPA_DETALLES);
             matrices.push();
@@ -112,7 +112,7 @@ public final class CuelloYCapucha {
         // en el marco del torso, por fuera del paño (que arranca a 2 + separación y tiene ~1 px) y del embozo si lo hay.
         if (chaqueta == null && capa != null && com.modamod.item.CapaItem.capucha(capa) && !TopCorte.capuchaArriba(capa)
                 && biped.body.visible) {
-            int color = com.modamod.region.RegionResolver.colorBase(capa, com.modamod.region.Lado.IZQUIERDA);
+            int color = com.modamod.region.RegionResolver.colorBase(capa);
             Identifier tela = telaDePieza(capa, color, false, com.modamod.region.RegionPintura.CAPA_DETALLES);
             float atras = Math.max(com.modamod.item.CapaItem.embozoLargo(capa) ? 0F : 1.2F + GarmentFeatureRenderer.separacionCapa(prendas, true),
                     com.modamod.item.CapaItem.embozo(capa) >= 0 ? 2.7F + GarmentFeatureRenderer.separacionCapa(prendas, false) : 0F);

@@ -13,11 +13,9 @@ import net.minecraft.item.ItemStack;
  *
  * IZQUIERDA es la primaria: vive en {@code primario}. DERECHA guarda un
  * override opcional en {@code override}; ausente = hereda de la izquierda.
- * Igual que {@link com.modamod.region.RegionResolver#fijarDerecha}, tocar
- * la IZQUIERDA clava primero el valor actual en el override de la derecha
+ * Tocar la IZQUIERDA clava primero el valor actual en el override de la derecha
  * (si no tenía uno ya) — sin esto, cambiar un lado cambiaría "gratis" el
- * otro en cuanto no tuviera override propio, el mismo bug que ya se
- * encontró y arregló para color.
+ * otro en cuanto no tuviera override propio.
  */
 public final class EjeBilateral {
 

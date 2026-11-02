@@ -2109,7 +2109,7 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
             return com.modamod.sublimadora.RemeraItem.color(stack);
         }
-        return com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+        return com.modamod.region.RegionResolver.colorBase(stack);
     }
 
     private void sonar(SoundEvent evento, float volumen, float tono) {

@@ -548,14 +548,14 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     /** Con la cola del que la lleva en pasos de media unidad ({@link PolleraMalla#pasoDeCola}). */
     public static Identifier texturaPollera(ItemStack stack, int pasoCola) {
-        int colorBase = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+        int colorBase = com.modamod.region.RegionResolver.colorBase(stack);
         // Tela nueva (2026-09-29, "teñirla y sublimarla"): pollera_tela.png
         // tiene el layout de la caja del TORSO (ver PolleraMalla), así que
         // los patrones salen de PatronGenerador("pollera") = caja de torso,
         // las zonas de Tintes son las del torso, y las fotos y la red se
         // pintan encima como en las demás prendas.
         java.util.List<com.modamod.region.RegionResolver.CapaPatron> capasPollera =
-                com.modamod.region.RegionResolver.capasTinte(stack, com.modamod.region.Lado.IZQUIERDA);
+                com.modamod.region.RegionResolver.capas(stack);
         java.util.List<ClothingTextureCache.CapaMascara> capasMascaraPollera = new java.util.ArrayList<>(capasPollera.size());
         // Patrones desplegados según la forma y el largo (2026-10-01, ver PatronGenerador#desplegar).
         String clavePollera = com.modamod.render.PatronGenerador.clavePollera(
@@ -671,7 +671,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 adorno, columnas));
         matrices.pop();
         if (!pieza) TirantesDelantal.dibujar(com.modamod.item.DelantalItem.tirantes(stack),
-                com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA), inicio, finalDilatacion,
+                com.modamod.region.RegionResolver.colorBase(stack), inicio, finalDilatacion,
                 Math.min(2.4F, 0.4F * talle), delJugador, matrices, vertexConsumers, luz);
         if (malla != null) {
             ApliqueRenderer.dibujarEnMalla(stack, com.modamod.aplique.Aplique.Superficie.DELANTAL, malla, vertexConsumers, luz, matrices.peek().getNormalMatrix());
@@ -681,9 +681,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     /** La tela del delantal ya teñida y recortada a su silueta (también la usa el ícono). */
     public static Identifier texturaDelantal(ItemStack stack) {
-        int colorBase = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+        int colorBase = com.modamod.region.RegionResolver.colorBase(stack);
         java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas =
-                com.modamod.region.RegionResolver.capasTinte(stack, com.modamod.region.Lado.IZQUIERDA);
+                com.modamod.region.RegionResolver.capas(stack);
         java.util.List<ClothingTextureCache.CapaMascara> capasMascara = new java.util.ArrayList<>(capas.size());
         for (com.modamod.region.RegionResolver.CapaPatron capa : capas) {
             net.minecraft.client.texture.NativeImage mascara = com.modamod.render.PatronGenerador.mascaraDeCapa("delantal", capa);
@@ -984,9 +984,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     /** La tela de la capa ya teñida y estampada (también la usa el ícono). */
     public static Identifier texturaCapa(ItemStack stack) {
-        int colorBase = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+        int colorBase = com.modamod.region.RegionResolver.colorBase(stack);
         java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas =
-                com.modamod.region.RegionResolver.capasTinte(stack, com.modamod.region.Lado.IZQUIERDA);
+                com.modamod.region.RegionResolver.capas(stack);
         java.util.List<ClothingTextureCache.CapaMascara> mascaras = new java.util.ArrayList<>(capas.size());
         for (com.modamod.region.RegionResolver.CapaPatron capa : capas) {
             net.minecraft.client.texture.NativeImage mascara = PatronGenerador.mascaraDeCapa("capa", capa);

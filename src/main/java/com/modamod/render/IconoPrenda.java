@@ -320,7 +320,7 @@ public final class IconoPrenda {
         Map<Identifier, NativeImage> imagenes = new HashMap<>();
         NativeImage pollera = texturaPollera == null ? null : imagen(texturaPollera);
         if (texturaPollera != null && pollera == null) completo = false;
-        int colorLiso = RegionResolver.colorBase(stack, Lado.IZQUIERDA);
+        int colorLiso = RegionResolver.colorBase(stack);
 
         boolean[] cortado = new boolean[LADO * LADO];
         for (int y = 0; y < LADO; y++) {

@@ -1,7 +1,6 @@
 package com.modamod.client;
 
 import com.modamod.item.ModamodItems;
-import com.modamod.region.Lado;
 import com.modamod.region.RegionResolver;
 import com.modamod.render.ClothingTextureCache;
 import com.modamod.render.GarmentFeatureRenderer;
@@ -168,11 +167,10 @@ public class ModamodClient implements ClientModInitializer {
             return m == null ? 0xFFB0B0B0 : 0xFF000000 | com.modamod.item.MuestraColorItem.rgb(m);
         }, ModamodItems.TINTE_MEZCLA);
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
-            int base = RegionResolver.colorBase(stack, Lado.IZQUIERDA);
-            int color = base;
+            int color = RegionResolver.colorBase(stack);
             if (tintIndex == 1) {
-                Identifier patron = RegionResolver.patronId(stack, Lado.IZQUIERDA);
-                if (patron != null) color = RegionResolver.colorPatron(stack, Lado.IZQUIERDA);
+                var patron = RegionResolver.primerPatron(stack);
+                if (patron != null) color = patron.color() & 0xFFFFFF;
             }
             // El tinte de item es ARGB y el alfa CUENTA: vanilla devuelve -1
             // para "sin tinte". Nuestros colores son 0xRRGGBB, o sea alfa 0,

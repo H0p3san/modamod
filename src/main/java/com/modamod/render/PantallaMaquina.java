@@ -323,13 +323,13 @@ public final class PantallaMaquina {
         int color;
         if (stack.getItem() == com.modamod.item.ModamodItems.PANTALON) {
             iconoBase = Identifier.of("modamod", "textures/item/pantalon.png");
-            color = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+            color = com.modamod.region.RegionResolver.colorBase(stack);
         } else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) {
             iconoBase = Identifier.of("modamod", "textures/item/socks_solid.png");
-            color = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+            color = com.modamod.region.RegionResolver.colorBase(stack);
         } else if (stack.getItem() == com.modamod.item.ModamodItems.CALIENTABRAZOS) {
             iconoBase = Identifier.of("modamod", "textures/item/calientabrazos.png");
-            color = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
+            color = com.modamod.region.RegionResolver.colorBase(stack);
         } else {
             return null;
         }

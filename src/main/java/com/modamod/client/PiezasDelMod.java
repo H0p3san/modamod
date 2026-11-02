@@ -100,7 +100,7 @@ public final class PiezasDelMod {
      */
     private static List<ClothingTextureCache.CapaMascara> capasDePatron(
             String prenda, com.modamod.tinturas.TinturasBlockEntity.Categoria categoria, ItemStack stack, Lado lado) {
-        List<RegionResolver.CapaPatron> capas = RegionResolver.capasTinte(stack, lado);
+        List<RegionResolver.CapaPatron> capas = RegionResolver.capas(stack);
         if (capas.isEmpty()) return List.of();
         List<ClothingTextureCache.CapaMascara> resultado = new ArrayList<>(capas.size());
         for (RegionResolver.CapaPatron capa : capas) {
@@ -119,7 +119,7 @@ public final class PiezasDelMod {
     }
 
     private static Identifier texturaMedia(Identifier base, ItemStack stack, Lado lado) {
-        int colorBase = RegionResolver.colorBase(stack, lado);
+        int colorBase = RegionResolver.colorBase(stack);
         List<ClothingTextureCache.CapaMascara> capas = capasDePatron("socks", com.modamod.tinturas.TinturasBlockEntity.Categoria.MEDIAS, stack, lado);
         int[] filas = MediasLargo.filasVisibles(stack, lado);
         Parte piernaParte = lado == Lado.DERECHA ? Parte.PIERNA_DER : Parte.PIERNA_IZQ;
@@ -192,7 +192,7 @@ public final class PiezasDelMod {
                 RemeraItem.estampaDe(stack, Estampa.Cara.FRENTE),
                 RemeraItem.estampaDe(stack, Estampa.Cara.ESPALDA),
                 RemeraItem.color(stack),
-                RegionResolver.capasTinte(stack, Lado.AMBAS),
+                RegionResolver.capas(stack),
                 com.modamod.item.PatronRed.leer(stack),
                 RemeraItem.capasDe(stack));
         // Si todavia no se pudo componer -la foto no bajo- se usa la lisa,
@@ -325,7 +325,7 @@ public final class PiezasDelMod {
     }
 
     private static Identifier texturaPantalon(Identifier base, ItemStack stack, Lado lado) {
-        int colorBase = RegionResolver.colorBase(stack, lado);
+        int colorBase = RegionResolver.colorBase(stack);
         // Mismo UV de pierna que las medias (Parte.PIERNA_*), así que
         // PatronGenerador usa la misma caja para las dos — a pedido
         // (2026-09-18, "todas las prendas compatibles con los patrones").
@@ -499,7 +499,7 @@ public final class PiezasDelMod {
     }
 
     private static Identifier texturaCalientabrazos(Identifier base, ItemStack stack, Lado lado) {
-        int colorBase = RegionResolver.colorBase(stack, lado);
+        int colorBase = RegionResolver.colorBase(stack);
         // Caja de brazo propia en PatronGenerador (BRAZO_DER/IZQ) — a
         // pedido (2026-09-18, "todas las prendas compatibles con los
         // patrones").
