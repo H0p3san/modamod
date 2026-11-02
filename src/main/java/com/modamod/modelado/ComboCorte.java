@@ -819,20 +819,6 @@ public record ComboCorte(
                 Lado.AMBAS, Optional.empty(), Optional.empty());
     }
 
-    /** Material en un índice de capa (2026-09-24) — transversal, sin lado (remera es AMBAS-únicamente para patrón). */
-    public static ComboCorte capaPatron(int indice, Identifier patronId) {
-        return capaPatron(indice, patronId, Lado.AMBAS);
-    }
-
-    /** Personalización por lado (medias/calientabrazos, 2026-09-26): la capa va solo a la pierna/brazo de {@code lado}. */
-    public static ComboCorte capaPatron(int indice, Identifier patronId, Lado lado) {
-        return new ComboCorte(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-                Optional.of(new CapaIndexada(indice, patronId)),
-                lado, Optional.empty(), Optional.empty());
-    }
-
     /**
      * Presets de prueba "cobertura de torso/extremidad" (ítems genéricos,
      * un nivel abstracto aplicado a todas las prendas de esa categoría a la

@@ -81,33 +81,6 @@ public final class PrendaModelado {
             RemeraItem.setManga(out, lado, combo.remeraManga().get());
             cambio = true;
         }
-        // Materiales/Calado (2026-09-24): un pin = una capa de patrón en un
-        // índice puntual. Lee las capas YA puestas en la prenda y reemplaza
-        // (o agrega, si el índice cae justo después de la última) solo esa
-        // — así 3 pines independientes arman hasta 3 capas apiladas, en vez
-        // de que cada fijada pise a las otras (ponerPatron(..., List) exige
-        // la lista completa de una, no soporta "agregar una sola").
-        if (combo.capaPatron().isPresent() && (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA)
-                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.PANTALON)
-                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
-                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)
-                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.POLLERA)
-                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CAPA)
-                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.DELANTAL))) {
-            var ci = combo.capaPatron().get();
-            var patronItem = com.modamod.item.ClothingPatternItem.porId(ci.patronId());
-            var forma = patronItem != null ? patronItem.forma : com.modamod.render.PatronGenerador.Forma.ALTERNADO;
-            var nueva = new com.modamod.region.RegionResolver.CapaPatron(
-                    ci.patronId(), 0xFFFFFF, com.modamod.item.TamanoPatron.GRANDE, 0f, 0.5f, forma, false);
-            var actuales = new java.util.ArrayList<>(
-                    com.modamod.region.RegionResolver.capasAplicadas(out, lado));
-            int idx = Math.min(ci.indice(), actuales.size());
-            if (idx < actuales.size()) actuales.set(idx, nueva);
-            else actuales.add(nueva);
-            if (actuales.size() > 3) actuales = new java.util.ArrayList<>(actuales.subList(0, 3));
-            com.modamod.region.RegionResolver.ponerPatron(out, lado, actuales);
-            cambio = true;
-        }
         if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.PANTALON)) {
             if (combo.pantalonTiro().isPresent()) {
                 PantalonItem.setTiro(out, combo.pantalonTiro().get());
