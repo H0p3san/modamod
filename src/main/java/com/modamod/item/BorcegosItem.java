@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Borcegos (2026-10-08, "modelame unos borcegos y agreguemos un slot de calzado"): un par de botas de cuero con
  * cordones y suela gruesa, en el slot de Trinkets {@code socks/calzado}. Como el sombrero y la banda NO es ropa de
- * cuerpo ({@code Garments.esPrenda} falso) y tiene 3 zonas con color y dibujo (cuero, suela, cordones) que se ponen en
+ * cuerpo ({@code com.modamod.prenda.Prendas.esRopaDeCuerpo} falso) y tiene 3 zonas con color y dibujo (cuero, suela, cordones) que se ponen en
  * la Estilista, que también le pone apliques y correas. La altura de la caña, la suela y cómo se lleva el pantalón son
  * componentes que se eligen con los moldes de la Modeladora. La dibuja {@link com.modamod.render.BorcegosRenderer}.
  *

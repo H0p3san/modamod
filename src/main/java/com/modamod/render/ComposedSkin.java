@@ -1,6 +1,5 @@
 package com.modamod.render;
 
-import com.modamod.garment.Garments;
 import com.modamod.garment.Parte;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.MinecraftClient;
@@ -182,15 +181,15 @@ public final class ComposedSkin {
 
     private static List<Parte> partesDePrendas(AbstractClientPlayerEntity player) {
         List<ItemStack> override = GarmentFeatureRenderer.previewOverride;
-        if (override != null) return Garments.partesCubiertas(override);
+        if (override != null) return com.modamod.prenda.Prendas.partesCubiertas(override);
 
         List<ItemStack> prendas = new ArrayList<>();
         TrinketsApi.getTrinketComponent(player).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
                 ItemStack stack = par.getRight();
-                if (Garments.esPrenda(stack)) prendas.add(stack);
+                if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) prendas.add(stack);
             }
         });
-        return Garments.partesCubiertas(prendas);
+        return com.modamod.prenda.Prendas.partesCubiertas(prendas);
     }
 }

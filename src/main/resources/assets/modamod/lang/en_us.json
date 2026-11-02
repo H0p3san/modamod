@@ -525,7 +525,6 @@
   "modamod.telar.aviso.procesando": "The shuttle caught you! Don't reach in while it weaves",
   "modamod.tinturas.aviso.procesando": "The fumes made you dizzy! Don't reach in while it's dyeing",
   "modamod.tinturas.aviso.entrada_ocupada": "There's already a garment waiting in the input",
-  "modamod.tinturas.aviso.sin_tenido_para_esta_prenda": "This garment can't be dyed",
   "modamod.tinturas.aviso.sin_tinte": "Out of %s",
   "modamod.tinturas.aviso.tanque_lleno": "That tank is already full",
   "modamod.tinturas.aviso.cargado": "Loaded: %s (%s/%s)",

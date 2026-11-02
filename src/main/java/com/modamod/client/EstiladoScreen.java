@@ -817,7 +817,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         int x1 = this.x + PX1 + 2, y1 = this.y + PY1 + 2, x2 = this.x + PX2 - 2, y2 = this.y + PY2 - 2;
         Map<Parte, Matrix4f> captura = new EnumMap<>(Parte.class);
         Map<String, com.modamod.render.MallaCapturada> capturaMallas = new java.util.HashMap<>();
-        boolean delMod = com.modamod.garment.Garments.esPrenda(prenda);
+        boolean delMod = com.modamod.prenda.Prendas.esRopaDeCuerpo(prenda);
         GarmentFeatureRenderer.previewOverride = delMod ? List.of(prenda) : List.of();
         GarmentFeatureRenderer.capturaPoses = captura;
         GarmentFeatureRenderer.capturaMallas = capturaMallas;
@@ -1120,7 +1120,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         Toque mejor = null;
         com.modamod.render.relieve.BustoRender.Busto busto =
                 com.modamod.render.GarmentFeatureRenderer.bustoDe(jugador, 0f, false);
-        List<Pieza> piezas = com.modamod.garment.Garments.esPrenda(prenda)
+        List<Pieza> piezas = com.modamod.prenda.Prendas.esRopaDeCuerpo(prenda)
                 ? PiezasDePrenda.de(prenda, jugador) : piezasDeVestible(prenda);
         for (Pieza pieza : piezas) {
             Matrix4f m = poses.get(pieza.parte());

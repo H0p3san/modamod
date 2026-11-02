@@ -1,7 +1,6 @@
 package com.modamod.maniqui;
 
 import com.modamod.Modamod;
-import com.modamod.garment.Garments;
 import com.modamod.garment.Parte;
 import com.modamod.render.GarmentFeatureRenderer;
 import com.modamod.render.Pieza;
@@ -362,7 +361,7 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
      * {@code PlayerEntityModel#setAngles}.
      */
     private static void capasDeSkin(PlayerEntityModel<LivingEntity> m, boolean skin, List<ItemStack> prendas) {
-        List<Parte> cubiertas = skin ? Garments.partesCubiertas(prendas) : List.of();
+        List<Parte> cubiertas = skin ? com.modamod.prenda.Prendas.partesCubiertas(prendas) : List.of();
         m.hat.visible = skin;
         m.jacket.visible = skin && !cubiertas.contains(Parte.TORSO);
         m.rightSleeve.visible = skin && !cubiertas.contains(Parte.BRAZO_DER);

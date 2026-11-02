@@ -1088,7 +1088,7 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
         if (slot == SLOT_BUZON) return stack.isOf(net.minecraft.item.Items.STRING);
         if (slot == SLOT_BUZON_CUERO) return stack.isOf(net.minecraft.item.Items.LEATHER);
         if (slot >= SLOT_ALMACEN) {
-            return !stack.isEmpty() && !com.modamod.garment.Garments.esPrenda(stack)
+            return !stack.isEmpty() && !com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)
                     && !stack.isOf(net.minecraft.item.Items.STRING) && !stack.isOf(net.minecraft.item.Items.LEATHER)
                     && com.modamod.aplique.ObjetoAplique.admite(stack);
         }

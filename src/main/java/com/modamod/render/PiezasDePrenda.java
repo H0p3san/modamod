@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Como se ve cada prenda. La mitad CLIENTE de {@code Garments}.
+ * Como se ve cada prenda. La mitad CLIENTE de {@code com.modamod.prenda.Prendas}.
  *
  * Esta partido en dos porque las mesas de tinturas y sastreria corren en el
  * servidor y necesitan {@code regionesDe}, pero componer una textura carga

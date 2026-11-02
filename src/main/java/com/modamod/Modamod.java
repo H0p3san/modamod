@@ -2,7 +2,7 @@ package com.modamod;
 
 import com.modamod.body.ComandoCuerpo;
 import com.modamod.body.PerfilesDeCuerpo;
-import com.modamod.garment.PrendasDelMod;
+import com.modamod.prenda.Prendas;
 import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
 import com.modamod.screen.ModamodScreenHandlers;
@@ -26,7 +26,7 @@ public class Modamod implements ModInitializer {
         com.modamod.receta.ModamodRecetas.init();
         // Que items son prendas del sistema de capas. Va DESPUES de los
         // items: registra por instancia, no por id.
-        PrendasDelMod.init();
+        Prendas.init();
         PerfilesDeCuerpo.init();
         // A la venta (2026-10-22, "va a estar a la venta"): el clérigo aprendiz vende Estrógenos y Testosterona.
         net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper.registerVillagerOffers(

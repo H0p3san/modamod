@@ -3,8 +3,6 @@ package com.modamod.render;
 import com.modamod.body.PerfilCuerpo;
 import com.modamod.body.PerfilesDeCuerpo;
 import com.modamod.garment.Capa;
-import com.modamod.garment.Garment;
-import com.modamod.garment.Garments;
 import com.modamod.garment.Parte;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.model.ModelPart;
@@ -53,7 +51,7 @@ import java.util.Map;
  * la panza sin que la prenda tenga que rellenarla ella misma.
  *
  * <h2>El cuerpo base va donde la prenda MANDA, no donde tiene tela</h2>
- * Las partes del sustrato salen de {@link Garment#partes} y no de las piezas
+ * Las partes del sustrato salen de {@link com.modamod.prenda.DefinicionDePrenda#partes} y no de las piezas
  * dibujadas. La diferencia importa para una musculosa: no dibuja nada en los
  * brazos, pero igual tiene que taparle las mangas pintadas de la skin, asi
  * que declara los brazos como suyos y ahi va el cuerpo.
@@ -241,7 +239,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         anotarPollera(prendas);
 
         // Las partes que alguna prenda gobierna: ahi va el cuerpo base.
-        List<Parte> conCuerpo = cuerpoEntero ? List.of(Parte.values()) : Garments.partesCubiertas(prendas);
+        List<Parte> conCuerpo = cuerpoEntero ? List.of(Parte.values()) : com.modamod.prenda.Prendas.partesCubiertas(prendas);
 
         // Las piezas de tela, agrupadas por parte. EnumMap para que el
         // recorrido sea estable: dos frames no pueden dibujar en distinto
@@ -857,14 +855,14 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         for (net.minecraft.entity.EquipmentSlot slot : net.minecraft.entity.EquipmentSlot.values()) {
             if (slot.getType() != net.minecraft.entity.EquipmentSlot.Type.HUMANOID_ARMOR) continue;
             ItemStack puesto = entidad.getEquippedStack(slot);
-            if (puesto.isEmpty() || Garments.esPrenda(puesto)) continue;
+            if (puesto.isEmpty() || com.modamod.prenda.Prendas.esRopaDeCuerpo(puesto)) continue;
             ApliqueRenderer.dibujar(puesto, ApliqueRenderer.dilatacionDeSlot(slot), biped, matrices, vertexConsumers, luz);
         }
         TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
                 ItemStack puesto = par.getRight();
                 // Los del sombrero los dibuja SombreroRenderer (también en la vista previa y el Maniquí).
-                if (puesto.isEmpty() || Garments.esPrenda(puesto) || AccesorioRenderer.es(puesto)) continue;
+                if (puesto.isEmpty() || com.modamod.prenda.Prendas.esRopaDeCuerpo(puesto) || AccesorioRenderer.es(puesto)) continue;
                 ApliqueRenderer.dibujar(puesto, ApliqueRenderer.dilatacionDeSlot(null), biped, matrices, vertexConsumers, luz);
             }
         });
@@ -1809,7 +1807,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         if (prendas.isEmpty() && !cuerpoEntero) return List.of();
         Identifier cuerpo = texturaDelCuerpo(entidad, esSlim(entidad));
         if (cuerpo == null) return List.of();
-        List<Parte> out = new ArrayList<>(cuerpoEntero ? List.of(Parte.values()) : Garments.partesCubiertas(prendas));
+        List<Parte> out = new ArrayList<>(cuerpoEntero ? List.of(Parte.values()) : com.modamod.prenda.Prendas.partesCubiertas(prendas));
         // La cabeza nunca lleva cuerpo base (ver render) — ocultar la de
         // vanilla ahí dejaría al jugador sin cara.
         out.remove(Parte.CABEZA);
@@ -2007,7 +2005,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
                 ItemStack stack = par.getRight();
-                if (!Garments.esPrenda(stack)) continue;
+                if (!com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) continue;
                 // Un Top en el slot de chaqueta se dibuja en la capa exterior (2026-10-07, "un solo top").
                 if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem
                         && "chaqueta".equals(par.getLeft().inventory().getSlotType().getName())) {

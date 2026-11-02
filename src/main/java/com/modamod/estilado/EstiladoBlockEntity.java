@@ -7,7 +7,6 @@ import com.modamod.aplique.ModeloAplique;
 import com.modamod.aplique.MoldeApliqueItem;
 import com.modamod.aplique.ObjetoAplique;
 import com.modamod.aplique.RetazoApliqueItem;
-import com.modamod.garment.Garments;
 import com.modamod.garment.Parte;
 import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
@@ -713,7 +712,7 @@ public class EstiladoBlockEntity extends BlockEntity
     /** Qué prendas llevan acabado: las de tela que se dibujan por piezas (remera, chaqueta, pantalón, medias, calentabrazos). */
     /** Todas las prendas, la pollera, la capa, el delantal, el sombrero, las bandas y el calzado (2026-10-22, "vamos con todo"). */
     public static boolean admiteAcabado(ItemStack prenda) {
-        return com.modamod.garment.Garments.esPrenda(prenda) || prenda.getItem() instanceof com.modamod.item.SombreroBrujaItem
+        return com.modamod.prenda.Prendas.esRopaDeCuerpo(prenda) || prenda.getItem() instanceof com.modamod.item.SombreroBrujaItem
                 || prenda.getItem() instanceof com.modamod.item.BandaItem || prenda.getItem() instanceof com.modamod.item.BorcegosItem;
     }
 
@@ -819,7 +818,7 @@ public class EstiladoBlockEntity extends BlockEntity
      */
     public static boolean admite(ItemStack stack) {
         if (stack.isEmpty()) return false;
-        if (Garments.esPrenda(stack)) return true;
+        if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) return true;
         if (net.minecraft.item.Equipment.fromStack(stack) != null) return true;
         // El maletín (2026-10-23, "editable en la estacion de tintes y de apliques"): un accesorio de cajas más.
         if (stack.getItem() instanceof com.modamod.guardarropas.MaletinItem) return true;

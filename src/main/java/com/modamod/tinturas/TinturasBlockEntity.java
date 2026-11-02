@@ -1,12 +1,9 @@
 package com.modamod.tinturas;
 
-import com.modamod.garment.Garment;
-import com.modamod.garment.Garments;
 import com.modamod.item.ClothingPatternItem;
 import com.modamod.item.ModamodDye;
 import com.modamod.item.TamanoPatron;
 import com.modamod.region.Lado;
-import com.modamod.region.Operacion;
 import com.modamod.region.RegionResolver;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
@@ -1715,12 +1712,6 @@ public class TinturasBlockEntity extends BlockEntity
         // Fijadas hay, pero todas con el ojo cerrado: no hay nada que aplicar.
         if (capasDe(cat, false).isEmpty()) {
             return Text.translatable("modamod.tinturas.aviso.todas_ocultas");
-        }
-
-        Garment garment = Garments.de(stack);
-        if (garment != null && garment.regionesDe(Operacion.TENIR).isEmpty()
-                && garment.regionesDe(Operacion.PATRON).isEmpty()) {
-            return Text.translatable("modamod.tinturas.aviso.sin_tenido_para_esta_prenda");
         }
 
         // Costo de tinta: la unión de canales usados por TODOS los

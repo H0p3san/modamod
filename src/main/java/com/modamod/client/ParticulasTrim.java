@@ -108,7 +108,7 @@ public final class ParticulasTrim {
 
     /** [desde, hasta] en bloques sobre los pies de lo que cubre la prenda. */
     private static float[] altura(ItemStack prenda) {
-        var partes = com.modamod.garment.Garments.partesCubiertas(List.of(prenda));
+        var partes = com.modamod.prenda.Prendas.partesCubiertas(List.of(prenda));
         if (prenda.getItem() instanceof com.modamod.item.SombreroBrujaItem) return new float[]{1.5f, 2.1f};
         if (prenda.getItem() instanceof com.modamod.item.BorcegosItem) return new float[]{0f, 0.3f};
         boolean arriba = partes.contains(com.modamod.garment.Parte.TORSO) || partes.contains(com.modamod.garment.Parte.BRAZO_DER);

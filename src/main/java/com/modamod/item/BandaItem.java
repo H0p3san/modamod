@@ -17,7 +17,7 @@ import java.util.List;
  * Banda (2026-10-05, "correas y cintos"): un aro de tela, cuero o metal que rodea la cintura (cinto) o el cuello
  * (choker). Un solo ítem; la zona, el ancho y el herraje son componentes que se eligen con los moldes de la
  * Modeladora, y cada zona va a su slot de Trinkets ({@code torso/cinto}, {@code head/choker}). Como el sombrero NO
- * es ropa de cuerpo ({@code Garments.esPrenda} falso). Tiene 3 zonas con color y dibujo (banda, borde, herraje) que
+ * es ropa de cuerpo ({@code com.modamod.prenda.Prendas.esRopaDeCuerpo} falso). Tiene 3 zonas con color y dibujo (banda, borde, herraje) que
  * se ponen en la Mesa de estilado, que también le pone apliques como colgantes. La dibuja
  * {@link com.modamod.render.BandaRenderer}.
  */

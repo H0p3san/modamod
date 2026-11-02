@@ -523,7 +523,6 @@
   "modamod.telar.aviso.procesando": "¡La lanzadera te enganchó! No metas la mano mientras teje",
   "modamod.tinturas.aviso.procesando": "¡Los vapores te marean! No metas la mano mientras tiñe",
   "modamod.tinturas.aviso.entrada_ocupada": "Ya hay una prenda esperando en la entrada",
-  "modamod.tinturas.aviso.sin_tenido_para_esta_prenda": "Esta prenda no se puede teñir",
   "modamod.tinturas.aviso.sin_tinte": "Sin tinte: %s",
   "modamod.tinturas.aviso.tanque_lleno": "Ese tanque ya está lleno",
   "modamod.tinturas.aviso.cargado": "Cargado: %s (%s/%s)",
