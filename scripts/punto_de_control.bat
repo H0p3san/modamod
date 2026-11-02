@@ -9,6 +9,7 @@ git log --oneline -1 >> "%LOG%" 2>&1
 git status --short >> "%LOG%" 2>&1
 call gradlew.bat build --console=plain --stacktrace >> "%LOG%" 2>&1
 echo BUILD_EXIT=%ERRORLEVEL% >> "%LOG%"
+call gradlew.bat imprimirClasspath --console=plain >> "%LOG%" 2>&1
 if /i "%~1"=="revision" (
   call gradlew.bat runRevision --console=plain >> "%LOG%" 2>&1
   echo REVISION_EXIT=%ERRORLEVEL% >> "%LOG%"

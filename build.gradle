@@ -260,3 +260,13 @@ tasks.register('runRevision') {
     dependsOn 'motorTest', 'runSmoke', 'runWearableSmoke', 'hojaDeRevision'
 }
 tasks.named('runSmoke') { mustRunAfter 'motorTest' }
+
+// Rediseño (2026-11-02): lista los jars con los que compila el mod, para poder compilar fuera de Gradle.
+tasks.register('imprimirClasspath') {
+    doLast {
+        def f = file('build/classpath.txt')
+        f.parentFile.mkdirs()
+        f.text = (sourceSets.main.compileClasspath.files + sourceSets.test.compileClasspath.files)
+                .collect { it.absolutePath }.unique().join('\n')
+    }
+}
