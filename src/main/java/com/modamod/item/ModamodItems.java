@@ -1,17 +1,11 @@
 package com.modamod.item;
 
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public final class ModamodItems {
-
-    // --- Slots cosméticos (via Cosmetic Armor Updated) ---
-    public static final ClothingArmorItem SOCKS_34 = registerArmor("socks_34",
-            new ClothingArmorItem(ModamodArmorMaterials.CLOTH, ArmorItem.Type.BOOTS,
-                    new Item.Settings().maxCount(1), true));
 
     // Migrada a Trinket: se dibuja pegada a la pierna real del jugador,
     // no con la geometría (más ancha) de bota de armadura.
@@ -26,10 +20,6 @@ public final class ModamodItems {
     // socks_solid en el telar (PATTERN_STRIPE_TOP / PATTERN_STRIPE_ALT
     // mas abajo), asi que el aspecto lo definen los componentes del
     // ItemStack y no un Item distinto.
-
-    public static final ClothingArmorItem FISHNET_SOCKS = registerArmor("fishnet_socks",
-            new ClothingArmorItem(ModamodArmorMaterials.CLOTH, ArmorItem.Type.BOOTS,
-                    new Item.Settings().maxCount(1), false));
 
     // Reemplaza a SHORTS. Primera prueba real del layering (se dibuja
     // ENCIMA de la media, sin borrarla — ver Capa.PIERNA_EXTERIOR), y ahora
@@ -53,10 +43,6 @@ public final class ModamodItems {
     // viejo, nunca se le dibujo el arte -salia en damero- y desde que la
     // remera tiene el eje de largo, el corte crop hace lo mismo pero teñible,
     // estampable y sobre la geometria del cuerpo y no la de armadura.
-
-    public static final ClothingArmorItem MAID_OUTFIT = registerArmor("maid_outfit",
-            new ClothingArmorItem(ModamodArmorMaterials.CLOTH, ArmorItem.Type.CHESTPLATE,
-                    new Item.Settings().maxCount(1), false));
 
     // --- Slot custom "arms" (via Trinkets) ---
     // Reemplaza a ARMWARMERS: aquel nunca se enganchó al sistema de capas
@@ -259,10 +245,6 @@ public final class ModamodItems {
     public static final ClothingPatternItem PATTERN_ZIGZAG = register("pattern_zigzag",
             new ClothingPatternItem(new Item.Settings().maxCount(1),
                     Identifier.of("modamod", "zigzag"), com.modamod.render.Motivo.ZIGZAG, 1));
-
-    private static ClothingArmorItem registerArmor(String path, ClothingArmorItem item) {
-        return Registry.register(Registries.ITEM, Identifier.of("modamod", path), item);
-    }
 
     private static <T extends Item> T register(String path, T item) {
         return Registry.register(Registries.ITEM, Identifier.of("modamod", path), item);

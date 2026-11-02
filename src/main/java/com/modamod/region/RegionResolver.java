@@ -1,6 +1,5 @@
 package com.modamod.region;
 
-import com.modamod.item.ClothingArmorItem;
 import com.modamod.item.ClothingTrinketItem;
 import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodDye;
@@ -47,7 +46,6 @@ public final class RegionResolver {
 
     public static int colorBase(ItemStack stack) {
         if (stack.getItem() instanceof ClothingTrinketItem prenda) return prenda.getColor(stack);
-        if (stack.getItem() instanceof ClothingArmorItem prenda) return prenda.getColor(stack);
         return 0xFFFFFF;
     }
 

@@ -3,7 +3,7 @@ package com.modamod.item;
 import com.modamod.sublimadora.RemeraItem;
 import net.minecraft.item.ItemStack;
 
-/** Helper compartido: leer/escribir el color base sin importar si la prenda es un ClothingTrinketItem o un ClothingArmorItem (legacy). */
+/** Helper compartido: escribir el color base de una prenda. */
 public final class ModamodDye {
 
     public static boolean isClothing(ItemStack stack) {
@@ -11,15 +11,12 @@ public final class ModamodDye {
         // le cambia el corte con los moldes. No hereda de ClothingTrinketItem
         // a proposito, tiene su propio sistema de color y de estampas.
         return stack.getItem() instanceof ClothingTrinketItem
-                || stack.getItem() instanceof ClothingArmorItem
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA);
     }
 
     public static void setBaseColor(ItemStack stack, int rgb) {
         if (stack.getItem() instanceof ClothingTrinketItem) {
             ClothingTrinketItem.setColor(stack, rgb);
-        } else if (stack.getItem() instanceof ClothingArmorItem) {
-            ClothingArmorItem.setColor(stack, rgb);
         }
     }
 

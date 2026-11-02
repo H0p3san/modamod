@@ -84,10 +84,6 @@ public final class ClothingTextureCache {
         }
     }
 
-    /** Devuelve la textura base sin modificar (para prendas sin tinte, ej. maid_outfit). */
-    public static Identifier plain(Identifier baseTexture) {
-        return baseTexture;
-    }
 
     /** Tiñe toda la textura base con un solo color (medias, shorts dyeable). */
     public static Identifier tinted(Identifier baseTexture, int rgb) {

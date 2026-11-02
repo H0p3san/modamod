@@ -13,9 +13,8 @@ import net.minecraft.util.Formatting;
 import java.util.List;
 
 /**
- * Prenda "pegada al cuerpo" (medias, shorts, croptop, etc). A diferencia
- * de ClothingArmorItem, esta NO usa la geometría de armadura (más ancha)
- * — se registra en un slot custom de Trinkets y se dibuja directo sobre
+ * Prenda "pegada al cuerpo" (medias y las que heredan de esta). No usa la
+ * geometría de armadura (más ancha): se registra en un slot custom de Trinkets y se dibuja directo sobre
  * las ModelPart reales del jugador vía GarmentFeatureRenderer, así que
  * queda pegada al cuerpo como una "segunda piel" en vez de verse como
  * una bota/peto puestos encima.
