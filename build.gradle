@@ -232,12 +232,16 @@ tasks.register('motorTest', JavaExec) {
 }
 check.dependsOn motorTest
 tasks.named('test') { enabled = false }
-tasks.named('runModeladoraLineaSmoke') {
-    doFirst {
-        def opciones = file('run-modeladora-linea/options.txt')
-        if (!opciones.exists()) {
-            opciones.parentFile.mkdirs()
-            opciones.text = 'onboardAccessibility:false\nrenderDistance:5\nsimulationDistance:5\npauseOnLostFocus:false\n'
+// Los clientes de prueba arrancan sin la pantalla de bienvenida de accesibilidad (la primera vez tapaba el mundo y la
+// prueba se quedaba esperando hasta agotar el tiempo).
+['runSmoke': 'run-smoke', 'runWearableSmoke': 'run-wearable-smoke', 'runModeladoraLineaSmoke': 'run-modeladora-linea'].each { tarea, dir ->
+    tasks.matching { it.name == tarea }.configureEach {
+        doFirst {
+            def opciones = file("$dir/options.txt")
+            if (!opciones.exists()) {
+                opciones.parentFile.mkdirs()
+                opciones.text = 'onboardAccessibility:false\nrenderDistance:5\nsimulationDistance:5\npauseOnLostFocus:false\n'
+            }
         }
     }
 }
