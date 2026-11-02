@@ -170,8 +170,6 @@ public final class MotorPruebas {
         // Corte (rediseño, tanda 1): todos los ejes de la prenda en un solo componente. Ida y vuelta por NBT con un
         // enumerado, un nivel y un mapa; un eje desconocido (de una versión vieja) se salta sin romper el resto.
         try {
-            net.minecraft.SharedConstants.createGameVersion();
-            net.minecraft.Bootstrap.initialize();
             com.modamod.prenda.Ejes.init();
             var ops = net.minecraft.nbt.NbtOps.INSTANCE;
             var c = com.modamod.prenda.Corte.VACIO

@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * La forma de una prenda: todos sus ejes de corte en un solo componente ({@link #COMPONENTE}). Lo ausente vale lo de
+ * La forma de una prenda: todos sus ejes de corte en un solo componente ({@link Tipo#COMPONENTE}). Lo ausente vale lo de
  * fábrica, que decide quien lee (cada prenda conoce los suyos). Un molde de la Modeladora puede ser el mismo
  * {@code Corte} con solo algunos ejes puestos: aplicarlo es copiarlos encima ({@link #conEncima}).
  */
@@ -34,12 +34,19 @@ public record Corte(Map<EjeDeCorte<?>, Object> valores) {
     public static final Codec<Corte> CODEC = Codec.unboundedMap(Codec.STRING, Codec.PASSTHROUGH)
             .xmap(Corte::leerMapa, Corte::escribirMapa);
 
-    public static final ComponentType<Corte> COMPONENTE = Registry.register(Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "corte"),
-            ComponentType.<Corte>builder().codec(CODEC).packetCodec(PacketCodecs.codec(CODEC)).build());
+    /** El componente vive aparte para que el codec se pueda usar (y probar) sin los registros del juego. */
+    public static final class Tipo {
+        public static final ComponentType<Corte> COMPONENTE = Registry.register(Registries.DATA_COMPONENT_TYPE,
+                Identifier.of("modamod", "corte"),
+                ComponentType.<Corte>builder().codec(CODEC).packetCodec(PacketCodecs.codec(CODEC)).build());
+
+        private Tipo() {}
+    }
 
     /** Fuerza el registro del componente. */
-    public static void init() {}
+    public static void init() {
+        Tipo.COMPONENTE.getClass();
+    }
 
     @SuppressWarnings("unchecked")
     @Nullable
@@ -68,13 +75,13 @@ public record Corte(Map<EjeDeCorte<?>, Object> valores) {
     // --- Sobre la prenda ---
 
     public static Corte de(ItemStack stack) {
-        return stack.getOrDefault(COMPONENTE, VACIO);
+        return stack.getOrDefault(Tipo.COMPONENTE, VACIO);
     }
 
     /** El valor guardado, o null si no está (vale el de fábrica). */
     @Nullable
     public static <T> T get(ItemStack stack, EjeDeCorte<T> eje) {
-        Corte c = stack.get(COMPONENTE);
+        Corte c = stack.get(Tipo.COMPONENTE);
         return c == null ? null : c.valor(eje);
     }
 
@@ -85,8 +92,8 @@ public record Corte(Map<EjeDeCorte<?>, Object> valores) {
 
     public static <T> void set(ItemStack stack, EjeDeCorte<T> eje, @Nullable T valor) {
         Corte nuevo = de(stack).con(eje, valor);
-        if (nuevo.vacio()) stack.remove(COMPONENTE);
-        else stack.set(COMPONENTE, nuevo);
+        if (nuevo.vacio()) stack.remove(Tipo.COMPONENTE);
+        else stack.set(Tipo.COMPONENTE, nuevo);
     }
 
     public static void remove(ItemStack stack, EjeDeCorte<?> eje) {
