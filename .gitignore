@@ -50,3 +50,6 @@ libs/
 
 # Textos y checklist para subir a Modrinth y CurseForge (no van a la repo)
 publicar/
+
+# Rediseno: registro del punto de control
+punto_de_control.log
