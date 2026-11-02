@@ -4,7 +4,6 @@ import com.modamod.item.BandaAncho;
 import com.modamod.item.BandaHerraje;
 import com.modamod.item.BandaItem;
 import com.modamod.item.BandaZona;
-import com.modamod.item.SombreroPatron;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -50,7 +49,6 @@ public final class BandaRenderer {
         ModelPart marco = biped.body;
         if (!marco.visible) return;
         List<Integer> colores = BandaItem.colores(banda);
-        List<SombreroPatron> patrones = BandaItem.patrones(banda);
         List<SombreroRenderer.Caja> cajas = cajas(banda, dil);
         for (int z = 0; z < 3; z++) {
             ModelPart parte = parte(cajas, z, zona, banda, dil);

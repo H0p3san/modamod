@@ -91,26 +91,7 @@ public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
         return c == null || c.size() < 3 ? DE_FABRICA : c;
     }
 
-    /** El dibujo de las 3 zonas (ala, cono, cinta); liso si no se eligió. */
-    public static List<SombreroPatron> patrones(ItemStack stack) {
-        List<Integer> p = stack.get(ModamodComponents.PATRONES_SOMBRERO);
-        SombreroPatron[] v = SombreroPatron.values();
-        List<SombreroPatron> out = new java.util.ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            int o = p != null && i < p.size() ? p.get(i) : 0;
-            out.add(o >= 0 && o < v.length ? v[o] : SombreroPatron.LISO);
-        }
-        return out;
-    }
 
-    public static ItemStack conPatron(ItemStack stack, int zona, SombreroPatron patron) {
-        List<SombreroPatron> actuales = patrones(stack);
-        int[] n = {actuales.get(0).ordinal(), actuales.get(1).ordinal(), actuales.get(2).ordinal()};
-        n[zona] = patron.ordinal();
-        if (n[0] == 0 && n[1] == 0 && n[2] == 0) stack.remove(ModamodComponents.PATRONES_SOMBRERO);
-        else stack.set(ModamodComponents.PATRONES_SOMBRERO, List.of(n[0], n[1], n[2]));
-        return stack;
-    }
 
     public static ItemStack conColores(ItemStack stack, int ala, int cono, int cinta) {
         stack.set(ModamodComponents.COLORES_SOMBRERO, List.of(ala, cono, cinta));
@@ -119,8 +100,6 @@ public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
 
     @Override public List<Integer> coloresDe(ItemStack stack) { return colores(stack); }
     @Override public ItemStack conColoresDe(ItemStack stack, int a, int b, int c) { return conColores(stack, a, b, c); }
-    @Override public List<SombreroPatron> patronesDe(ItemStack stack) { return patrones(stack); }
-    @Override public ItemStack conPatronDe(ItemStack stack, int zona, SombreroPatron patron) { return conPatron(stack, zona, patron); }
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.sombrero.zona." + (i + 1); }
     @Override public com.modamod.garment.Parte marco(ItemStack stack) { return com.modamod.garment.Parte.CABEZA; }
 

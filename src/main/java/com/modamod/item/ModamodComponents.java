@@ -431,21 +431,9 @@ public final class ModamodComponents {
                     .codec(com.mojang.serialization.Codec.INT.listOf())
                     .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
                     .build());
-    public static final ComponentType<java.util.List<Integer>> PATRONES_BANDA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "patrones_banda"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
 
     public static final ComponentType<java.util.List<Integer>> COLORES_BORCEGOS_IZQ = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_borcegos_izq"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
-    public static final ComponentType<java.util.List<Integer>> PATRONES_BORCEGOS_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "patrones_borcegos_izq"),
             ComponentType.<java.util.List<Integer>>builder()
                     .codec(com.mojang.serialization.Codec.INT.listOf())
                     .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
@@ -456,20 +444,7 @@ public final class ModamodComponents {
                     .codec(com.mojang.serialization.Codec.INT.listOf())
                     .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
                     .build());
-    public static final ComponentType<java.util.List<Integer>> PATRONES_BORCEGOS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "patrones_borcegos"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
 
-    /** Dibujo de cada zona del sombrero (2026-10-05): ordinales de {@link SombreroPatron}, ala/cono/cinta. */
-    public static final ComponentType<java.util.List<Integer>> PATRONES_SOMBRERO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "patrones_sombrero"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
 
     /** La mezcla C/M/Y/K/T de una muestra de color (2026-09-30), 5 niveles de 0..20. */
     public static final ComponentType<java.util.List<Integer>> MEZCLA_COLOR = Registry.register(

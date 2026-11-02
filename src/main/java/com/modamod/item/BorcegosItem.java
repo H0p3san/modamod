@@ -158,19 +158,7 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
         return c == null || c.size() < 3 ? DE_FABRICA : c;
     }
 
-    public static List<SombreroPatron> patrones(ItemStack stack) { return patrones(stack, false); }
 
-    public static List<SombreroPatron> patrones(ItemStack stack, boolean izq) {
-        List<Integer> p = izq ? stack.get(ModamodComponents.PATRONES_BORCEGOS_IZQ) : null;
-        if (p == null) p = stack.get(ModamodComponents.PATRONES_BORCEGOS);
-        SombreroPatron[] v = SombreroPatron.values();
-        List<SombreroPatron> out = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            int o = p != null && i < p.size() ? p.get(i) : 0;
-            out.add(o >= 0 && o < v.length ? v[o] : SombreroPatron.LISO);
-        }
-        return out;
-    }
 
     @Override public List<Integer> coloresDe(ItemStack stack) { return colores(stack); }
 
@@ -193,34 +181,10 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
         return stack;
     }
 
-    @Override public List<SombreroPatron> patronesDe(ItemStack stack) { return patrones(stack); }
 
-    @Override public List<SombreroPatron> patronesDe(ItemStack stack, boolean izq) { return patrones(stack, izq); }
 
-    @Override
-    public ItemStack conPatronDe(ItemStack stack, int zona, SombreroPatron patron) {
-        conPatronDe(stack, zona, patron, false);
-        stack.remove(ModamodComponents.PATRONES_BORCEGOS_IZQ);
-        return stack;
-    }
 
-    @Override
-    public ItemStack conPatronDe(ItemStack stack, int zona, SombreroPatron patron, boolean izq) {
-        if (!izq && stack.get(ModamodComponents.PATRONES_BORCEGOS_IZQ) == null) {
-            stack.set(ModamodComponents.PATRONES_BORCEGOS_IZQ, ordinales(patrones(stack, false)));   // congela el izquierdo
-        }
-        List<SombreroPatron> actuales = patrones(stack, izq);
-        int[] n = {actuales.get(0).ordinal(), actuales.get(1).ordinal(), actuales.get(2).ordinal()};
-        n[zona] = patron.ordinal();
-        ComponentType<List<Integer>> tipo = izq ? ModamodComponents.PATRONES_BORCEGOS_IZQ : ModamodComponents.PATRONES_BORCEGOS;
-        if (!izq && n[0] == 0 && n[1] == 0 && n[2] == 0) stack.remove(tipo);
-        else stack.set(tipo, List.of(n[0], n[1], n[2]));
-        return stack;
-    }
 
-    private static List<Integer> ordinales(List<SombreroPatron> l) {
-        return List.of(l.get(0).ordinal(), l.get(1).ordinal(), l.get(2).ordinal());
-    }
 
     @Override public boolean tienePares() { return true; }
 

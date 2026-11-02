@@ -51,20 +51,7 @@ public class MaletinItem extends Item implements com.modamod.item.ZonasTenibles 
         return stack;
     }
 
-    @Override
-    public List<com.modamod.item.SombreroPatron> patronesDe(ItemStack stack) {
-        return com.modamod.item.BandaItem.patrones(stack);
-    }
 
-    @Override
-    public ItemStack conPatronDe(ItemStack stack, int zona, com.modamod.item.SombreroPatron patron) {
-        List<com.modamod.item.SombreroPatron> actuales = patronesDe(stack);
-        int[] n = {actuales.get(0).ordinal(), actuales.get(1).ordinal(), actuales.get(2).ordinal()};
-        n[zona] = patron.ordinal();
-        if (n[0] == 0 && n[1] == 0 && n[2] == 0) stack.remove(ModamodComponents.PATRONES_BANDA);
-        else stack.set(ModamodComponents.PATRONES_BANDA, List.of(n[0], n[1], n[2]));
-        return stack;
-    }
 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.maletin.zona." + (i + 1); }
 

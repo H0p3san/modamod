@@ -2,7 +2,6 @@ package com.modamod.render;
 
 import com.modamod.Modamod;
 import com.modamod.item.ModamodComponents;
-import com.modamod.item.SombreroPatron;
 import com.modamod.item.ZonasTenibles;
 import com.modamod.region.RegionPintura;
 import com.modamod.region.RegionResolver.CapaPatron;
@@ -39,13 +38,12 @@ public final class ZonaTextura {
     public static Identifier de(ItemStack stack, int zona, boolean izq) {
         ZonasTenibles zt = (ZonasTenibles) stack.getItem();
         int rgb = zt.coloresDe(stack, izq).get(zona) & 0xFFFFFF;
-        SombreroPatron patron = zt.patronesDe(stack, izq).get(zona);
         RegionPintura reg = region(zona, izq);
         List<CapaPatron> capas = new ArrayList<>();
         for (CapaPatron c : stack.getOrDefault(ModamodComponents.CAPAS_TINTE, List.<CapaPatron>of())) {
             if (c.region() == reg) capas.add(c);
         }
-        if (capas.isEmpty()) return SombreroRenderer.textura(rgb, patron);
+        if (capas.isEmpty()) return SombreroRenderer.textura(rgb);
         return componer(rgb, capas, false, false);
     }
 

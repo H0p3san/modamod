@@ -129,7 +129,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     /** Gancho: la Estilista guarda lo elegido en cada pestaña por separado. */
     void alCambiarPestana(int antes, int ahora) { }
     private final ButtonWidget[][] btnColorZona = new ButtonWidget[3][3];
-    private final ButtonWidget[] btnPatronZona = new ButtonWidget[3];
     /** Los controles de apliques que se esconden mientras se colorea. */
     private final List<ButtonWidget> grupoAplique = new java.util.ArrayList<>();
 
@@ -213,7 +212,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         poner(btnTextura, "textura");
         for (int z = 0; z < 3; z++) {
             for (int c = 0; c < 3; c++) poner(btnColorZona[z][c], "zc" + z + c);
-            poner(btnPatronZona[z], "zp" + z);
         }
         poner(btnColorEntero, "entero");
     }
@@ -407,11 +405,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                             clickZona(id);
                         });
             }
-        }
-        for (int z = 0; z < 3; z++) {
-            final int id = EstiladoBlockEntity.BTN_PATRON_BASE + z;
-            btnPatronZona[z] = boton(X_DER + 98, 66 + z * 22, 64, Text.empty(), "modamod.estilado.tooltip.patron_zona",
-                    () -> clickZona(id));
         }
         btnColorEntero = boton(X_DER, 132, 96, Text.translatable("modamod.estilado.color.entero"),
                 "modamod.estilado.tooltip.color_entero", () -> clickZona(EstiladoBlockEntity.BTN_COLOR_ENTERO));
@@ -1456,11 +1449,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         btnEspejo.setMessage(Text.translatable(espejarPie ? "modamod.estilado.espejo.si" : "modamod.estilado.espejo.no"));
         btnPie.visible = pares && modoColor;
         btnPie.setMessage(Text.translatable(pieActivoIzq ? "modamod.estilado.pie.izq" : "modamod.estilado.pie.der"));
-        for (int z = 0; z < 3; z++) {
-            btnPatronZona[z].visible = modoColor;
-            if (enPrenda.getItem() instanceof com.modamod.item.ZonasTenibles zt) btnPatronZona[z].setMessage(Text.translatable(
-                    zt.patronesDe(enPrenda, pieActivoIzq).get(z).traduccion()));
-        }
         btnGiro.active = btnEscala.active = btnQuitar.active = hay;
         // La fila es de los apliques de modelo; los de objeto la ignoran.
         boolean conFila = hay && apliques.get(sel).objeto() == null;

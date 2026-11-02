@@ -3,7 +3,6 @@ package com.modamod.render;
 import com.modamod.Modamod;
 import com.modamod.item.SombreroAla;
 import com.modamod.item.SombreroBrujaItem;
-import com.modamod.item.SombreroPatron;
 import com.modamod.item.SombreroPlanta;
 import com.modamod.item.SombreroPunta;
 import net.minecraft.client.MinecraftClient;
@@ -91,7 +90,6 @@ public final class SombreroRenderer {
         CabezaCaras.agrandar(matrices, biped, 1.18F);
 
         List<Integer> colores = SombreroBrujaItem.colores(sombrero);
-        List<SombreroPatron> patrones = SombreroBrujaItem.patrones(sombrero);
         // La punta: lo que la inercia le suma a cada tramo (el de arriba también, el doble por ser hijo del de abajo).
         float pitch = 0f, roll = 0f;
         FisicaApliques.Desplazamiento d = FisicaApliques.actual;
@@ -160,19 +158,25 @@ public final class SombreroRenderer {
     // ── textura lisa por color ────────────────────────────────────────────
     private static final Map<Integer, Identifier> TEXTURAS = new HashMap<>();
 
-    static Identifier textura(int rgb, SombreroPatron patron) {
+    static Identifier textura(int rgb) {
         int key = rgb & 0xFFFFFF;
-        int clave = key | (patron.ordinal() << 24);
-        Identifier id = TEXTURAS.get(clave);
+        Identifier id = TEXTURAS.get(key);
         if (id != null) return id;
         NativeImage img = new NativeImage(TEX, TEX, true);
         int abgr = abgr(key);
-        int abgr2 = abgr(SombreroPatron.tonoDeContraste(key));
-        for (int y = 0; y < TEX; y++) for (int x = 0; x < TEX; x++) img.setColor(x, y, patron.contraste(x, y) ? abgr2 : abgr);
-        id = Identifier.of(Modamod.MOD_ID, "dynamic/sombrero_" + Integer.toHexString(key) + "_" + patron.clave);
+        for (int y = 0; y < TEX; y++) for (int x = 0; x < TEX; x++) img.setColor(x, y, abgr);
+        id = Identifier.of(Modamod.MOD_ID, "dynamic/sombrero_" + Integer.toHexString(key));
         MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        TEXTURAS.put(clave, id);
+        TEXTURAS.put(key, id);
         return id;
+    }
+
+    /** El tono de contraste de un color: más oscuro si es claro, más claro si es oscuro (bordes de las correas). */
+    static int tonoDeContraste(int rgb) {
+        int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+        double lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0;
+        if (lum > 0.5) return ((int) (r * 0.55) << 16) | ((int) (g * 0.55) << 8) | (int) (b * 0.55);
+        return ((r + (int) ((255 - r) * 0.45)) << 16) | ((g + (int) ((255 - g) * 0.45)) << 8) | (b + (int) ((255 - b) * 0.45));
     }
 
     private static int abgr(int rgb) {

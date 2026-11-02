@@ -74,10 +74,10 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
             com.modamod.item.ModamodComponents.APLIQUES, com.modamod.item.ModamodComponents.CORREAS,
             com.modamod.item.ModamodComponents.TEXTURA_TELA, com.modamod.item.ModamodComponents.ACABADO_TRIM,
             com.modamod.item.ModamodComponents.ACABADO_MATERIAL,
-            com.modamod.item.ModamodComponents.COLORES_SOMBRERO, com.modamod.item.ModamodComponents.PATRONES_SOMBRERO,
-            com.modamod.item.ModamodComponents.COLORES_BANDA, com.modamod.item.ModamodComponents.PATRONES_BANDA,
-            com.modamod.item.ModamodComponents.COLORES_BORCEGOS, com.modamod.item.ModamodComponents.PATRONES_BORCEGOS,
-            com.modamod.item.ModamodComponents.COLORES_BORCEGOS_IZQ, com.modamod.item.ModamodComponents.PATRONES_BORCEGOS_IZQ);
+            com.modamod.item.ModamodComponents.COLORES_SOMBRERO,
+            com.modamod.item.ModamodComponents.COLORES_BANDA,
+            com.modamod.item.ModamodComponents.COLORES_BORCEGOS,
+            com.modamod.item.ModamodComponents.COLORES_BORCEGOS_IZQ);
 
     /** Los tics del trabajo (de la animación `trabajo`) en que el pórtico arranca un recorrido: horizontal o de subida y bajada. */
     private static final int[] TICS_HORIZONTAL = {0, 18, 42, 52, 70, 94, 104, 122, 146, 156, 174, 198};

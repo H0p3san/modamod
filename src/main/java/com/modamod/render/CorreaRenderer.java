@@ -4,7 +4,6 @@ import com.modamod.correa.Correa;
 import com.modamod.correa.EstiloCorrea;
 import com.modamod.correa.ModoCorrea;
 import com.modamod.item.ModamodComponents;
-import com.modamod.item.SombreroPatron;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
@@ -497,11 +496,11 @@ public final class CorreaRenderer {
             }
             case CORDON -> {
                 float wc = Math.max(0.8f, w * 0.55f);
-                VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(banda, SombreroPatron.LISO)));
+                VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(banda)));
                 cinta(vc, e, luz, nodos, bb, nn, wc / 2f, 0.5f, 0.5f);
                 cinta(vc, e, luz, nodos, nn, bb, wc / 2f, 0.5f, 0.5f);
                 // Las puntas (aglets): una caja de herraje en cada extremo.
-                VertexConsumer vm = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(herraje, SombreroPatron.LISO)));
+                VertexConsumer vm = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(herraje)));
                 for (int i : new int[] {0, n - 1}) {
                     if (i == 0 && (c.modo() == ModoCorrea.COLGANTE || c.modo() == ModoCorrea.ANCLADA)) continue;     // el de arriba está sujeto
                     Vector3f dir = new Vector3f(t[i]).mul(i == 0 ? -1f : 1f);
@@ -510,7 +509,7 @@ public final class CorreaRenderer {
                 }
             }
             case CADENA -> {
-                VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(herraje, SombreroPatron.LISO)));
+                VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(herraje)));
                 for (int i = 0; i < n; i++) {
                     boolean par = i % 2 == 0;
                     // Eslabones alternados 90°: uno de plano, el otro de canto.
@@ -519,7 +518,7 @@ public final class CorreaRenderer {
                 }
             }
             case CADENA_FINA -> {
-                VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(herraje, SombreroPatron.LISO)));
+                VertexConsumer vc = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(SombreroRenderer.textura(herraje)));
                 float lado = Math.max(1f, w * 0.75f) / 2f;
                 for (int i = 0; i < n; i++) {
                     caja(vc, e, luz, nodos.get(i).pos(), t[i], bb[i], nn[i], lado, lado, lado);
@@ -583,7 +582,7 @@ public final class CorreaRenderer {
         Identifier id = TEXTURAS.get(clave);
         if (id != null) return id;
         NativeImage img = new NativeImage(16, 16, true);
-        int cb = abgr(banda), ce = abgr(borde), cp = abgr(SombreroPatron.tonoDeContraste(banda)), co = abgr(0x201408);
+        int cb = abgr(banda), ce = abgr(borde), cp = abgr(SombreroRenderer.tonoDeContraste(banda)), co = abgr(0x201408);
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int col = (x < 2 || x > 13) ? ce : cb;

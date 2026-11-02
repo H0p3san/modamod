@@ -15,18 +15,14 @@ public interface ZonasTenibles {
 
     ItemStack conColoresDe(ItemStack stack, int a, int b, int c);
 
-    List<SombreroPatron> patronesDe(ItemStack stack);
 
-    ItemStack conPatronDe(ItemStack stack, int zona, SombreroPatron patron);
 
     /** Lo mismo del pie izquierdo (2026-10-11): solo los borcegos distinguen los dos pies; el resto repite lo de siempre. */
     default List<Integer> coloresDe(ItemStack stack, boolean izq) { return coloresDe(stack); }
 
     default ItemStack conColoresDe(ItemStack stack, int a, int b, int c, boolean izq) { return conColoresDe(stack, a, b, c); }
 
-    default List<SombreroPatron> patronesDe(ItemStack stack, boolean izq) { return patronesDe(stack); }
 
-    default ItemStack conPatronDe(ItemStack stack, int zona, SombreroPatron patron, boolean izq) { return conPatronDe(stack, zona, patron); }
 
     /** ¿Tiene dos lados que se pintan por separado (los borcegos)? */
     default boolean tienePares() { return false; }

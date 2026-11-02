@@ -10,7 +10,6 @@ import com.modamod.item.BorcegosItem;
 import com.modamod.item.CalzadoCierre;
 import com.modamod.item.CalzadoDetalle;
 import com.modamod.item.CalzadoPunta;
-import com.modamod.item.SombreroPatron;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -163,7 +162,6 @@ public final class BorcegosRenderer {
             if (!marco.visible) continue;
             // Cada pie con lo suyo (2026-10-11, "no se puede independizar derecho e izquierdo?").
             List<Integer> colores = BorcegosItem.colores(borcegos, izq);
-            List<SombreroPatron> patrones = BorcegosItem.patrones(borcegos, izq);
             Montado m = montar(borcegos, izq);
             matrices.push();
             marco.rotate(matrices);

@@ -66,16 +66,6 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
         return c == null || c.size() < 3 ? DE_FABRICA : c;
     }
 
-    public static List<SombreroPatron> patrones(ItemStack stack) {
-        List<Integer> p = stack.get(ModamodComponents.PATRONES_BANDA);
-        SombreroPatron[] v = SombreroPatron.values();
-        List<SombreroPatron> out = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            int o = p != null && i < p.size() ? p.get(i) : 0;
-            out.add(o >= 0 && o < v.length ? v[o] : SombreroPatron.LISO);
-        }
-        return out;
-    }
 
     /** Solo entra en el slot de su zona. */
     @Override
@@ -93,17 +83,7 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
         return stack;
     }
 
-    @Override public List<SombreroPatron> patronesDe(ItemStack stack) { return patrones(stack); }
 
-    @Override
-    public ItemStack conPatronDe(ItemStack stack, int zona, SombreroPatron patron) {
-        List<SombreroPatron> actuales = patrones(stack);
-        int[] n = {actuales.get(0).ordinal(), actuales.get(1).ordinal(), actuales.get(2).ordinal()};
-        n[zona] = patron.ordinal();
-        if (n[0] == 0 && n[1] == 0 && n[2] == 0) stack.remove(ModamodComponents.PATRONES_BANDA);
-        else stack.set(ModamodComponents.PATRONES_BANDA, List.of(n[0], n[1], n[2]));
-        return stack;
-    }
 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.banda.parte." + (i + 1); }
 

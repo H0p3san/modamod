@@ -1,7 +1,6 @@
 package com.modamod.render;
 
 import com.modamod.item.DelantalTirantes;
-import com.modamod.item.SombreroPatron;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -65,6 +64,6 @@ final class TirantesDelantal {
         }
         ModelPart parte = new ModelPart(cajas, Map.of());
         GarmentFeatureRenderer.dibujarModelPart(parte, CuerpoGeometria.Superficie.CUERPO,
-                SombreroRenderer.textura(rgb, SombreroPatron.LISO), torso, matrices, vcp, luz);
+                SombreroRenderer.textura(rgb), torso, matrices, vcp, luz);
     }
 }
