@@ -167,6 +167,27 @@ public final class MotorPruebas {
             inf.ok("hormonas", "suben, bajan y llegan a plano");
         } catch (Throwable t) { inf.fallo("hormonas", t.toString()); }
 
+        // Corte (rediseño, tanda 1): todos los ejes de la prenda en un solo componente. Ida y vuelta por NBT con un
+        // enumerado, un nivel y un mapa; un eje desconocido (de una versión vieja) se salta sin romper el resto.
+        try {
+            net.minecraft.SharedConstants.createGameVersion();
+            net.minecraft.Bootstrap.initialize();
+            com.modamod.prenda.Ejes.init();
+            var ops = net.minecraft.nbt.NbtOps.INSTANCE;
+            var c = com.modamod.prenda.Corte.VACIO
+                    .con(com.modamod.prenda.Ejes.CALCE, com.modamod.item.Calce.values()[1])
+                    .con(com.modamod.prenda.Ejes.FALDON, 3);
+            var nbt = com.modamod.prenda.Corte.CODEC.encodeStart(ops, c).getOrThrow();
+            Informe.verificar(com.modamod.prenda.Corte.CODEC.parse(ops, nbt).getOrThrow().equals(c), "el corte no vuelve igual: " + nbt);
+            var conViejo = (net.minecraft.nbt.NbtCompound) nbt.copy();
+            conViejo.putString("eje_que_ya_no_existe", "x");
+            Informe.verificar(com.modamod.prenda.Corte.CODEC.parse(ops, conViejo).getOrThrow().equals(c), "un eje desconocido rompe el corte");
+            var sinFaldon = c.con(com.modamod.prenda.Ejes.FALDON, null);
+            Informe.verificar(sinFaldon.valor(com.modamod.prenda.Ejes.FALDON) == null && sinFaldon.valor(com.modamod.prenda.Ejes.CALCE) != null,
+                    "sacar un eje no deja el resto");
+            inf.ok("corte", "ida y vuelta por NBT, ejes desconocidos se saltan");
+        } catch (Throwable t) { inf.fallo("corte", t.toString()); }
+
         Path dir = Path.of("").toAbsolutePath().resolve("pruebas");
         Files.createDirectories(dir);
         inf.escribir(dir);

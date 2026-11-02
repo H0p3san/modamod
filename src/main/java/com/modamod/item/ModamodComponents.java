@@ -1,7 +1,6 @@
 package com.modamod.item;
 
 import com.modamod.region.Orientacion;
-import com.modamod.sublimadora.Variante;
 import com.mojang.serialization.Codec;
 import net.minecraft.component.ComponentType;
 import net.minecraft.network.codec.PacketCodecs;
@@ -283,25 +282,6 @@ public final class ModamodComponents {
                     .packetCodec(PacketCodecs.indexed(i -> TamanoPatron.values()[i], Enum::ordinal))
                     .build());
 
-    /**
-     * Como esta puesta la prenda: girada (frente/espalda) y/o espejada
-     * (izquierda/derecha).
-     *
-     * Ausente = normal, y se BORRA al volver a la normal en vez de guardarse
-     * con los dos bits en false: una prenda sin girar tiene que apilar con
-     * otra igual, y un componente presente no apila contra uno ausente.
-     *
-     * No permuta nada guardado — lo aplica RegionResolver al resolver, asi
-     * que sacar el flag devuelve la prenda a como estaba.
-     */
-    public static final ComponentType<Orientacion> ORIENTACION = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "orientacion"),
-            ComponentType.<Orientacion>builder()
-                    .codec(Orientacion.CODEC)
-                    .packetCodec(Orientacion.PACKET_CODEC)
-                    .build());
-
     // PANTALON_LARGO (un solo valor) se retiró: la cobertura de extremidad
     // ahora es DOS anclajes que se intersecan (ver PANTALON_LARGO_SUPERIOR/
     // _INFERIOR más abajo) — mismo criterio de retiro que CALIENTABRAZOS_TIRO,
@@ -313,125 +293,13 @@ public final class ModamodComponents {
     // (ver PantalonItem#filasVisibles), pero el componente queda
     // registrado igual por si un mundo viejo lo tiene guardado.
 
-    private static ComponentType<Botamanga> botamangaComponent(String nombre) {
-        return Registry.register(
-                Registries.DATA_COMPONENT_TYPE,
-                Identifier.of("modamod", nombre),
-                ComponentType.<Botamanga>builder()
-                        .codec(StringIdentifiable.createCodec(Botamanga::values))
-                        .packetCodec(PacketCodecs.indexed(i -> Botamanga.values()[i], Enum::ordinal))
-                        .build());
-    }
-
-    /**
-     * Anclaje SUPERIOR de cobertura del pantalón (cintura hacia abajo) y su
-     * override de la pierna derecha. Ausente = {@code PIE} (completo). Ya
-     * no se escribe desde la GUI (2026-09-23, "pantalones se fija solo el
-     * corte inferior") — queda registrado por compatibilidad de guardado.
-     * La tela final es la INTERSECCIÓN con {@link #PANTALON_LARGO_INFERIOR}
-     * — ver {@link PantalonItem#filasVisibles}.
-     */
-    public static final ComponentType<Botamanga> PANTALON_LARGO_SUPERIOR = botamangaComponent("pantalon_largo_superior");
-    public static final ComponentType<Botamanga> RIGHT_PANTALON_LARGO_SUPERIOR = botamangaComponent("right_pantalon_largo_superior");
-
-    /** Anclaje INFERIOR (tobillo hacia arriba). Ausente = {@code PIE} (completo). */
-    public static final ComponentType<Botamanga> PANTALON_LARGO_INFERIOR = botamangaComponent("pantalon_largo_inferior");
-    public static final ComponentType<Botamanga> RIGHT_PANTALON_LARGO_INFERIOR = botamangaComponent("right_pantalon_largo_inferior");
-
-    /**
-     * El tiro del pantalón (§{@link PantalonTiro}): cuánto sube la cintura
-     * sobre el torso. Eje independiente de {@code PANTALON_LARGO} — ausente
-     * = {@code MEDIO}, la cintura natural.
-     */
-    public static final ComponentType<PantalonTiro> PANTALON_TIRO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "pantalon_tiro"),
-            ComponentType.<PantalonTiro>builder()
-                    .codec(StringIdentifiable.createCodec(PantalonTiro::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PantalonTiro.values()[i], Enum::ordinal))
-                    .build());
-
-    /**
-     * Calce (§{@link Calce}): cuán ajustada/voluminosa se ve la prenda —
-     * transversal a las 4 (remera/pantalón/medias/calientabrazos), un solo
-     * componente compartido. Ausente = {@code NORMAL}.
-     */
-    public static final ComponentType<Calce> CALCE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "calce"),
-            ComponentType.<Calce>builder()
-                    .codec(StringIdentifiable.createCodec(Calce::values))
-                    .packetCodec(PacketCodecs.indexed(i -> Calce.values()[i], Enum::ordinal))
-                    .build());
-
-    /**
-     * Corte de red (§{@link PatronRed}): agujerea la tela ya compuesta —
-     * transversal a las 4 prendas con corte, mismo criterio que
-     * {@code CALCE}. Ausente = sin red (tela lisa, sin agujeros).
-     */
-    public static final ComponentType<PatronRed> PATRON_RED = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "patron_red"),
-            ComponentType.<PatronRed>builder()
-                    .codec(StringIdentifiable.createCodec(PatronRed::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PatronRed.values()[i], Enum::ordinal))
-                    .build());
-
     // MEDIAS_LARGO (un solo valor) se retiró — mismo criterio que
     // PANTALON_LARGO arriba: ahora son dos anclajes que se intersecan.
     // 2026-09-23: el TIPO también pasó de MediasLargo a Botamanga
     // (compartido con pantalón, ver esa clase) — medias sigue con los DOS
     // anclajes, sin cambios de comportamiento acá.
 
-    /**
-     * Anclaje SUPERIOR de la media (muslo hacia abajo) — eje nuevo, las
-     * medias antes solo anclaban desde abajo. Ausente = {@code PIE}
-     * (completo, hasta el final del rango — el largo real de siempre).
-     */
-    public static final ComponentType<Botamanga> MEDIAS_LARGO_SUPERIOR = botamangaComponent("medias_largo_superior");
-    public static final ComponentType<Botamanga> RIGHT_MEDIAS_LARGO_SUPERIOR = botamangaComponent("right_medias_largo_superior");
-
-    /** Anclaje INFERIOR (tobillo hacia arriba, el que ya existía). Ausente = {@code PIE}. */
-    public static final ComponentType<Botamanga> MEDIAS_LARGO_INFERIOR = botamangaComponent("medias_largo_inferior");
-    public static final ComponentType<Botamanga> RIGHT_MEDIAS_LARGO_INFERIOR = botamangaComponent("right_medias_largo_inferior");
-
     // CALIENTABRAZOS_COBERTURA (un solo valor) se retiró — mismo criterio.
-
-    private static ComponentType<Variante.Manga> calientabrazosCoberturaComponent(String nombre) {
-        return Registry.register(
-                Registries.DATA_COMPONENT_TYPE,
-                Identifier.of("modamod", nombre),
-                ComponentType.<Variante.Manga>builder()
-                        .codec(StringIdentifiable.createCodec(Variante.Manga::values))
-                        .packetCodec(PacketCodecs.indexed(i -> Variante.Manga.values()[i], Enum::ordinal))
-                        .build());
-    }
-
-    /**
-     * Cobertura de calientabrazos (§{@link com.modamod.sublimadora.Variante.Manga}),
-     * ahora dos anclajes que se intersecan igual que pantalón/medias.
-     * Anclaje SUPERIOR = hombro hacia abajo (el que ya existía, reusa el
-     * mismo molde cíclico que la manga de la remera, `MoldeItem.Eje.MANGA`,
-     * pero en un componente propio: no se pisa con la manga de una remera
-     * puesta). Ausente = {@code LARGA} (completo).
-     */
-    public static final ComponentType<Variante.Manga> CALIENTABRAZOS_COBERTURA_SUPERIOR = calientabrazosCoberturaComponent("calientabrazos_cobertura_superior");
-    public static final ComponentType<Variante.Manga> RIGHT_CALIENTABRAZOS_COBERTURA_SUPERIOR = calientabrazosCoberturaComponent("right_calientabrazos_cobertura_superior");
-
-    /** Anclaje INFERIOR (muñeca hacia arriba) — eje nuevo. Ausente = {@code LARGA}. */
-    public static final ComponentType<Variante.Manga> CALIENTABRAZOS_COBERTURA_INFERIOR = calientabrazosCoberturaComponent("calientabrazos_cobertura_inferior");
-    public static final ComponentType<Variante.Manga> RIGHT_CALIENTABRAZOS_COBERTURA_INFERIOR = calientabrazosCoberturaComponent("right_calientabrazos_cobertura_inferior");
-
-    /**
-     * Override de la manga DERECHA de la remera (2026-09-24, "vamos con
-     * mangas distintas") — la izquierda sigue viviendo en el {@code
-     * Variante} de siempre ({@code ModItems.VARIANTE}, sin cambios); esto
-     * es SOLO el override, mismo criterio primario-izquierda/override-
-     * derecha que {@link #RIGHT_DYED_COLOR}, no un par Superior/Inferior
-     * como calientabrazos. Ausente = hereda el valor izquierdo — ver
-     * {@code RemeraItem#manga}.
-     */
-    public static final ComponentType<Variante.Manga> RIGHT_REMERA_MANGA = calientabrazosCoberturaComponent("right_remera_manga");
 
     // CALIENTABRAZOS_TIRO se retiró (ver docs/archivo/MAQUINAS.md §"Categorías de
     // patrones de modelado"): tiro es exclusivo de prendas inferiores, no
@@ -452,193 +320,8 @@ public final class ModamodComponents {
                     .packetCodec(com.modamod.modelado.ComboCorte.PACKET_CODEC)
                     .build());
 
-    /** Largo de la pollera (§{@link PolleraLargo}); ausente = MEDIO. */
-    public static final ComponentType<PolleraLargo> POLLERA_LARGO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "pollera_largo"),
-            ComponentType.<PolleraLargo>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraLargo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraLargo.values()[i], Enum::ordinal))
-                    .build());
-
-    /**
-     * Faldón de un Top (2026-10-11, "las chaquetas de malla"): una falda de malla colgando de la cintura, con el largo
-     * del nivel de rango 0..6 (0 = el más corto); ausente = sin faldón.
-     */
-    public static final ComponentType<Integer> FALDON_TOP = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "faldon_top"),
-            ComponentType.<Integer>builder()
-                    .codec(com.mojang.serialization.Codec.intRange(0, 6))
-                    .packetCodec(PacketCodecs.VAR_INT)
-                    .build());
-
-    /** Cintura de la pollera (2026-10-08): nivel de rango 0..6 (altura de la cintura = 2 × nivel px bajo el hombro); ausente = cadera. */
-    public static final ComponentType<Integer> POLLERA_CINTURA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "pollera_cintura"),
-            ComponentType.<Integer>builder()
-                    .codec(com.mojang.serialization.Codec.intRange(0, 6))
-                    .packetCodec(PacketCodecs.VAR_INT)
-                    .build());
-
-    /** Volado del borde de abajo / de toda la pollera (2026-10-05); ausente = sin volado. */
-    public static final ComponentType<PolleraVolado> POLLERA_VOLADO_RUEDO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "pollera_volado_ruedo"),
-            ComponentType.<PolleraVolado>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraVolado::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraVolado.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<PolleraVolado> POLLERA_VOLADO_TODO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "pollera_volado_todo"),
-            ComponentType.<PolleraVolado>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraVolado::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraVolado.values()[i], Enum::ordinal))
-                    .build());
-
-    /** Delantal (2026-10-11): nivel de rango 0..6 de dónde arranca (1 + 1,5·n px) y hasta dónde llega (9 + 2,5·n px). */
-    public static final ComponentType<Integer> DELANTAL_INICIO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_inicio"),
-            ComponentType.<Integer>builder()
-                    .codec(com.mojang.serialization.Codec.intRange(0, 6))
-                    .packetCodec(PacketCodecs.VAR_INT)
-                    .build());
-    public static final ComponentType<Integer> DELANTAL_LARGO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_largo"),
-            ComponentType.<Integer>builder()
-                    .codec(com.mojang.serialization.Codec.intRange(0, 6))
-                    .packetCodec(PacketCodecs.VAR_INT)
-                    .build());
-    /** Volados de los costados y del borde de arriba del delantal (2026-10-11); ausente = sin volado. */
-    public static final ComponentType<PolleraVolado> DELANTAL_VOLADO_LATERAL = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_volado_lateral"),
-            ComponentType.<PolleraVolado>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraVolado::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraVolado.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<PolleraVolado> DELANTAL_VOLADO_SUPERIOR = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_volado_superior"),
-            ComponentType.<PolleraVolado>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraVolado::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraVolado.values()[i], Enum::ordinal))
-                    .build());
-    /** Silueta del delantal; ausente = RECTO. */
-    public static final ComponentType<DelantalForma> DELANTAL_FORMA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_forma"),
-            ComponentType.<DelantalForma>builder()
-                    .codec(StringIdentifiable.createCodec(DelantalForma::values))
-                    .packetCodec(PacketCodecs.indexed(i -> DelantalForma.values()[i], Enum::ordinal))
-                    .build());
-    /** Tirantes del delantal; ausente = sin. */
-    public static final ComponentType<DelantalTirantes> DELANTAL_TIRANTES = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_tirantes"),
-            ComponentType.<DelantalTirantes>builder()
-                    .codec(StringIdentifiable.createCodec(DelantalTirantes::values))
-                    .packetCodec(PacketCodecs.indexed(i -> DelantalTirantes.values()[i], Enum::ordinal))
-                    .build());
-    /** Cobertura del delantal; ausente = ENVOLVENTE. */
-    public static final ComponentType<DelantalCobertura> DELANTAL_COBERTURA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_cobertura"),
-            ComponentType.<DelantalCobertura>builder()
-                    .codec(StringIdentifiable.createCodec(DelantalCobertura::values))
-                    .packetCodec(PacketCodecs.indexed(i -> DelantalCobertura.values()[i], Enum::ordinal))
-                    .build());
-    /** Embozo de la capa (2026-10-11): nivel de rango 0..6 = hasta dónde baja sobre los hombros; ausente = sin embozo. */
-    public static final ComponentType<Integer> CAPA_EMBOZO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_embozo"),
-            ComponentType.<Integer>builder().codec(com.mojang.serialization.Codec.intRange(0, 6)).packetCodec(PacketCodecs.VAR_INT).build());
-    /** Borde del embozo (cinta alrededor del contorno, cerrando por el frente); ausente = sin borde. */
-    public static final ComponentType<Boolean> CAPA_BORDE_EMBOZO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_borde_embozo"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
-    /** Esquinas de abajo del delantal (solo se guarda REDONDEADO). */
-    public static final ComponentType<CapaRuedo> DELANTAL_ESQUINAS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_esquinas"),
-            ComponentType.<CapaRuedo>builder()
-                    .codec(StringIdentifiable.createCodec(CapaRuedo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CapaRuedo.values()[i], Enum::ordinal))
-                    .build());
-    /** Volado del ruedo del delantal (los de la pollera); ausente = sin volado. */
-    public static final ComponentType<PolleraVolado> DELANTAL_VOLADO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "delantal_volado"),
-            ComponentType.<PolleraVolado>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraVolado::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraVolado.values()[i], Enum::ordinal))
-                    .build());
-
-    /** Forma de la pollera (§{@link PolleraForma}); ausente = CAMPANA. */
-    public static final ComponentType<PolleraForma> POLLERA_FORMA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "pollera_forma"),
-            ComponentType.<PolleraForma>builder()
-                    .codec(StringIdentifiable.createCodec(PolleraForma::values))
-                    .packetCodec(PacketCodecs.indexed(i -> PolleraForma.values()[i], Enum::ordinal))
-                    .build());
-
     // ── capa (2026-09-29) — ausentes = Medio / Recto / sin capucha / sin cuello ──
-    public static final ComponentType<CapaLargo> CAPA_LARGO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_largo"),
-            ComponentType.<CapaLargo>builder()
-                    .codec(StringIdentifiable.createCodec(CapaLargo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CapaLargo.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CapaRuedo> CAPA_RUEDO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_ruedo"),
-            ComponentType.<CapaRuedo>builder()
-                    .codec(StringIdentifiable.createCodec(CapaRuedo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CapaRuedo.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<Boolean> CAPA_CAPUCHA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_capucha"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
-    public static final ComponentType<Boolean> CAPA_CUELLO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_cuello"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
 
-    /**
-     * Capucha puesta en la cabeza (true) o caída en la espalda (ausente/false)
-     * de una chaqueta (2026-09-30, hoodie "con tecla para subir/bajar"). Vive
-     * en el stack equipado: el servidor la cambia (ver {@code util/RedCapucha})
-     * y Trinkets la sincroniza a todos.
-     */
-    public static final ComponentType<Boolean> CAPUCHA_ARRIBA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capucha_arriba"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
-
-    /**
-     * Frente abierto o cerrado AHORA (2026-10-11, "un keybind para abrir y cerrar la chaqueta"): true = abierto,
-     * false = cerrado, ausente = como dice el corte ({@link #CHAQUETA_FRENTE}). Lo cambia el servidor con la tecla
-     * (ver {@code util/RedFrente}) y Trinkets lo sincroniza, igual que {@link #CAPUCHA_ARRIBA}.
-     */
-    public static final ComponentType<Boolean> FRENTE_AHORA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "frente_ahora"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
-
-    /** Frente de la chaqueta (2026-10-07); ausente = cerrada. */
-    public static final ComponentType<ChaquetaFrente> CHAQUETA_FRENTE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "chaqueta_frente"),
-            ComponentType.<ChaquetaFrente>builder()
-                    .codec(StringIdentifiable.createCodec(ChaquetaFrente::values))
-                    .packetCodec(PacketCodecs.indexed(i -> ChaquetaFrente.values()[i], Enum::ordinal))
-                    .build());
-    /** Ruedo de cada borde libre de la prenda (2026-10-07, {@link Ruedos}); lo ausente vale el de fábrica. */
-    public static final ComponentType<java.util.Map<ZonaRuedo, Ruedo>> RUEDOS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "ruedos"),
-            ComponentType.<java.util.Map<ZonaRuedo, Ruedo>>builder()
-                    .codec(Ruedos.CODEC)
-                    .packetCodec(PacketCodecs.codec(Ruedos.CODEC))
-                    .build());
-    /** Solapas de la chaqueta (2026-10-07); ausente = ninguna. */
-    public static final ComponentType<ChaquetaSolapa> CHAQUETA_SOLAPA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "chaqueta_solapa"),
-            ComponentType.<ChaquetaSolapa>builder()
-                    .codec(StringIdentifiable.createCodec(ChaquetaSolapa::values))
-                    .packetCodec(PacketCodecs.indexed(i -> ChaquetaSolapa.values()[i], Enum::ordinal))
-                    .build());
-    /** El Top con capucha (2026-10-07, "un solo top"): solo se guarda cuando es true; ausente = sin capucha. */
-    public static final ComponentType<Boolean> CON_CAPUCHA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "con_capucha"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
     /** Marca de la copia que se dibuja en la capa exterior (el Top llevado en el slot de chaqueta); no se guarda en la prenda. */
     public static final ComponentType<Boolean> CAPA_EXTERIOR = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_exterior"),
@@ -735,43 +418,6 @@ public final class ModamodComponents {
                     .build());
 
     // ── sombrero de bruja (2026-10-04) — ausentes = ala ancha / punta recta / colores de fábrica ──
-    public static final ComponentType<SombreroAla> SOMBRERO_ALA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "sombrero_ala"),
-            ComponentType.<SombreroAla>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroAla::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroAla.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<SombreroPunta> SOMBRERO_PUNTA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "sombrero_punta"),
-            ComponentType.<SombreroPunta>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroPunta::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroPunta.values()[i], Enum::ordinal))
-                    .build());
-    /** La planta del ala plana (2026-10-14): ausente = redonda. */
-    public static final ComponentType<SombreroPlanta> SOMBRERO_PLANTA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "sombrero_planta"),
-            ComponentType.<SombreroPlanta>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroPlanta::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroPlanta.values()[i], Enum::ordinal))
-                    .build());
-    /** Malla o cuboides (2026-10-14): ausente = malla. */
-    public static final ComponentType<SombreroEstilo> SOMBRERO_ESTILO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "sombrero_estilo"),
-            ComponentType.<SombreroEstilo>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroEstilo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroEstilo.values()[i], Enum::ordinal))
-                    .build());
-    /** Grosor de las alas (2026-10-14): ausente = fina. */
-    public static final ComponentType<SombreroGrosor> SOMBRERO_GROSOR = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "sombrero_grosor"),
-            ComponentType.<SombreroGrosor>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroGrosor::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroGrosor.values()[i], Enum::ordinal))
-                    .build());
-    /** La banda del sombrero (2026-10-14, "molde para poner la banda, con el en blanco se va"): solo se guarda cuando es false; ausente = con banda. */
-    public static final ComponentType<Boolean> SOMBRERO_BANDA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "sombrero_banda"),
-            ComponentType.<Boolean>builder().codec(com.mojang.serialization.Codec.BOOL).packetCodec(PacketCodecs.BOOL).build());
     public static final ComponentType<java.util.List<Integer>> COLORES_SOMBRERO = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_sombrero"),
             ComponentType.<java.util.List<Integer>>builder()
@@ -779,25 +425,6 @@ public final class ModamodComponents {
                     .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
                     .build());
 
-    /** Banda (2026-10-05, cintos y chokers): zona, ancho, herraje, colores y dibujo de sus 3 partes. */
-    public static final ComponentType<BandaZona> BANDA_ZONA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "banda_zona"),
-            ComponentType.<BandaZona>builder()
-                    .codec(StringIdentifiable.createCodec(BandaZona::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BandaZona.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<BandaAncho> BANDA_ANCHO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "banda_ancho"),
-            ComponentType.<BandaAncho>builder()
-                    .codec(StringIdentifiable.createCodec(BandaAncho::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BandaAncho.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<BandaHerraje> BANDA_HERRAJE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "banda_herraje"),
-            ComponentType.<BandaHerraje>builder()
-                    .codec(StringIdentifiable.createCodec(BandaHerraje::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BandaHerraje.values()[i], Enum::ordinal))
-                    .build());
     public static final ComponentType<java.util.List<Integer>> COLORES_BANDA = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_banda"),
             ComponentType.<java.util.List<Integer>>builder()
@@ -811,97 +438,6 @@ public final class ModamodComponents {
                     .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
                     .build());
 
-    /** Borcegos (2026-10-08, slot de calzado): altura de la caña, suela, cómo se lleva el pantalón, colores y dibujo de sus 3 zonas. */
-    public static final ComponentType<BorcegoCana> BORCEGO_CANA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_cana"),
-            ComponentType.<BorcegoCana>builder()
-                    .codec(StringIdentifiable.createCodec(BorcegoCana::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BorcegoCana.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<BorcegoSuela> BORCEGO_SUELA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_suela"),
-            ComponentType.<BorcegoSuela>builder()
-                    .codec(StringIdentifiable.createCodec(BorcegoSuela::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BorcegoSuela.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<BorcegoBotamanga> BORCEGO_BOTAMANGA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_botamanga"),
-            ComponentType.<BorcegoBotamanga>builder()
-                    .codec(StringIdentifiable.createCodec(BorcegoBotamanga::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BorcegoBotamanga.values()[i], Enum::ordinal))
-                    .build());
-    /** Pie izquierdo (2026-10-11, "no se puede independizar derecho e izquierdo?"): ausente = igual que el derecho. */
-    public static final ComponentType<BorcegoCana> BORCEGO_CANA_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_cana_izq"),
-            ComponentType.<BorcegoCana>builder()
-                    .codec(StringIdentifiable.createCodec(BorcegoCana::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BorcegoCana.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<BorcegoSuela> BORCEGO_SUELA_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_suela_izq"),
-            ComponentType.<BorcegoSuela>builder()
-                    .codec(StringIdentifiable.createCodec(BorcegoSuela::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BorcegoSuela.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<BorcegoBotamanga> BORCEGO_BOTAMANGA_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_botamanga_izq"),
-            ComponentType.<BorcegoBotamanga>builder()
-                    .codec(StringIdentifiable.createCodec(BorcegoBotamanga::values))
-                    .packetCodec(PacketCodecs.indexed(i -> BorcegoBotamanga.values()[i], Enum::ordinal))
-                    .build());
-    /**
-     * Cuboides o malla de la capucha del top y de la capa (2026-10-23, "metelas al mod con dos moldes nuevos para cambiar
-     * entre cuboide o malla"); ausente = malla.
-     */
-    public static final ComponentType<SombreroEstilo> CAPUCHA_ESTILO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capucha_estilo"),
-            ComponentType.<SombreroEstilo>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroEstilo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroEstilo.values()[i], Enum::ordinal))
-                    .build());
-    /** Cuboides o malla del calzado (2026-10-14, "el mismo molde cuboide"): los dos pies juntos; ausente = malla. */
-    public static final ComponentType<SombreroEstilo> BORCEGO_ESTILO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_estilo"),
-            ComponentType.<SombreroEstilo>builder()
-                    .codec(StringIdentifiable.createCodec(SombreroEstilo::values))
-                    .packetCodec(PacketCodecs.indexed(i -> SombreroEstilo.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CalzadoPunta> BORCEGO_PUNTA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_punta"),
-            ComponentType.<CalzadoPunta>builder()
-                    .codec(StringIdentifiable.createCodec(CalzadoPunta::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CalzadoPunta.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CalzadoPunta> BORCEGO_PUNTA_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_punta_izq"),
-            ComponentType.<CalzadoPunta>builder()
-                    .codec(StringIdentifiable.createCodec(CalzadoPunta::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CalzadoPunta.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CalzadoCierre> BORCEGO_CIERRE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_cierre"),
-            ComponentType.<CalzadoCierre>builder()
-                    .codec(StringIdentifiable.createCodec(CalzadoCierre::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CalzadoCierre.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CalzadoCierre> BORCEGO_CIERRE_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_cierre_izq"),
-            ComponentType.<CalzadoCierre>builder()
-                    .codec(StringIdentifiable.createCodec(CalzadoCierre::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CalzadoCierre.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CalzadoDetalle> BORCEGO_DETALLE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_detalle"),
-            ComponentType.<CalzadoDetalle>builder()
-                    .codec(StringIdentifiable.createCodec(CalzadoDetalle::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CalzadoDetalle.values()[i], Enum::ordinal))
-                    .build());
-    public static final ComponentType<CalzadoDetalle> BORCEGO_DETALLE_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "borcego_detalle_izq"),
-            ComponentType.<CalzadoDetalle>builder()
-                    .codec(StringIdentifiable.createCodec(CalzadoDetalle::values))
-                    .packetCodec(PacketCodecs.indexed(i -> CalzadoDetalle.values()[i], Enum::ordinal))
-                    .build());
     public static final ComponentType<java.util.List<Integer>> COLORES_BORCEGOS_IZQ = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_borcegos_izq"),
             ComponentType.<java.util.List<Integer>>builder()

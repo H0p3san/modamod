@@ -71,7 +71,7 @@ public final class PrendaModelado {
                     combo.remeraLargo().orElse(actual.largo()),
                     actual.manga(),
                     combo.remeraCuello().orElse(actual.cuello()));
-            out.set(ModItems.VARIANTE, nuevo);
+            com.modamod.prenda.Corte.set(out, com.modamod.prenda.Ejes.VARIANTE, nuevo);
             cambio = true;
         }
         // Manga: eje aparte (2026-09-24, "vamos con mangas distintas") —

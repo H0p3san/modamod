@@ -127,13 +127,13 @@ public enum Calce implements StringIdentifiable {
     }
 
     public static Calce leer(ItemStack stack) {
-        Calce c = stack.get(ModamodComponents.CALCE);
+        Calce c = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CALCE);
         return c == null ? NORMAL : c;
     }
 
     public static void escribir(ItemStack stack, Calce valor) {
-        if (valor == NORMAL) stack.remove(ModamodComponents.CALCE);
-        else stack.set(ModamodComponents.CALCE, valor);
+        if (valor == NORMAL) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CALCE);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CALCE, valor);
     }
 
     /**

@@ -47,7 +47,7 @@ public final class RegionResolver {
     // --- Orientacion ---
 
     public static Orientacion orientacion(ItemStack stack) {
-        Orientacion o = stack.get(ModamodComponents.ORIENTACION);
+        Orientacion o = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.ORIENTACION);
         return o == null ? Orientacion.NORMAL : o;
     }
 
@@ -59,8 +59,8 @@ public final class RegionResolver {
      * apilaria con uno ausente.
      */
     public static void ponerOrientacion(ItemStack stack, Orientacion o) {
-        if (o.esNormal()) stack.remove(ModamodComponents.ORIENTACION);
-        else stack.set(ModamodComponents.ORIENTACION, o);
+        if (o.esNormal()) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.ORIENTACION);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.ORIENTACION, o);
     }
 
     /**

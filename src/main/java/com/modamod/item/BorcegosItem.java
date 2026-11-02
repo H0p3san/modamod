@@ -37,45 +37,45 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
     public static BorcegoCana cana(ItemStack stack) { return cana(stack, false); }
 
     public static BorcegoCana cana(ItemStack stack, boolean izq) {
-        BorcegoCana c = izq ? stack.get(ModamodComponents.BORCEGO_CANA_IZQ) : null;
-        if (c == null) c = stack.get(ModamodComponents.BORCEGO_CANA);
+        BorcegoCana c = izq ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_CANA_IZQ) : null;
+        if (c == null) c = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_CANA);
         return c == null ? BorcegoCana.MEDIA : c;
     }
 
     public static BorcegoSuela suela(ItemStack stack) { return suela(stack, false); }
 
     public static BorcegoSuela suela(ItemStack stack, boolean izq) {
-        BorcegoSuela s = izq ? stack.get(ModamodComponents.BORCEGO_SUELA_IZQ) : null;
-        if (s == null) s = stack.get(ModamodComponents.BORCEGO_SUELA);
+        BorcegoSuela s = izq ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_SUELA_IZQ) : null;
+        if (s == null) s = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_SUELA);
         return s == null ? BorcegoSuela.CHATA : s;
     }
 
     /** Malla de fábrica o cuboides (el mismo molde que el sombrero). */
     public static SombreroEstilo estilo(ItemStack stack) {
-        SombreroEstilo e = stack.get(ModamodComponents.BORCEGO_ESTILO);
+        SombreroEstilo e = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_ESTILO);
         return e == null ? SombreroEstilo.MALLA : e;
     }
 
     public static void setEstilo(ItemStack stack, SombreroEstilo v) {
-        if (v == SombreroEstilo.MALLA) stack.remove(ModamodComponents.BORCEGO_ESTILO);
-        else stack.set(ModamodComponents.BORCEGO_ESTILO, v);
+        if (v == SombreroEstilo.MALLA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BORCEGO_ESTILO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BORCEGO_ESTILO, v);
     }
 
     public static CalzadoPunta punta(ItemStack stack, boolean izq) {
-        CalzadoPunta p = izq ? stack.get(ModamodComponents.BORCEGO_PUNTA_IZQ) : null;
-        if (p == null) p = stack.get(ModamodComponents.BORCEGO_PUNTA);
+        CalzadoPunta p = izq ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_PUNTA_IZQ) : null;
+        if (p == null) p = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_PUNTA);
         return p == null ? CalzadoPunta.CUERO : p;
     }
 
     public static CalzadoCierre cierre(ItemStack stack, boolean izq) {
-        CalzadoCierre c = izq ? stack.get(ModamodComponents.BORCEGO_CIERRE_IZQ) : null;
-        if (c == null) c = stack.get(ModamodComponents.BORCEGO_CIERRE);
+        CalzadoCierre c = izq ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_CIERRE_IZQ) : null;
+        if (c == null) c = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_CIERRE);
         return c == null ? CalzadoCierre.CORDONES : c;
     }
 
     public static CalzadoDetalle detalle(ItemStack stack, boolean izq) {
-        CalzadoDetalle d = izq ? stack.get(ModamodComponents.BORCEGO_DETALLE_IZQ) : null;
-        if (d == null) d = stack.get(ModamodComponents.BORCEGO_DETALLE);
+        CalzadoDetalle d = izq ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_DETALLE_IZQ) : null;
+        if (d == null) d = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_DETALLE);
         return d == null ? CalzadoDetalle.NINGUNO : d;
     }
 
@@ -93,8 +93,8 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
     public static BorcegoBotamanga botamanga(ItemStack stack) { return botamanga(stack, false); }
 
     public static BorcegoBotamanga botamanga(ItemStack stack, boolean izq) {
-        BorcegoBotamanga b = izq ? stack.get(ModamodComponents.BORCEGO_BOTAMANGA_IZQ) : null;
-        if (b == null) b = stack.get(ModamodComponents.BORCEGO_BOTAMANGA);
+        BorcegoBotamanga b = izq ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA_IZQ) : null;
+        if (b == null) b = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA);
         return b == null ? BorcegoBotamanga.ADENTRO : b;
     }
 
@@ -103,42 +103,43 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
      * vuelve a copiarlo); DERECHA congela antes el izquierdo en lo que tenía para que no se mueva; IZQUIERDA escribe
      * solo el suyo.
      */
-    private static <T> void escribir(ItemStack stack, ComponentType<T> der, ComponentType<T> izq, T porDefecto,
-                                     T valor, Lado lado) {
-        T actualDer = stack.get(der) == null ? porDefecto : stack.get(der);
+    private static <T> void escribir(ItemStack stack, com.modamod.prenda.EjeDeCorte<T> der,
+                                     com.modamod.prenda.EjeDeCorte<T> izq, T porDefecto, T valor, Lado lado) {
+        T actualDer = com.modamod.prenda.Corte.getOrDefault(stack, der, porDefecto);
         if (lado == Lado.IZQUIERDA) {
-            stack.set(izq, valor);
+            com.modamod.prenda.Corte.set(stack, izq, valor);
             return;
         }
-        if (lado == Lado.DERECHA && stack.get(izq) == null) stack.set(izq, actualDer);   // congela el izquierdo
-        if (valor.equals(porDefecto)) stack.remove(der);
-        else stack.set(der, valor);
-        if (lado == Lado.AMBAS) stack.remove(izq);
+        if (lado == Lado.DERECHA && com.modamod.prenda.Corte.get(stack, izq) == null) {
+            com.modamod.prenda.Corte.set(stack, izq, actualDer);   // congela el izquierdo
+        }
+        com.modamod.prenda.Corte.set(stack, der, valor.equals(porDefecto) ? null : valor);
+        if (lado == Lado.AMBAS) com.modamod.prenda.Corte.remove(stack, izq);
     }
 
     public static void setCana(ItemStack stack, BorcegoCana v, Lado lado) {
-        escribir(stack, ModamodComponents.BORCEGO_CANA, ModamodComponents.BORCEGO_CANA_IZQ, BorcegoCana.MEDIA, v, lado);
+        escribir(stack, com.modamod.prenda.Ejes.BORCEGO_CANA, com.modamod.prenda.Ejes.BORCEGO_CANA_IZQ, BorcegoCana.MEDIA, v, lado);
     }
 
     public static void setSuela(ItemStack stack, BorcegoSuela v, Lado lado) {
-        escribir(stack, ModamodComponents.BORCEGO_SUELA, ModamodComponents.BORCEGO_SUELA_IZQ, BorcegoSuela.CHATA, v, lado);
+        escribir(stack, com.modamod.prenda.Ejes.BORCEGO_SUELA, com.modamod.prenda.Ejes.BORCEGO_SUELA_IZQ, BorcegoSuela.CHATA, v, lado);
     }
 
     public static void setBotamanga(ItemStack stack, BorcegoBotamanga v, Lado lado) {
-        escribir(stack, ModamodComponents.BORCEGO_BOTAMANGA, ModamodComponents.BORCEGO_BOTAMANGA_IZQ,
+        escribir(stack, com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA, com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA_IZQ,
                 BorcegoBotamanga.ADENTRO, v, lado);
     }
 
     public static void setPunta(ItemStack stack, CalzadoPunta v, Lado lado) {
-        escribir(stack, ModamodComponents.BORCEGO_PUNTA, ModamodComponents.BORCEGO_PUNTA_IZQ, CalzadoPunta.CUERO, v, lado);
+        escribir(stack, com.modamod.prenda.Ejes.BORCEGO_PUNTA, com.modamod.prenda.Ejes.BORCEGO_PUNTA_IZQ, CalzadoPunta.CUERO, v, lado);
     }
 
     public static void setCierre(ItemStack stack, CalzadoCierre v, Lado lado) {
-        escribir(stack, ModamodComponents.BORCEGO_CIERRE, ModamodComponents.BORCEGO_CIERRE_IZQ, CalzadoCierre.CORDONES, v, lado);
+        escribir(stack, com.modamod.prenda.Ejes.BORCEGO_CIERRE, com.modamod.prenda.Ejes.BORCEGO_CIERRE_IZQ, CalzadoCierre.CORDONES, v, lado);
     }
 
     public static void setDetalle(ItemStack stack, CalzadoDetalle v, Lado lado) {
-        escribir(stack, ModamodComponents.BORCEGO_DETALLE, ModamodComponents.BORCEGO_DETALLE_IZQ, CalzadoDetalle.NINGUNO, v, lado);
+        escribir(stack, com.modamod.prenda.Ejes.BORCEGO_DETALLE, com.modamod.prenda.Ejes.BORCEGO_DETALLE_IZQ, CalzadoDetalle.NINGUNO, v, lado);
     }
 
     public static void setCana(ItemStack stack, BorcegoCana v) { setCana(stack, v, Lado.AMBAS); }

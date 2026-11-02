@@ -21,13 +21,13 @@ import net.minecraft.item.ItemStack;
  */
 public final class EjeBilateral {
 
-    public static <E> E leer(ItemStack stack, Lado lado, ComponentType<E> primario,
-                              ComponentType<E> override, E porDefecto) {
+    public static <E> E leer(ItemStack stack, Lado lado, com.modamod.prenda.EjeDeCorte<E> primario,
+                              com.modamod.prenda.EjeDeCorte<E> override, E porDefecto) {
         if (lado == Lado.DERECHA) {
-            E o = stack.get(override);
+            E o = com.modamod.prenda.Corte.get(stack, override);
             if (o != null) return o;
         }
-        E v = stack.get(primario);
+        E v = com.modamod.prenda.Corte.get(stack, primario);
         return v == null ? porDefecto : v;
     }
 
@@ -40,9 +40,9 @@ public final class EjeBilateral {
      * valor que llegue a las 12 filas, {@code CANCAN} son 10 nomás) de
      * "anclaje puesto en su valor más largo a propósito".
      */
-    public static <E> boolean presente(ItemStack stack, Lado lado, ComponentType<E> primario, ComponentType<E> override) {
-        if (lado == Lado.DERECHA && stack.get(override) != null) return true;
-        return stack.get(primario) != null;
+    public static <E> boolean presente(ItemStack stack, Lado lado, com.modamod.prenda.EjeDeCorte<E> primario, com.modamod.prenda.EjeDeCorte<E> override) {
+        if (lado == Lado.DERECHA && com.modamod.prenda.Corte.get(stack, override) != null) return true;
+        return com.modamod.prenda.Corte.get(stack, primario) != null;
     }
 
     /**
@@ -58,23 +58,23 @@ public final class EjeBilateral {
         return new int[]{desde, Math.max(desde, hasta)};
     }
 
-    public static <E> void escribir(ItemStack stack, Lado lado, ComponentType<E> primario,
-                                     ComponentType<E> override, E porDefecto, E valor) {
+    public static <E> void escribir(ItemStack stack, Lado lado, com.modamod.prenda.EjeDeCorte<E> primario,
+                                     com.modamod.prenda.EjeDeCorte<E> override, E porDefecto, E valor) {
         switch (lado) {
             case AMBAS -> {
-                if (valor.equals(porDefecto)) stack.remove(primario); else stack.set(primario, valor);
-                stack.remove(override);
+                if (valor.equals(porDefecto)) com.modamod.prenda.Corte.remove(stack, primario); else com.modamod.prenda.Corte.set(stack, primario, valor);
+                com.modamod.prenda.Corte.remove(stack, override);
             }
             case DERECHA -> {
                 E izq = leer(stack, Lado.IZQUIERDA, primario, override, porDefecto);
-                if (valor.equals(izq)) stack.remove(override); else stack.set(override, valor);
+                if (valor.equals(izq)) com.modamod.prenda.Corte.remove(stack, override); else com.modamod.prenda.Corte.set(stack, override, valor);
             }
             case IZQUIERDA -> {
-                if (stack.get(override) == null) {
+                if (com.modamod.prenda.Corte.get(stack, override) == null) {
                     E actual = leer(stack, Lado.IZQUIERDA, primario, override, porDefecto);
-                    stack.set(override, actual);
+                    com.modamod.prenda.Corte.set(stack, override, actual);
                 }
-                if (valor.equals(porDefecto)) stack.remove(primario); else stack.set(primario, valor);
+                if (valor.equals(porDefecto)) com.modamod.prenda.Corte.remove(stack, primario); else com.modamod.prenda.Corte.set(stack, primario, valor);
             }
         }
     }

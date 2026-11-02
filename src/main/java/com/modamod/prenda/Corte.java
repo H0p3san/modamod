@@ -1,0 +1,123 @@
+package com.modamod.prenda;
+
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
+import net.minecraft.component.ComponentType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * La forma de una prenda: todos sus ejes de corte en un solo componente ({@link #COMPONENTE}). Lo ausente vale lo de
+ * fábrica, que decide quien lee (cada prenda conoce los suyos). Un molde de la Modeladora puede ser el mismo
+ * {@code Corte} con solo algunos ejes puestos: aplicarlo es copiarlos encima ({@link #conEncima}).
+ */
+public record Corte(Map<EjeDeCorte<?>, Object> valores) {
+    private static final Logger LOG = LogUtils.getLogger();
+    public static final Corte VACIO = new Corte(Map.of());
+
+    public Corte {
+        valores = Map.copyOf(valores);
+    }
+
+    public static final Codec<Corte> CODEC = Codec.unboundedMap(Codec.STRING, Codec.PASSTHROUGH)
+            .xmap(Corte::leerMapa, Corte::escribirMapa);
+
+    public static final ComponentType<Corte> COMPONENTE = Registry.register(Registries.DATA_COMPONENT_TYPE,
+            Identifier.of("modamod", "corte"),
+            ComponentType.<Corte>builder().codec(CODEC).packetCodec(PacketCodecs.codec(CODEC)).build());
+
+    /** Fuerza el registro del componente. */
+    public static void init() {}
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T> T valor(EjeDeCorte<T> eje) {
+        return (T) valores.get(eje);
+    }
+
+    public <T> Corte con(EjeDeCorte<T> eje, @Nullable T valor) {
+        Map<EjeDeCorte<?>, Object> m = new HashMap<>(valores);
+        if (valor == null) m.remove(eje);
+        else m.put(eje, valor);
+        return new Corte(m);
+    }
+
+    /** Este corte con los ejes de {@code encima} reemplazando a los propios. */
+    public Corte conEncima(Corte encima) {
+        Map<EjeDeCorte<?>, Object> m = new HashMap<>(valores);
+        m.putAll(encima.valores);
+        return new Corte(m);
+    }
+
+    public boolean vacio() {
+        return valores.isEmpty();
+    }
+
+    // --- Sobre la prenda ---
+
+    public static Corte de(ItemStack stack) {
+        return stack.getOrDefault(COMPONENTE, VACIO);
+    }
+
+    /** El valor guardado, o null si no está (vale el de fábrica). */
+    @Nullable
+    public static <T> T get(ItemStack stack, EjeDeCorte<T> eje) {
+        Corte c = stack.get(COMPONENTE);
+        return c == null ? null : c.valor(eje);
+    }
+
+    public static <T> T getOrDefault(ItemStack stack, EjeDeCorte<T> eje, T porDefecto) {
+        T v = get(stack, eje);
+        return v == null ? porDefecto : v;
+    }
+
+    public static <T> void set(ItemStack stack, EjeDeCorte<T> eje, @Nullable T valor) {
+        Corte nuevo = de(stack).con(eje, valor);
+        if (nuevo.vacio()) stack.remove(COMPONENTE);
+        else stack.set(COMPONENTE, nuevo);
+    }
+
+    public static void remove(ItemStack stack, EjeDeCorte<?> eje) {
+        set(stack, eje, null);
+    }
+
+    // --- Codec ---
+
+    private static Corte leerMapa(Map<String, Dynamic<?>> crudo) {
+        Map<EjeDeCorte<?>, Object> m = new HashMap<>();
+        for (var e : crudo.entrySet()) {
+            EjeDeCorte<?> eje = EjeDeCorte.porNombre(e.getKey());
+            if (eje == null) {
+                LOG.warn("[ModaMod] Eje de corte desconocido, se ignora: {}", e.getKey());
+                continue;
+            }
+            eje.codec().parse(e.getValue()).resultOrPartial(err -> LOG.warn("[ModaMod] Eje {} ilegible: {}", eje, err))
+                    .ifPresent(v -> m.put(eje, v));
+        }
+        return new Corte(m);
+    }
+
+    private static Map<String, Dynamic<?>> escribirMapa(Corte corte) {
+        Map<String, Dynamic<?>> m = new LinkedHashMap<>();
+        corte.valores.forEach((eje, valor) -> m.put(eje.nombre(), codificar(eje, valor)));
+        return m;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Dynamic<NbtElement> codificar(EjeDeCorte<T> eje, Object valor) {
+        NbtElement nbt = eje.codec().encodeStart(NbtOps.INSTANCE, (T) valor).getOrThrow();
+        return new Dynamic<>(NbtOps.INSTANCE, nbt);
+    }
+}

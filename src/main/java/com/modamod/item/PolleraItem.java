@@ -25,57 +25,57 @@ public class PolleraItem extends ClothingTrinketItem {
     }
 
     public static PolleraLargo largo(ItemStack stack) {
-        PolleraLargo l = stack.get(ModamodComponents.POLLERA_LARGO);
+        PolleraLargo l = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.POLLERA_LARGO);
         return l == null ? PolleraLargo.MEDIO : l;
     }
 
     public static void setLargo(ItemStack stack, PolleraLargo largo) {
-        if (largo == PolleraLargo.MEDIO) stack.remove(ModamodComponents.POLLERA_LARGO);
-        else stack.set(ModamodComponents.POLLERA_LARGO, largo);
+        if (largo == PolleraLargo.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_LARGO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_LARGO, largo);
     }
 
     /** Altura de la cintura en px bajo el hombro (9 = cadera de siempre). */
     public static float cintura(ItemStack stack) {
-        Integer n = stack.get(ModamodComponents.POLLERA_CINTURA);
+        Integer n = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.POLLERA_CINTURA);
         if (n == null) return 9f;
         return Math.max(3f, Math.min(11f, 2f * n));
     }
 
     public static void setCintura(ItemStack stack, int nivel) {
         // 7 = "ninguna" (2026-10-12, molde en blanco): vuelve a la cadera de siempre.
-        if (nivel < 0 || nivel > 6) stack.remove(ModamodComponents.POLLERA_CINTURA);
-        else stack.set(ModamodComponents.POLLERA_CINTURA, nivel);
+        if (nivel < 0 || nivel > 6) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_CINTURA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_CINTURA, nivel);
     }
 
     public static PolleraForma forma(ItemStack stack) {
-        PolleraForma f = stack.get(ModamodComponents.POLLERA_FORMA);
+        PolleraForma f = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.POLLERA_FORMA);
         return f == null ? PolleraForma.CAMPANA : f;
     }
 
     public static void setForma(ItemStack stack, PolleraForma forma) {
-        if (forma == PolleraForma.CAMPANA) stack.remove(ModamodComponents.POLLERA_FORMA);
-        else stack.set(ModamodComponents.POLLERA_FORMA, forma);
+        if (forma == PolleraForma.CAMPANA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_FORMA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_FORMA, forma);
     }
 
     /** Volado del borde de abajo (2026-10-05), o null. */
     @org.jetbrains.annotations.Nullable
     public static PolleraVolado voladoRuedo(ItemStack stack) {
-        return stack.get(ModamodComponents.POLLERA_VOLADO_RUEDO);
+        return com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO);
     }
 
     @org.jetbrains.annotations.Nullable
     public static PolleraVolado voladoTodo(ItemStack stack) {
-        return stack.get(ModamodComponents.POLLERA_VOLADO_TODO);
+        return com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO);
     }
 
     public static void setVoladoRuedo(ItemStack stack, @org.jetbrains.annotations.Nullable PolleraVolado v) {
-        if (v == null) stack.remove(ModamodComponents.POLLERA_VOLADO_RUEDO);
-        else stack.set(ModamodComponents.POLLERA_VOLADO_RUEDO, v);
+        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO, v);
     }
 
     public static void setVoladoTodo(ItemStack stack, @org.jetbrains.annotations.Nullable PolleraVolado v) {
-        if (v == null) stack.remove(ModamodComponents.POLLERA_VOLADO_TODO);
-        else stack.set(ModamodComponents.POLLERA_VOLADO_TODO, v);
+        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO, v);
     }
 
     /** Borde decorativo del ruedo (2026-10-05) que sale del {@link Ruedo} de la pollera, o null (sin borde decorativo). */

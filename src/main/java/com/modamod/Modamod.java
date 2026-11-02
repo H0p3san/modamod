@@ -26,6 +26,8 @@ public class Modamod implements ModInitializer {
         com.modamod.receta.ModamodRecetas.init();
         // Que items son prendas del sistema de capas. Va DESPUES de los
         // items: registra por instancia, no por id.
+        com.modamod.prenda.Ejes.init();
+        com.modamod.prenda.Corte.init();
         Prendas.init();
         PerfilesDeCuerpo.init();
         // A la venta (2026-10-22, "va a estar a la venta"): el clérigo aprendiz vende Estrógenos y Testosterona.

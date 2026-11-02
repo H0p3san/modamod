@@ -33,25 +33,25 @@ public class PantalonItem extends ClothingTrinketItem {
     // ── anclaje SUPERIOR: cintura hacia abajo (el que escribe la Mesa desde el 2026-10-04) ──
 
     public static Botamanga largoSuperior(ItemStack stack, Lado lado) {
-        return EjeBilateral.leer(stack, lado, ModamodComponents.PANTALON_LARGO_SUPERIOR,
-                ModamodComponents.RIGHT_PANTALON_LARGO_SUPERIOR, Botamanga.PIE);
+        return EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.PANTALON_SUPERIOR,
+                com.modamod.prenda.Ejes.PANTALON_SUPERIOR_DER, Botamanga.PIE);
     }
 
     public static void setLargoSuperior(ItemStack stack, Lado lado, Botamanga valor) {
-        EjeBilateral.escribir(stack, lado, ModamodComponents.PANTALON_LARGO_SUPERIOR,
-                ModamodComponents.RIGHT_PANTALON_LARGO_SUPERIOR, Botamanga.PIE, valor);
+        EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.PANTALON_SUPERIOR,
+                com.modamod.prenda.Ejes.PANTALON_SUPERIOR_DER, Botamanga.PIE, valor);
     }
 
     // ── anclaje INFERIOR: tobillo hacia arriba (el de los pantalones hechos antes del 2026-10-04) ──
 
     public static Botamanga largoInferior(ItemStack stack, Lado lado) {
-        return EjeBilateral.leer(stack, lado, ModamodComponents.PANTALON_LARGO_INFERIOR,
-                ModamodComponents.RIGHT_PANTALON_LARGO_INFERIOR, Botamanga.PIE);
+        return EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.PANTALON_INFERIOR,
+                com.modamod.prenda.Ejes.PANTALON_INFERIOR_DER, Botamanga.PIE);
     }
 
     public static void setLargoInferior(ItemStack stack, Lado lado, Botamanga valor) {
-        EjeBilateral.escribir(stack, lado, ModamodComponents.PANTALON_LARGO_INFERIOR,
-                ModamodComponents.RIGHT_PANTALON_LARGO_INFERIOR, Botamanga.PIE, valor);
+        EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.PANTALON_INFERIOR,
+                com.modamod.prenda.Ejes.PANTALON_INFERIOR_DER, Botamanga.PIE, valor);
     }
 
     /**
@@ -62,9 +62,9 @@ public class PantalonItem extends ClothingTrinketItem {
      */
     public static int[] filasVisibles(ItemStack stack, Lado lado) {
         boolean supAusente = !EjeBilateral.presente(stack, lado,
-                ModamodComponents.PANTALON_LARGO_SUPERIOR, ModamodComponents.RIGHT_PANTALON_LARGO_SUPERIOR);
+                com.modamod.prenda.Ejes.PANTALON_SUPERIOR, com.modamod.prenda.Ejes.PANTALON_SUPERIOR_DER);
         boolean infAusente = !EjeBilateral.presente(stack, lado,
-                ModamodComponents.PANTALON_LARGO_INFERIOR, ModamodComponents.RIGHT_PANTALON_LARGO_INFERIOR);
+                com.modamod.prenda.Ejes.PANTALON_INFERIOR, com.modamod.prenda.Ejes.PANTALON_INFERIOR_DER);
         int filasSup = supAusente ? 12 : largoSuperior(stack, lado).filas;
         int filasInf = infAusente ? 12 : largoInferior(stack, lado).filas;
         return EjeBilateral.interseccion(filasSup, filasInf);
@@ -72,13 +72,13 @@ public class PantalonItem extends ClothingTrinketItem {
 
     /** El tiro actual. Sin componente, MEDIO (cintura natural). No es cobertura de extremidad, sigue igual. */
     public static PantalonTiro tiro(ItemStack stack) {
-        PantalonTiro t = stack.get(ModamodComponents.PANTALON_TIRO);
+        PantalonTiro t = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.TIRO);
         return t == null ? PantalonTiro.MEDIO : t;
     }
 
     public static void setTiro(ItemStack stack, PantalonTiro tiro) {
-        if (tiro == PantalonTiro.MEDIO) stack.remove(ModamodComponents.PANTALON_TIRO);
-        else stack.set(ModamodComponents.PANTALON_TIRO, tiro);
+        if (tiro == PantalonTiro.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.TIRO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.TIRO, tiro);
     }
 
     /**

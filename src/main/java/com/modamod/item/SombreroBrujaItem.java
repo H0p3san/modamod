@@ -26,63 +26,63 @@ public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
     }
 
     public static SombreroAla ala(ItemStack stack) {
-        SombreroAla a = stack.get(ModamodComponents.SOMBRERO_ALA);
+        SombreroAla a = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_ALA);
         return a == null ? SombreroAla.ANCHA : a;
     }
 
     public static SombreroPunta punta(ItemStack stack) {
-        SombreroPunta p = stack.get(ModamodComponents.SOMBRERO_PUNTA);
+        SombreroPunta p = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA);
         return p == null ? SombreroPunta.RECTA : p;
     }
 
     public static SombreroGrosor grosor(ItemStack stack) {
-        SombreroGrosor g = stack.get(ModamodComponents.SOMBRERO_GROSOR);
+        SombreroGrosor g = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_GROSOR);
         return g == null ? SombreroGrosor.FINA : g;
     }
 
     public static void setGrosor(ItemStack stack, SombreroGrosor v) {
-        if (v == SombreroGrosor.FINA) stack.remove(ModamodComponents.SOMBRERO_GROSOR);
-        else stack.set(ModamodComponents.SOMBRERO_GROSOR, v);
+        if (v == SombreroGrosor.FINA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_GROSOR);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_GROSOR, v);
     }
 
     /** ¿Lleva banda? Sí de fábrica (los sombreros de antes la tienen). */
     public static boolean banda(ItemStack stack) {
-        return !Boolean.FALSE.equals(stack.get(ModamodComponents.SOMBRERO_BANDA));
+        return !Boolean.FALSE.equals(com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA));
     }
 
     public static void setBanda(ItemStack stack, boolean con) {
-        if (con) stack.remove(ModamodComponents.SOMBRERO_BANDA);
-        else stack.set(ModamodComponents.SOMBRERO_BANDA, false);
+        if (con) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);
     }
 
     public static SombreroEstilo estilo(ItemStack stack) {
-        SombreroEstilo e = stack.get(ModamodComponents.SOMBRERO_ESTILO);
+        SombreroEstilo e = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO);
         return e == null ? SombreroEstilo.MALLA : e;
     }
 
     public static void setEstilo(ItemStack stack, SombreroEstilo v) {
-        if (v == SombreroEstilo.MALLA) stack.remove(ModamodComponents.SOMBRERO_ESTILO);
-        else stack.set(ModamodComponents.SOMBRERO_ESTILO, v);
+        if (v == SombreroEstilo.MALLA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO, v);
     }
 
     public static SombreroPlanta planta(ItemStack stack) {
-        SombreroPlanta p = stack.get(ModamodComponents.SOMBRERO_PLANTA);
+        SombreroPlanta p = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_PLANTA);
         return p == null ? SombreroPlanta.REDONDA : p;
     }
 
     public static void setPlanta(ItemStack stack, SombreroPlanta v) {
-        if (v == SombreroPlanta.REDONDA) stack.remove(ModamodComponents.SOMBRERO_PLANTA);
-        else stack.set(ModamodComponents.SOMBRERO_PLANTA, v);
+        if (v == SombreroPlanta.REDONDA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_PLANTA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_PLANTA, v);
     }
 
     public static void setAla(ItemStack stack, SombreroAla v) {
-        if (v == SombreroAla.ANCHA) stack.remove(ModamodComponents.SOMBRERO_ALA);
-        else stack.set(ModamodComponents.SOMBRERO_ALA, v);
+        if (v == SombreroAla.ANCHA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_ALA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_ALA, v);
     }
 
     public static void setPunta(ItemStack stack, SombreroPunta v) {
-        if (v == SombreroPunta.RECTA) stack.remove(ModamodComponents.SOMBRERO_PUNTA);
-        else stack.set(ModamodComponents.SOMBRERO_PUNTA, v);
+        if (v == SombreroPunta.RECTA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA, v);
     }
 
     /** Los 3 colores (ala, cono, cinta); los de fábrica si el sombrero no se tiñó. */

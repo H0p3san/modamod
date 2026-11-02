@@ -31,34 +31,34 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
     }
 
     public static BandaZona zona(ItemStack stack) {
-        BandaZona z = stack.get(ModamodComponents.BANDA_ZONA);
+        BandaZona z = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BANDA_ZONA);
         return z == null ? BandaZona.CINTURA : z;
     }
 
     public static BandaAncho ancho(ItemStack stack) {
-        BandaAncho a = stack.get(ModamodComponents.BANDA_ANCHO);
+        BandaAncho a = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BANDA_ANCHO);
         return a == null ? BandaAncho.MEDIO : a;
     }
 
     public static BandaHerraje herraje(ItemStack stack) {
-        BandaHerraje h = stack.get(ModamodComponents.BANDA_HERRAJE);
+        BandaHerraje h = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE);
         // De fábrica sin hebilla (2026-10-12, "defaulteemos el cinto sin hebilla"): la placa es un molde.
         return h == null ? BandaHerraje.NINGUNO : h;
     }
 
     public static void setZona(ItemStack stack, BandaZona v) {
-        if (v == BandaZona.CINTURA) stack.remove(ModamodComponents.BANDA_ZONA);
-        else stack.set(ModamodComponents.BANDA_ZONA, v);
+        if (v == BandaZona.CINTURA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BANDA_ZONA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_ZONA, v);
     }
 
     public static void setAncho(ItemStack stack, BandaAncho v) {
-        if (v == BandaAncho.MEDIO) stack.remove(ModamodComponents.BANDA_ANCHO);
-        else stack.set(ModamodComponents.BANDA_ANCHO, v);
+        if (v == BandaAncho.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BANDA_ANCHO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_ANCHO, v);
     }
 
     public static void setHerraje(ItemStack stack, BandaHerraje v) {
-        if (v == BandaHerraje.NINGUNO) stack.remove(ModamodComponents.BANDA_HERRAJE);
-        else stack.set(ModamodComponents.BANDA_HERRAJE, v);
+        if (v == BandaHerraje.NINGUNO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE, v);
     }
 
     public static List<Integer> colores(ItemStack stack) {

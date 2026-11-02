@@ -52,7 +52,7 @@ public final class EscenarioModeladoraLinea {
                 mundo.setBlockState(destino, Blocks.BARREL.getDefaultState());
                 tick(mundo, posicion, maquina);
                 Inventory barril = (Inventory) mundo.getBlockEntity(destino);
-                verificar(barril.getStack(0).getCount() == 1 && barril.getStack(0).get(ModamodComponents.CALCE) == Calce.OVERSIZE,
+                verificar(barril.getStack(0).getCount() == 1 && com.modamod.prenda.Corte.get(barril.getStack(0), com.modamod.prenda.Ejes.CALCE) == Calce.OVERSIZE,
                         "no entrego exactamente una prenda modelada");
                 tick(mundo, posicion, maquina);
                 verificar(maquina.estado() == ModeladoBlockEntity.Estado.PROCESANDO, "la siguiente prenda quedo detenida tras liberar la salida");

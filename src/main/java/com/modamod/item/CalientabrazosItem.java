@@ -30,33 +30,33 @@ public class CalientabrazosItem extends ClothingTrinketItem {
     // ── anclaje SUPERIOR: hombro hacia abajo (el que ya existía) ────────
 
     public static Variante.Manga coberturaSuperior(ItemStack stack, Lado lado) {
-        return EjeBilateral.leer(stack, lado, ModamodComponents.CALIENTABRAZOS_COBERTURA_SUPERIOR,
-                ModamodComponents.RIGHT_CALIENTABRAZOS_COBERTURA_SUPERIOR, Variante.Manga.LARGA);
+        return EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR,
+                com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR_DER, Variante.Manga.LARGA);
     }
 
     public static void setCoberturaSuperior(ItemStack stack, Lado lado, Variante.Manga valor) {
-        EjeBilateral.escribir(stack, lado, ModamodComponents.CALIENTABRAZOS_COBERTURA_SUPERIOR,
-                ModamodComponents.RIGHT_CALIENTABRAZOS_COBERTURA_SUPERIOR, Variante.Manga.LARGA, valor);
+        EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR,
+                com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR_DER, Variante.Manga.LARGA, valor);
     }
 
     // ── anclaje INFERIOR: muñeca hacia arriba (nuevo) ───────────────────
 
     public static Variante.Manga coberturaInferior(ItemStack stack, Lado lado) {
-        return EjeBilateral.leer(stack, lado, ModamodComponents.CALIENTABRAZOS_COBERTURA_INFERIOR,
-                ModamodComponents.RIGHT_CALIENTABRAZOS_COBERTURA_INFERIOR, Variante.Manga.LARGA);
+        return EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR,
+                com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR_DER, Variante.Manga.LARGA);
     }
 
     public static void setCoberturaInferior(ItemStack stack, Lado lado, Variante.Manga valor) {
-        EjeBilateral.escribir(stack, lado, ModamodComponents.CALIENTABRAZOS_COBERTURA_INFERIOR,
-                ModamodComponents.RIGHT_CALIENTABRAZOS_COBERTURA_INFERIOR, Variante.Manga.LARGA, valor);
+        EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR,
+                com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR_DER, Variante.Manga.LARGA, valor);
     }
 
     /** Filas [desde,hasta) con tela — intersección de los dos anclajes. */
     public static int[] filasVisibles(ItemStack stack, Lado lado) {
         boolean supAusente = !EjeBilateral.presente(stack, lado,
-                ModamodComponents.CALIENTABRAZOS_COBERTURA_SUPERIOR, ModamodComponents.RIGHT_CALIENTABRAZOS_COBERTURA_SUPERIOR);
+                com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR, com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR_DER);
         boolean infAusente = !EjeBilateral.presente(stack, lado,
-                ModamodComponents.CALIENTABRAZOS_COBERTURA_INFERIOR, ModamodComponents.RIGHT_CALIENTABRAZOS_COBERTURA_INFERIOR);
+                com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR, com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR_DER);
         int filasSup = supAusente ? 12 : coberturaSuperior(stack, lado).filas;
         int filasInf = infAusente ? 12 : coberturaInferior(stack, lado).filas;
         return EjeBilateral.interseccion(filasSup, filasInf);

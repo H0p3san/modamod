@@ -105,7 +105,7 @@ public final class EscenarioPrenda {
         // Volumen de las medias: Pegado y Oversize tienen que verse DISTINTOS (el reclamo era "no observo ninguna variacion").
         java.util.function.Function<Calce, ItemStack> medias = calce -> {
             ItemStack m = new ItemStack(ModamodItems.SOCKS_SOLID);
-            m.set(ModamodComponents.CALCE, calce);
+            com.modamod.prenda.Corte.set(m, com.modamod.prenda.Ejes.CALCE, calce);
             return m;
         };
         java.util.function.Function<dev.emi.trinkets.api.TrinketComponent, TrinketInventory> mediasSlot =
@@ -174,11 +174,11 @@ public final class EscenarioPrenda {
         r.hacer("muestra base", 0, c -> anterior = muestra(c));
 
         ItemStack pantalon = new ItemStack(ModamodItems.PANTALON);
-        pantalon.set(ModamodComponents.CALCE, Calce.OVERSIZE);
+        com.modamod.prenda.Corte.set(pantalon, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
         prenda(r, "pantalon oversize", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.PANTALON), pantalon);
 
         ItemStack remera = new ItemStack(ModItems.REMERA);
-        remera.set(ModamodComponents.CALCE, Calce.OVERSIZE);
+        com.modamod.prenda.Corte.set(remera, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
         prenda(r, "remera oversize", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.REMERA), remera);
 
         prenda(r, "medias", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.MEDIAS), new ItemStack(ModamodItems.SOCKS_SOLID));

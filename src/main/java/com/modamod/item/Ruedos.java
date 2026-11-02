@@ -23,7 +23,7 @@ public final class Ruedos {
     }
 
     public static Ruedo get(ItemStack stack, ZonaRuedo zona) {
-        Map<ZonaRuedo, Ruedo> m = stack.get(ModamodComponents.RUEDOS);
+        Map<ZonaRuedo, Ruedo> m = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.RUEDOS);
         Ruedo r = m == null ? null : m.get(zona);
         return r == null ? deFabrica(stack, zona) : r;
     }
@@ -31,11 +31,11 @@ public final class Ruedos {
     /** Anota el ruedo; si coincide con el de fábrica se saca para no ensuciar el componente. */
     public static void set(ItemStack stack, ZonaRuedo zona, Ruedo ruedo) {
         Map<ZonaRuedo, Ruedo> m = new EnumMap<>(ZonaRuedo.class);
-        Map<ZonaRuedo, Ruedo> actual = stack.get(ModamodComponents.RUEDOS);
+        Map<ZonaRuedo, Ruedo> actual = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.RUEDOS);
         if (actual != null) m.putAll(actual);
         if (ruedo == deFabrica(stack, zona)) m.remove(zona);
         else m.put(zona, ruedo);
-        if (m.isEmpty()) stack.remove(ModamodComponents.RUEDOS);
-        else stack.set(ModamodComponents.RUEDOS, m);
+        if (m.isEmpty()) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.RUEDOS);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.RUEDOS, m);
     }
 }

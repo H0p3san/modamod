@@ -28,25 +28,25 @@ public final class MediasLargo {
     // ── anclaje SUPERIOR: muslo hacia abajo ─────────────────────────────
 
     public static Botamanga superior(ItemStack stack, Lado lado) {
-        return EjeBilateral.leer(stack, lado, ModamodComponents.MEDIAS_LARGO_SUPERIOR,
-                ModamodComponents.RIGHT_MEDIAS_LARGO_SUPERIOR, Botamanga.PIE);
+        return EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.MEDIAS_SUPERIOR,
+                com.modamod.prenda.Ejes.MEDIAS_SUPERIOR_DER, Botamanga.PIE);
     }
 
     public static void setSuperior(ItemStack stack, Lado lado, Botamanga valor) {
-        EjeBilateral.escribir(stack, lado, ModamodComponents.MEDIAS_LARGO_SUPERIOR,
-                ModamodComponents.RIGHT_MEDIAS_LARGO_SUPERIOR, Botamanga.PIE, valor);
+        EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.MEDIAS_SUPERIOR,
+                com.modamod.prenda.Ejes.MEDIAS_SUPERIOR_DER, Botamanga.PIE, valor);
     }
 
     // ── anclaje INFERIOR: tobillo hacia arriba (el que ya existía) ──────
 
     public static Botamanga inferior(ItemStack stack, Lado lado) {
-        return EjeBilateral.leer(stack, lado, ModamodComponents.MEDIAS_LARGO_INFERIOR,
-                ModamodComponents.RIGHT_MEDIAS_LARGO_INFERIOR, Botamanga.PIE);
+        return EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.MEDIAS_INFERIOR,
+                com.modamod.prenda.Ejes.MEDIAS_INFERIOR_DER, Botamanga.PIE);
     }
 
     public static void setInferior(ItemStack stack, Lado lado, Botamanga valor) {
-        EjeBilateral.escribir(stack, lado, ModamodComponents.MEDIAS_LARGO_INFERIOR,
-                ModamodComponents.RIGHT_MEDIAS_LARGO_INFERIOR, Botamanga.PIE, valor);
+        EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.MEDIAS_INFERIOR,
+                com.modamod.prenda.Ejes.MEDIAS_INFERIOR_DER, Botamanga.PIE, valor);
     }
 
     /**
@@ -55,7 +55,7 @@ public final class MediasLargo {
      */
     public static int[] filasVisibles(ItemStack stack, Lado lado) {
         boolean supAusente = !EjeBilateral.presente(stack, lado,
-                ModamodComponents.MEDIAS_LARGO_SUPERIOR, ModamodComponents.RIGHT_MEDIAS_LARGO_SUPERIOR);
+                com.modamod.prenda.Ejes.MEDIAS_SUPERIOR, com.modamod.prenda.Ejes.MEDIAS_SUPERIOR_DER);
         int filasSup = supAusente ? 12 : superior(stack, lado).filas;
         int filasInf = inferior(stack, lado).filas; // PIE es el default correcto acá
         return EjeBilateral.interseccion(filasSup, filasInf);

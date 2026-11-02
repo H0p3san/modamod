@@ -62,7 +62,7 @@ public final class RedFrente {
             boolean algunaAbierta = chaquetas.stream().anyMatch(p -> abierta(p.getRight()));
             for (Pair<SlotReference, ItemStack> par : chaquetas) {
                 ItemStack copia = par.getRight().copy();
-                if (com.modamod.prenda.Prendas.es(copia, com.modamod.prenda.CategoriaDePrenda.CAPA)) copia.set(com.modamod.item.ModamodComponents.FRENTE_AHORA, !algunaAbierta);
+                if (com.modamod.prenda.Prendas.es(copia, com.modamod.prenda.CategoriaDePrenda.CAPA)) com.modamod.prenda.Corte.set(copia, com.modamod.prenda.Ejes.FRENTE_AHORA, !algunaAbierta);
                 else TopCorte.setFrenteAbierto(copia, !algunaAbierta);
                 // setStack (y no cambiar el stack en el lugar) para que Trinkets lo sincronice.
                 par.getLeft().inventory().setStack(par.getLeft().index(), copia);

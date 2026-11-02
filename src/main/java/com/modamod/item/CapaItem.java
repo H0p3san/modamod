@@ -23,54 +23,54 @@ public class CapaItem extends ClothingTrinketItem {
     }
 
     public static CapaLargo largo(ItemStack stack) {
-        CapaLargo l = stack.get(ModamodComponents.CAPA_LARGO);
+        CapaLargo l = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CAPA_LARGO);
         return l == null ? CapaLargo.MEDIO : l;
     }
 
     public static void setLargo(ItemStack stack, CapaLargo v) {
-        if (v == CapaLargo.MEDIO) stack.remove(ModamodComponents.CAPA_LARGO);
-        else stack.set(ModamodComponents.CAPA_LARGO, v);
+        if (v == CapaLargo.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_LARGO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_LARGO, v);
     }
 
     public static CapaRuedo ruedo(ItemStack stack) {
-        CapaRuedo r = stack.get(ModamodComponents.CAPA_RUEDO);
+        CapaRuedo r = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CAPA_RUEDO);
         return r == null ? CapaRuedo.RECTO : r;
     }
 
     public static void setRuedo(ItemStack stack, CapaRuedo v) {
-        if (v == CapaRuedo.RECTO) stack.remove(ModamodComponents.CAPA_RUEDO);
-        else stack.set(ModamodComponents.CAPA_RUEDO, v);
+        if (v == CapaRuedo.RECTO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_RUEDO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_RUEDO, v);
     }
 
     public static boolean capucha(ItemStack stack) {
-        return Boolean.TRUE.equals(stack.get(ModamodComponents.CAPA_CAPUCHA));
+        return Boolean.TRUE.equals(com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CAPA_CAPUCHA));
     }
 
     public static void setCapucha(ItemStack stack, boolean v) {
-        if (!v) stack.remove(ModamodComponents.CAPA_CAPUCHA);
-        else stack.set(ModamodComponents.CAPA_CAPUCHA, true);
+        if (!v) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_CAPUCHA);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_CAPUCHA, true);
     }
 
     public static boolean cuelloAlto(ItemStack stack) {
-        return Boolean.TRUE.equals(stack.get(ModamodComponents.CAPA_CUELLO));
+        return Boolean.TRUE.equals(com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CAPA_CUELLO));
     }
 
     public static void setCuelloAlto(ItemStack stack, boolean v) {
-        if (!v) stack.remove(ModamodComponents.CAPA_CUELLO);
-        else stack.set(ModamodComponents.CAPA_CUELLO, true);
+        if (!v) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_CUELLO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_CUELLO, true);
     }
 
     /** Nivel de rango (0..6) del embozo sobre los hombros, o −1 si no lleva (2026-10-11). */
     public static int embozo(ItemStack stack) {
-        Integer n = stack.get(ModamodComponents.CAPA_EMBOZO);
+        Integer n = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CAPA_EMBOZO);
         return n == null ? -1 : n;
     }
 
     public static void setEmbozo(ItemStack stack, int nivel) {
         if (nivel < 0) {
-            stack.remove(ModamodComponents.CAPA_EMBOZO);
-            stack.remove(ModamodComponents.FRENTE_AHORA);
-        } else stack.set(ModamodComponents.CAPA_EMBOZO, Math.min(6, nivel));
+            com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_EMBOZO);
+            com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.FRENTE_AHORA);
+        } else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_EMBOZO, Math.min(6, nivel));
     }
 
     /** Cuánto baja el embozo desde el hombro, en px: del 2 hasta el piso (2026-10-23, "pensaba bajarlo como maximo hasta el piso"). */
@@ -86,17 +86,17 @@ public class CapaItem extends ClothingTrinketItem {
     }
 
     public static boolean bordeEmbozo(ItemStack stack) {
-        return Boolean.TRUE.equals(stack.get(ModamodComponents.CAPA_BORDE_EMBOZO));
+        return Boolean.TRUE.equals(com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO));
     }
 
     public static void setBordeEmbozo(ItemStack stack, boolean v) {
-        if (!v) stack.remove(ModamodComponents.CAPA_BORDE_EMBOZO);
-        else stack.set(ModamodComponents.CAPA_BORDE_EMBOZO, true);
+        if (!v) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO);
+        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, true);
     }
 
     /** ¿El frente del embozo está abierto un poco? (la tecla de abrir el frente, la misma de la chaqueta). */
     public static boolean embozoAbierto(ItemStack stack) {
-        return embozo(stack) >= 0 && Boolean.TRUE.equals(stack.get(ModamodComponents.FRENTE_AHORA));
+        return embozo(stack) >= 0 && Boolean.TRUE.equals(com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.FRENTE_AHORA));
     }
 
     /** Capelet con el largo cero y capa con capucha si la tiene (2026-10-23). */

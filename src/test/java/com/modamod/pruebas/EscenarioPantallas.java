@@ -136,7 +136,7 @@ public final class EscenarioPantallas {
         modelar(r, "pantalon oversize");
         r.hacer("la prenda salio con Calce OVERSIZE", 5, c -> {
             ItemStack out = modeladora(c, be -> be.getStack(ModeladoBlockEntity.SALIDA).copy());
-            verificar(out.get(ModamodComponents.CALCE) == Calce.OVERSIZE, "calce de la salida: " + out.get(ModamodComponents.CALCE));
+            verificar(com.modamod.prenda.Corte.get(out, com.modamod.prenda.Ejes.CALCE) == Calce.OVERSIZE, "calce de la salida: " + com.modamod.prenda.Corte.get(out, com.modamod.prenda.Ejes.CALCE));
         });
 
         // ── Modeladora: ruedo Fruncido en medias ─────────────────────────────────────────
@@ -156,13 +156,13 @@ public final class EscenarioPantallas {
         modelar(r, "medias fruncidas");
         r.hacer("las medias salieron con ruedo Fruncido", 5, c -> {
             ItemStack out = modeladora(c, be -> be.getStack(ModeladoBlockEntity.SALIDA).copy());
-            var ruedos = out.get(ModamodComponents.RUEDOS);
+            var ruedos = com.modamod.prenda.Corte.get(out, com.modamod.prenda.Ejes.RUEDOS);
             int pin = pinPara(Categoria.MEDIAS, ModeladoMod.MOLDE_RUEDO_FRUNCIDO);
             verificar(ruedos != null && ruedos.containsValue(Ruedo.FRUNCIDO), "ruedos de la salida: " + ruedos + " | salida=" + out + " componentes=" + out.getComponents()
                     + " | pin=" + pin + " rol=" + ModeladoBlockEntity.ROLES[Categoria.MEDIAS.ordinal()][pin]
-                    + " | aplicar directo=" + modeladora(c, be -> com.modamod.modelado.PrendaModelado.aplicar(new ItemStack(ModamodItems.SOCKS_SOLID), be.fijadas().get(0)).get(ModamodComponents.RUEDOS))
+                    + " | aplicar directo=" + modeladora(c, be -> com.modamod.prenda.Corte.get(com.modamod.modelado.PrendaModelado.aplicar(new ItemStack(ModamodItems.SOCKS_SOLID), be.fijadas().get(0)), com.modamod.prenda.Ejes.RUEDOS))
                     + " | estado=" + modeladora(c, be -> be.estado() + " tijera=" + be.tijeraOk())
-                    + " | procesar directo=" + modeladora(c, be -> { try { var m = ModeladoBlockEntity.class.getDeclaredMethod("procesar", ItemStack.class); m.setAccessible(true); return ((ItemStack) m.invoke(be, new ItemStack(ModamodItems.SOCKS_SOLID))).get(ModamodComponents.RUEDOS); } catch (Exception e) { return e.toString(); } }));
+                    + " | procesar directo=" + modeladora(c, be -> { try { var m = ModeladoBlockEntity.class.getDeclaredMethod("procesar", ItemStack.class); m.setAccessible(true); return com.modamod.prenda.Corte.get((ItemStack) m.invoke(be, new ItemStack(ModamodItems.SOCKS_SOLID)), com.modamod.prenda.Ejes.RUEDOS); } catch (Exception e) { return e.toString(); } }));
         });
         // ── Modeladora: pin "Pant leg" (botamanga) del calzado con el molde en blanco (reporte 2026-10-19) ─────────────
         r.hacer("retirar las medias", 0, c -> modeladora(c, be -> { be.setStack(ModeladoBlockEntity.SALIDA, ItemStack.EMPTY); return null; }));

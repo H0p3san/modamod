@@ -44,7 +44,7 @@ public class RemeraItem extends Item {
 
     /** El corte de la prenda. Sin componente, la remera comun. */
     public static Variante variante(ItemStack stack) {
-        Variante v = stack.get(ModItems.VARIANTE);
+        Variante v = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.VARIANTE);
         return v == null ? Variante.BASE : v;
     }
 
@@ -52,7 +52,7 @@ public class RemeraItem extends Item {
      * Largo de manga POR LADO (2026-09-24, "vamos con mangas distintas") —
      * la izquierda sigue siendo la del {@link Variante} de siempre (sin
      * componente nuevo); la derecha es un override aparte
-     * ({@code ModamodComponents.RIGHT_REMERA_MANGA}), ausente = hereda
+     * ({@code com.modamod.prenda.Ejes.MANGA_DERECHA}), ausente = hereda
      * la izquierda — mismo criterio primario/override que
      * {@code RegionResolver#colorBase}, no el par Superior/Inferior que
      * usan pantalón/medias/calientabrazos (acá no hay dos anclajes, un
@@ -61,7 +61,7 @@ public class RemeraItem extends Item {
     public static Variante.Manga manga(ItemStack stack, com.modamod.region.Lado lado) {
         Variante.Manga izq = variante(stack).manga();
         if (lado == com.modamod.region.Lado.IZQUIERDA) return izq;
-        Variante.Manga der = stack.get(com.modamod.item.ModamodComponents.RIGHT_REMERA_MANGA);
+        Variante.Manga der = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.MANGA_DERECHA);
         return der != null ? der : izq;
     }
 
@@ -74,12 +74,12 @@ public class RemeraItem extends Item {
     public static void setManga(ItemStack stack, com.modamod.region.Lado lado, Variante.Manga valor) {
         if (lado != com.modamod.region.Lado.DERECHA) {
             Variante actual = variante(stack);
-            stack.set(ModItems.VARIANTE, new Variante(actual.largo(), valor, actual.cuello()));
+            com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.VARIANTE, new Variante(actual.largo(), valor, actual.cuello()));
         }
         if (lado == com.modamod.region.Lado.AMBAS) {
-            stack.remove(com.modamod.item.ModamodComponents.RIGHT_REMERA_MANGA);
+            com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.MANGA_DERECHA);
         } else if (lado == com.modamod.region.Lado.DERECHA) {
-            stack.set(com.modamod.item.ModamodComponents.RIGHT_REMERA_MANGA, valor);
+            com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.MANGA_DERECHA, valor);
         }
     }
 

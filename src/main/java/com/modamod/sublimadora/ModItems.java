@@ -105,14 +105,6 @@ public final class ModItems {
                     .packetCodec(net.minecraft.network.codec.PacketCodecs.INTEGER)
                     .build());
 
-    /** Que corte de prenda es. Ausente = remera comun. */
-    public static final ComponentType<Variante> VARIANTE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(Modamod.MOD_ID, "variante"),
-            ComponentType.<Variante>builder()
-                    .codec(Variante.CODEC)
-                    .packetCodec(Variante.PACKET_CODEC)
-                    .build());
 
     // maxCount(16): dos remeras con distinto corte/color/estampa tienen
     // distintos componentes, así que Minecraft nunca las apila entre sí de
