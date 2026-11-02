@@ -529,7 +529,7 @@ public final class RegionResolver {
         if (!hay) return capas;
         com.modamod.item.ChaquetaSolapa tipo = com.modamod.item.TopCorte.solapa(stack);
         boolean abierta = com.modamod.item.TopCorte.frente(stack).abre();
-        boolean camisa = stack.getItem() instanceof com.modamod.sublimadora.RemeraItem
+        boolean camisa = com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)
                 && com.modamod.sublimadora.RemeraItem.variante(stack).cuello() == com.modamod.sublimadora.Variante.Cuello.CAMISA;
         java.util.List<CapaPatron> out = new java.util.ArrayList<>(capas.size());
         for (CapaPatron c : capas) {

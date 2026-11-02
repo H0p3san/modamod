@@ -108,13 +108,13 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static ItemStack calzadoDe(@Nullable LivingEntity entidad) {
         if (calzadoOverride != null) return calzadoOverride;
         if (sombreroOverride != null) {
-            return sombreroOverride.getItem() instanceof com.modamod.item.BorcegosItem ? sombreroOverride : null;
+            return com.modamod.prenda.Prendas.es(sombreroOverride, com.modamod.prenda.CategoriaDePrenda.CALZADO) ? sombreroOverride : null;
         }
         if (entidad == null) return null;
         ItemStack[] hallado = {null};
         TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
-                if (par.getRight().getItem() instanceof com.modamod.item.BorcegosItem) hallado[0] = par.getRight();
+                if (com.modamod.prenda.Prendas.es(par.getRight(), com.modamod.prenda.CategoriaDePrenda.CALZADO)) hallado[0] = par.getRight();
             }
         });
         return hallado[0];
@@ -376,18 +376,18 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         // abajo y cada siguiente se infla SEPARACION_POLLERAS más.
         int nivel = 0;
         for (ItemStack s : prendas) {
-            if (!(s.getItem() instanceof com.modamod.item.PolleraItem)) continue;
+            if (!(com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA))) continue;
             dibujarUnaPollera(s, nivel++, entidad, biped, matrices, vertexConsumers, luz, tickDelta);
         }
         // Faldón de malla de los Tops (2026-10-11, "las chaquetas de malla"): por fuera de las polleras.
         for (ItemStack s : prendas) {
-            if (s.getItem() instanceof com.modamod.sublimadora.RemeraItem && com.modamod.item.TopCorte.faldon(s) >= 0) {
+            if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA) && com.modamod.item.TopCorte.faldon(s) >= 0) {
                 dibujarFaldon(s, nivel, entidad, biped, matrices, vertexConsumers, luz, tickDelta);
             }
         }
         // Delantal (2026-10-11): por fuera de todo lo demás.
         for (ItemStack s : prendas) {
-            if (s.getItem() instanceof com.modamod.item.DelantalItem) {
+            if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) {
                 dibujarDelantal(s, prendas, nivel, entidad, biped, matrices, vertexConsumers, luz, tickDelta);
             }
         }
@@ -601,7 +601,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         float inicio = com.modamod.item.DelantalItem.inicio(stack), largo = com.modamod.item.DelantalItem.largo(stack);
         float otras = 0F;
         for (ItemStack p : prendas) {
-            if (!(p.getItem() instanceof com.modamod.item.DelantalItem)) {
+            if (!(com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.DELANTAL))) {
                 otras = Math.max(otras, com.modamod.item.Calce.dilatacionEfectiva(p));
             }
         }
@@ -620,7 +620,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             float punta = 0.61F + 0.5F * t;
             boolean hayRemera = false;
             for (ItemStack p : prendas) {
-                if (!(p.getItem() instanceof com.modamod.sublimadora.RemeraItem)) continue;
+                if (!(com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.REMERA))) continue;
                 hayRemera = true;
                 float inflado = com.modamod.item.Calce.dilatacionEfectiva(p);
                 boolean manto = com.modamod.render.relieve.BustoRender.esManto(
@@ -738,7 +738,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** La capa del mod puesta en el slot espalda/capa, o null. */
     @Nullable
     public static ItemStack capaDe(List<ItemStack> prendas) {
-        for (ItemStack s : prendas) if (s.getItem() instanceof com.modamod.item.CapaItem) return s;
+        for (ItemStack s : prendas) if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CAPA)) return s;
         return null;
     }
 
@@ -1109,7 +1109,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     private static void anotarPollera(List<ItemStack> prendas) {
         polleras.clear();
-        for (ItemStack s : prendas) if (s.getItem() instanceof com.modamod.item.PolleraItem) polleras.add(s);
+        for (ItemStack s : prendas) if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)) polleras.add(s);
     }
 
     /** Cuánto sale la pollera puesta del torso a la altura {@code y}, o −1 (ver {@link PolleraMalla#holguraEn}). */
@@ -1132,7 +1132,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     /** Ancho en px de la apertura del frente de esta prenda (0 si no tiene): el manto del busto se corta ahí. */
     private static int aperturaDe(@Nullable ItemStack prenda) {
-        if (prenda == null || !(prenda.getItem() instanceof com.modamod.sublimadora.RemeraItem)) return 0;
+        if (prenda == null || !(com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.REMERA))) return 0;
         if (!com.modamod.item.TopCorte.frente(prenda).abre()) return 0;
         return com.modamod.render.DetallesHoodie.anchoApertura(com.modamod.item.Calce.leer(prenda));
     }
@@ -2007,7 +2007,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 ItemStack stack = par.getRight();
                 if (!com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) continue;
                 // Un Top en el slot de chaqueta se dibuja en la capa exterior (2026-10-07, "un solo top").
-                if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem
+                if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)
                         && "chaqueta".equals(par.getLeft().inventory().getSlotType().getName())) {
                     stack = com.modamod.item.TopCorte.comoExterior(stack);
                 }

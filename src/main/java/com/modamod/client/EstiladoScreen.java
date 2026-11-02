@@ -1107,9 +1107,9 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private Toque tocarPrendaSinCapucha(ItemStack prenda, PlayerEntity jugador, double mx, double my) {
         boolean slim = MinecraftClient.getInstance().player.getSkinTextures().model() == SkinTextures.Model.SLIM;
         // Pollera y capa (2026-10-02, "no registran click on garment"): contra su malla, por UV.
-        Aplique.Superficie malla = prenda.getItem() instanceof com.modamod.item.PolleraItem ? Aplique.Superficie.POLLERA
-                : prenda.getItem() instanceof com.modamod.item.CapaItem ? Aplique.Superficie.CAPA
-                : prenda.getItem() instanceof com.modamod.item.DelantalItem ? Aplique.Superficie.DELANTAL : null;
+        Aplique.Superficie malla = com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.POLLERA) ? Aplique.Superficie.POLLERA
+                : com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CAPA) ? Aplique.Superficie.CAPA
+                : com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.DELANTAL) ? Aplique.Superficie.DELANTAL : null;
         if (malla != null) {
             com.modamod.render.MallaCapturada m = mallas.get(malla == Aplique.Superficie.POLLERA ? "pollera"
                     : malla == Aplique.Superficie.DELANTAL ? "delantal" : "capa");
@@ -1321,7 +1321,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 else if (!objeto && be.getStack(EstiladoBlockEntity.SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem)
                     aviso = Text.translatable("modamod.estilado.aviso.textura");
                 else if (!objeto && be.getStack(EstiladoBlockEntity.SLOT_MOLDE).isEmpty()) aviso = Text.translatable("modamod.estilado.aviso.molde");
-                else if (!objeto && !(be.getStack(EstiladoBlockEntity.SLOT_RETAZO).getItem() instanceof com.modamod.aplique.RetazoApliqueItem)
+                else if (!objeto && !(com.modamod.prenda.Prendas.es(be.getStack(EstiladoBlockEntity.SLOT_RETAZO), com.modamod.prenda.CategoriaDePrenda.APLIQUE))
                         && !(plantillaDeObjeto(be.getStack(EstiladoBlockEntity.SLOT_MOLDE)))
                         && !be.creativa()) aviso = Text.translatable("modamod.estilado.aviso.retazo");
                 else if (be.apliques().size() >= Aplique.MAXIMO_POR_PRENDA) aviso = Text.translatable("modamod.estilado.aviso.lleno");

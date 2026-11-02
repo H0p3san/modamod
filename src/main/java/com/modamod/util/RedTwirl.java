@@ -71,7 +71,7 @@ public final class RedTwirl {
 
     private static boolean tienePollera(ServerPlayerEntity jugador) {
         return TrinketsApi.getTrinketComponent(jugador)
-                .map(c -> c.isEquipped(s -> s.getItem() instanceof com.modamod.item.PolleraItem))
+                .map(c -> c.isEquipped(s -> com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)))
                 .orElse(false);
     }
 }

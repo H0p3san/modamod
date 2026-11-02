@@ -102,13 +102,13 @@ public final class IconoPrenda {
     }
 
     public static boolean tieneIcono(ItemStack stack) {
-        return stack.getItem() instanceof com.modamod.item.DelantalItem || plantillaDe(stack) != null;
+        return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.DELANTAL) || plantillaDe(stack) != null;
     }
 
     /** La textura del ícono de este stack, o null si no se pudo armar (sin plantilla). */
     @Nullable
     public static Identifier de(ItemStack stack) {
-        if (stack.getItem() instanceof com.modamod.item.DelantalItem) return deDelantal(stack);
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) return deDelantal(stack);
         String nombre = plantillaDe(stack);
         if (nombre == null) return null;
         long ahora = System.currentTimeMillis();
@@ -125,8 +125,8 @@ public final class IconoPrenda {
             texturaPollera = texturaSuelta(stack);
             clave = claveDe(nombre, piezas, texturaPollera);
             // El largo de la pollera no cambia su textura, pero sí el recorte del ícono.
-            if (stack.getItem() instanceof PolleraItem) clave += "|largo:" + PolleraItem.largo(stack);
-            if (stack.getItem() instanceof com.modamod.item.CapaItem) clave += "|largo:" + com.modamod.item.CapaItem.largo(stack);
+            if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.POLLERA)) clave += "|largo:" + PolleraItem.largo(stack);
+            if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA)) clave += "|largo:" + com.modamod.item.CapaItem.largo(stack);
             if (POR_STACK.size() > 4 * MAXIMO_ICONOS) POR_STACK.clear();
             POR_STACK.put(hash, new PorStack(clave, ahora));
         }
@@ -224,8 +224,8 @@ public final class IconoPrenda {
     /** La tela de las prendas que no van por piezas (pollera, capa), o null. */
     @Nullable
     private static Identifier texturaSuelta(ItemStack stack) {
-        if (stack.getItem() instanceof PolleraItem) return GarmentFeatureRenderer.texturaPollera(stack);
-        if (stack.getItem() instanceof com.modamod.item.CapaItem) return GarmentFeatureRenderer.texturaCapa(stack);
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.POLLERA)) return GarmentFeatureRenderer.texturaPollera(stack);
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA)) return GarmentFeatureRenderer.texturaCapa(stack);
         return null;
     }
 

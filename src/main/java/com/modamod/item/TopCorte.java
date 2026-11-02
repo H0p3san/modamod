@@ -104,7 +104,7 @@ public final class TopCorte {
 
     /** Capucha que de verdad se dibuja o se sube con la tecla: un Top con capucha. */
     public static boolean tieneCapucha(ItemStack stack) {
-        return stack.getItem() instanceof RemeraItem && conCapucha(stack);
+        return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA) && conCapucha(stack);
     }
 
     /**

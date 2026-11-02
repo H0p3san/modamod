@@ -40,8 +40,8 @@ public class IconoAccesorioItemRenderer implements BuiltinItemRendererRegistry.D
      * en la mano derecha (pivote del brazo en x=-5, y=2).
      */
     private static float[][] limites(ItemStack stack) {
-        boolean calzado = stack.getItem() instanceof BorcegosItem;
-        boolean maletin = stack.getItem() instanceof com.modamod.guardarropas.MaletinItem;
+        boolean calzado = com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO);
+        boolean maletin = com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN);
         float[] min = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE}, max = {-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
         for (boolean izq : calzado ? new boolean[] {false, true} : new boolean[] {false}) {
             List<SombreroRenderer.Caja> cajas = calzado ? BorcegosRenderer.cajas(stack, izq) : AccesorioRenderer.cajas(stack);
@@ -84,7 +84,7 @@ public class IconoAccesorioItemRenderer implements BuiltinItemRendererRegistry.D
             // El marco del modelo tiene la Y hacia abajo y el frente en −Z: se da vuelta para mirar de frente al ítem.
             matrices.translate(0.5f, 0.5f, 0.5f);
             // El maletín cuelga de costado (su largo va hacia adelante): se gira para mostrar la cara ancha.
-            if (stack.getItem() instanceof com.modamod.guardarropas.MaletinItem) {
+            if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)) {
                 matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(90f));
             }
             matrices.scale(k, -k, -k);

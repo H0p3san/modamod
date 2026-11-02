@@ -137,11 +137,11 @@ public final class ComposedSkin {
      */
     private static ItemStack sombreroPuesto(AbstractClientPlayerEntity player) {
         ItemStack so = GarmentFeatureRenderer.sombreroOverride;
-        if (so != null) return so.getItem() instanceof com.modamod.item.SombreroBrujaItem ? so : null;
+        if (so != null) return com.modamod.prenda.Prendas.es(so, com.modamod.prenda.CategoriaDePrenda.SOMBRERO) ? so : null;
         if (GarmentFeatureRenderer.previewOverride != null) return null;
         ItemStack[] hay = {null};
         TrinketsApi.getTrinketComponent(player).ifPresent(c -> {
-            for (var par : c.getAllEquipped()) if (par.getRight().getItem() instanceof com.modamod.item.SombreroBrujaItem) hay[0] = par.getRight();
+            for (var par : c.getAllEquipped()) if (com.modamod.prenda.Prendas.es(par.getRight(), com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) hay[0] = par.getRight();
         });
         return hay[0];
     }

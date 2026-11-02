@@ -71,7 +71,7 @@ public final class CuelloYCapucha {
                                VertexConsumerProvider vertexConsumers, int luz) {
         ItemStack polera = null, chaqueta = null;
         for (ItemStack s : prendas) {
-            if (!(s.getItem() instanceof RemeraItem)) continue;
+            if (!(com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA))) continue;
             if (RemeraItem.variante(s).cuello() == Variante.Cuello.POLERA) polera = s;
             if (TopCorte.tieneCapucha(s)) chaqueta = s; // sin capucha no hay capucha ni cordones (2026-10-07)
         }
@@ -212,9 +212,9 @@ public final class CuelloYCapucha {
                                               VertexConsumerProvider vertexConsumers, int luz) {
         if (!biped.body.visible) return;
         float dMax = 0F;
-        for (ItemStack s : prendas) if (s.getItem() instanceof RemeraItem) dMax = Math.max(dMax, Calce.dilatacionEfectiva(s));
+        for (ItemStack s : prendas) if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA)) dMax = Math.max(dMax, Calce.dilatacionEfectiva(s));
         for (ItemStack s : prendas) {
-            if (!(s.getItem() instanceof RemeraItem)) continue;
+            if (!(com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA))) continue;
             if (com.modamod.item.TopCorte.frente(s).abre()) {
                 // Los cantos de la apertura (2026-10-08, "vamos por parte" → parte 3): una tira de tela fina a cada
                 // lado, de arriba abajo, que le da grosor a la abertura y sigue hasta el ruedo; las solapas van encima.
@@ -238,7 +238,7 @@ public final class CuelloYCapucha {
                             biped, matrices, vertexConsumers, luz);
                 }
             }
-            if (s.getItem() instanceof RemeraItem
+            if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA)
                     && com.modamod.item.TopCorte.solapa(s) != com.modamod.item.ChaquetaSolapa.NINGUNA) {
                 float d = Math.max(0F, Calce.dilatacionEfectiva(s));
                 // Pegada al borde real del escote y de la apertura (2026-10-08, "las solapas no esten pegadas a la

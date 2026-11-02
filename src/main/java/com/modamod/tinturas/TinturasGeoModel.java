@@ -160,7 +160,7 @@ public class TinturasGeoModel extends GeoModel<TinturasBlockEntity> {
     /** Color plano de {@code stack} — mismos 5 tipos que {@code TinturasBlockEntity.Categoria}, 0 si no es ninguno. */
     private static int colorDePrenda(net.minecraft.item.ItemStack stack) {
         if (stack.isEmpty()) return 0;
-        if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem) {
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
             return com.modamod.sublimadora.RemeraItem.color(stack);
         }
         return com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);

@@ -38,7 +38,7 @@ public class TelarScreen extends net.minecraft.client.gui.screen.ingame.HandledS
     private void dibujarPrenda3d(DrawContext c, ItemStack prenda, int x1, int y1, int x2, int y2) {
         var jugador = net.minecraft.client.MinecraftClient.getInstance().player;
         if (jugador == null) return;
-        boolean calzado = prenda.getItem() instanceof com.modamod.item.BorcegosItem;
+        boolean calzado = com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CALZADO);
         com.modamod.render.GarmentFeatureRenderer.previewOverride = calzado ? List.of() : List.of(prenda);
         com.modamod.render.GarmentFeatureRenderer.calzadoOverride = calzado ? prenda : null;
         try {

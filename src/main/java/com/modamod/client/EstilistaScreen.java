@@ -128,16 +128,16 @@ public class EstilistaScreen extends EstiladoScreen {
         var PIS = com.modamod.modelado.ZonasModelado.Enfoque.PIES;
         var TODO = com.modamod.modelado.ZonasModelado.Enfoque.ENTERO;
         if (s.isEmpty()) return java.util.List.of(TODO);
-        if (s.getItem() instanceof com.modamod.item.BandaItem) {
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.BANDA)) {
             return com.modamod.item.BandaItem.zona(s) == com.modamod.item.BandaZona.CUELLO ? java.util.List.of(CAB, TOR, TODO) : java.util.List.of(CIN, TODO);
         }
-        if (s.getItem() instanceof com.modamod.item.SombreroBrujaItem) return java.util.List.of(CAB, TODO);
-        if (s.getItem() instanceof com.modamod.item.BorcegosItem) return java.util.List.of(PIS, PIE, TODO);
-        if (s.getItem() instanceof com.modamod.item.CalientabrazosItem) return java.util.List.of(BRA, TODO);
-        if (s.getItem() instanceof com.modamod.guardarropas.MaletinItem) return java.util.List.of(CIN, TODO);
-        if (s.getItem() instanceof com.modamod.item.PantalonItem || s.getItem() instanceof com.modamod.item.PolleraItem) return java.util.List.of(CIN, PIE, TODO);
-        if (s.getItem() instanceof com.modamod.item.DelantalItem) return java.util.List.of(TOR, CIN, TODO);
-        if (s.getItem() instanceof com.modamod.item.CapaItem) return java.util.List.of(TOR, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) return java.util.List.of(CAB, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALZADO)) return java.util.List.of(PIS, PIE, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)) return java.util.List.of(BRA, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.MALETIN)) return java.util.List.of(CIN, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.PANTALON) || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)) return java.util.List.of(CIN, PIE, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) return java.util.List.of(TOR, CIN, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CAPA)) return java.util.List.of(TOR, TODO);
         String n = s.getItem().getClass().getSimpleName();
         if (n.contains("Remera")) return java.util.List.of(TOR, BRA, TODO);
         return java.util.List.of(PIE, PIS, TODO);

@@ -249,7 +249,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         }
         List<ItemStack> prendas = new ArrayList<>(GarmentFeatureRenderer.equipadas(jugador));
         boolean esCara = vista.getItem() instanceof com.modamod.item.CaraItem;   // la dibuja CaraRenderer (2026-10-24)
-        boolean esGorra = vista.getItem() instanceof com.modamod.item.SombreroBrujaItem;   // la dibuja SombreroRenderer (2026-10-25)
+        boolean esGorra = com.modamod.prenda.Prendas.es(vista, com.modamod.prenda.CategoriaDePrenda.SOMBRERO);   // la dibuja SombreroRenderer (2026-10-25)
         if (!vista.isEmpty() && !esCara && !esGorra) {
             prendas.removeIf(s -> s.getItem().getClass() == vista.getItem().getClass());
             prendas.add(vista);

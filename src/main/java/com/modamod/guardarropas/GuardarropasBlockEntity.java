@@ -127,9 +127,9 @@ public class GuardarropasBlockEntity extends BlockEntity
      * élitros, calabaza, cabezas). Compartido con el Maniquí.
      */
     public static boolean esValidoEn(int slot, ItemStack stack) {
-        if (slot == SLOT_SOMBRERO) return stack.getItem() instanceof com.modamod.item.SombreroBrujaItem;
-        if (slot == SLOT_CALZADO) return stack.getItem() instanceof com.modamod.item.BorcegosItem;
-        if (slot == SLOT_DELANTAL) return stack.getItem() instanceof com.modamod.item.DelantalItem;
+        if (slot == SLOT_SOMBRERO) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO);
+        if (slot == SLOT_CALZADO) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO);
+        if (slot == SLOT_DELANTAL) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.DELANTAL);
         if (slot >= ARMADURA_INICIO) {
             int i = slot - ARMADURA_INICIO;
             if (i >= SLOTS_ARMADURA.length) return false;
@@ -144,9 +144,9 @@ public class GuardarropasBlockEntity extends BlockEntity
 
     /** El slot de armadura que le toca a {@code stack}, o -1 si no es armadura. */
     public static int slotArmaduraDe(ItemStack stack) {
-        if (stack.getItem() instanceof com.modamod.item.SombreroBrujaItem) return SLOT_SOMBRERO;
-        if (stack.getItem() instanceof com.modamod.item.BorcegosItem) return SLOT_CALZADO;
-        if (stack.getItem() instanceof com.modamod.item.DelantalItem) return SLOT_DELANTAL;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) return SLOT_SOMBRERO;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)) return SLOT_CALZADO;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) return SLOT_DELANTAL;
         for (int i = 0; i < SLOTS_ARMADURA.length; i++) {
             if (esValidoEn(ARMADURA_INICIO + i, stack)) return ARMADURA_INICIO + i;
         }
@@ -214,10 +214,10 @@ public class GuardarropasBlockEntity extends BlockEntity
      * con una pollera y una calza". Compartido con el Maniquí.
      */
     public static int categoriaDe(ItemStack stack) {
-        if (stack.getItem() instanceof RemeraItem) return REMERA;
-        if (stack.getItem() instanceof PantalonItem || stack.getItem() instanceof PolleraItem) return PANTALON;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) return REMERA;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.PANTALON) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.POLLERA)) return PANTALON;
         if (stack.isOf(ModamodItems.SOCKS_SOLID)) return MEDIAS;
-        if (stack.getItem() instanceof CalientabrazosItem) return CALIENTABRAZOS;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)) return CALIENTABRAZOS;
         return -1;
     }
 

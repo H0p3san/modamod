@@ -12,7 +12,7 @@ public final class ModamodDye {
         // a proposito, tiene su propio sistema de color y de estampas.
         return stack.getItem() instanceof ClothingTrinketItem
                 || stack.getItem() instanceof ClothingArmorItem
-                || stack.getItem() instanceof RemeraItem;
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA);
     }
 
     public static void setBaseColor(ItemStack stack, int rgb) {

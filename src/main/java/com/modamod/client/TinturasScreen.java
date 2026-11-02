@@ -569,7 +569,7 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
         // El sombrero (2026-10-14) no es ropa de cuerpo: se pone de mentira en la cabeza (como en la Mesa de estilado).
         // Lo mismo la banda y el calzado (2026-10-15): accesorios de cajas, se dibujan sobre el jugador.
         boolean esSombrero = prenda.getItem() instanceof com.modamod.item.ZonasTenibles;
-        boolean esCalzado = prenda.getItem() instanceof com.modamod.item.BorcegosItem;
+        boolean esCalzado = com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CALZADO);
         // Máscara y barbijo (2026-10-24): los dibuja CaraRenderer, no son ropa de cuerpo.
         boolean esCara = prenda.getItem() instanceof com.modamod.item.CaraItem;
         if (!prenda.isEmpty() && !esSombrero && !esCara) {

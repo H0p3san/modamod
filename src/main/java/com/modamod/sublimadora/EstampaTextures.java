@@ -300,7 +300,7 @@ public final class EstampaTextures {
     /** La versión con el lado izquierdo espejado, o null si la prenda no va de a pares. */
     @Nullable
     private static Prenda espejadaDe(ItemStack stack) {
-        if (stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
                 || stack.getItem() == com.modamod.item.ModamodItems.PANTALON) return MEDIAS_ESPEJO;
         if (stack.getItem() == com.modamod.item.ModamodItems.CALIENTABRAZOS) return BRAZO_ESPEJO;
         return null;
@@ -346,15 +346,15 @@ public final class EstampaTextures {
     /** Que prenda estampable es este stack, o null si no lo es. */
     @Nullable
     private static Prenda prendaDe(ItemStack stack) {
-        if (stack.getItem() instanceof RemeraItem) return deLaRemera(RemeraItem.variante(stack));
-        if (stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID) return MEDIAS;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) return deLaRemera(RemeraItem.variante(stack));
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) return MEDIAS;
         // Pantalón usa el mismo UV de pierna que las medias (misma Parte.
         // PIERNA_*) — el mapeo de caras es idéntico, se reusa tal cual.
         if (stack.getItem() == com.modamod.item.ModamodItems.PANTALON) return MEDIAS;
         if (stack.getItem() == com.modamod.item.ModamodItems.CALIENTABRAZOS) return BRAZO;
-        if (stack.getItem() instanceof com.modamod.item.PolleraItem) return POLLERA;
-        if (stack.getItem() instanceof com.modamod.item.CapaItem) return CAPA;
-        if (stack.getItem() instanceof com.modamod.item.DelantalItem) return DELANTAL;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.POLLERA)) return POLLERA;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA)) return CAPA;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) return DELANTAL;
         return null;   // ModItems.esEstampable tiene que decir lo mismo
     }
 

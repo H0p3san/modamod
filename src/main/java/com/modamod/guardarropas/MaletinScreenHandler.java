@@ -49,5 +49,5 @@ public class MaletinScreenHandler extends ScreenHandler implements VisorColeccio
 
     @Override public ItemStack quickMove(PlayerEntity player, int slot) { return ItemStack.EMPTY; }
 
-    @Override public boolean canUse(PlayerEntity player) { return maletin().getItem() instanceof MaletinItem; }
+    @Override public boolean canUse(PlayerEntity player) { return com.modamod.prenda.Prendas.es(maletin(), com.modamod.prenda.CategoriaDePrenda.MALETIN); }
 }

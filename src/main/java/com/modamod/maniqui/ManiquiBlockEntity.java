@@ -167,7 +167,7 @@ public class ManiquiBlockEntity extends BlockEntity
         for (int i = 0; i < GuardarropasBlockEntity.PRENDAS; i++) {
             int cat = i / GuardarropasBlockEntity.POR_CATEGORIA;
             if ((cat == GuardarropasBlockEntity.REMERA || cat == GuardarropasBlockEntity.CHAQUETA)
-                    && items.get(i).getItem() instanceof com.modamod.sublimadora.RemeraItem) out.add(items.get(i));
+                    && com.modamod.prenda.Prendas.es(items.get(i), com.modamod.prenda.CategoriaDePrenda.REMERA)) out.add(items.get(i));
         }
         return out;
     }
@@ -257,7 +257,7 @@ public class ManiquiBlockEntity extends BlockEntity
                 ItemStack s = items.get(categoria * GuardarropasBlockEntity.POR_CATEGORIA + capa);
                 if (s.isEmpty()) continue;
                 // La columna de chaquetas se dibuja en la capa exterior (2026-10-07, "un solo top").
-                if (categoria == GuardarropasBlockEntity.CHAQUETA && s.getItem() instanceof com.modamod.sublimadora.RemeraItem) {
+                if (categoria == GuardarropasBlockEntity.CHAQUETA && com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
                     s = com.modamod.item.TopCorte.comoExterior(s);
                 }
                 out.add(s);
@@ -489,10 +489,10 @@ public class ManiquiBlockEntity extends BlockEntity
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        if (slot == SLOT_CAPA) return stack.getItem() instanceof com.modamod.item.CapaItem;
-        if (slot == SLOT_CINTO) return stack.getItem() instanceof com.modamod.item.BandaItem
+        if (slot == SLOT_CAPA) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA);
+        if (slot == SLOT_CINTO) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
                 && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CINTURA;
-        if (slot == SLOT_COLLAR) return stack.getItem() instanceof com.modamod.item.BandaItem
+        if (slot == SLOT_COLLAR) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
                 && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CUELLO;
         if (slot == SLOT_MASCARA) return stack.getItem() instanceof com.modamod.item.CaraItem c && !c.barbijo;
         if (slot == SLOT_BARBIJO) return stack.getItem() instanceof com.modamod.item.CaraItem c && c.barbijo;

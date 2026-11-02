@@ -37,29 +37,29 @@ public final class PrendaModelado {
         // Calce: transversal a las 4, sin anclaje ni lado (a diferencia de
         // los demás ejes, no recorta filas — cambia la dilatación de la
         // geometría 3D, ver CuerpoGeometria).
-        if (combo.calce().isPresent() && (out.getItem() instanceof RemeraItem
-                || out.getItem() instanceof PantalonItem
-                || out.getItem() == ModamodItems.SOCKS_SOLID
-                || out.getItem() instanceof CalientabrazosItem
-                || out.getItem() instanceof com.modamod.item.PolleraItem
-                || out.getItem() instanceof com.modamod.item.DelantalItem)) {
+        if (combo.calce().isPresent() && (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.PANTALON)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.POLLERA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.DELANTAL))) {
             Calce.escribir(out, combo.calce().get());
             cambio = true;
         }
 
         // Red: mismo criterio transversal que Calce — perfora la textura ya
         // compuesta en vez de recortar filas (ver PatronRed, PiezasDelMod).
-        if (combo.red().isPresent() && (out.getItem() instanceof RemeraItem
-                || out.getItem() instanceof PantalonItem
-                || out.getItem() == ModamodItems.SOCKS_SOLID
-                || out.getItem() instanceof CalientabrazosItem
-                || out.getItem() instanceof com.modamod.item.PolleraItem
-                || out.getItem() instanceof com.modamod.item.DelantalItem)) {
+        if (combo.red().isPresent() && (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.PANTALON)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.POLLERA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.DELANTAL))) {
             PatronRed.escribir(out, combo.red().get());
             cambio = true;
         }
 
-        if (out.getItem() instanceof RemeraItem
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA)
                 && (combo.remeraLargo().isPresent() || combo.remeraCuello().isPresent())) {
             // Parchea SOLO los ejes presentes sobre el Variante ACTUAL de la
             // prenda (no un valor congelado) — antes esto reemplazaba el
@@ -77,7 +77,7 @@ public final class PrendaModelado {
         // Manga: eje aparte (2026-09-24, "vamos con mangas distintas") —
         // respeta combo.lado() en vez de ir siempre adentro del Variante
         // completo (izquierda/derecha independientes, ver RemeraItem#setManga).
-        if (out.getItem() instanceof RemeraItem && combo.remeraManga().isPresent()) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA) && combo.remeraManga().isPresent()) {
             RemeraItem.setManga(out, lado, combo.remeraManga().get());
             cambio = true;
         }
@@ -87,13 +87,13 @@ public final class PrendaModelado {
         // — así 3 pines independientes arman hasta 3 capas apiladas, en vez
         // de que cada fijada pise a las otras (ponerPatron(..., List) exige
         // la lista completa de una, no soporta "agregar una sola").
-        if (combo.capaPatron().isPresent() && (out.getItem() instanceof RemeraItem
-                || out.getItem() instanceof PantalonItem
-                || out.getItem() == ModamodItems.SOCKS_SOLID
-                || out.getItem() instanceof CalientabrazosItem
-                || out.getItem() instanceof com.modamod.item.PolleraItem
-                || out.getItem() instanceof com.modamod.item.CapaItem
-                || out.getItem() instanceof com.modamod.item.DelantalItem)) {
+        if (combo.capaPatron().isPresent() && (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.PANTALON)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.POLLERA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CAPA)
+                || com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.DELANTAL))) {
             var ci = combo.capaPatron().get();
             var patronItem = com.modamod.item.ClothingPatternItem.porId(ci.patronId());
             var forma = patronItem != null ? patronItem.forma : com.modamod.render.PatronGenerador.Forma.ALTERNADO;
@@ -108,7 +108,7 @@ public final class PrendaModelado {
             com.modamod.region.RegionResolver.ponerPatron(out, lado, actuales);
             cambio = true;
         }
-        if (out.getItem() instanceof PantalonItem) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.PANTALON)) {
             if (combo.pantalonTiro().isPresent()) {
                 PantalonItem.setTiro(out, combo.pantalonTiro().get());
                 cambio = true;
@@ -122,7 +122,7 @@ public final class PrendaModelado {
                 cambio = true;
             }
         }
-        if (out.getItem() == ModamodItems.SOCKS_SOLID) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) {
             if (combo.mediasLargoSuperior().isPresent()) {
                 MediasLargo.setSuperior(out, lado, combo.mediasLargoSuperior().get());
                 cambio = true;
@@ -132,7 +132,7 @@ public final class PrendaModelado {
                 cambio = true;
             }
         }
-        if (out.getItem() instanceof CalientabrazosItem) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)) {
             if (combo.calientabrazosCoberturaSuperior().isPresent()) {
                 CalientabrazosItem.setCoberturaSuperior(out, lado, combo.calientabrazosCoberturaSuperior().get());
                 cambio = true;
@@ -144,7 +144,7 @@ public final class PrendaModelado {
         }
 
         // Pollera (2026-09-29): largo y forma.
-        if (out.getItem() instanceof com.modamod.item.PolleraItem && combo.pollera().isPresent()) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.POLLERA) && combo.pollera().isPresent()) {
             var p = combo.pollera().get();
             if (p.largo().isPresent()) {
                 com.modamod.item.PolleraItem.setLargo(out, p.largo().get());
@@ -157,7 +157,7 @@ public final class PrendaModelado {
         }
 
         // Capa (2026-09-29): largo, ruedo, capucha y cuello alto.
-        if (out.getItem() instanceof com.modamod.item.CapaItem && combo.pollera().isPresent()) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CAPA) && combo.pollera().isPresent()) {
             var p = combo.pollera().get();
             if (p.capaLargo().isPresent()) {
                 com.modamod.item.CapaItem.setLargo(out, p.capaLargo().get());
@@ -183,7 +183,7 @@ public final class PrendaModelado {
         }
 
         // Embozo de la capa (2026-10-11): largo por molde de rango (−1 = sin embozo) y borde.
-        if (out.getItem() instanceof com.modamod.item.CapaItem && combo.pollera().isPresent()
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CAPA) && combo.pollera().isPresent()
                 && combo.pollera().get().chaqueta().isPresent() && combo.pollera().get().chaqueta().get().embozo().isPresent()) {
             var em = combo.pollera().get().chaqueta().get().embozo().get();
             if (em.nivel().isPresent()) { com.modamod.item.CapaItem.setEmbozo(out, em.nivel().get()); cambio = true; }
@@ -191,7 +191,7 @@ public final class PrendaModelado {
         }
 
         // Sombrero de bruja (2026-10-05): ala y punta.
-        if (out.getItem() instanceof com.modamod.item.SombreroBrujaItem && combo.pollera().isPresent()) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.SOMBRERO) && combo.pollera().isPresent()) {
             var p = combo.pollera().get();
             if (p.sombreroAla().isPresent()) {
                 com.modamod.item.SombreroBrujaItem.setAla(out, p.sombreroAla().get());
@@ -226,7 +226,7 @@ public final class PrendaModelado {
         }
 
         // Volados de la pollera (2026-10-05): del borde de abajo y de toda la pollera.
-        if (out.getItem() instanceof com.modamod.item.PolleraItem && combo.pollera().isPresent()) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.POLLERA) && combo.pollera().isPresent()) {
             var p = combo.pollera().get();
             if (p.voladoRuedo().isPresent()) {
                 com.modamod.item.PolleraItem.setVoladoRuedo(out, sinVolado(p.voladoRuedo().get()));
@@ -256,7 +256,7 @@ public final class PrendaModelado {
         }
 
         // Borcegos (2026-10-08): altura de la caña, suela y cómo se lleva la botamanga.
-        if (out.getItem() instanceof com.modamod.item.BorcegosItem && combo.pollera().isPresent()
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.CALZADO) && combo.pollera().isPresent()
                 && combo.pollera().get().chaqueta().isPresent() && combo.pollera().get().chaqueta().get().borcego().isPresent()) {
             var bo = combo.pollera().get().chaqueta().get().borcego().get();
             if (bo.cana().isPresent()) {
@@ -291,7 +291,7 @@ public final class PrendaModelado {
         }
 
         // Delantal (2026-10-11): inicio y largo (rango), forma, esquinas y volado.
-        if (out.getItem() instanceof com.modamod.item.DelantalItem && combo.pollera().isPresent()
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.DELANTAL) && combo.pollera().isPresent()
                 && combo.pollera().get().chaqueta().isPresent() && combo.pollera().get().chaqueta().get().delantal().isPresent()) {
             var d = combo.pollera().get().chaqueta().get().delantal().get();
             if (d.inicio().isPresent()) { com.modamod.item.DelantalItem.setInicio(out, d.inicio().get()); cambio = true; }
@@ -306,7 +306,7 @@ public final class PrendaModelado {
         }
 
         // Banda (2026-10-05): zona, ancho y herraje.
-        if (out.getItem() instanceof com.modamod.item.BandaItem && combo.pollera().isPresent()) {
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.BANDA) && combo.pollera().isPresent()) {
             var p = combo.pollera().get();
             if (p.bandaZona().isPresent()) {
                 com.modamod.item.BandaItem.setZona(out, p.bandaZona().get());
@@ -323,7 +323,7 @@ public final class PrendaModelado {
         }
 
         // Chaqueta (2026-10-07): frente, capucha y solapa (el cuello, las mangas y el largo salen del bloque de remera).
-        if (out.getItem() instanceof com.modamod.sublimadora.RemeraItem && combo.pollera().isPresent()
+        if (com.modamod.prenda.Prendas.es(out, com.modamod.prenda.CategoriaDePrenda.REMERA) && combo.pollera().isPresent()
                 && combo.pollera().get().chaqueta().isPresent()) {
             var c = combo.pollera().get().chaqueta().get();
             if (c.frente().isPresent()) {
@@ -361,14 +361,14 @@ public final class PrendaModelado {
         if (r == com.modamod.item.Ruedo.FRUNCIDO && zona != com.modamod.item.ZonaRuedo.SUP_IZQ && zona != com.modamod.item.ZonaRuedo.SUP_DER
                 && zona != com.modamod.item.ZonaRuedo.INF_IZQ && zona != com.modamod.item.ZonaRuedo.INF_DER) return false;
         return switch (zona) {
-            case TORSO -> prenda.getItem() instanceof com.modamod.sublimadora.RemeraItem && r.valeEnTela();
-            case PUNO_IZQ, PUNO_DER -> prenda.getItem() instanceof com.modamod.sublimadora.RemeraItem;
-            case POLLERA -> prenda.getItem() instanceof com.modamod.item.PolleraItem;
-            case DELANTAL -> prenda.getItem() instanceof com.modamod.item.DelantalItem;
-            case BOTA_IZQ, BOTA_DER -> prenda.getItem() instanceof PantalonItem
+            case TORSO -> com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.REMERA) && r.valeEnTela();
+            case PUNO_IZQ, PUNO_DER -> com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.REMERA);
+            case POLLERA -> com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.POLLERA);
+            case DELANTAL -> com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.DELANTAL);
+            case BOTA_IZQ, BOTA_DER -> com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.PANTALON)
                     && (r.ordinal() <= com.modamod.item.Ruedo.CAMPANA.ordinal() || r.volado() != null || r.borde() != null);
-            case SUP_IZQ, SUP_DER, INF_IZQ, INF_DER -> (prenda.getItem() == ModamodItems.SOCKS_SOLID
-                    || prenda.getItem() instanceof CalientabrazosItem)
+            case SUP_IZQ, SUP_DER, INF_IZQ, INF_DER -> (com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
+                    || com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS))
                     && (r.ordinal() <= com.modamod.item.Ruedo.CAMPANA.ordinal() || r.volado() != null || r.borde() != null
                             || r == com.modamod.item.Ruedo.FRUNCIDO);
             default -> false;

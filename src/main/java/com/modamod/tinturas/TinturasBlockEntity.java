@@ -426,7 +426,35 @@ public class TinturasBlockEntity extends BlockEntity
      * MALETIN (2026-10-23), BANNER (2026-10-24, "tintes banners"), MASCARA y BARBIJO (2026-10-24): al final, el orden
      * viaja en lo guardado.
      */
-    public enum Categoria { REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, CAPA, APLIQUE, DELANTAL, SOMBRERO, CALZADO, BANDA, MALETIN, BANNER, MASCARA, BARBIJO }
+    public enum Categoria {
+        REMERA(com.modamod.prenda.CategoriaDePrenda.REMERA),
+        PANTALON(com.modamod.prenda.CategoriaDePrenda.PANTALON),
+        MEDIAS(com.modamod.prenda.CategoriaDePrenda.MEDIAS),
+        CALIENTABRAZOS(com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS),
+        POLLERA(com.modamod.prenda.CategoriaDePrenda.POLLERA),
+        CAPA(com.modamod.prenda.CategoriaDePrenda.CAPA),
+        APLIQUE(com.modamod.prenda.CategoriaDePrenda.APLIQUE),
+        DELANTAL(com.modamod.prenda.CategoriaDePrenda.DELANTAL),
+        SOMBRERO(com.modamod.prenda.CategoriaDePrenda.SOMBRERO),
+        CALZADO(com.modamod.prenda.CategoriaDePrenda.CALZADO),
+        BANDA(com.modamod.prenda.CategoriaDePrenda.BANDA),
+        MALETIN(com.modamod.prenda.CategoriaDePrenda.MALETIN),
+        BANNER(com.modamod.prenda.CategoriaDePrenda.BANNER),
+        MASCARA(com.modamod.prenda.CategoriaDePrenda.MASCARA),
+        BARBIJO(com.modamod.prenda.CategoriaDePrenda.BARBIJO);
+
+        /** La categoría única de prenda que esta máquina muestra con este lugar. */
+        public final com.modamod.prenda.CategoriaDePrenda prenda;
+
+        Categoria(com.modamod.prenda.CategoriaDePrenda prenda) { this.prenda = prenda; }
+
+        /** El lugar de esta máquina para {@code prenda}, o null si no la trabaja. */
+        @org.jetbrains.annotations.Nullable
+        public static Categoria de(@org.jetbrains.annotations.Nullable com.modamod.prenda.CategoriaDePrenda prenda) {
+            for (Categoria c : values()) if (c.prenda == prenda) return c;
+            return null;
+        }
+    }
 
     private Categoria categoria = Categoria.REMERA;
     /** Calzado: con la simetría (de fábrica) el pie izquierdo copia el diseño del derecho; apagada se pintan por separado. */
@@ -564,21 +592,7 @@ public class TinturasBlockEntity extends BlockEntity
     /** Sin private (2026-09-22, "cubos simples" del hueso prenda): {@link TinturasGeoModel} la necesita para elegir qué forma mostrar. */
     @Nullable
     static Categoria categoriaDe(ItemStack stack) {
-        if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem) return Categoria.REMERA;
-        if (stack.getItem() instanceof com.modamod.item.PantalonItem) return Categoria.PANTALON;
-        if (stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID) return Categoria.MEDIAS;
-        if (stack.getItem() instanceof com.modamod.item.CalientabrazosItem) return Categoria.CALIENTABRAZOS;
-        if (stack.getItem() instanceof com.modamod.item.PolleraItem) return Categoria.POLLERA;
-        if (stack.getItem() instanceof com.modamod.item.CapaItem) return Categoria.CAPA;
-        if (stack.getItem() instanceof com.modamod.item.DelantalItem) return Categoria.DELANTAL;
-        if (stack.getItem() instanceof com.modamod.aplique.RetazoApliqueItem) return Categoria.APLIQUE;
-        if (stack.getItem() instanceof com.modamod.item.SombreroBrujaItem) return Categoria.SOMBRERO;
-        if (stack.getItem() instanceof com.modamod.item.BorcegosItem) return Categoria.CALZADO;
-        if (stack.getItem() instanceof com.modamod.item.BandaItem) return Categoria.BANDA;
-        if (stack.getItem() instanceof com.modamod.guardarropas.MaletinItem) return Categoria.MALETIN;
-        if (stack.getItem() instanceof net.minecraft.item.BannerItem) return Categoria.BANNER;
-        if (stack.getItem() instanceof com.modamod.item.CaraItem c) return c.barbijo ? Categoria.BARBIJO : Categoria.MASCARA;
-        return null;
+        return Categoria.de(com.modamod.prenda.Prendas.categoria(stack));
     }
 
     /**
@@ -1756,7 +1770,7 @@ public class TinturasBlockEntity extends BlockEntity
      */
     /** ¿Entra al slot de entrada? Las prendas y el retazo de aplique (2026-10-04, fase 4). */
     public static boolean aceptaEntrada(ItemStack stack) {
-        return ModamodDye.isClothing(stack) || stack.getItem() instanceof com.modamod.aplique.RetazoApliqueItem
+        return ModamodDye.isClothing(stack) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
                 || stack.getItem() instanceof com.modamod.item.ZonasTenibles || stack.getItem() instanceof net.minecraft.item.BannerItem
                 || stack.getItem() instanceof com.modamod.item.CaraItem;
     }
@@ -1848,7 +1862,7 @@ public class TinturasBlockEntity extends BlockEntity
             if (c.lisa() && c.region() == com.modamod.region.RegionPintura.TODO && c.opacidad() >= 100
                     && c.modo() == com.modamod.region.ModoMezcla.NORMAL && c.extras().isEmpty()
                     && (c.color() >>> 24) == 0) {
-                if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem) {
+                if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
                     stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(c.color() & 0xFFFFFF, false));
                 } else {
                     RegionResolver.ponerColorBase(stack, Lado.AMBAS, c.color() & 0xFFFFFF);

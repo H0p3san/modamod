@@ -197,10 +197,10 @@ public class SublimadoraGeoModel extends GeoModel<SublimadoraBlockEntity> {
     @org.jetbrains.annotations.Nullable
     private static String huesoDe(net.minecraft.item.ItemStack stack) {
         if (stack.isEmpty()) return null;
-        if (stack.getItem() instanceof RemeraItem) return "REMERA"; // la chaqueta también
-        if (stack.getItem() instanceof com.modamod.item.PantalonItem) return "PANTALON";
-        if (stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID) return "MEDIAS";
-        if (stack.getItem() instanceof com.modamod.item.CalientabrazosItem) return "CALIENTABRAZOS";
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) return "REMERA"; // la chaqueta también
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.PANTALON)) return "PANTALON";
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) return "MEDIAS";
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)) return "CALIENTABRAZOS";
         return null;
     }
 }

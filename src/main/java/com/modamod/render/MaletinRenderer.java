@@ -84,7 +84,7 @@ public final class MaletinRenderer {
     /** En la mano derecha de {@code biped}, con sus zonas teñidas y los apliques encima. */
     public static void dibujar(ItemStack maletin, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz) {
-        if (!(maletin.getItem() instanceof MaletinItem)) return;
+        if (!(com.modamod.prenda.Prendas.es(maletin, com.modamod.prenda.CategoriaDePrenda.MALETIN))) return;
         vertexConsumers = EfectoTrim.envolver(maletin, vertexConsumers);
         for (int z = 0; z < 3; z++) {
             GarmentFeatureRenderer.dibujarModelPart(parte(z), CuerpoGeometria.Superficie.CUERPO,

@@ -1591,8 +1591,8 @@ public class SublimadoraBlockEntity extends BlockEntity
 
     /** Banner, delantal, máscaras y barbijo (2026-10-24) solo tienen frente. */
     public static boolean soloFrente(ItemStack s) {
-        return s.getItem() instanceof net.minecraft.item.BannerItem || s.getItem() instanceof com.modamod.item.DelantalItem
-                || s.getItem() instanceof com.modamod.item.CaraItem || s.getItem() instanceof com.modamod.item.SombreroBrujaItem;
+        return s.getItem() instanceof net.minecraft.item.BannerItem || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.DELANTAL)
+                || s.getItem() instanceof com.modamod.item.CaraItem || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO);
     }
 
     /** La cara de atrás existe (un banner o un delantal solo tienen frente). */

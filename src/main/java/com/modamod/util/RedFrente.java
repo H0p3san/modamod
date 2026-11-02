@@ -45,13 +45,13 @@ public final class RedFrente {
 
     private static boolean esChaqueta(SlotReference ref, ItemStack stack) {
         // La capa con embozo (2026-10-11, "abra un poco con la tecla de abrir el frente") también obedece a la tecla.
-        if (stack.getItem() instanceof com.modamod.item.CapaItem) return com.modamod.item.CapaItem.embozo(stack) >= 0;
-        if (!(stack.getItem() instanceof RemeraItem)) return false;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA)) return com.modamod.item.CapaItem.embozo(stack) >= 0;
+        if (!(com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA))) return false;
         return TopCorte.conRasgosDeChaqueta(stack) || "chaqueta".equals(ref.inventory().getSlotType().getName());
     }
 
     private static boolean abierta(ItemStack s) {
-        return s.getItem() instanceof com.modamod.item.CapaItem ? com.modamod.item.CapaItem.embozoAbierto(s) : TopCorte.frente(s).abre();
+        return com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CAPA) ? com.modamod.item.CapaItem.embozoAbierto(s) : TopCorte.frente(s).abre();
     }
 
     private static void alternar(ServerPlayerEntity jugador) {
@@ -62,7 +62,7 @@ public final class RedFrente {
             boolean algunaAbierta = chaquetas.stream().anyMatch(p -> abierta(p.getRight()));
             for (Pair<SlotReference, ItemStack> par : chaquetas) {
                 ItemStack copia = par.getRight().copy();
-                if (copia.getItem() instanceof com.modamod.item.CapaItem) copia.set(com.modamod.item.ModamodComponents.FRENTE_AHORA, !algunaAbierta);
+                if (com.modamod.prenda.Prendas.es(copia, com.modamod.prenda.CategoriaDePrenda.CAPA)) copia.set(com.modamod.item.ModamodComponents.FRENTE_AHORA, !algunaAbierta);
                 else TopCorte.setFrenteAbierto(copia, !algunaAbierta);
                 // setStack (y no cambiar el stack en el lugar) para que Trinkets lo sincronice.
                 par.getLeft().inventory().setStack(par.getLeft().index(), copia);

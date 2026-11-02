@@ -47,7 +47,7 @@ public final class RedCapucha {
 
     private static boolean tieneCapucha(ItemStack stack) {
         return TopCorte.tieneCapucha(stack)
-                || (stack.getItem() instanceof CapaItem && CapaItem.capucha(stack));
+                || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA) && CapaItem.capucha(stack));
     }
 
     private static void alternar(ServerPlayerEntity jugador) {

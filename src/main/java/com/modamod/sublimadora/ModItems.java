@@ -135,21 +135,21 @@ public final class ModItems {
     public static boolean esEstampable(net.minecraft.item.ItemStack stack) {
         // A pedido (2026-09-19, "hace todas las prendas sublimables") —
         // pantalón y calientabrazos se suman a remera/medias.
-        return stack.getItem() instanceof RemeraItem // la chaqueta también (2026-09-30)
-                || stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID
+        return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA) // la chaqueta también (2026-09-30)
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)
                 || stack.getItem() == com.modamod.item.ModamodItems.PANTALON
                 || stack.getItem() == com.modamod.item.ModamodItems.CALIENTABRAZOS
                 // La pollera nueva (2026-09-29, "quiero poder... sublimarla"):
                 // su tela es una caja de torso, ver EstampaTextures#POLLERA.
-                || stack.getItem() instanceof com.modamod.item.PolleraItem
-                || stack.getItem() instanceof com.modamod.item.CapaItem
-                || stack.getItem() instanceof com.modamod.item.DelantalItem
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.POLLERA)
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA)
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.DELANTAL)
                 // El banner (2026-10-06, "sublimadoras a banners y 16x"): una foto en el Frente, ver BannerHD.
                 || stack.getItem() instanceof net.minecraft.item.BannerItem
                 // Máscaras y barbijo (2026-10-24): una foto en el Frente, ver CaraRenderer.
                 || stack.getItem() instanceof com.modamod.item.CaraItem
                 // Gorras con visera (2026-10-25): foto en el frente de la copa, ver SombreroRenderer.
-                || (stack.getItem() instanceof com.modamod.item.SombreroBrujaItem
+                || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
                         && com.modamod.item.SombreroBrujaItem.ala(stack).esVisera());
     }
 

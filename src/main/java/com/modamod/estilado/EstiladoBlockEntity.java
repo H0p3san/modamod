@@ -211,9 +211,9 @@ public class EstiladoBlockEntity extends BlockEntity
             if (prenda.isEmpty() || !ObjetoAplique.admite(objeto)) return false;
         } else if (plantilla != null) {
             // Un objeto del molde se tiñe con la muestra (opcional); un modelo del mod pide su retazo.
-            if (prenda.isEmpty() || (plantilla.objeto() == null && !(retazo.getItem() instanceof RetazoApliqueItem) && !gratis)) return false;
+            if (prenda.isEmpty() || (plantilla.objeto() == null && !(com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)) && !gratis)) return false;
         } else if (prenda.isEmpty() || !(molde.getItem() instanceof MoldeApliqueItem)
-                || (!(retazo.getItem() instanceof RetazoApliqueItem) && !gratis)) {
+                || (!(com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)) && !gratis)) {
             return false;
         }
         if (!admite(prenda) || !Float.isFinite(x) || !Float.isFinite(y) || !Float.isFinite(z)) return false;
@@ -221,19 +221,19 @@ public class EstiladoBlockEntity extends BlockEntity
         if (actuales.size() >= Aplique.MAXIMO_POR_PRENDA) return false;
         switch (superficie) {
             case POLLERA -> {
-                if (!(prenda.getItem() instanceof com.modamod.item.PolleraItem)) return false;
+                if (!(com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.POLLERA))) return false;
                 x = MathHelper.clamp(x, 0, 64);
                 y = MathHelper.clamp(y, 0, 64);
                 z = 0;
             }
             case CAPA -> {
-                if (!(prenda.getItem() instanceof com.modamod.item.CapaItem)) return false;
+                if (!(com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CAPA))) return false;
                 x = MathHelper.clamp(x, 0, 64);
                 y = MathHelper.clamp(y, 0, 64);
                 z = 0;
             }
             case DELANTAL -> {
-                if (!(prenda.getItem() instanceof com.modamod.item.DelantalItem)) return false;
+                if (!(com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.DELANTAL))) return false;
                 x = MathHelper.clamp(x, 0, 64);
                 y = MathHelper.clamp(y, 0, 64);
                 z = 0;
@@ -241,7 +241,7 @@ public class EstiladoBlockEntity extends BlockEntity
             case CAPUCHA -> {
                 // La capucha del Top o de la capa (2026-10-24).
                 boolean conCapucha = com.modamod.item.TopCorte.tieneCapucha(prenda)
-                        || (prenda.getItem() instanceof com.modamod.item.CapaItem && com.modamod.item.CapaItem.capucha(prenda));
+                        || (com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CAPA) && com.modamod.item.CapaItem.capucha(prenda));
                 if (!conCapucha) return false;
                 x = MathHelper.clamp(x, 0, 64);
                 y = MathHelper.clamp(y, 0, 64);
@@ -280,7 +280,7 @@ public class EstiladoBlockEntity extends BlockEntity
             ItemStack muestra = plantilla.objeto() != null && retazo.getItem() instanceof com.modamod.item.MuestraColorItem
                     ? retazo : ItemStack.EMPTY;
             ObjetoAplique ob = plantilla.objeto() == null ? null : plantilla.objeto().paraPoner(muestra);
-            java.util.List<Integer> colores = plantilla.objeto() == null && retazo.getItem() instanceof RetazoApliqueItem
+            java.util.List<Integer> colores = plantilla.objeto() == null && com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
                     ? RetazoApliqueItem.colores(retazo) : RetazoApliqueItem.BLANCO;
             actuales.add(new Aplique(plantilla.modelo(), parte, x, y, z, cara, plantilla.giro(), plantilla.escala(), colores,
                     superficie, plantilla.blandura(), ob, plantilla.colocacion(), plantilla.oscilacion()).conFila(plantilla.fila()));
@@ -531,7 +531,7 @@ public class EstiladoBlockEntity extends BlockEntity
     @org.jetbrains.annotations.Nullable
     public List<Integer> coloresDeLaFuente() {
         ItemStack fuente = items.get(SLOT_RETAZO);
-        if (fuente.getItem() instanceof RetazoApliqueItem) return RetazoApliqueItem.colores(fuente);
+        if (com.modamod.prenda.Prendas.es(fuente, com.modamod.prenda.CategoriaDePrenda.APLIQUE)) return RetazoApliqueItem.colores(fuente);
         if (fuente.getItem() instanceof com.modamod.item.MuestraColorItem) {
             int[] m = com.modamod.item.MuestraColorItem.mezcla(fuente);
             if (m == null) return null;
@@ -559,9 +559,9 @@ public class EstiladoBlockEntity extends BlockEntity
         ItemStack prenda = items.get(SLOT_PRENDA), molde = items.get(SLOT_MOLDE);
         if (prenda.isEmpty() || !admite(prenda) || !(molde.getItem() instanceof com.modamod.correa.MoldeCorreaItem m)) return false;
         // La superficie tiene que ser la de la prenda: la malla de la pollera o de la capa, o las cajas (cuerpo, sombrero, banda).
-        boolean pollera = prenda.getItem() instanceof com.modamod.item.PolleraItem;
-        boolean capa = prenda.getItem() instanceof com.modamod.item.CapaItem;
-        boolean delantal = prenda.getItem() instanceof com.modamod.item.DelantalItem;
+        boolean pollera = com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.POLLERA);
+        boolean capa = com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CAPA);
+        boolean delantal = com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.DELANTAL);
         switch (superficie) {
             case POLLERA -> { if (!pollera) return false; }
             case CAPA -> { if (!capa) return false; }
@@ -712,8 +712,8 @@ public class EstiladoBlockEntity extends BlockEntity
     /** Qué prendas llevan acabado: las de tela que se dibujan por piezas (remera, chaqueta, pantalón, medias, calentabrazos). */
     /** Todas las prendas, la pollera, la capa, el delantal, el sombrero, las bandas y el calzado (2026-10-22, "vamos con todo"). */
     public static boolean admiteAcabado(ItemStack prenda) {
-        return com.modamod.prenda.Prendas.esRopaDeCuerpo(prenda) || prenda.getItem() instanceof com.modamod.item.SombreroBrujaItem
-                || prenda.getItem() instanceof com.modamod.item.BandaItem || prenda.getItem() instanceof com.modamod.item.BorcegosItem;
+        return com.modamod.prenda.Prendas.esRopaDeCuerpo(prenda) || com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
+                || com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.BANDA) || com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.CALZADO);
     }
 
     private boolean alternarTextura() {
@@ -821,7 +821,7 @@ public class EstiladoBlockEntity extends BlockEntity
         if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) return true;
         if (net.minecraft.item.Equipment.fromStack(stack) != null) return true;
         // El maletín (2026-10-23, "editable en la estacion de tintes y de apliques"): un accesorio de cajas más.
-        if (stack.getItem() instanceof com.modamod.guardarropas.MaletinItem) return true;
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)) return true;
         return stack.getItem() instanceof dev.emi.trinkets.api.Trinket;
     }
 
@@ -834,7 +834,7 @@ public class EstiladoBlockEntity extends BlockEntity
                     || stack.getItem() instanceof com.modamod.correa.MoldeCorreaItem
                     || stack.getItem() instanceof com.modamod.item.MoldeTexturaItem
                     || patronDeTrim(stack) != null;   // molde de trim de vanilla (2026-10-06)
-            case SLOT_RETAZO -> stack.getItem() instanceof RetazoApliqueItem
+            case SLOT_RETAZO -> com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
                     || stack.getItem() instanceof com.modamod.item.MuestraColorItem;
             case SLOT_OBJETO -> creativa() && ObjetoAplique.admite(stack);
             case SLOT_MATERIAL -> materialDe(stack) != null;   // material de trim de vanilla (2026-10-06)
@@ -844,7 +844,7 @@ public class EstiladoBlockEntity extends BlockEntity
 
     @Override
     public int getMaxCount(ItemStack stack) {
-        return stack.getItem() instanceof RetazoApliqueItem || materialDe(stack) != null ? 64 : 1;
+        return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE) || materialDe(stack) != null ? 64 : 1;
     }
 
     @Override

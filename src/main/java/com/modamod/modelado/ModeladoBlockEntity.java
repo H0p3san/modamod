@@ -203,7 +203,30 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
 
     /** Qué prenda está configurando ahora el jugador — cicla con {@link #BTN_CATEGORIA}. */
     /** POLLERA al final (2026-09-29): sus slots van al final del inventario, ver {@link #POLLERA_ACTIVO}. */
-    public enum Categoria { REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, CAPA, SOMBRERO, BANDA, CALZADO, DELANTAL }
+    public enum Categoria {
+        REMERA(com.modamod.prenda.CategoriaDePrenda.REMERA),
+        PANTALON(com.modamod.prenda.CategoriaDePrenda.PANTALON),
+        MEDIAS(com.modamod.prenda.CategoriaDePrenda.MEDIAS),
+        CALIENTABRAZOS(com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS),
+        POLLERA(com.modamod.prenda.CategoriaDePrenda.POLLERA),
+        CAPA(com.modamod.prenda.CategoriaDePrenda.CAPA),
+        SOMBRERO(com.modamod.prenda.CategoriaDePrenda.SOMBRERO),
+        BANDA(com.modamod.prenda.CategoriaDePrenda.BANDA),
+        CALZADO(com.modamod.prenda.CategoriaDePrenda.CALZADO),
+        DELANTAL(com.modamod.prenda.CategoriaDePrenda.DELANTAL);
+
+        /** La categoría única de prenda que esta máquina muestra con este lugar. */
+        public final com.modamod.prenda.CategoriaDePrenda prenda;
+
+        Categoria(com.modamod.prenda.CategoriaDePrenda prenda) { this.prenda = prenda; }
+
+        /** El lugar de esta máquina para {@code prenda}, o null si no la trabaja. */
+        @org.jetbrains.annotations.Nullable
+        public static Categoria de(@org.jetbrains.annotations.Nullable com.modamod.prenda.CategoriaDePrenda prenda) {
+            for (Categoria c : values()) if (c.prenda == prenda) return c;
+            return null;
+        }
+    }
 
     /** Qué hace cada pin del esquema (2026-09-26, pines para las 4 prendas). NINGUNO = pin sin usar en esa categoría. */
     public enum Rol { CUELLO, MAT1, MAT2, MAT3, MANGA_IZQ, MANGA_DER, CALCE, TORSO, TIRO, BOTA_IZQ, BOTA_DER,
@@ -1878,25 +1901,15 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
     /** Lo que entra en el slot de prenda: la ropa de siempre y el sombrero de bruja (2026-10-05; no es ropa para el resto de las máquinas). */
     public static boolean esPrendaModelable(ItemStack stack) {
         return com.modamod.item.ModamodDye.isClothing(stack)
-                || stack.getItem() instanceof com.modamod.item.SombreroBrujaItem
-                || stack.getItem() instanceof com.modamod.item.BandaItem
-                || stack.getItem() instanceof com.modamod.item.BorcegosItem;
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO);
     }
 
     /** A qué categoría pertenece esta prenda de verdad — mismo chequeo de tipo que {@link PrendaModelado#aplicar}. */
     @Nullable
     private static Categoria categoriaDe(ItemStack stack) {
-        if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem) return Categoria.REMERA;
-        if (stack.getItem() instanceof com.modamod.item.PantalonItem) return Categoria.PANTALON;
-        if (stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID) return Categoria.MEDIAS;
-        if (stack.getItem() instanceof com.modamod.item.CalientabrazosItem) return Categoria.CALIENTABRAZOS;
-        if (stack.getItem() instanceof com.modamod.item.PolleraItem) return Categoria.POLLERA;
-        if (stack.getItem() instanceof com.modamod.item.CapaItem) return Categoria.CAPA;
-        if (stack.getItem() instanceof com.modamod.item.SombreroBrujaItem) return Categoria.SOMBRERO;
-        if (stack.getItem() instanceof com.modamod.item.BandaItem) return Categoria.BANDA;
-        if (stack.getItem() instanceof com.modamod.item.BorcegosItem) return Categoria.CALZADO;
-        if (stack.getItem() instanceof com.modamod.item.DelantalItem) return Categoria.DELANTAL;
-        return null;
+        return Categoria.de(com.modamod.prenda.Prendas.categoria(stack));
     }
 
     /**
@@ -2093,7 +2106,7 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
     /** Color plano de la prenda para el hilo — mismos tipos que {@link #categoriaDe}, blanco si no hay ninguna reconocida. */
     private static int colorDeHilo(ItemStack stack) {
         if (stack.isEmpty()) return 0xFFFFFF;
-        if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem) {
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
             return com.modamod.sublimadora.RemeraItem.color(stack);
         }
         return com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);

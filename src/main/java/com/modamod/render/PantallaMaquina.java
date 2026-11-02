@@ -316,7 +316,7 @@ public final class PantallaMaquina {
         // que aparece en la pantallita?"): el mismo que el inventario y la mesa.
         NativeImage nuevo = IconoPrenda.copia(stack);
         if (nuevo != null) return nuevo;
-        if (stack.getItem() instanceof com.modamod.sublimadora.RemeraItem) {
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
             return com.modamod.sublimadora.EstampaTextures.iconoParaPantalla(stack);
         }
         Identifier iconoBase;
@@ -324,7 +324,7 @@ public final class PantallaMaquina {
         if (stack.getItem() == com.modamod.item.ModamodItems.PANTALON) {
             iconoBase = Identifier.of("modamod", "textures/item/pantalon.png");
             color = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
-        } else if (stack.getItem() == com.modamod.item.ModamodItems.SOCKS_SOLID) {
+        } else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) {
             iconoBase = Identifier.of("modamod", "textures/item/socks_solid.png");
             color = com.modamod.region.RegionResolver.colorBase(stack, com.modamod.region.Lado.IZQUIERDA);
         } else if (stack.getItem() == com.modamod.item.ModamodItems.CALIENTABRAZOS) {
