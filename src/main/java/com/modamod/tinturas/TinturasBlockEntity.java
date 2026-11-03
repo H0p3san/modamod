@@ -1811,9 +1811,8 @@ public class TinturasBlockEntity extends BlockEntity
 
     /**
      * Sombrero, banda y calzado (2026-10-15, "aplicar patrones... como las otras prendas"): las capas de cada cuadradito
-     * van a su zona ({@code ZONA_n}, ver {@link com.modamod.render.ZonaTextura}) y el color base de la zona es el de su
-     * capa lisa más arriba, como en {@link #pintarStack}. Con la simetría prendida el pie izquierdo copia las capas del
-     * derecho (y los colores: el componente izquierdo se borra y vuelve a copiar al derecho).
+     * van a su zona ({@code ZONA_n}, ver {@link com.modamod.render.ZonaTextura}), sobre el color de fábrica de cada zona.
+     * Con la simetría prendida el pie izquierdo copia las capas del derecho.
      */
     private void pintarZonas(ItemStack stack, com.modamod.item.ZonasTenibles zt, List<RegionResolver.CapaPatron> capas) {
         boolean pares = zt.tienePares(), sim = pares && simetriaCalzado;
@@ -1827,25 +1826,6 @@ public class TinturasBlockEntity extends BlockEntity
                 int z = c.region().ordinal() - z1;
                 if (z < 3) todas.add(RegionResolver.conRegion(c, com.modamod.region.RegionPintura.values()[z1 + z + 3]));
             }
-        }
-        for (boolean izq : pares ? new boolean[]{false, true} : new boolean[]{false}) {
-            if (izq && sim) break;
-            List<Integer> actuales = zt.coloresDe(stack, izq);
-            int[] nuevos = new int[3];
-            for (int z = 0; z < 3; z++) {
-                nuevos[z] = actuales.get(z);
-                com.modamod.region.RegionPintura reg = com.modamod.render.ZonaTextura.region(z, izq);
-                for (int k = todas.size() - 1; k >= 0; k--) {
-                    RegionResolver.CapaPatron c = todas.get(k);
-                    if (c.region() == reg && c.lisa() && c.opacidad() >= 100 && c.modo() == com.modamod.region.ModoMezcla.NORMAL
-                            && c.extras().isEmpty() && (c.color() >>> 24) == 0) {
-                        nuevos[z] = c.color() & 0xFFFFFF;
-                        break;
-                    }
-                }
-            }
-            if (pares && izq) zt.conColoresDe(stack, nuevos[0], nuevos[1], nuevos[2], true);
-            else zt.conColoresDe(stack, nuevos[0], nuevos[1], nuevos[2]);
         }
         if (todas.isEmpty()) stack.remove(com.modamod.item.ModamodComponents.CAPAS_TINTE);
         else stack.set(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.copyOf(todas));

@@ -83,18 +83,11 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private ButtonWidget btnObjModo, btnObjVariante;
     /**
      * Borcegos (2026-10-11, "no se puede independizar derecho e izquierdo?"): cada pie lleva lo suyo. {@code espejarPie}
-     * (de fábrica prendido) repite lo que hacés en un pie, espejado, en el otro; {@code pieActivoIzq} es el pie al que
-     * van los botones de color y dibujo (se cambia con el botón o clickeando un borcego en la vista).
+     * (de fábrica prendido) repite lo que hacés en un pie, espejado, en el otro.
      */
-    private boolean espejarPie = true, pieActivoIzq = false;
+    private boolean espejarPie = true;
     private net.minecraft.item.Item ultimaPrendaEspejo;
-    private ButtonWidget btnEspejo, btnPie;
-    /**
-     * Colorear el sombrero de bruja (2026-10-05, "que se le apliquen los colores en la mesa de estilado sobre todo si
-     * tiene tres areas"): con un sombrero en la prenda hay un botón que cambia los controles de apliques por 3 filas
-     * (ala, cono, cinta) con un botón por cada color del retazo, y "retazo entero".
-     */
-    private boolean modoColor = false;
+    private ButtonWidget btnEspejo;
     /**
      * Correas libres (2026-10-05, "correas libres"): modo con dos clicks en la vista (inicio y fin), modo pegada o
      * colgante, ancho en px y "Quitar última" (que antes cancela el punto de inicio si ya hay uno).
@@ -113,9 +106,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private int correaSel = -1;
     /** Dónde (pantalla) se hizo el primer click: la guía de las correas sobre malla, que no tienen un punto 3D. */
     private float[] correaInicioPantalla = null;
-    /** El color del retazo (0..2) con el que pinta el click en la vista (2026-10-05): el último botón ■ apretado. */
-    private int colorActivo = 0;
-    private ButtonWidget btnColorEntero;
     /**
      * Las tres pestañas (2026-10-06, "conceptualmente son tres cosas aplique correa acabado"): 0 = Aplique, 1 = Correa,
      * 2 = Acabado (textura de tela, trim con material y, en el sombrero y las bandas, el color y dibujo de cada zona).
@@ -128,7 +118,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
 
     /** Gancho: la Estilista guarda lo elegido en cada pestaña por separado. */
     void alCambiarPestana(int antes, int ahora) { }
-    private final ButtonWidget[][] btnColorZona = new ButtonWidget[3][3];
     /** Los controles de apliques que se esconden mientras se colorea. */
     private final List<ButtonWidget> grupoAplique = new java.util.ArrayList<>();
 
@@ -169,10 +158,10 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
      * Acomoda TODOS los controles de la columna con la disposición de la pestaña (2026-10-13, "ordenalo bien chequea dos
      * veces"): lo que no figura en la disposición se esconde, así no puede haber dos controles en el mismo lugar.
      */
-    private void reubicar(boolean zonas, boolean pares, boolean objeto) {
+    private void reubicar(boolean pares, boolean objeto) {
         if (!conBolsas()) return;
         modoDisp = pestana == 0 ? DisposicionEstilista.Modo.APLIQUE : pestana == 1 ? DisposicionEstilista.Modo.CORREA
-                : pestana == 2 ? (zonas ? DisposicionEstilista.Modo.COLOR : DisposicionEstilista.Modo.ACABADO)
+                : pestana == 2 ? DisposicionEstilista.Modo.ACABADO
                 : pestana == 3 ? DisposicionEstilista.Modo.BOLSAS : DisposicionEstilista.Modo.DISENOS;
         disp = DisposicionEstilista.calcular(new DisposicionEstilista.Estado(modoDisp, pares, objeto));
         for (int i = 0; i < btnApliques.length; i++) poner(btnApliques[i], "ap" + i);
@@ -200,7 +189,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         poner(btnObjModo, "objModo");
         poner(btnObjVariante, "objVariante");
         poner(btnEspejo, "espejo");
-        poner(btnPie, "pie");
         for (int i = 0; i < btnCorreaLista.length; i++) poner(btnCorreaLista[i], "cl" + i);
         poner(btnCorreaModo, "cModo");
         poner(btnCorreaAncho, "cAncho");
@@ -210,10 +198,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         poner(btnCorreaLargo, "cLargo");
         poner(btnCorreaLargoMas, "cLargoMas");
         poner(btnTextura, "textura");
-        for (int z = 0; z < 3; z++) {
-            for (int c = 0; c < 3; c++) poner(btnColorZona[z][c], "zc" + z + c);
-        }
-        poner(btnColorEntero, "entero");
     }
 
     /** Revisa con los widgets reales que nada visible de la columna se pise; avisa una sola vez por situación. */
@@ -252,15 +236,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         return p.getItem() instanceof com.modamod.item.ZonasTenibles zt && zt.tienePares();
     }
 
-    /** Color o dibujo de una zona: en los borcegos va al pie activo y, con "Espejar", también al otro. */
-    private void clickZona(int id) {
-        if (!conPares()) {
-            clickBoton(id);
-            return;
-        }
-        clickBoton(pieActivoIzq ? id + EstiladoBlockEntity.BTN_PIE_IZQ : id);
-        if (espejarPie) clickBoton(pieActivoIzq ? id : id + EstiladoBlockEntity.BTN_PIE_IZQ);
-    }
 
     /**
      * El mismo toque del otro lado (2026-10-14, "que el boton mirror funcione para todas las prendas... en las de una
@@ -395,19 +370,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 "modamod.correa.tooltip.recolorear", () -> {
                     if (correaSel >= 0) clickBoton(EstiladoBlockEntity.BTN_CORREA_COLOREAR_BASE + correaSel);
                 });
-        for (int z = 0; z < 3; z++) {
-            for (int c = 0; c < 3; c++) {
-                int id = EstiladoBlockEntity.BTN_COLOR_BASE + z * 4 + c;
-                final int color = c;
-                btnColorZona[z][c] = boton(X_DER + 46 + c * 17, 66 + z * 22, 15, Text.literal("■"),
-                        "modamod.estilado.tooltip.color_zona", () -> {
-                            colorActivo = color;
-                            clickZona(id);
-                        });
-            }
-        }
-        btnColorEntero = boton(X_DER, 132, 96, Text.translatable("modamod.estilado.color.entero"),
-                "modamod.estilado.tooltip.color_entero", () -> clickZona(EstiladoBlockEntity.BTN_COLOR_ENTERO));
         // Sacudir (2026-10-04, "boton de sacudir... alternar mover el muñeco"): prende y apaga el vaivén.
         btnSacudir = boton(X_DER + 98, 132, 64, Text.empty(), "modamod.estilado.tooltip.sacudir",
                 () -> sacudiendo = !sacudiendo);
@@ -424,7 +386,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 () -> clickBoton(EstiladoBlockEntity.BTN_OBJ_VARIANTE));
         btnEspejo = conBolsas() ? boton(X_DER, 132, 96, Text.empty(), "modamod.estilado.tooltip.espejo", () -> espejarPie = !espejarPie)
                 : boton(bx0 + bpaso * 2, by, 72, Text.empty(), "modamod.estilado.tooltip.espejo", () -> espejarPie = !espejarPie);
-        btnPie = boton(X_DER, 44, 80, Text.empty(), "modamod.estilado.tooltip.pie", () -> pieActivoIzq = !pieActivoIzq);
         // Tira de enfoques abajo del visor (2026-10-12): acerca la cámara a la parte del cuerpo para poner apliques cómodo.
         var enfoques = com.modamod.modelado.ZonasModelado.Enfoque.values();
         for (int i = 0; i < enfoques.length; i++) {
@@ -1294,18 +1255,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 clickCorrea(mx, my);
                 return true;
             }
-            if (button == 0 && modoColor) {
-                // Colorear el sombrero (2026-10-05, "click en la vista 3d"): la zona clickeada toma el color activo.
-                int zona = zonaDelSombrero(mx, my);
-                if (handler.be.coloresDeLaFuente() == null) aviso = Text.translatable("modamod.estilado.color.sin_retazo");
-                else if (zona < 0) aviso = Text.translatable("modamod.estilado.aviso.fuera");
-                else {
-                    aviso = null;
-                    if (conPares()) pieActivoIzq = pieIzquierdo;    // el pie que tocaste
-                    clickZona(EstiladoBlockEntity.BTN_COLOR_BASE + zona * 4 + colorActivo);
-                }
-                return true;
-            }
             if (button == 0) {
                 Toque t = tocar(mx, my);
                 EstiladoBlockEntity be = handler.be;
@@ -1392,7 +1341,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         boolean admiteCorrea = !enPrenda.isEmpty();
         if (!admiteCorrea && pestana != 0 && pestana < 3) pestana = 0;
         modoCorrea = pestana == 1;
-        modoColor = pestana == 2 && sombrero;
         if (!modoCorrea) correaInicio = null;
         String[] nombresPestana = {"aplique", "correa", "acabado"};
         for (int i = 0; i < btnPestana.length; i++) {
@@ -1427,19 +1375,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 : correaSel >= 0 ? "modamod.correa.boton.quitar_sel" : "modamod.correa.boton.quitar", correaSel >= 0 ? correaSel + 1 : be.correas().size()));
         btnCorreaQuitar.active = correaInicio != null || !be.correas().isEmpty();
         for (ButtonWidget b : grupoAplique) b.visible = pestana == 0;
-        java.util.List<Integer> fuente = be.coloresDeLaFuente();
-        for (int z = 0; z < 3; z++) {
-            for (int c = 0; c < 3; c++) {
-                ButtonWidget b = btnColorZona[z][c];
-                b.visible = modoColor;
-                b.active = fuente != null;
-                int rgb = fuente == null ? 0x808080 : fuente.get(c);
-                b.setMessage(Text.literal(c == colorActivo ? "[■]" : "■").styled(st -> st.withColor(rgb)));
-            }
-        }
-        btnColorEntero.visible = modoColor;
-        btnColorEntero.active = fuente != null;
-        boolean pares = sombrero && ((com.modamod.item.ZonasTenibles) enPrenda.getItem()).tienePares();
         if (enPrenda.getItem() != ultimaPrendaEspejo) {
             // Cada prenda arranca con su espejo: prendido en las de a pares (borcegos), apagado en el resto.
             ultimaPrendaEspejo = enPrenda.getItem();
@@ -1447,8 +1382,6 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         }
         btnEspejo.visible = !enPrenda.isEmpty();
         btnEspejo.setMessage(Text.translatable(espejarPie ? "modamod.estilado.espejo.si" : "modamod.estilado.espejo.no"));
-        btnPie.visible = pares && modoColor;
-        btnPie.setMessage(Text.translatable(pieActivoIzq ? "modamod.estilado.pie.izq" : "modamod.estilado.pie.der"));
         btnGiro.active = btnEscala.active = btnQuitar.active = hay;
         // La fila es de los apliques de modelo; los de objeto la ignoran.
         boolean conFila = hay && apliques.get(sel).objeto() == null;
@@ -1505,7 +1438,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                     Text.translatable(actual.traduccion())));
         }
 
-        reubicar(sombrero, pares, obj != null && creativa());
+        reubicar(conPares(), obj != null && creativa());
         super.render(context, mouseX, mouseY, delta);
         verificarSolapes();
         // Mira: dónde caería el aplique.
@@ -1527,14 +1460,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                     context.fill(px, py, px + 1, py + 1, 0xFFFFD060);
                 }
             }
-        } else if (modoColor && dentroDeVista(mouseX, mouseY)) {
-            int zona = zonaDelSombrero(mouseX, mouseY);
-            if (zona >= 0) {
-                context.fill(mouseX - 3, mouseY, mouseX + 4, mouseY + 1, 0xFFFFFFFF);
-                context.fill(mouseX, mouseY - 3, mouseX + 1, mouseY + 4, 0xFFFFFFFF);
-                context.drawTooltip(this.textRenderer, Text.translatable(claveDeZona(zona)), mouseX, mouseY);
-            }
-        } else if (!modoColor && !modoCorrea && dentroDeVista(mouseX, mouseY) && tocar(mouseX, mouseY) != null) {
+        } else if (!modoCorrea && dentroDeVista(mouseX, mouseY) && tocar(mouseX, mouseY) != null) {
             context.fill(mouseX - 3, mouseY, mouseX + 4, mouseY + 1, 0xFFFFFFFF);
             context.fill(mouseX, mouseY - 3, mouseX + 1, mouseY + 4, 0xFFFFFFFF);
         }
@@ -1576,23 +1502,12 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 yy += 10;
             }
         }
-        if (modoColor) {
-            for (int z = 0; z < 3; z++) {
-                context.drawText(this.textRenderer, Text.translatable(claveDeZona(z)),
-                        X_DER, (conBolsas() && disp.get("zr" + z) != null ? disp.get("zr" + z).y() : 66 + z * 22) + 4, EstiloPergamino.TEXTO, false);
-            }
-            if (handler.be.coloresDeLaFuente() == null) {
-                context.drawText(this.textRenderer, Text.translatable("modamod.estilado.color.sin_retazo"),
-                        X_DER, conBolsas() && disp.get("avisoColor") != null ? disp.get("avisoColor").y() : 170, 0xFFFF9090, false);
-            }
-        }
         context.getMatrices().pop();
-        java.util.List<Integer> fuenteAyuda = modoColor ? handler.be.coloresDeLaFuente() : null;
         Text ayuda = aviso != null ? aviso
                 : modoCorrea ? Text.translatable(!correaModo.dosPuntos() ? "modamod.correa.ayuda.anclada"
                         : correaInicio == null ? "modamod.correa.ayuda.inicio" : "modamod.correa.ayuda.fin")
-                : modoColor ? Text.translatable("modamod.estilado.ayuda_color",
-                        Text.literal("■").styled(st -> st.withColor(fuenteAyuda == null ? 0x808080 : fuenteAyuda.get(colorActivo))))
+                : pestana == 2 && handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA).getItem() instanceof com.modamod.item.ZonasTenibles
+                        ? Text.translatable("modamod.estilado.ayuda_accesorio")
                 : pestana == 2 ? Text.translatable("modamod.estilado.ayuda_acabado")
                 : Text.translatable("modamod.estilado.ayuda");
         int color = aviso != null ? 0xFFFF9090 : 0xFFE8DCC8;

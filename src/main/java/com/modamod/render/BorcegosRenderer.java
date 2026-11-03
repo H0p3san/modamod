@@ -161,7 +161,6 @@ public final class BorcegosRenderer {
             ModelPart marco = izq ? biped.leftLeg : biped.rightLeg;
             if (!marco.visible) continue;
             // Cada pie con lo suyo (2026-10-11, "no se puede independizar derecho e izquierdo?").
-            List<Integer> colores = BorcegosItem.colores(borcegos, izq);
             Montado m = montar(borcegos, izq);
             matrices.push();
             marco.rotate(matrices);

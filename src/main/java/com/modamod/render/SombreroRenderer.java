@@ -89,7 +89,6 @@ public final class SombreroRenderer {
         matrices.push();
         CabezaCaras.agrandar(matrices, biped, 1.18F);
 
-        List<Integer> colores = SombreroBrujaItem.colores(sombrero);
         // La punta: lo que la inercia le suma a cada tramo (el de arriba también, el doble por ser hijo del de abajo).
         float pitch = 0f, roll = 0f;
         FisicaApliques.Desplazamiento d = FisicaApliques.actual;

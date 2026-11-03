@@ -96,10 +96,6 @@ public class EstilistaScreen extends EstiladoScreen {
     private java.util.List<Fila> filas() {
         int B = com.modamod.estilista.EditorBolsaPayload.ELEGIR;
         int molde = com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE, retazo = com.modamod.estilado.EstiladoBlockEntity.SLOT_RETAZO;
-        if (pestana == 2 && modoDisp == DisposicionEstilista.Modo.COLOR) {
-            return java.util.List.of(new Fila("retazos", B, EstilistaBlockEntity.BOLSA_RETAZOS, retazo,
-                    () -> delaBolsa(EstilistaBlockEntity.BOLSA_RETAZOS, x -> true)));
-        }
         return switch (pestana) {
             case 0 -> java.util.List.of(
                     new Fila("apliques", B, EstilistaBlockEntity.BOLSA_APLIQUES, molde, () -> delaBolsa(EstilistaBlockEntity.BOLSA_APLIQUES, x -> true)),
@@ -148,9 +144,7 @@ public class EstilistaScreen extends EstiladoScreen {
         var ed = yo.host.editor();
         DisposicionEstilista.R er = disp.get("elegidos");
         if (er == null) return;
-        int[] slots = modoDisp == DisposicionEstilista.Modo.COLOR
-                ? new int[] { com.modamod.estilado.EstiladoBlockEntity.SLOT_RETAZO }
-                : modoDisp == DisposicionEstilista.Modo.ACABADO
+        int[] slots = modoDisp == DisposicionEstilista.Modo.ACABADO
                 ? new int[] { com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE, com.modamod.estilado.EstiladoBlockEntity.SLOT_MATERIAL }
                 : new int[] { com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE, com.modamod.estilado.EstiladoBlockEntity.SLOT_RETAZO };
         for (int k = 0; k < slots.length; k++) {
@@ -291,12 +285,12 @@ public class EstilistaScreen extends EstiladoScreen {
     private boolean clickChincheta(double mx, double my) {
         DisposicionEstilista.R er = disp.get("elegidos");
         if (er == null || pestana > 2) return false;
-        int n = modoDisp == DisposicionEstilista.Modo.COLOR ? 1 : 2;
+        int n = 2;
         for (int k = 0; k < n; k++) {
             int cx = this.x + er.x() + 1 + k * 112 + 96, cy = this.y + er.y() + 5;
             if (mx >= cx - 2 && mx < cx + 10 && my >= cy - 2 && my < cy + 10) {
                 // k es la posición en la fila; el casillero del editor es: molde 0, retazo 1, material 2.
-                int casillero = modoDisp == DisposicionEstilista.Modo.COLOR ? 1 : modoDisp == DisposicionEstilista.Modo.ACABADO && k == 1 ? 2 : k;
+                int casillero = modoDisp == DisposicionEstilista.Modo.ACABADO && k == 1 ? 2 : k;
                 net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.modamod.estilista.EditorBolsaPayload(
                         yo.host.getPos(), com.modamod.estilista.EditorBolsaPayload.FIJAR, casillero, 0,
                         net.minecraft.util.Identifier.of("minecraft", "air")));

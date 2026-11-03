@@ -23,7 +23,7 @@ public final class DisposicionEstilista {
         }
     }
 
-    public enum Modo { APLIQUE, CORREA, ACABADO, COLOR, BOLSAS, DISENOS }
+    public enum Modo { APLIQUE, CORREA, ACABADO, BOLSAS, DISENOS }
 
     /** Lo que cambia qué controles hay: el modo, si la prenda tiene dos pies y si hay un aplique de objeto elegido (creativa). */
     public record Estado(Modo modo, boolean pares, boolean objeto) {}
@@ -111,25 +111,6 @@ public final class DisposicionEstilista {
                 m.put("textura", new R(X, y, ANCHO, H_FILA));
                 y += H_FILA + SEP;
                 m.put("acabadoTexto", new R(X, y, ANCHO, 20));
-            }
-            case COLOR -> {
-                y = elegidos(m, y);
-                y = selector(m, 0, y);
-                for (int z = 0; z < 3; z++) {
-                    m.put("zr" + z, new R(X, y, 60, H_FILA));
-                    for (int c = 0; c < 3; c++) m.put("zc" + z + c, new R(X + 62 + c * 18, y, 16, H_FILA));
-                    m.put("zp" + z, new R(X + 118, y, 64, H_FILA));
-                    y += H_FILA + 2;
-                }
-                y += 2;
-                m.put("entero", new R(X, y, 112, H_FILA));
-                if (e.pares()) m.put("pie", new R(X + 116, y, 90, H_FILA));
-                y += H_FILA + SEP;
-                if (e.pares()) {
-                    m.put("espejo", new R(X, y, 112, H_FILA));
-                    y += H_FILA + SEP;
-                }
-                m.put("avisoColor", new R(X, y, ANCHO, 10));
             }
         }
         return m;

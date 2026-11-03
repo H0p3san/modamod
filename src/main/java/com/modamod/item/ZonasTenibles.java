@@ -6,23 +6,25 @@ import net.minecraft.item.ItemStack;
 import java.util.List;
 
 /**
- * Un ítem puesto con 3 zonas que se pintan y se dibujan en la Mesa de estilado (2026-10-05): el sombrero de bruja
- * (ala, cono, cinta) y la banda (banda, borde, herraje). Los dos se dibujan con cajas en el marco de una parte del
+ * Un accesorio de cajas con 3 zonas (por pie, en el calzado): el sombrero (ala, copa, cinta), la banda (banda, borde,
+ * herraje), los borcegos y el maletín. Se tiñen en la Estación de Tintes, una región ZONA_n por zona. Los dos se dibujan con cajas en el marco de una parte del
  * cuerpo ({@link #marco}) y llevan sus propios apliques.
  */
 public interface ZonasTenibles {
-    List<Integer> coloresDe(ItemStack stack);
+    /** El color de cada zona (0..2) sin teñir; lo que se tiñe en la Estación de Tintes va encima como capas. */
+    List<Integer> coloresDeFabrica();
 
-    ItemStack conColoresDe(ItemStack stack, int a, int b, int c);
-
-
-
-    /** Lo mismo del pie izquierdo (2026-10-11): solo los borcegos distinguen los dos pies; el resto repite lo de siempre. */
-    default List<Integer> coloresDe(ItemStack stack, boolean izq) { return coloresDe(stack); }
-
-    default ItemStack conColoresDe(ItemStack stack, int a, int b, int c, boolean izq) { return conColoresDe(stack, a, b, c); }
-
-
+    /** Tiñe todas las zonas de un color liso (lo que sale del telar): una capa lisa por zona. */
+    default void tenirEntero(ItemStack stack, int rgb) {
+        List<com.modamod.region.RegionResolver.CapaPatron> capas = new java.util.ArrayList<>();
+        int zonas = tienePares() ? 6 : 3;
+        for (int z = 0; z < zonas; z++) {
+            capas.add(new com.modamod.region.RegionResolver.CapaPatron(null, rgb & 0xFFFFFF, TamanoPatron.GRANDE, 0f, 0.5f,
+                    com.modamod.render.PatronGenerador.Forma.ALTERNADO, false,
+                    com.modamod.region.RegionPintura.values()[com.modamod.region.RegionPintura.ZONA_1.ordinal() + z]));
+        }
+        stack.set(ModamodComponents.CAPAS_TINTE, List.copyOf(capas));
+    }
 
     /** ¿Tiene dos lados que se pintan por separado (los borcegos)? */
     default boolean tienePares() { return false; }

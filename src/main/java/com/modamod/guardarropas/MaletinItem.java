@@ -37,21 +37,13 @@ public class MaletinItem extends Item implements com.modamod.item.ZonasTenibles 
     // ── Zonas (2026-10-23, "editable en la estacion de tintes y de apliques"): como la banda, guarda colores y patrones en los
     // mismos componentes que ella (colores_banda / patrones_banda); las cajas las dibuja render/MaletinRenderer.
     /** Cuero marrón, costuras y manija oscuras, herrajes dorados (lo que se veía con las texturas de antes). */
-    public static final List<Integer> DE_FABRICA = List.of(0x7A4A2A, 0x2E1C10, 0xD4AF37);
-
-    @Override
-    public List<Integer> coloresDe(ItemStack stack) {
-        List<Integer> c = stack.get(ModamodComponents.COLORES_BANDA);
-        return c == null || c.size() < 3 ? DE_FABRICA : c;
-    }
-
-    @Override
-    public ItemStack conColoresDe(ItemStack stack, int a, int b, int c) {
-        stack.set(ModamodComponents.COLORES_BANDA, List.of(a, b, c));
-        return stack;
-    }
+    private static final List<Integer> DE_FABRICA = List.of(0x7A4A2A, 0x2E1C10, 0xD4AF37);
 
 
+
+
+
+    @Override public List<Integer> coloresDeFabrica() { return DE_FABRICA; }
 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.maletin.zona." + (i + 1); }
 

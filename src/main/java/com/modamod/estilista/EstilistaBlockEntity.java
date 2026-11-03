@@ -73,11 +73,7 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
     private static final java.util.List<net.minecraft.component.ComponentType<?>> COMPONENTES_DE_DISENO = java.util.List.of(
             com.modamod.item.ModamodComponents.APLIQUES, com.modamod.item.ModamodComponents.CORREAS,
             com.modamod.item.ModamodComponents.TEXTURA_TELA, com.modamod.item.ModamodComponents.ACABADO_TRIM,
-            com.modamod.item.ModamodComponents.ACABADO_MATERIAL,
-            com.modamod.item.ModamodComponents.COLORES_SOMBRERO,
-            com.modamod.item.ModamodComponents.COLORES_BANDA,
-            com.modamod.item.ModamodComponents.COLORES_BORCEGOS,
-            com.modamod.item.ModamodComponents.COLORES_BORCEGOS_IZQ);
+            com.modamod.item.ModamodComponents.ACABADO_MATERIAL);
 
     /** Los tics del trabajo (de la animación `trabajo`) en que el pórtico arranca un recorrido: horizontal o de subida y bajada. */
     private static final int[] TICS_HORIZONTAL = {0, 18, 42, 52, 70, 94, 104, 122, 146, 156, 174, 198};
@@ -546,10 +542,6 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
         com.modamod.item.TexturaTela tx = d.get(com.modamod.item.ModamodComponents.TEXTURA_TELA);
         if (tx != null && tx != com.modamod.item.TexturaTela.LISA) {
             t.append(", ").append(Text.translatable("modamod.estilado.textura.actual", Text.translatable(tx.traduccion())));
-        }
-        if (d.get(com.modamod.item.ModamodComponents.COLORES_SOMBRERO) != null
-                || d.get(com.modamod.item.ModamodComponents.COLORES_BANDA) != null) {
-            t.append(", ").append(Text.translatable("modamod.estilista.resumen_colores"));
         }
         return t;
     }

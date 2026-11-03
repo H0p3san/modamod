@@ -1028,11 +1028,6 @@
   "modamod.sombrero.punta.recta": "recta",
   "modamod.sombrero.punta.doblada": "doblada",
   "trinkets.slot.head.sombrero": "Sombrero",
-  "modamod.estilado.color.entero": "Retazo entero",
-  "modamod.estilado.color.sin_retazo": "Falta el retazo",
-  "modamod.estilado.tooltip.color_zona": "Pasa este color del retazo a esta zona del sombrero (no se gasta el retazo)",
-  "modamod.estilado.tooltip.color_entero": "Pasa los 3 colores del retazo a las 3 zonas del sombrero",
-  "modamod.estilado.ayuda_color": "Click en el ala, el cono o la cinta del sombrero: la pinta con el color %s (cambialo con los botones)",
   "modamod.modelado.categoria.sombrero": "Sombrero",
   "modamod.prenda.sombrero": "Sombrero",
   "modamod.modelado.rol.ala_sombrero": "Ala",
@@ -1160,7 +1155,6 @@
   "modamod.estilado.ayuda_acabado": "Elegí una textura, un trim y un material de las listas y apretá el botón de abajo.",
   "modamod.acabado.tooltip": "Acabado: %s",
   "modamod.estilista.resumen_base": "%s apliques, %s correas",
-  "modamod.estilista.resumen_colores": "colores",
   "block.modamod.telar": "Telar automático",
   "block.modamod.telar_creativa": "Telar automático creativo",
   "modamod.telar.lana": "Lana",
@@ -1281,9 +1275,6 @@
   "modamod.estilado.espejo.si": "Espejar: sí",
   "modamod.estilado.espejo.no": "Espejar: no",
   "modamod.estilado.tooltip.espejo": "Repite lo que pongas (aplique o correa) del otro lado, espejado: en brazos y piernas pasa al de enfrente; en el torso, la cabeza, la pollera, la capa y el delantal se espeja contra el centro. Con borcegos también el color y el dibujo. Apagado, cada lado lleva lo suyo.",
-  "modamod.estilado.pie.der": "Pie: derecho",
-  "modamod.estilado.pie.izq": "Pie: izquierdo",
-  "modamod.estilado.tooltip.pie": "El pie al que van los colores y dibujos de abajo (también se cambia clickeando un borcego en la vista).",
   "item.modamod.delantal": "Delantal",
   "trinkets.slot.torso.delantal": "Delantal",
   "modamod.slot.torso.delantal": "Delantales. Van por encima de la remera, la chaqueta y la pollera, del pecho hacia abajo.",
@@ -1628,5 +1619,6 @@
   "modamod.pattern.liso": "Liso",
   "modamod.pattern.mas": "… y %s capas más",
   "modamod.region_pintura.lado_izq": "Lado izq. entero",
-  "modamod.region_pintura.lado_der": "Lado der. entero"
+  "modamod.region_pintura.lado_der": "Lado der. entero",
+  "modamod.estilado.ayuda_accesorio": "Sombreros, bandas, calzado y maletines se tiñen en la Estación de Tintes; acá van apliques, correas y acabados."
 }

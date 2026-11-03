@@ -65,15 +65,15 @@ public enum TelarPrenda {
                 // La base es una gorra (2026-10-14, "que no sea el sombrero de bruja puede ser el de copa o la gorra").
                 com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.VISERA_CURVA);
                 com.modamod.item.SombreroBrujaItem.setPunta(s, com.modamod.item.SombreroPunta.CUPULA);
-                com.modamod.item.SombreroBrujaItem.conColores(s, rgb, rgb, rgb);
+                ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
             case VINCHA -> {
                 com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.VINCHA);
-                com.modamod.item.SombreroBrujaItem.conColores(s, rgb, rgb, rgb);
+                ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
             case COFIA -> {
                 com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.COFIA);
-                com.modamod.item.SombreroBrujaItem.conColores(s, rgb, rgb, rgb);
+                ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
             default -> s.set(net.minecraft.component.DataComponentTypes.DYED_COLOR,
                     new net.minecraft.component.type.DyedColorComponent(rgb, true));

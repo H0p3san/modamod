@@ -37,7 +37,7 @@ public final class ZonaTextura {
 
     public static Identifier de(ItemStack stack, int zona, boolean izq) {
         ZonasTenibles zt = (ZonasTenibles) stack.getItem();
-        int rgb = zt.coloresDe(stack, izq).get(zona) & 0xFFFFFF;
+        int rgb = zt.coloresDeFabrica().get(zona) & 0xFFFFFF;
         RegionPintura reg = region(zona, izq);
         List<CapaPatron> capas = new ArrayList<>();
         for (CapaPatron c : stack.getOrDefault(ModamodComponents.CAPAS_TINTE, List.<CapaPatron>of())) {

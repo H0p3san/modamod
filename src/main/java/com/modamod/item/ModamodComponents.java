@@ -137,32 +137,8 @@ public final class ModamodComponents {
                     .build());
 
     // ── sombrero de bruja (2026-10-04) — ausentes = ala ancha / punta recta / colores de fábrica ──
-    public static final ComponentType<java.util.List<Integer>> COLORES_SOMBRERO = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_sombrero"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
 
-    public static final ComponentType<java.util.List<Integer>> COLORES_BANDA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_banda"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
 
-    public static final ComponentType<java.util.List<Integer>> COLORES_BORCEGOS_IZQ = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_borcegos_izq"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
-    public static final ComponentType<java.util.List<Integer>> COLORES_BORCEGOS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_borcegos"),
-            ComponentType.<java.util.List<Integer>>builder()
-                    .codec(com.mojang.serialization.Codec.INT.listOf())
-                    .packetCodec(PacketCodecs.VAR_INT.collect(PacketCodecs.toList()))
-                    .build());
 
     /** La mezcla C/M/Y/K/T de una muestra de color (2026-09-30), 5 niveles de 0..20. */
     public static final ComponentType<java.util.List<Integer>> MEZCLA_COLOR = Registry.register(

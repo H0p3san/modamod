@@ -7,10 +7,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +22,7 @@ import java.util.List;
 public class BandaItem extends TrinketItem implements ZonasTenibles {
 
     /** Cuero oscuro, borde claro y herraje dorado de fábrica. */
-    public static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x8A6240, 0xC9A24A);
+    private static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x8A6240, 0xC9A24A);
 
     public BandaItem(Settings settings) {
         super(settings);
@@ -61,10 +59,6 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
         else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE, v);
     }
 
-    public static List<Integer> colores(ItemStack stack) {
-        List<Integer> c = stack.get(ModamodComponents.COLORES_BANDA);
-        return c == null || c.size() < 3 ? DE_FABRICA : c;
-    }
 
 
     /** Solo entra en el slot de su zona. */
@@ -75,15 +69,11 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
         return tipo.getGroup().equals(z.grupo) && tipo.getName().equals(z.slot) && super.canEquip(stack, slot, entity);
     }
 
-    @Override public List<Integer> coloresDe(ItemStack stack) { return colores(stack); }
-
-    @Override
-    public ItemStack conColoresDe(ItemStack stack, int a, int b, int c) {
-        stack.set(ModamodComponents.COLORES_BANDA, List.of(a, b, c));
-        return stack;
-    }
 
 
+
+
+    @Override public List<Integer> coloresDeFabrica() { return DE_FABRICA; }
 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.banda.parte." + (i + 1); }
 
@@ -106,11 +96,6 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
         tooltip.add(Text.translatable("modamod.banda.tooltip", Text.translatable(zona(stack).traduccion()),
                 Text.translatable(ancho(stack).traduccion()), Text.translatable(herraje(stack).traduccion()))
                 .formatted(Formatting.GRAY));
-        List<Integer> c = colores(stack);
-        for (int i = 0; i < 3; i++) {
-            int color = c.get(i);
-            tooltip.add(Text.translatable("modamod.banda.parte." + (i + 1)).formatted(Formatting.GRAY)
-                    .append(Text.literal(" ■■■").styled(s -> s.withColor(TextColor.fromRgb(color)))));
-        }
+        ClothingTrinketItem.lineasDePintura(stack, tooltip);
     }
 }

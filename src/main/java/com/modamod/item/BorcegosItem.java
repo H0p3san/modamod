@@ -3,14 +3,11 @@ package com.modamod.item;
 import com.modamod.garment.Parte;
 import com.modamod.region.Lado;
 import dev.emi.trinkets.api.TrinketItem;
-import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +23,7 @@ import java.util.List;
 public class BorcegosItem extends TrinketItem implements ZonasTenibles {
 
     /** Cuero marrón oscuro, suela casi negra y cordones crema de fábrica. */
-    public static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x2E2824, 0xD9CDB0);
+    private static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x2E2824, 0xD9CDB0);
 
     public BorcegosItem(Settings settings) {
         super(settings);
@@ -150,36 +147,13 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
 
     // ── colores y dibujos, por pie ────────────────────────────────────────
 
-    public static List<Integer> colores(ItemStack stack) { return colores(stack, false); }
-
-    public static List<Integer> colores(ItemStack stack, boolean izq) {
-        List<Integer> c = izq ? stack.get(ModamodComponents.COLORES_BORCEGOS_IZQ) : null;
-        if (c == null || c.size() < 3) c = stack.get(ModamodComponents.COLORES_BORCEGOS);
-        return c == null || c.size() < 3 ? DE_FABRICA : c;
-    }
 
 
 
-    @Override public List<Integer> coloresDe(ItemStack stack) { return colores(stack); }
 
-    @Override public List<Integer> coloresDe(ItemStack stack, boolean izq) { return colores(stack, izq); }
 
-    @Override
-    public ItemStack conColoresDe(ItemStack stack, int a, int b, int c) {
-        // Sin pie elegido: los dos pies (el izquierdo vuelve a copiar al derecho).
-        stack.set(ModamodComponents.COLORES_BORCEGOS, List.of(a, b, c));
-        stack.remove(ModamodComponents.COLORES_BORCEGOS_IZQ);
-        return stack;
-    }
 
-    @Override
-    public ItemStack conColoresDe(ItemStack stack, int a, int b, int c, boolean izq) {
-        if (!izq && stack.get(ModamodComponents.COLORES_BORCEGOS_IZQ) == null) {
-            stack.set(ModamodComponents.COLORES_BORCEGOS_IZQ, colores(stack, false));   // congela el izquierdo
-        }
-        stack.set(izq ? ModamodComponents.COLORES_BORCEGOS_IZQ : ModamodComponents.COLORES_BORCEGOS, List.of(a, b, c));
-        return stack;
-    }
+
 
 
 
@@ -187,6 +161,8 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
 
 
     @Override public boolean tienePares() { return true; }
+
+    @Override public List<Integer> coloresDeFabrica() { return DE_FABRICA; }
 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.borcegos.parte." + (i + 1); }
 
@@ -226,11 +202,6 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
         tooltip.add(Text.translatable("modamod.calzado.tooltip", Text.translatable(punta(stack, false).traduccion()),
                 Text.translatable(cierre(stack, false).traduccion()), Text.translatable(detalle(stack, false).traduccion()))
                 .formatted(Formatting.GRAY));
-        List<Integer> c = colores(stack);
-        for (int i = 0; i < 3; i++) {
-            int color = c.get(i);
-            tooltip.add(Text.translatable("modamod.borcegos.parte." + (i + 1)).formatted(Formatting.GRAY)
-                    .append(Text.literal(" ■■■").styled(s -> s.withColor(TextColor.fromRgb(color)))));
-        }
+        ClothingTrinketItem.lineasDePintura(stack, tooltip);
     }
 }

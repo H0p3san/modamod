@@ -48,7 +48,6 @@ public final class BandaRenderer {
         // Collar y cinto van en el torso (2026-10-11, "che te dije que va anclado en el torso").
         ModelPart marco = biped.body;
         if (!marco.visible) return;
-        List<Integer> colores = BandaItem.colores(banda);
         List<SombreroRenderer.Caja> cajas = cajas(banda, dil);
         for (int z = 0; z < 3; z++) {
             ModelPart parte = parte(cajas, z, zona, banda, dil);

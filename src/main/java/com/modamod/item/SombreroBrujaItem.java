@@ -4,7 +4,6 @@ import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
 public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
 
     /** Blanco de fábrica (2026-10-05, "sale blanco de fabrica"): igual que el retazo sin teñir; los colores se ponen en la Mesa de estilado. */
-    public static final List<Integer> DE_FABRICA = List.of(0xF2F2F6, 0xF2F2F6, 0xF2F2F6);
+    private static final List<Integer> DE_FABRICA = List.of(0xF2F2F6, 0xF2F2F6, 0xF2F2F6);
 
     public SombreroBrujaItem(Settings settings) {
         super(settings);
@@ -85,21 +84,12 @@ public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
         else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA, v);
     }
 
-    /** Los 3 colores (ala, cono, cinta); los de fábrica si el sombrero no se tiñó. */
-    public static List<Integer> colores(ItemStack stack) {
-        List<Integer> c = stack.get(ModamodComponents.COLORES_SOMBRERO);
-        return c == null || c.size() < 3 ? DE_FABRICA : c;
-    }
 
 
 
-    public static ItemStack conColores(ItemStack stack, int ala, int cono, int cinta) {
-        stack.set(ModamodComponents.COLORES_SOMBRERO, List.of(ala, cono, cinta));
-        return stack;
-    }
 
-    @Override public List<Integer> coloresDe(ItemStack stack) { return colores(stack); }
-    @Override public ItemStack conColoresDe(ItemStack stack, int a, int b, int c) { return conColores(stack, a, b, c); }
+    @Override public List<Integer> coloresDeFabrica() { return DE_FABRICA; }
+
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.sombrero.zona." + (i + 1); }
     @Override public com.modamod.garment.Parte marco(ItemStack stack) { return com.modamod.garment.Parte.CABEZA; }
 
@@ -117,11 +107,6 @@ public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
         tooltip.add(Text.translatable("modamod.sombrero.tooltip",
                 Text.translatable(ala(stack).traduccion()), Text.translatable(punta(stack).traduccion()))
                 .formatted(Formatting.GRAY));
-        List<Integer> c = colores(stack);
-        for (int i = 0; i < 3; i++) {
-            int color = c.get(i);
-            tooltip.add(Text.translatable("modamod.sombrero.zona." + (i + 1)).formatted(Formatting.GRAY)
-                    .append(Text.literal(" ■■■").styled(s -> s.withColor(TextColor.fromRgb(color)))));
-        }
+        ClothingTrinketItem.lineasDePintura(stack, tooltip);
     }
 }

@@ -1028,11 +1028,6 @@
   "modamod.sombrero.punta.recta": "straight",
   "modamod.sombrero.punta.doblada": "bent",
   "trinkets.slot.head.sombrero": "Hat",
-  "modamod.estilado.color.entero": "Whole scrap",
-  "modamod.estilado.color.sin_retazo": "A scrap is missing",
-  "modamod.estilado.tooltip.color_zona": "Copies this scrap color to this zone of the hat (the scrap is not used up)",
-  "modamod.estilado.tooltip.color_entero": "Copies the scrap's 3 colors to the hat's 3 zones",
-  "modamod.estilado.ayuda_color": "Click the brim, cone or band of the hat: it takes the color %s (change it with the buttons)",
   "modamod.modelado.categoria.sombrero": "Hat",
   "modamod.prenda.sombrero": "Hat",
   "modamod.modelado.rol.ala_sombrero": "Brim",
@@ -1160,7 +1155,6 @@
   "modamod.estilado.ayuda_acabado": "Pick a texture, a trim and a material from the lists and press the button below.",
   "modamod.acabado.tooltip": "Finish: %s",
   "modamod.estilista.resumen_base": "%s appliqués, %s straps",
-  "modamod.estilista.resumen_colores": "colors",
   "block.modamod.telar": "Automatic Loom",
   "block.modamod.telar_creativa": "Creative Automatic Loom",
   "modamod.telar.lana": "Wool",
@@ -1281,9 +1275,6 @@
   "modamod.estilado.espejo.si": "Mirror: on",
   "modamod.estilado.espejo.no": "Mirror: off",
   "modamod.estilado.tooltip.espejo": "Repeats what you place (applique or strap) on the other side, mirrored: on arms and legs it goes to the opposite one; on the torso, head, skirt, cape and apron it mirrors across the centre. With combat boots, colour and pattern too. Off, each side keeps its own.",
-  "modamod.estilado.pie.der": "Foot: right",
-  "modamod.estilado.pie.izq": "Foot: left",
-  "modamod.estilado.tooltip.pie": "The foot the colors and patterns below go to (also changed by clicking a boot in the view).",
   "item.modamod.delantal": "Apron",
   "trinkets.slot.torso.delantal": "Apron",
   "modamod.slot.torso.delantal": "Aprons. Worn over the shirt, jacket and skirt, from the chest down.",
@@ -1628,5 +1619,6 @@
   "modamod.pattern.liso": "Plain",
   "modamod.pattern.mas": "… and %s more layers",
   "modamod.region_pintura.lado_izq": "Whole left side",
-  "modamod.region_pintura.lado_der": "Whole right side"
+  "modamod.region_pintura.lado_der": "Whole right side",
+  "modamod.estilado.ayuda_accesorio": "Hats, bands, footwear and briefcases are dyed at the Dye Station; here you add appliqués, straps and finishes."
 }
