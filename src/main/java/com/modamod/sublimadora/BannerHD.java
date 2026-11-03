@@ -53,10 +53,20 @@ public final class BannerHD {
         /** El panel del frente de máscaras y barbijo (2026-10-24): 30×30 en (1,1) de su textura; sin cara de atrás. */
         CARA(30, 30, 1, -1),
         /** El frente de la copa de las gorras (2026-10-25): 48×24 en (1,1), proyectado de frente; sin cara de atrás. */
-        GORRA(48, 24, 1, -1);
+        GORRA(48, 24, 1, -1),
+        /** La placa del cinto (2026-11-03): 12×8 en (1,1), proyectada de frente; sin cara de atrás. */
+        CINTO_HEBILLA(12, 8, 1, -1),
+        /** La correa del cinto (2026-11-03): una tira de 48×4 en (1,1) que da toda la vuelta; sin cara de atrás. */
+        CINTO_CORREA(48, 4, 1, -1);
 
         final int ancho, alto, x0, xAtras;
         Forma(int ancho, int alto, int x0, int xAtras) { this.ancho = ancho; this.alto = alto; this.x0 = x0; this.xAtras = xAtras; }
+
+        /** Dónde cae la foto en la textura de {@link #foto}: {u0, v0, u1, v1}, entre 0 y 1. */
+        public float[] uv() {
+            float lado = LADO;
+            return new float[] {x0 * ESCALA / lado, ESCALA / lado, (x0 + ancho) * ESCALA / lado, (1 + alto) * ESCALA / lado};
+        }
     }
 
     private record Clave(UUID foto, int escala, int x, int y, int angulo, boolean cubrir, Forma forma) {}

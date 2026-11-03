@@ -122,7 +122,8 @@ public class RemeraItem extends com.modamod.prenda.PrendaItem {
         ItemStack out = base.copyWithCount(1);
         // El banner, la máscara y el barbijo (2026-10-24) no llevan capas con máscara.
         if (base.getItem() instanceof net.minecraft.item.BannerItem || base.getItem() instanceof com.modamod.item.CaraItem
-                || com.modamod.prenda.Prendas.es(base, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) return out;
+                || com.modamod.prenda.Prendas.es(base, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
+                || com.modamod.prenda.Prendas.es(base, com.modamod.prenda.CategoriaDePrenda.BANDA)) return out;
         Estampas.guardar(out, Estampas.de(out).conCapas(capas));
         return out;
     }

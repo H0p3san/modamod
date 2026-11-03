@@ -257,6 +257,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             com.modamod.item.ModamodItems.MASCARA_COMPLETA,
             com.modamod.item.ModamodItems.BARBIJO,
             com.modamod.item.ModamodItems.SOMBRERO_BRUJA, // gorras con visera (2026-10-25)
+            com.modamod.item.ModamodItems.BANDA,          // el cinto (2026-11-03)
     };
     private net.minecraft.item.Item categoria = ModItems.REMERA;
 

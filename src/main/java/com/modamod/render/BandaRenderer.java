@@ -42,6 +42,7 @@ public final class BandaRenderer {
 
     public static void dibujar(ItemStack banda, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz, float dil) {
+        VertexConsumerProvider sinEfecto = vertexConsumers;
         vertexConsumers = EfectoTrim.envolver(banda, vertexConsumers);
 
         BandaZona zona = BandaItem.zona(banda);
@@ -61,9 +62,52 @@ public final class BandaRenderer {
             dibujarColgante(BandaItem.herraje(banda), y0 + BandaItem.ancho(banda).alto(zona), -(hz + grosor(zona) + BORDE_SALE),
                     ZonaTextura.de(banda, 2, false), marco, matrices, vertexConsumers, luz);
         }
+        if (zona == BandaZona.CINTURA) dibujarFotos(banda, marco, matrices, sinEfecto, luz, dil);
         // Los colgantes: apliques apoyados en la banda (el punto es de una de sus cajas, en el marco de la parte).
         EfectoTrim.volcar();   // el brillo de lo último con acabado (2026-10-22)
         ApliqueRenderer.dibujar(banda, 0f, biped, matrices, vertexConsumers, luz);
+    }
+
+    /** Cuánto sobresale el panel de la foto de la pieza (px), para que no pelee el plano. */
+    private static final float SOBRA_FOTO = 0.02f;
+
+    /**
+     * Las fotos de la Sublimadora en el cinto (2026-11-03): el frente va sobre la placa o el aro del herraje y la espalda
+     * da toda la vuelta a la correa, como una tira (el frente primero, después el lado derecho, la espalda y el izquierdo).
+     */
+    private static void dibujarFotos(ItemStack banda, ModelPart marco, MatrixStack matrices,
+                                     VertexConsumerProvider vertexConsumers, int luz, float dil) {
+        var estampas = com.modamod.sublimadora.Estampas.de(banda);
+        BandaHerraje herraje = BandaItem.herraje(banda);
+        float y0 = Y_CINTURA, h = BandaItem.ancho(banda).alto(BandaZona.CINTURA);
+        float hx = hx(BandaZona.CINTURA, dil), hz = hz(BandaZona.CINTURA, dil), t = GROSOR;
+
+        net.minecraft.util.Identifier fotoHebilla = com.modamod.sublimadora.BannerHD.foto(
+                com.modamod.sublimadora.BannerHD.Forma.CINTO_HEBILLA, estampas.frente().orElse(null));
+        if ((herraje == BandaHerraje.PLACA || herraje == BandaHerraje.ARO) && fotoHebilla != null) {
+            float mx = herraje == BandaHerraje.PLACA ? 1.9f : 2.3f;
+            float zf = -hz - t - BORDE_SALE - 0.5f - SOBRA_FOTO;
+            float[] uv = com.modamod.sublimadora.BannerHD.Forma.CINTO_HEBILLA.uv();
+            var vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(fotoHebilla));
+            FotoPlana.panel(matrices, marco, vc, luz, -mx, zf, mx, zf, y0 - 0.25f, y0 + h + 0.25f,
+                    uv[0], uv[2], uv[1], uv[3], 0f, -1f);
+        }
+
+        net.minecraft.util.Identifier fotoCorrea = com.modamod.sublimadora.BannerHD.foto(
+                com.modamod.sublimadora.BannerHD.Forma.CINTO_CORREA, estampas.espalda().orElse(null));
+        if (fotoCorrea != null) {
+            float ox = hx + t + SOBRA_FOTO, oz = hz + t + SOBRA_FOTO;
+            float perimetro = 4f * ox + 4f * oz;
+            float a = 2f * ox / perimetro, b = a + 2f * oz / perimetro, c = b + 2f * ox / perimetro;
+            float[] uv = com.modamod.sublimadora.BannerHD.Forma.CINTO_CORREA.uv();
+            float du = uv[2] - uv[0];
+            var vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(fotoCorrea));
+            float ya = y0, yb = y0 + h;
+            FotoPlana.panel(matrices, marco, vc, luz, -ox, -oz, ox, -oz, ya, yb, uv[0], uv[0] + a * du, uv[1], uv[3], 0f, -1f);   // frente
+            FotoPlana.panel(matrices, marco, vc, luz, ox, -oz, ox, oz, ya, yb, uv[0] + a * du, uv[0] + b * du, uv[1], uv[3], 1f, 0f);   // lado derecho
+            FotoPlana.panel(matrices, marco, vc, luz, ox, oz, -ox, oz, ya, yb, uv[0] + b * du, uv[0] + c * du, uv[1], uv[3], 0f, 1f);   // espalda
+            FotoPlana.panel(matrices, marco, vc, luz, -ox, oz, -ox, -oz, ya, yb, uv[0] + c * du, uv[2], uv[1], uv[3], -1f, 0f);   // lado izquierdo
+        }
     }
 
     /** Las cajas de cada zona con la holgura por defecto — para apuntar el mouse en la Mesa de estilado. */
