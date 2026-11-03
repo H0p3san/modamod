@@ -258,6 +258,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             com.modamod.item.ModamodItems.BARBIJO,
             com.modamod.item.ModamodItems.SOMBRERO_BRUJA, // gorras con visera (2026-10-25)
             com.modamod.item.ModamodItems.BANDA,          // el cinto (2026-11-03)
+            com.modamod.item.ModamodItems.BORCEGOS,       // el calzado (2026-11-03)
     };
     private net.minecraft.item.Item categoria = ModItems.REMERA;
 
@@ -1542,10 +1543,11 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
                 || s.getItem() instanceof MoldeMascaraItem || s.getItem() instanceof DisenoSublimadoItem;
     }
 
-    /** Banner, delantal, máscaras y barbijo (2026-10-24) solo tienen frente. */
+    /** Banner, delantal, máscaras, barbijo, gorras y calzado solo tienen frente. */
     public static boolean soloFrente(ItemStack s) {
         return s.getItem() instanceof net.minecraft.item.BannerItem || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.DELANTAL)
-                || s.getItem() instanceof com.modamod.item.CaraItem || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO);
+                || s.getItem() instanceof com.modamod.item.CaraItem || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
+                || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALZADO);
     }
 
     /** La cara de atrás existe (un banner o un delantal solo tienen frente). */

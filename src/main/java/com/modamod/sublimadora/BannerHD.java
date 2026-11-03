@@ -57,7 +57,9 @@ public final class BannerHD {
         /** La placa del cinto (2026-11-03): 12×8 en (1,1), proyectada de frente; sin cara de atrás. */
         CINTO_HEBILLA(12, 8, 1, -1),
         /** La correa del cinto (2026-11-03): una tira de 48×4 en (1,1) que da toda la vuelta; sin cara de atrás. */
-        CINTO_CORREA(48, 4, 1, -1);
+        CINTO_CORREA(48, 4, 1, -1),
+        /** El costado de afuera de cada bota (2026-11-03): 12×10 en (1,1), proyectado de lado; sin cara de atrás. */
+        BORCEGO(12, 10, 1, -1);
 
         final int ancho, alto, x0, xAtras;
         Forma(int ancho, int alto, int x0, int xAtras) { this.ancho = ancho; this.alto = alto; this.x0 = x0; this.xAtras = xAtras; }

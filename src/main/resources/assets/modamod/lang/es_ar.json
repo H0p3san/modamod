@@ -483,6 +483,8 @@
   "modamod.sublimadora.hint.sin_prenda": "Poné una prenda en la Entrada",
   "modamod.sublimadora.rotulo.frente": "Frente",
   "modamod.sublimadora.rotulo.espalda": "Espalda",
+  "modamod.sublimadora.rotulo.hebilla": "Hebilla",
+  "modamod.sublimadora.rotulo.correa": "Correa",
   "modamod.sublimadora.tanque.papel": "Papel",
   "modamod.sublimadora.boton.prensar": "Prensar",
   "modamod.sublimadora.tooltip.prensar": "Baja la tapa y estampa las caras fijadas en la prenda de la Entrada",

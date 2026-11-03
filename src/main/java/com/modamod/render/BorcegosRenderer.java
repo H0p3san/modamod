@@ -178,10 +178,37 @@ public final class BorcegosRenderer {
                 if (m.cuboides() != null) CalzadoMalla.emitir(m.cuboides().get(i), null, izq, p.esPiel(), conMedia, pos, nor, vc, luz);
                 else CalzadoMalla.emitir(p, p.esSuela() ? null : m.plantilla(), izq, conMedia, pos, nor, vc, luz);
             }
+            dibujarFoto(borcegos, marco, izq, matrices, sinEfecto, luz);
         }
         EfectoTrim.volcar();
         // Apliques y correas: cada uno en el pie en que se puso (su parte es la pierna derecha o la izquierda).
         ApliqueRenderer.dibujar(borcegos, 0f, biped, matrices, vertexConsumers, luz);
+    }
+
+    /**
+     * La foto de la Sublimadora (2026-11-03): un panel sobre el costado de afuera de cada bota, tomando de borde el cuerpo
+     * del calzado (la suela no cuenta). Se lee derecha de afuera hacia adentro: el frente de la bota queda a la derecha en
+     * la bota derecha y a la izquierda en la izquierda.
+     */
+    private static void dibujarFoto(ItemStack borcegos, ModelPart marco, boolean izq, MatrixStack matrices,
+                                    VertexConsumerProvider vertexConsumers, int luz) {
+        Identifier foto = com.modamod.sublimadora.BannerHD.foto(com.modamod.sublimadora.BannerHD.Forma.BORCEGO,
+                com.modamod.sublimadora.Estampas.frente(borcegos));
+        if (foto == null) return;
+        float zMin = Float.MAX_VALUE, zMax = -Float.MAX_VALUE, yMin = Float.MAX_VALUE, yMax = -Float.MAX_VALUE;
+        float xFuera = izq ? -Float.MAX_VALUE : Float.MAX_VALUE;
+        for (SombreroRenderer.Caja c : cajas(borcegos, izq)) {
+            if (c.zona() != 0) continue;
+            zMin = Math.min(zMin, c.min()[2]); zMax = Math.max(zMax, c.max()[2]);
+            yMin = Math.min(yMin, c.min()[1]); yMax = Math.max(yMax, c.max()[1]);
+            xFuera = izq ? Math.max(xFuera, c.max()[0]) : Math.min(xFuera, c.min()[0]);
+        }
+        if (zMin > zMax) return;
+        float x = xFuera + (izq ? 0.02f : -0.02f);
+        float[] uv = com.modamod.sublimadora.BannerHD.Forma.BORCEGO.uv();
+        VertexConsumer vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(foto));
+        FotoPlana.panel(matrices, marco, vc, luz, x, izq ? zMin : zMax, x, izq ? zMax : zMin, yMin, yMax,
+                uv[0], uv[2], uv[1], uv[3], izq ? 1f : -1f, 0f);
     }
 
     /** Las cajas gruesas del pie derecho en el marco de la pierna. */

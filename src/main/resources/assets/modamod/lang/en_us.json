@@ -485,6 +485,8 @@
   "modamod.sublimadora.hint.sin_prenda": "Put a garment in the Input",
   "modamod.sublimadora.rotulo.frente": "Front",
   "modamod.sublimadora.rotulo.espalda": "Back",
+  "modamod.sublimadora.rotulo.hebilla": "Buckle",
+  "modamod.sublimadora.rotulo.correa": "Strap",
   "modamod.sublimadora.tanque.papel": "Paper",
   "modamod.sublimadora.boton.prensar": "Press",
   "modamod.sublimadora.tooltip.prensar": "Closes the lid and prints the pinned sides on the garment in the Input",

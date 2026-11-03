@@ -226,6 +226,15 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         return List.of(Enfoque.ENTERO);
     }
 
+    /** El nombre de la cara: Frente y Espalda, salvo en el cinto, donde son la hebilla y la correa. */
+    private Text rotuloDeCara(Estampa.Cara cara) {
+        String clave = cara.clave;
+        if (be().categoria() == com.modamod.item.ModamodItems.BANDA) {
+            clave = cara == Estampa.Cara.FRENTE ? "hebilla" : "correa";
+        }
+        return Text.translatable("modamod.sublimadora.rotulo." + clave);
+    }
+
     private boolean dentroVisor(double mx, double my) {
         return mx >= this.x + PX1 && mx < this.x + PX2 && my >= this.y + PY1 && my < this.y + PY2;
     }
@@ -338,7 +347,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
             boolean comoCapa = be.hayMascara() && be.getFotoCargada(cara) != null;
             btnChinchetas[c].setTooltip(Tooltip.of(Text.translatable(comoCapa ? "modamod.sublimadora.tooltip.chincheta_capa"
                     : be.caraFijada(cara) ? "modamod.sublimadora.tooltip.chincheta_quitar" : "modamod.sublimadora.tooltip.chincheta_fijar",
-                    Text.translatable("modamod.sublimadora.rotulo." + cara.clave))));
+                    rotuloDeCara(cara))));
         }
         var capas = be.capas();
         for (int i = 0; i < com.modamod.sublimadora.CapaEstampa.MAXIMO; i++) {
@@ -753,7 +762,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
             R r = disp.get("estadoTexto");
             Text estado = Text.translatable(be.caraFijada(be.getSeleccion()) ? "modamod.tinturas.estado.fijada" : "modamod.tinturas.estado.borrador");
             context.drawText(textRenderer, Text.translatable("modamod.tinturas.editando",
-                    Text.translatable("modamod.sublimadora.rotulo." + be.getSeleccion().clave), estado), r.x(), r.y(), EstiloPergamino.TEXTO, false);
+                    rotuloDeCara(be.getSeleccion()), estado), r.x(), r.y(), EstiloPergamino.TEXTO, false);
         }
         // Qué sigue, abajo del visor.
         for (var linea : textRenderer.wrapLines(hint(), PX2 - PX1 - 12)) {

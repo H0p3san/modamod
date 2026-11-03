@@ -105,6 +105,8 @@ public final class ModItems {
                 // El cinto (2026-11-03): la placa es el frente y la correa la espalda, ver BandaRenderer.
                 || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
                         && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CINTURA)
+                // El calzado (2026-11-03): una foto en el costado de afuera de cada bota, ver BorcegosRenderer.
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)
                 // Gorras con visera (2026-10-25): foto en el frente de la copa, ver SombreroRenderer.
                 || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
                         && com.modamod.item.SombreroBrujaItem.ala(stack).esVisera());
