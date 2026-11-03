@@ -378,22 +378,33 @@ final class SombreroMalla {
      */
     /**
      * La foto sobre las caras de adelante de varias piezas a la vez (la copa y la cinta de la gorra: la foto baja hasta la
-     * visera), estirada sobre el rectángulo que ocupan juntas. {@code dys}: el corrimiento vertical de cada pieza.
+     * visera). Sigue la comba: a lo ancho se reparte por el ángulo alrededor del centro de las piezas (un cilindro), no por
+     * la X, así que en los costados curvos no se aplasta. {@code dys}: el corrimiento vertical de cada pieza.
      */
     static void dibujarFoto(List<Pieza> piezas, float[] dys, MatrixStackLike m, VertexConsumer vc, int luz, boolean cuboides,
                             float[] rect) {
-        float x0 = Float.MAX_VALUE, x1 = -Float.MAX_VALUE, y0 = Float.MAX_VALUE, y1 = -Float.MAX_VALUE;
+        // El centro (en planta) de todas las piezas: el eje del cilindro.
+        double sx = 0, sz = 0;
+        int n = 0;
+        for (Pieza p : piezas) {
+            Quads q = cuboides ? cuboides(p) : p.base;
+            for (int j = 0; j < q.vertices; j++) { sx += q.pos[j * 3]; sz += q.pos[j * 3 + 2]; n++; }
+        }
+        if (n == 0) return;
+        float cx = (float) (sx / n), cz = (float) (sz / n);
+        float a0 = Float.MAX_VALUE, a1 = -Float.MAX_VALUE, y0 = Float.MAX_VALUE, y1 = -Float.MAX_VALUE;
         for (int k = 0; k < piezas.size(); k++) {
             Quads q = cuboides ? cuboides(piezas.get(k)) : piezas.get(k).base;
             for (int c = 0; c + 3 < q.vertices; c += 4) {
                 if (!deFrente(q, c)) continue;
                 for (int j = c; j < c + 4; j++) {
-                    x0 = Math.min(x0, q.pos[j * 3]); x1 = Math.max(x1, q.pos[j * 3]);
+                    float ang = angulo(q, j, cx, cz);
+                    a0 = Math.min(a0, ang); a1 = Math.max(a1, ang);
                     y0 = Math.min(y0, q.pos[j * 3 + 1] + dys[k]); y1 = Math.max(y1, q.pos[j * 3 + 1] + dys[k]);
                 }
             }
         }
-        if (x1 <= x0 || y1 <= y0) return;
+        if (a1 <= a0 || y1 <= y0) return;
         Vector3f v = new Vector3f(), nv = new Vector3f();
         for (int k = 0; k < piezas.size(); k++) {
             Quads q = cuboides ? cuboides(piezas.get(k)) : piezas.get(k).base;
@@ -403,8 +414,8 @@ final class SombreroMalla {
                     float y = q.pos[j * 3 + 1] + dys[k];
                     v.set(q.pos[j * 3], y, q.pos[j * 3 + 2]);
                     nv.set(q.nor[j * 3], q.nor[j * 3 + 1], q.nor[j * 3 + 2]);
-                    // De frente, la izquierda de quien mira es +X.
-                    float u = (rect[0] + (x1 - q.pos[j * 3]) / (x1 - x0) * rect[2]) / 64f;
+                    // De frente, la izquierda de quien mira es +X (el ángulo crece hacia +X).
+                    float u = (rect[0] + (a1 - angulo(q, j, cx, cz)) / (a1 - a0) * rect[2]) / 64f;
                     float vv = (rect[1] + (y - y0) / (y1 - y0) * rect[3]) / 64f;
                     Vector3f w = m.pos().transformPosition(v.x / 16f, v.y / 16f, v.z / 16f, new Vector3f());
                     Vector3f nn = m.nor().transform(nv, new Vector3f()).normalize();
@@ -412,6 +423,11 @@ final class SombreroMalla {
                 }
             }
         }
+    }
+
+    /** El ángulo del vértice {@code j} alrededor del eje vertical que pasa por (cx, cz); 0 = justo adelante (-Z). */
+    private static float angulo(Quads q, int j, float cx, float cz) {
+        return (float) Math.atan2(q.pos[j * 3] - cx, -(q.pos[j * 3 + 2] - cz));
     }
 
     /** ¿El cuadrilátero que empieza en {@code c} mira de frente? */
