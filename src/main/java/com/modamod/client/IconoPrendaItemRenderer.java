@@ -39,8 +39,11 @@ public class IconoPrendaItemRenderer implements BuiltinItemRendererRegistry.Dyna
             if (respaldo != null) respaldo.render(stack, modo, matrices, vertexConsumers, luz, overlay);
             return;
         }
+        // Con acabado de trim, el ícono lleva el mismo efecto que la prenda puesta (rediseño, "el ítem no refleja el trim").
+        VertexConsumerProvider proveedor = com.modamod.render.EfectoTrim.envolver(stack, vertexConsumers);
+        if (proveedor != vertexConsumers) com.modamod.render.ClothingTextureCache.ultimaTextura = icono;
         // vanilla ya hizo translate(-0.5,-0.5,-0.5): el ítem ocupa [0,1]³.
-        VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(icono));
+        VertexConsumer buffer = proveedor.getBuffer(RenderLayer.getEntityCutout(icono));
         MatrixStack.Entry e = matrices.peek();
         float zf = 0.5f + Z, za = 0.5f - Z;
         // Frente (la v invertida: el eje Y del ítem sube, el de la textura baja).
@@ -53,6 +56,7 @@ public class IconoPrendaItemRenderer implements BuiltinItemRendererRegistry.Dyna
         vertice(buffer, e, 1, 1, za, 1, 0, 0, 0, -1, luz, overlay);
         vertice(buffer, e, 1, 0, za, 1, 1, 0, 0, -1, luz, overlay);
         vertice(buffer, e, 0, 0, za, 0, 1, 0, 0, -1, luz, overlay);
+        if (proveedor != vertexConsumers) com.modamod.render.EfectoTrim.volcar();
     }
 
     private static void vertice(VertexConsumer buffer, MatrixStack.Entry e, float x, float y, float z,

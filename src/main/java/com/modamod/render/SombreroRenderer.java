@@ -114,9 +114,15 @@ public final class SombreroRenderer {
                     com.modamod.sublimadora.Estampas.frente(sombrero));
             if (foto != null) {
                 VertexConsumer vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(foto));
+                // La copa y la cinta juntas: la foto llega hasta donde empieza la visera.
+                List<SombreroMalla.Pieza> piezas = new java.util.ArrayList<>();
+                List<Float> dys = new java.util.ArrayList<>();
                 for (Armada a : armar(sombrero)) {
-                    if (a.pieza().zona == 1) SombreroMalla.dibujarFoto(a.pieza(), a.dy(), m, vc, luz, cuboides, new float[] {1f, 1f, 48f, 24f});
+                    if (a.pieza().zona == 1 || a.pieza().zona == 2) { piezas.add(a.pieza()); dys.add(a.dy()); }
                 }
+                float[] dy = new float[dys.size()];
+                for (int k = 0; k < dy.length; k++) dy[k] = dys.get(k);
+                SombreroMalla.dibujarFoto(piezas, dy, m, vc, luz, cuboides, new float[] {1f, 1f, 48f, 24f});
             }
         }
         // Apliques apoyados en el sombrero (2026-10-05): su punto es de una caja del sombrero en el marco de la

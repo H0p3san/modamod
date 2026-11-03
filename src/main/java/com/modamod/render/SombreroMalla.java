@@ -376,31 +376,49 @@ final class SombreroMalla {
      * agrandando la textura x16"): las caras que miran hacia adelante (−Z) se vuelven a dibujar con la UV proyectada de
      * frente sobre la caja de la copa, al rectángulo {@code rect} (x, y, ancho, alto en px de 64) de la textura de la foto.
      */
-    static void dibujarFoto(Pieza p, float dy, MatrixStackLike m, VertexConsumer vc, int luz, boolean cuboides, float[] rect) {
-        Quads q = cuboides ? cuboides(p) : p.base;
+    /**
+     * La foto sobre las caras de adelante de varias piezas a la vez (la copa y la cinta de la gorra: la foto baja hasta la
+     * visera), estirada sobre el rectángulo que ocupan juntas. {@code dys}: el corrimiento vertical de cada pieza.
+     */
+    static void dibujarFoto(List<Pieza> piezas, float[] dys, MatrixStackLike m, VertexConsumer vc, int luz, boolean cuboides,
+                            float[] rect) {
         float x0 = Float.MAX_VALUE, x1 = -Float.MAX_VALUE, y0 = Float.MAX_VALUE, y1 = -Float.MAX_VALUE;
-        for (int i = 0; i < q.vertices; i++) {
-            x0 = Math.min(x0, q.pos[i * 3]); x1 = Math.max(x1, q.pos[i * 3]);
-            y0 = Math.min(y0, q.pos[i * 3 + 1]); y1 = Math.max(y1, q.pos[i * 3 + 1]);
+        for (int k = 0; k < piezas.size(); k++) {
+            Quads q = cuboides ? cuboides(piezas.get(k)) : piezas.get(k).base;
+            for (int c = 0; c + 3 < q.vertices; c += 4) {
+                if (!deFrente(q, c)) continue;
+                for (int j = c; j < c + 4; j++) {
+                    x0 = Math.min(x0, q.pos[j * 3]); x1 = Math.max(x1, q.pos[j * 3]);
+                    y0 = Math.min(y0, q.pos[j * 3 + 1] + dys[k]); y1 = Math.max(y1, q.pos[j * 3 + 1] + dys[k]);
+                }
+            }
         }
         if (x1 <= x0 || y1 <= y0) return;
         Vector3f v = new Vector3f(), nv = new Vector3f();
-        for (int c = 0; c + 3 < q.vertices; c += 4) {
-            float nz = 0f;
-            for (int k = 0; k < 4; k++) nz += q.nor[(c + k) * 3 + 2];
-            if (nz > -1.2f) continue;   // solo lo que mira de frente
-            for (int k = 0; k < 4; k++) {
-                int i = c + k;
-                v.set(q.pos[i * 3], q.pos[i * 3 + 1] + dy, q.pos[i * 3 + 2]);
-                nv.set(q.nor[i * 3], q.nor[i * 3 + 1], q.nor[i * 3 + 2]);
-                // De frente, la izquierda de quien mira es +X.
-                float u = (rect[0] + (x1 - q.pos[i * 3]) / (x1 - x0) * rect[2]) / 64f;
-                float vv = (rect[1] + (q.pos[i * 3 + 1] - y0) / (y1 - y0) * rect[3]) / 64f;
-                Vector3f w = m.pos().transformPosition(v.x / 16f, v.y / 16f, v.z / 16f, new Vector3f());
-                Vector3f nn = m.nor().transform(nv, new Vector3f()).normalize();
-                vc.vertex(w.x, w.y, w.z, 0xFFFFFFFF, u, vv, OverlayTexture.DEFAULT_UV, luz, nn.x, nn.y, nn.z);
+        for (int k = 0; k < piezas.size(); k++) {
+            Quads q = cuboides ? cuboides(piezas.get(k)) : piezas.get(k).base;
+            for (int c = 0; c + 3 < q.vertices; c += 4) {
+                if (!deFrente(q, c)) continue;
+                for (int j = c; j < c + 4; j++) {
+                    float y = q.pos[j * 3 + 1] + dys[k];
+                    v.set(q.pos[j * 3], y, q.pos[j * 3 + 2]);
+                    nv.set(q.nor[j * 3], q.nor[j * 3 + 1], q.nor[j * 3 + 2]);
+                    // De frente, la izquierda de quien mira es +X.
+                    float u = (rect[0] + (x1 - q.pos[j * 3]) / (x1 - x0) * rect[2]) / 64f;
+                    float vv = (rect[1] + (y - y0) / (y1 - y0) * rect[3]) / 64f;
+                    Vector3f w = m.pos().transformPosition(v.x / 16f, v.y / 16f, v.z / 16f, new Vector3f());
+                    Vector3f nn = m.nor().transform(nv, new Vector3f()).normalize();
+                    vc.vertex(w.x, w.y, w.z, 0xFFFFFFFF, u, vv, OverlayTexture.DEFAULT_UV, luz, nn.x, nn.y, nn.z);
+                }
             }
         }
+    }
+
+    /** ¿El cuadrilátero que empieza en {@code c} mira de frente? */
+    private static boolean deFrente(Quads q, int c) {
+        float nz = 0f;
+        for (int k = 0; k < 4; k++) nz += q.nor[(c + k) * 3 + 2];
+        return nz <= -1.2f;
     }
 
     /** Lo que hace falta de una MatrixStack: la matriz de posición y la de normales. */
