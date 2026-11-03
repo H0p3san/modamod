@@ -239,6 +239,7 @@ public final class ApliqueRenderer {
             for (GeoBone hueso : modelo.topLevelBones()) dibujarHueso(hueso, matrices, vc, luz, blando);
             matrices.pop();
         }
+        if (!a.capas().isEmpty()) dibujarTramas(a, modelo, matrices, pm, vertexConsumers, luz, blando);
     }
 
     // ── apliques sobre apliques (2026-10-04) ───────────────────────────────
@@ -509,6 +510,15 @@ public final class ApliqueRenderer {
 
     private static void dibujarHueso(GeoBone hueso, MatrixStack matrices, VertexConsumer vc, int luz,
                                      @org.jetbrains.annotations.Nullable Blando blando) {
+        dibujarHueso(hueso, matrices, vc, luz, blando, -1);
+    }
+
+    /**
+     * {@code zonaTrama} -1: la tela, con las UV del atlas. 0..2: solo las caras de esa zona (su columna del atlas), con la
+     * UV proyectada desde la posición para la pasada de tramas.
+     */
+    private static void dibujarHueso(GeoBone hueso, MatrixStack matrices, VertexConsumer vc, int luz,
+                                     @org.jetbrains.annotations.Nullable Blando blando, int zonaTrama) {
         matrices.push();
         if (blando != null) blando.mover(hueso, matrices);
         RenderUtil.prepMatrixForBone(matrices, hueso);
@@ -521,16 +531,26 @@ public final class ApliqueRenderer {
             Matrix3f normales = matrices.peek().getNormalMatrix();
             for (GeoQuad quad : cubo.quads()) {
                 if (quad == null) continue;
+                if (zonaTrama >= 0 && Math.min(2, (int) (quad.vertices()[0].texU() * 3f)) != zonaTrama) continue;
                 Vector3f nq = normales.transform(new Vector3f(quad.normal()));
+                float ax = Math.abs(quad.normal().x()), ay = Math.abs(quad.normal().y()), az = Math.abs(quad.normal().z());
                 for (GeoVertex v : quad.vertices()) {
                     Vector4f p = pos.transform(new Vector4f(v.position().x(), v.position().y(), v.position().z(), 1f));
-                    vc.vertex(p.x(), p.y(), p.z()).color(0xFFFFFFFF).texture(v.texU(), v.texV())
+                    float u = v.texU(), t = v.texV();
+                    if (zonaTrama >= 0) {
+                        // Un paño de trama cada 16 px del modelo (posiciones en bloques), centrado en el aplique.
+                        float px = v.position().x(), py = v.position().y(), pz = v.position().z();
+                        if (az >= ax && az >= ay) { u = 0.5f + px; t = 0.5f - py; }
+                        else if (ax >= ay) { u = 0.5f + pz; t = 0.5f - py; }
+                        else { u = 0.5f + px; t = 0.5f + pz; }
+                    }
+                    vc.vertex(p.x(), p.y(), p.z()).color(0xFFFFFFFF).texture(u, t)
                             .overlay(OverlayTexture.DEFAULT_UV).light(luz).normal(nq.x(), nq.y(), nq.z());
                 }
             }
             matrices.pop();
         }
-        for (GeoBone hijo : hueso.getChildBones()) dibujarHueso(hijo, matrices, vc, luz, blando);
+        for (GeoBone hijo : hueso.getChildBones()) dibujarHueso(hijo, matrices, vc, luz, blando, zonaTrama);
         matrices.pop();
     }
 
@@ -621,13 +641,9 @@ public final class ApliqueRenderer {
     // ── textura teñida por zona ────────────────────────────────────────────
     private static final Map<String, Identifier> CACHE = new HashMap<>();
 
-    /**
-     * El atlas gris con cada columna de zona multiplicada por su tela: el color de la zona y, encima, las capas de Tintes del
-     * retazo que van a esa zona (tramas incluidas). La trama se estira a lo ancho de la columna de su zona.
-     */
+    /** El atlas gris con cada columna de zona multiplicada por su color (las tramas van aparte, ver {@link #dibujarTramas}). */
     private static Identifier textura(Aplique a) {
-        String key = Integer.toHexString(a.color(0)) + "_" + Integer.toHexString(a.color(1)) + "_" + Integer.toHexString(a.color(2))
-                + (a.capas().isEmpty() ? "" : "_" + Integer.toHexString(a.capas().hashCode()));
+        String key = Integer.toHexString(a.color(0)) + "_" + Integer.toHexString(a.color(1)) + "_" + Integer.toHexString(a.color(2));
         Identifier id = CACHE.get(key);
         if (id != null) return id;
         NativeImage base = ClothingTextureCache.imagenBase(ATLAS);
@@ -635,42 +651,45 @@ public final class ApliqueRenderer {
         NativeImage img = new NativeImage(base.getWidth(), base.getHeight(), true);
         img.copyFrom(base);
         int escala = Math.max(1, base.getWidth() / 96);
-        int anchoZona = ANCHO_ZONA * escala;
-        // Las máscaras de cada zona (0..2), en el orden en que se pintan.
-        List<List<ClothingTextureCache.CapaMascara>> porZona = new java.util.ArrayList<>();
-        for (int z = 0; z < 3; z++) porZona.add(new java.util.ArrayList<>());
-        int z1 = com.modamod.region.RegionPintura.ZONA_1.ordinal();
-        for (var c : a.capas()) {
-            int z = c.region().ordinal() - z1;
-            if (z < 0 || z > 2) continue;
-            NativeImage m = com.modamod.render.PatronGenerador.mascaraDeCapa("zona", c);
-            if (!c.lisa() && m == null) continue;
-            porZona.get(z).add(ClothingTextureCache.CapaMascara.de(c, m, null));
-        }
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
-                int zona = Math.min(2, x / anchoZona);
+                int zona = Math.min(2, x / (ANCHO_ZONA * escala));
                 int c = img.getColor(x, y);            // ABGR
                 int rgb = a.color(zona);
-                int tinta = 0xFF000000 | ((rgb & 0xFF) << 16) | (rgb & 0xFF00) | ((rgb >> 16) & 0xFF);
-                if (!porZona.get(zona).isEmpty()) {
-                    // La columna de la zona ocupa toda la máscara (512) a lo ancho; para abajo se repite al mismo paso.
-                    int mx = (x - zona * anchoZona) * 512 / anchoZona, my = (y * 512 / anchoZona) % 512;
-                    for (ClothingTextureCache.CapaMascara cm : porZona.get(zona)) {
-                        int op = cm.opacidadEn(mx, my);
-                        if (op > 0) tinta = ClothingTextureCache.mezclar(tinta, 0xFFFFFFFF, cm.colorEn(mx, my), cm.modo(), op);
-                    }
-                }
-                int r = ((c & 0xFF) * (tinta & 0xFF)) / 255;
-                int g = (((c >> 8) & 0xFF) * ((tinta >> 8) & 0xFF)) / 255;
-                int b = (((c >> 16) & 0xFF) * ((tinta >> 16) & 0xFF)) / 255;
+                int r = ((c & 0xFF) * ((rgb >> 16) & 0xFF)) / 255;
+                int g = (((c >> 8) & 0xFF) * ((rgb >> 8) & 0xFF)) / 255;
+                int b = (((c >> 16) & 0xFF) * (rgb & 0xFF)) / 255;
                 img.setColor(x, y, (c & 0xFF000000) | (b << 16) | (g << 8) | r);
             }
         }
-        id = Identifier.of(Modamod.MOD_ID, "dynamic/aplique_" + Integer.toHexString(key.hashCode()));
+        id = Identifier.of(Modamod.MOD_ID, "dynamic/aplique_" + key);
         MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
         CACHE.put(key, id);
         return id;
+    }
+
+    /**
+     * Las tramas del retazo encima de la tela del aplique, una pasada por zona. Las caras de los modelos toman de su columna
+     * del atlas apenas un recuadro de 1-2 px, así que la trama no puede ir en el atlas: se proyecta sobre la forma (cada
+     * cara por su eje dominante), con un paño de trama cada 16 px del modelo, y se dibuja como calco sobre los mismos
+     * vértices (prueba de profundidad igual, sin pelearse con la tela).
+     */
+    private static void dibujarTramas(Aplique a, BakedGeoModel modelo, MatrixStack matrices, Matrix4f pm,
+                                      VertexConsumerProvider vertexConsumers, int luz, Blando blando) {
+        int z1 = com.modamod.region.RegionPintura.ZONA_1.ordinal();
+        for (int zona = 0; zona < 3; zona++) {
+            List<com.modamod.region.RegionResolver.CapaPatron> capas = new java.util.ArrayList<>();
+            for (var c : a.capas()) if (c.region().ordinal() - z1 == zona && !c.lisa()) capas.add(c);
+            if (capas.isEmpty()) continue;
+            VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getEntityDecal(ZonaTextura.tramas(capas)));
+            for (int i = 0; i < a.fila().cantidad(); i++) {
+                matrices.push();
+                matrices.translate(0f, -i * a.fila().separacion() / 16f / a.escala(), 0f);
+                aplicar(matrices, pm);
+                for (GeoBone hueso : modelo.topLevelBones()) dibujarHueso(hueso, matrices, vc, luz, blando, zona);
+                matrices.pop();
+            }
+        }
     }
 
     /** Parte por parte, la caja de tela en píxeles (sin inflar) — la misma que usa el picking de la mesa. */

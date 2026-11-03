@@ -61,6 +61,40 @@ public final class ZonaTextura {
         return componer(rgb & 0xFFFFFF, capas, false, false);
     }
 
+    /**
+     * Solo las tramas, sobre transparente (los apliques: se dibujan encima de la tela del aplique, que ya trae su color y
+     * su sombreado). Lo que la trama no cubre queda vacío.
+     */
+    public static Identifier tramas(List<CapaPatron> capas) {
+        String key = "tramas|" + capas.hashCode();
+        Identifier hecho = CACHE.get(key);
+        if (hecho != null) return hecho;
+        List<ClothingTextureCache.CapaMascara> mascaras = new ArrayList<>();
+        for (CapaPatron c : capas) {
+            if (c.lisa()) continue;
+            NativeImage m = PatronGenerador.mascaraDeCapa("zona", c);
+            if (m != null) mascaras.add(ClothingTextureCache.CapaMascara.de(c, m, null));
+        }
+        NativeImage img = new NativeImage(TEX, TEX, true);
+        for (int y = 0; y < TEX; y++) {
+            for (int x = 0; x < TEX; x++) {
+                int acc = 0;
+                for (ClothingTextureCache.CapaMascara cm : mascaras) {
+                    int mx = x * ESC + ESC / 2, my = y * ESC + ESC / 2;
+                    int op = cm.opacidadEn(mx, my);
+                    if (op < 50) continue;
+                    int rgb = cm.colorEn(mx, my);
+                    acc = 0xFF000000 | ((rgb & 0xFF) << 16) | (rgb & 0xFF00) | ((rgb >> 16) & 0xFF);
+                }
+                img.setColor(x, y, acc);
+            }
+        }
+        Identifier id = Identifier.of(Modamod.MOD_ID, "dynamic/tramas_" + Integer.toHexString(key.hashCode()));
+        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
+        CACHE.put(key, id);
+        return id;
+    }
+
     private static Identifier componer(int rgb, List<CapaPatron> capas, boolean sombra, boolean rib) {
         String key = rgb + "|" + capas.hashCode() + (sombra ? "|s" + rib : "");
         Identifier hecho = CACHE.get(key);
