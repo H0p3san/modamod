@@ -345,7 +345,11 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
     public Estado estado() { return estado; }
 
     /** Trabajando de verdad: la GUI se cierra y no se toca (2026-10-08). */
+    @Override
     public boolean trabajando() { return estado == Estado.PROCESANDO; }
+
+    @Override
+    public int casilleroSalida() { return SLOT_SALIDA; }
     public int progreso() { return progreso; }
 
     public ItemStack prendaVisible() {

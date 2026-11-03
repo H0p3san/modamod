@@ -136,7 +136,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
     private int progreso = 0;
     /** Cuantos ticks antes de terminar sale el poof de descarga. */
     private static final int TICKS_DESCARGA = 8;
-    private ItemStack remera = ItemStack.EMPTY;
+    private ItemStack prenda = ItemStack.EMPTY;
     private ItemStack salida = ItemStack.EMPTY;
 
     // Una foto y un ajuste de escala/posicion POR CARA: la maquina estampa
@@ -484,7 +484,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
         if (be.progreso >= com.modamod.util.MaquinaCreativa.duracion(be, TICKS_PRENSADO)) {
             be.progreso = 0;
             be.estado = Estado.LISTO;
-            ItemStack hecha = be.remera;
+            ItemStack hecha = be.prenda;
             // pendientes[] NO se borra al terminar (2026-09-19, "ya no
             // consume la imagen") — la foto queda lista para reimprimir en
             // la proxima remera sin volver a cargarla.
@@ -506,7 +506,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             // (la lista arrancó desde las de la prenda al fijar la primera).
             if (!be.capas.isEmpty()) hecha = RemeraItem.conCapas(hecha, sumarCapas(RemeraItem.capasDe(hecha), be.capas));
             be.salida = hecha;
-            be.remera = ItemStack.EMPTY;
+            be.prenda = ItemStack.EMPTY;
             // Esto es exactamente el tick en que se prende el LED verde, que
             // sale de estado == LISTO. La campanita va aca y no agendada
             // aparte: atada al mismo cambio de estado no se pueden desfasar.
@@ -582,15 +582,19 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
     }
 
     /** Trabajando de verdad: la GUI se cierra y no se toca (2026-10-08). */
+    @Override
     public boolean trabajando() { return estado == Estado.PRENSANDO; }
+
+    @Override
+    public int casilleroSalida() { return SLOT_SALIDA; }
 
     /** 0..1, para animar. */
     public float getProgreso() {
         return estado == Estado.PRENSANDO ? progreso / (float) TICKS_PRENSADO : 0f;
     }
 
-    public ItemStack getRemera() {
-        return remera;
+    public ItemStack getPrenda() {
+        return prenda;
     }
 
     public ItemStack getSalida() {
@@ -616,7 +620,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
      * La pantallita del bloque sigue pidiendo solo prendas de verdad.
      */
     public ItemStack prendaDeVistaPrevia(boolean representativa) {
-        ItemStack base = !remera.isEmpty() ? remera
+        ItemStack base = !prenda.isEmpty() ? prenda
                 : representativa && salida.isEmpty() ? new ItemStack(categoria) : ItemStack.EMPTY;
         if (!base.isEmpty()) {
             ItemStack copia = base.copy();
@@ -706,15 +710,15 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
     }
 
     /** La prenda a estampar: la remera de cualquier corte, o las medias. */
-    public boolean ponerRemera(ItemStack stack) {
-        if (!remera.isEmpty() || estado != Estado.REPOSO) return false;
-        remera = stack.copyWithCount(1);
+    public boolean ponerPrenda(ItemStack stack) {
+        if (!prenda.isEmpty() || estado != Estado.REPOSO) return false;
+        prenda = stack.copyWithCount(1);
         soltarCapas();
         // La categoría de fijadas sigue automáticamente lo que se carga
         // — a pedido, ver el javadoc de {@link #categoria}.
         // La chaqueta comparte los diseños de la remera (misma tela, 2026-09-30).
         // El banner (2026-10-06) comparte los ajustes de la remera: es una sola foto, la del Frente.
-        irACategoria(categoriaDe(remera));
+        irACategoria(categoriaDe(prenda));
         sincronizar();
         return true;
     }
@@ -734,8 +738,8 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
         // tinta para producir una remera en blanco.
         if (id == null) return false;
         // Esa cara ya estampada: rechazar en vez de pisarla en silencio.
-        if (!remera.isEmpty() && !hayMascara() && RemeraItem.estampaDe(remera, cara) != null) return false;
-        if (cara == Estampa.Cara.ESPALDA && (soloFrente(remera))) return false;
+        if (!prenda.isEmpty() && !hayMascara() && RemeraItem.estampaDe(prenda, cara) != null) return false;
+        if (cara == Estampa.Cara.ESPALDA && (soloFrente(prenda))) return false;
         fotos[i] = stack.copyWithCount(1);
         pendientes[i] = id;
         sincronizar();
@@ -760,7 +764,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
     // lógica. Ver getAvailableSlots/canInsert más abajo para qué lado
     // puede tocar qué slot — las fotos (0-1) siguen sin ser alcanzables
     // por hopper, a propósito (se cargan desde la pantalla, no de afuera).
-    public static final int SLOT_REMERA = 2;
+    public static final int SLOT_PRENDA = 2;
     public static final int SLOT_PAPEL = 3;
     public static final int SLOT_TINTA_BASE = 4; // .. +4 (C,M,Y,K, mismo orden que SublimadoraBlock.TINTES)
     /**
@@ -796,7 +800,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
 
     @Override
     public boolean isEmpty() {
-        if (!fotos[0].isEmpty() || !fotos[1].isEmpty() || !remera.isEmpty() || !salida.isEmpty()) return false;
+        if (!fotos[0].isEmpty() || !fotos[1].isEmpty() || !prenda.isEmpty() || !salida.isEmpty()) return false;
         if (!mascaraSlot.isEmpty()) return false;
         if (papelCargado > 0) return false;
         for (int c : cargas) if (c > 0) return false;
@@ -814,7 +818,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
         if (slot >= SLOT_ALMACEN_INICIO) return almacen.get(slot - SLOT_ALMACEN_INICIO);
         return switch (slot) {
             case 0, 1 -> fotos[slot];
-            case SLOT_REMERA -> remera;
+            case SLOT_PRENDA -> prenda;
             case SLOT_PAPEL -> papelSlotView;
             case SLOT_SALIDA -> salida;
             default -> tintaSlotView[slot - SLOT_TINTA_BASE];
@@ -841,8 +845,8 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             }
             return resultado;
         }
-        if (slot == SLOT_REMERA) {
-            ItemStack resultado = remera.split(amount);
+        if (slot == SLOT_PRENDA) {
+            ItemStack resultado = prenda.split(amount);
             if (!resultado.isEmpty()) sincronizar();
             return resultado;
         }
@@ -886,9 +890,9 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             sincronizar();
             return resultado;
         }
-        if (slot == SLOT_REMERA) {
-            ItemStack resultado = remera;
-            remera = ItemStack.EMPTY;
+        if (slot == SLOT_PRENDA) {
+            ItemStack resultado = prenda;
+            prenda = ItemStack.EMPTY;
             soltarCapas();
             sincronizar();
             return resultado;
@@ -930,10 +934,10 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
                     ponerFoto(Estampa.Cara.values()[slot], stack, SublimadoraBlock.uuidDeFoto(stack));
                 }
             }
-            case SLOT_REMERA -> {
+            case SLOT_PRENDA -> {
                 ItemStack nueva = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
                 if (!nueva.isEmpty() && (com.modamod.util.InventarioUtil.enCadena && linea()) && estado == Estado.REPOSO
-                        && remera.isEmpty() && salida.isEmpty() && !hayFijadas() && capas.isEmpty()) {
+                        && prenda.isEmpty() && salida.isEmpty() && !hayFijadas() && capas.isEmpty()) {
                     // Llegó por la cadena y no hay nada que estampar: pasa de
                     // largo (2026-10-04, "me parece perfecto que saltee").
                     salida = nueva;
@@ -941,8 +945,8 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
                     sincronizar();
                     return;
                 }
-                if (!ItemStack.areEqual(remera, nueva)) soltarCapas();
-                remera = nueva;
+                if (!ItemStack.areEqual(prenda, nueva)) soltarCapas();
+                prenda = nueva;
                 if (!nueva.isEmpty()) {
                     // Como en ponerRemera: la GUI muestra el tipo de prenda que entró (2026-10-04, "al poner un x
                     // input se seleccione automaticamente la gui de ese tipo de prenda").
@@ -1020,7 +1024,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
     @Override
     public void clear() {
         for (int i = 0; i < 2; i++) { fotos[i] = ItemStack.EMPTY; pendientes[i] = null; }
-        remera = ItemStack.EMPTY;
+        prenda = ItemStack.EMPTY;
         salida = ItemStack.EMPTY;
         papelCargado = 0;
         java.util.Arrays.fill(cargas, 0);
@@ -1053,12 +1057,12 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             if (estado != Estado.REPOSO) return false;
             if (!fotos[slot].isEmpty()) return false;
             Estampa.Cara cara = Estampa.Cara.values()[slot];
-            if (!remera.isEmpty() && !hayMascara() && RemeraItem.estampaDe(remera, cara) != null) return false;
-            if (cara == Estampa.Cara.ESPALDA && (soloFrente(remera))) return false;
+            if (!prenda.isEmpty() && !hayMascara() && RemeraItem.estampaDe(prenda, cara) != null) return false;
+            if (cara == Estampa.Cara.ESPALDA && (soloFrente(prenda))) return false;
             return SublimadoraBlock.esFoto(stack) && SublimadoraBlock.uuidDeFoto(stack) != null;
         }
-        if (slot == SLOT_REMERA) {
-            return remera.isEmpty() && estado == Estado.REPOSO
+        if (slot == SLOT_PRENDA) {
+            return prenda.isEmpty() && estado == Estado.REPOSO
                     && ModItems.esEstampable(stack) && (!SublimadoraBlock.tieneLasDosCaras(stack) || hayMascara());
         }
         if (slot == SLOT_PAPEL) {
@@ -1086,18 +1090,18 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
     @Override
     public int[] getAvailableSlots(Direction side) {
         // También por la IZQUIERDA (2026-10-04, "poder cargarles prendas por la izquierda").
-        if (side == Direction.UP || side == ladoIzquierdo()) return new int[]{SLOT_REMERA};
+        if (side == Direction.UP || side == ladoIzquierdo()) return new int[]{SLOT_PRENDA};
         if (side == ladoAtras()) return new int[]{SLOT_PAPEL, SLOT_TINTA_BASE, SLOT_TINTA_BASE + 1, SLOT_TINTA_BASE + 2, SLOT_TINTA_BASE + 3};
         return new int[0];
     }
 
     @Override
-    public int topeEntrada(int slot) { return slot == SLOT_REMERA ? 1 : getMaxCountPerStack(); }
+    public int topeEntrada(int slot) { return slot == SLOT_PRENDA ? 1 : getMaxCountPerStack(); }
 
     @Override
     public boolean canInsert(int slot, ItemStack stack, @org.jetbrains.annotations.Nullable Direction dir) {
         if (dir != null && com.modamod.util.Redstone.pausada(this)) return false;   // con señal, nada entra por automatización
-        if (SLOT_REMERA == slot && !getStack(slot).isEmpty()) return false;   // una prenda por vez
+        if (SLOT_PRENDA == slot && !getStack(slot).isEmpty()) return false;   // una prenda por vez
 
         return isValid(slot, stack);
     }
@@ -1211,8 +1215,8 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
      * después de gastar tinta y papel.
      */
     private int capasDeMas() {
-        if (remera.isEmpty() || capas.isEmpty()) return 0;
-        return Math.max(0, RemeraItem.capasDe(remera).size() + capas.size() - CapaEstampa.MAXIMO);
+        if (prenda.isEmpty() || capas.isEmpty()) return 0;
+        return Math.max(0, RemeraItem.capasDe(prenda).size() + capas.size() - CapaEstampa.MAXIMO);
     }
 
     /** Chincheta con máscara: agrega la capa en curso de esa cara. */
@@ -1552,7 +1556,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
 
     /** La cara de atrás existe (un banner o un delantal solo tienen frente). */
     public boolean admiteEspalda() {
-        return !(soloFrente(remera));
+        return !(soloFrente(prenda));
     }
 
     @Override
@@ -1719,7 +1723,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
         if (c == null) return false;
         net.minecraft.util.Identifier id = net.minecraft.util.Identifier.tryParse(c.getString("Item"));
         net.minecraft.item.Item item = id == null ? null : net.minecraft.registry.Registries.ITEM.get(id);
-        if (item != null && item != net.minecraft.item.Items.AIR && remera.isEmpty()) irACategoria(item);
+        if (item != null && item != net.minecraft.item.Items.AIR && prenda.isEmpty()) irACategoria(item);
         aplicarDiseno(disenoDeNbt(c));
         jugador.sendMessage(Text.translatable("modamod.estilista.disenos.cargado", disenosItem.get(idx).getName()), true);
         return true;
@@ -1763,7 +1767,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
      */
     public java.util.List<ItemStack> contenido() {
         java.util.List<ItemStack> todo = new java.util.ArrayList<>();
-        if (!remera.isEmpty()) todo.add(remera);
+        if (!prenda.isEmpty()) todo.add(prenda);
         for (ItemStack f : fotos) if (!f.isEmpty()) todo.add(f);
         if (!salida.isEmpty()) todo.add(salida);
         // El almacén también (2026-09-28): antes sus fotos se perdían al romper la máquina.
@@ -1790,9 +1794,9 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             sincronizar();
             return out;
         }
-        if (!remera.isEmpty()) {
-            ItemStack out = remera;
-            remera = ItemStack.EMPTY;
+        if (!prenda.isEmpty()) {
+            ItemStack out = prenda;
+            prenda = ItemStack.EMPTY;
             soltarCapas();
             sincronizar();
             return out;
@@ -1806,7 +1810,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
      */
     public boolean intentarPrensar() {
         if (estado != Estado.REPOSO) return false;
-        if (remera.isEmpty()) return false;
+        if (prenda.isEmpty()) return false;
         // Hallazgo H04: si no entran todas las capas, no se prensa (antes se cobraba y se descartaban las nuevas).
         if (capasDeMas() > 0) return false;
         // Las capas con máscara cuentan como una pasada más (2026-10-02).
@@ -1839,7 +1843,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
 
     /** ¿Esta cara se estampa? Foto cargada y chincheta puesta. */
     private boolean caraActiva(int i) {
-        if (i == Estampa.Cara.ESPALDA.ordinal() && (soloFrente(remera))) return false;
+        if (i == Estampa.Cara.ESPALDA.ordinal() && (soloFrente(prenda))) return false;
         return !fotos[i].isEmpty() && pendientes[i] != null && caraFijada[i];
     }
 
@@ -1920,9 +1924,9 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
 
         if (capasDeMas() > 0) {
             return Text.translatable("modamod.sublimadora.aviso.capas_de_mas",
-                    RemeraItem.capasDe(remera).size(), capasDeMas());
+                    RemeraItem.capasDe(prenda).size(), capasDeMas());
         }
-        if (remera.isEmpty() || (fotos[0].isEmpty() && fotos[1].isEmpty() && capas.isEmpty())) {
+        if (prenda.isEmpty() || (fotos[0].isEmpty() && fotos[1].isEmpty() && capas.isEmpty())) {
             return Text.translatable("modamod.sublimadora.aviso.cargar");
         }
         if (!caraActiva(0) && !caraActiva(1) && capas.isEmpty()) {
@@ -1982,7 +1986,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
         nbt.putInt("PapelCargado", papelCargado);
         nbt.putString("Estado", estado.name());
         nbt.putInt("Progreso", progreso);
-        if (!remera.isEmpty()) nbt.put("Remera", remera.encode(registries));
+        if (!prenda.isEmpty()) nbt.put("Remera", prenda.encode(registries));
         for (int i = 0; i < 2; i++) {
             if (!fotos[i].isEmpty()) nbt.put("Foto" + i, fotos[i].encode(registries));
             if (pendientes[i] != null) nbt.putUuid("Pendiente" + i, pendientes[i]);
@@ -2073,7 +2077,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
         sincronizarVistaTanques();
         estado = nbt.contains("Estado") ? Estado.valueOf(nbt.getString("Estado")) : Estado.REPOSO;
         progreso = nbt.getInt("Progreso");
-        remera = nbt.contains("Remera") ? ItemStack.fromNbtOrEmpty(registries, nbt.getCompound("Remera")) : ItemStack.EMPTY;
+        prenda = nbt.contains("Remera") ? ItemStack.fromNbtOrEmpty(registries, nbt.getCompound("Remera")) : ItemStack.EMPTY;
         for (int i = 0; i < 2; i++) {
             fotos[i] = nbt.contains("Foto" + i)
                     ? ItemStack.fromNbtOrEmpty(registries, nbt.getCompound("Foto" + i))

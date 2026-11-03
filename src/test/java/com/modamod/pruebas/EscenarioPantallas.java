@@ -85,9 +85,9 @@ public final class EscenarioPantallas {
         });
     }
 
-    /** Paso: enciende la maquina y espera la prenda en la salida (la creativa tarda pocos ticks). */
+    /** Paso: aprieta Modelar y espera la prenda en la salida (la creativa tarda pocos ticks). */
     private static Corrida modelar(Corrida r, String nombre) {
-        return r.hacer("encender " + nombre, 0, c -> boton(c, ModeladoBlockEntity.BTN_ENCENDER))
+        return r.hacer("modelar " + nombre, 0, c -> boton(c, ModeladoBlockEntity.BTN_MODELAR))
                 .paso("salida lista " + nombre, c -> modeladora(c, be -> be.estado() == ModeladoBlockEntity.Estado.LISTO && !be.getStack(ModeladoBlockEntity.SALIDA).isEmpty()));
     }
 

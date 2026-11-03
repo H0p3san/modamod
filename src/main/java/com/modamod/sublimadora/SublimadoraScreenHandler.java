@@ -52,9 +52,9 @@ public class SublimadoraScreenHandler extends ScreenHandler {
         this.be = be;
         if (be.getWorld() != null && !be.getWorld().isClient()) be.alAbrirGui();
 
-        addSlot(new Slot(be, SublimadoraBlockEntity.SLOT_REMERA, X_ENTRADA, Y_IO) {
+        addSlot(new Slot(be, SublimadoraBlockEntity.SLOT_PRENDA, X_ENTRADA, Y_IO) {
             @Override
-            public boolean canInsert(ItemStack stack) { return be.isValid(SublimadoraBlockEntity.SLOT_REMERA, stack); }
+            public boolean canInsert(ItemStack stack) { return be.isValid(SublimadoraBlockEntity.SLOT_PRENDA, stack); }
 
             @Override
             public int getMaxItemCount() { return 1; }

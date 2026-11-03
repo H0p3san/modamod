@@ -46,7 +46,7 @@ public class SublimadoraRenderer extends GeoBlockRenderer<SublimadoraBlockEntity
                 be -> com.modamod.render.PantallaMaquina.glow(SublimadoraGeoModel.TEX,
                         com.modamod.render.PantallaMaquina.PANEL_128, be.getPos())));
         addRenderLayer(new com.modamod.render.PrendaEnMaquinaLayer<>(this, "REMERA",
-                be -> !be.getRemera().isEmpty() ? be.getRemera() : be.getSalida(), 0f, 11.85f, -0.6f, 10f,
+                be -> !be.getPrenda().isEmpty() ? be.getPrenda() : be.getSalida(), 0f, 11.85f, -0.6f, 10f,
                 com.modamod.render.PrendaEnMaquinaLayer.Apoyo.ACOSTADA_FRENTE_MENOS_Z));
         // La prenda terminada sobre la bandeja de salida, que se desliza hacia la
         // cinta con el hueso "cargo" (2026-10-04, "el cargo tiene una prenda random

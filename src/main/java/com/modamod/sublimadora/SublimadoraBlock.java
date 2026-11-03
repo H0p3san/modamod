@@ -92,7 +92,7 @@ public class SublimadoraBlock extends MaquinaBlock {
         // Se acepta mientras le quede alguna cara sin estampar: una remera
         // con el frente hecho vuelve a entrar para imprimirle la espalda.
         if (ModItems.esEstampable(stack) && !tieneLasDosCaras(stack)) {
-            if (!be.ponerRemera(stack)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            if (!be.ponerPrenda(stack)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             if (!player.isCreative()) stack.decrement(1);
             sonar(world, pos, SoundEvents.BLOCK_WOOL_PLACE, 1.0f);
             return ItemActionResult.CONSUME;
@@ -245,6 +245,11 @@ public class SublimadoraBlock extends MaquinaBlock {
      * {@code ModeladoBlock}/{@code TinturasBlock}, cada una con su
      * propio sabor de peligro.
      */
+    @Override
+    protected void castigar(World world, BlockPos pos, PlayerEntity player) {
+        quemarPorInterrumpir(world, pos, player);
+    }
+
     private static void quemarPorInterrumpir(World world, BlockPos pos, PlayerEntity player) {
         player.setOnFireFor(4);
         world.playSound(null, pos, net.minecraft.sound.SoundEvents.ENTITY_GENERIC_BURN, SoundCategory.BLOCKS, 1.0f, 1.0f);

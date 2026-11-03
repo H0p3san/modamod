@@ -385,20 +385,6 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
 
     private static final Logger LOG = LoggerFactory.getLogger("modamod-modelado");
 
-    /** DIAGNOSTICO TEMPORAL: anota en el registro cada cambio de lo que decide si la Modeladora trabaja. */
-    private String diagUltimo = "";
-
-    private void diagnosticar() {
-        String ahora = "estado=" + estado + " encendida=" + encendida + " linea=" + linea()
-                + " prenda=" + (items.get(PRENDA).isEmpty() ? "VACIA" : items.get(PRENDA).getItem().toString())
-                + " salida=" + (items.get(SALIDA).isEmpty() ? "vacia" : "LLENA")
-                + " fijadas=" + hayFijadas() + " tijeraOk=" + tijeraOk() + " guis=" + guiAbiertas;
-        if (!ahora.equals(diagUltimo)) {
-            LOG.info("[diag] {} @{} t={} progreso={}", ahora, pos.toShortString(), world == null ? -1 : world.getTime() % 100000, progreso);
-            diagUltimo = ahora;
-        }
-    }
-
     // Modelo "garment_shaper" v2 (bloques de moda 2.0, ver HUESOS.md): dos
     // controladores independientes, no un solo reposo/trabajo — "trabajo"
     // mueve guillotine/needle/cargo (solo mientras PROCESANDO), "en_marcha"
@@ -751,7 +737,11 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     public Estado estado() { return estado; }
 
     /** Trabajando de verdad: la GUI se cierra y no se toca (2026-10-08, "las 5 maquinas... cierran y bloquean gui"). */
+    @Override
     public boolean trabajando() { return estado == Estado.PROCESANDO; }
+
+    @Override
+    public int casilleroSalida() { return SALIDA; }
 
     /** El resultado esperando en la bandeja de salida (lo dibuja el hueso "cargo"). */
     public ItemStack salidaVisible() { return items.get(SALIDA); }
@@ -768,7 +758,6 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     // ── botones ──────────────────────────────────────────────────────
 
     public static final int BTN_FIJAR = 4;
-    public static final int BTN_ENCENDER = 6;
     /** Cicla Superior/Inferior — solo importa para pantalón-largo/medias/calientabrazos. */
     public static final int BTN_ANCLAJE = 7;
     /** Cicla Izquierda/Derecha/Ambas — ídem. */
@@ -802,14 +791,10 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             alternarLinea();
             return true;
         }
-        if (encendida && id != BTN_ENCENDER) return false; // config bloqueada mientras produce
+        if (encendida) return false; // config bloqueada mientras produce
         boolean cambio;
         switch (id) {
             case BTN_FIJAR -> cambio = fijar();
-            case BTN_ENCENDER -> {
-                encendida = !encendida;
-                cambio = true;
-            }
             case BTN_ANCLAJE -> {
                 anclaje = anclaje == Anclaje.SUPERIOR ? Anclaje.INFERIOR : Anclaje.SUPERIOR;
                 cambio = true;
@@ -1986,7 +1971,6 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             rafaga(servidor, pos);
         }
 
-        be.diagnosticar();   // DIAGNOSTICO TEMPORAL (sacar al encontrar la causa)
         switch (be.estado) {
             case REPOSO -> {
                 boolean prendaOk = !be.items.get(PRENDA).isEmpty();
@@ -2049,7 +2033,6 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 // mismo intervalo que TinturasBlockEntity#tick.
                 if (be.progreso % 20 == 0) be.sincronizar();
                 if (be.progreso >= com.modamod.util.MaquinaCreativa.duracion(be, TICKS_PROCESO)) {
-                    if (be.items.get(PRENDA).isEmpty()) LOG.warn("[diag] termina de PROCESAR con la PRENDA VACIA @{}", be.pos.toShortString());   // DIAGNOSTICO TEMPORAL
                     ItemStack resultado = be.procesar(be.items.get(PRENDA));
                     be.items.set(SALIDA, resultado);
                     be.items.set(PRENDA, ItemStack.EMPTY);

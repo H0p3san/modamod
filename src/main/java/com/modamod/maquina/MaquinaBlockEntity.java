@@ -6,6 +6,7 @@ import com.modamod.util.MaquinaCreativa;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -23,7 +24,7 @@ import net.minecraft.util.math.Direction;
  * <p>Línea de producción: apagada de fábrica, la máquina no empuja su salida al vecino ni saltea las prendas que le llegan
  * por la cadena; la prenda queda para sacarla a mano. El resto (inventario, ciclo de trabajo, pantalla) es de cada máquina.
  */
-public abstract class MaquinaBlockEntity extends BlockEntity implements ConSalida {
+public abstract class MaquinaBlockEntity extends BlockEntity implements ConSalida, SidedInventory {
 
     /** Id del botón de la pantalla que alterna la línea de producción. */
     public static final int BTN_LINEA = 900;
@@ -33,6 +34,12 @@ public abstract class MaquinaBlockEntity extends BlockEntity implements ConSalid
     protected MaquinaBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
+
+    /** ¿Está en pleno ciclo? Mientras trabaja no se abre la pantalla: quien mete la mano se lleva el castigo de la máquina. */
+    public abstract boolean trabajando();
+
+    /** El casillero donde queda el resultado listo para retirar. */
+    public abstract int casilleroSalida();
 
     public boolean linea() {
         return linea;

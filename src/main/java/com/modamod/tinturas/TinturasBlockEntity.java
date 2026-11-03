@@ -617,7 +617,11 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
     public Estado estado() { return estado; }
 
     /** Trabajando de verdad: la GUI se cierra y los controles quedan trabados (2026-10-08, hallazgo H03). */
+    @Override
     public boolean trabajando() { return estado == Estado.TINIENDO; }
+
+    @Override
+    public int casilleroSalida() { return SLOT_SALIDA; }
     public int progreso() { return progreso; }
     /** La prenda ya teñida esperando salir — "listo" de verdad es REPOSO + esto no vacío (no hay Estado.LISTO acá). */
     public ItemStack getSalida() { return salida; }
@@ -1604,14 +1608,6 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         return true;
     }
 
-    /** Shift + click derecho, mano vacía: vuelve a blanco los cuadraditos SIN fijar de la categoría actual, sin abrir la GUI. */
-    public void resetearBorrador() {
-        for (Casilla cas : casillas[categoria.ordinal()]) {
-            if (!cas.fijada) java.util.Arrays.fill(cas.mezcla, 0);
-        }
-        sincronizar();
-    }
-
     /** Directo desde el slider del lado cliente (ver TinturasScreen) para el cuadradito seleccionado, cuantizado a NIVELES_MEZCLA pasos. */
     public int botonMezcla(int canal, int nivel) {
         return BTN_MEZCLA_BASE + canal * NIVELES_MEZCLA + MathHelper.clamp(nivel, 0, NIVELES_MEZCLA - 1);
@@ -1697,57 +1693,61 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         return estado == Estado.REPOSO && !prendaEntrada.isEmpty() && salida.isEmpty();
     }
 
+    /**
+     * Por qué no podría arrancar a teñir {@code stack} ahora, o null si podría: el mismo chequeo que hace
+     * {@link #iniciarTenido} pero sin tocar nada (la tolva lo usa para no dejar entrar lo que quedaría trabado).
+     */
     @Nullable
-    private Text iniciarTenidoInterno(ItemStack stack) {
-        if (estado != Estado.REPOSO) {
-            return Text.translatable("modamod.tinturas.aviso.procesando");
-        }
-        if (!prendaEntrada.isEmpty()) {
-            // Ya hay una prenda cruda trabada esperando (un intento
-            // anterior que rechazó) — no la pisa.
-            return Text.translatable("modamod.tinturas.aviso.entrada_ocupada");
-        }
-        if (!salida.isEmpty()) {
-            // Bug real (2026-09-28): tick() pisaba salida sin mirar, así
-            // que una prenda terminada que no se había podido empujar
-            // (sin cofre a la derecha) se perdía al terminar la siguiente.
-            return Text.translatable("modamod.tinturas.aviso.salida_ocupada");
-        }
-        // La categoría la decide el TIPO de la prenda en mano, no la que
-        // esté mostrando la GUI en ese momento — así un click derecho
-        // siempre usa "la fijada de pantalón" sobre un pantalón, sin
-        // importar qué pestaña quedó abierta la última vez.
+    private Text motivoParaNoTenir(ItemStack stack) {
+        if (estado != Estado.REPOSO) return Text.translatable("modamod.tinturas.aviso.procesando");
+        if (!prendaEntrada.isEmpty()) return Text.translatable("modamod.tinturas.aviso.entrada_ocupada");
+        if (!salida.isEmpty()) return Text.translatable("modamod.tinturas.aviso.salida_ocupada");
         Categoria cat = categoriaDe(stack);
-        if (cat == null) {
-            return Text.translatable("modamod.tinturas.aviso.no_es_prenda");
-        }
-        categoria = cat;   // la GUI sigue a la prenda que entra (2026-10-04)
-        // El diseño son los cuadraditos FIJADOS de esa categoría (2026-09-27).
-        if (!hayFijadas(cat)) {
-            return Text.translatable("modamod.tinturas.aviso.sin_fijada_seleccionada");
-        }
-        // Fijadas hay, pero todas con el ojo cerrado: no hay nada que aplicar.
-        if (capasDe(cat, false).isEmpty()) {
-            return Text.translatable("modamod.tinturas.aviso.todas_ocultas");
-        }
-
-        // Costo de tinta: la unión de canales usados por TODOS los
-        // cuadraditos fijados — 1 dosis por canal, no por capa.
-        boolean[] canalUsado = new boolean[4];
-        for (int i = 0; i < CASILLAS; i++) {
-            Casilla cas = casillas[cat.ordinal()][i];
-            if (regionDe(cat, i) == null || !cas.fijada || cas.oculta) continue;
-            for (int col = 0; col < cas.colores; col++) {
-                // Solo C/M/Y/K — la transparencia (T) no gasta tinta.
-                for (int canal = 0; canal < 4; canal++) if (cas.mezclaDe(col)[canal] > 0) canalUsado[canal] = true;
-            }
-        }
+        if (cat == null) return Text.translatable("modamod.tinturas.aviso.no_es_prenda");
+        if (!hayFijadas(cat)) return Text.translatable("modamod.tinturas.aviso.sin_fijada_seleccionada");
+        if (capasDe(cat, false).isEmpty()) return Text.translatable("modamod.tinturas.aviso.todas_ocultas");
+        boolean[] canalUsado = canalesUsados(cat);
         for (int canal = 0; canal < 4; canal++) {
             if (canalUsado[canal] && cargas[canal] <= 0 && !com.modamod.util.MaquinaCreativa.es(this)) {
                 return Text.translatable("modamod.tinturas.aviso.sin_tinte",
                         Text.translatable("modamod.sublimadora.tinta." + NOMBRE_CANAL[canal]));
             }
         }
+        return null;
+    }
+
+    /** Los canales que usa el diseño fijado de {@code cat}: 1 dosis por canal, no por capa (la transparencia no gasta). */
+    private boolean[] canalesUsados(Categoria cat) {
+        boolean[] canalUsado = new boolean[4];
+        for (int i = 0; i < CASILLAS; i++) {
+            Casilla cas = casillas[cat.ordinal()][i];
+            if (regionDe(cat, i) == null || !cas.fijada || cas.oculta) continue;
+            for (int col = 0; col < cas.colores; col++) {
+                for (int canal = 0; canal < 4; canal++) if (cas.mezclaDe(col)[canal] > 0) canalUsado[canal] = true;
+            }
+        }
+        return canalUsado;
+    }
+
+    /** ¿Una tolva o la cadena pueden dejar esta prenda? Solo si arranca a teñir o pasa de largo; si no, espera afuera. */
+    private boolean entraPorAutomatizacion(ItemStack stack) {
+        return pasaDeLargo(stack) || motivoParaNoTenir(stack) == null;
+    }
+
+    /** Llegó por la cadena con la línea activa y no hay nada que teñirle: sigue de largo hacia la próxima máquina. */
+    private boolean pasaDeLargo(ItemStack stack) {
+        Categoria cat = categoriaDe(stack);
+        return com.modamod.util.InventarioUtil.enCadena && linea() && estado == Estado.REPOSO
+                && prendaEntrada.isEmpty() && salida.isEmpty() && (cat == null || capasDe(cat, false).isEmpty());
+    }
+
+    @Nullable
+    private Text iniciarTenidoInterno(ItemStack stack) {
+        Categoria cat = categoriaDe(stack);
+        if (cat != null && estado == Estado.REPOSO) categoria = cat;   // la GUI sigue a la prenda que entra (2026-10-04)
+        Text motivo = motivoParaNoTenir(stack);
+        if (motivo != null) return motivo;
+        boolean[] canalUsado = canalesUsados(cat);
         for (int canal = 0; canal < 4; canal++) {
             if (canalUsado[canal] && !com.modamod.util.MaquinaCreativa.es(this)) cargas[canal]--;
         }
@@ -2057,9 +2057,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
                 ItemStack copia = stack.copyWithCount(1);
                 Categoria catCadena = categoriaDe(copia);
                 if (catCadena != null) categoria = catCadena;   // la GUI sigue a la prenda que entra (2026-10-04)
-                if ((com.modamod.util.InventarioUtil.enCadena && linea()) && estado == Estado.REPOSO
-                        && prendaEntrada.isEmpty() && salida.isEmpty()
-                        && (catCadena == null || capasDe(catCadena, false).isEmpty())) {
+                if (pasaDeLargo(copia)) {
                     // Llegó por la cadena y no hay nada que teñir: pasa de
                     // largo (2026-10-04, "me parece perfecto que saltee").
                     salida = copia;
@@ -2160,6 +2158,8 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
         if (dir != null && com.modamod.util.Redstone.pausada(this)) return false;   // con señal, nada entra por automatización
         if (SLOT_PRENDA_ENTRADA == slot && !getStack(slot).isEmpty()) return false;   // una prenda por vez
+        // Lo que no podría teñir ni pasar de largo no entra: espera en la tolva o la cinta en vez de trabarse adentro.
+        if (dir != null && SLOT_PRENDA_ENTRADA == slot && !entraPorAutomatizacion(stack)) return false;
 
         return isValid(slot, stack);
     }
@@ -2207,13 +2207,6 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         }
         super.markDirty();
     }
-
-    void sonarClick() {
-        if (world != null) {
-            world.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.BLOCKS, 0.6f, 1.0f);
-        }
-    }
-
     // ── persistencia y sincronización — mismo patrón que ModeladoBlockEntity/SublimadoraBlockEntity ──
 
     @Override

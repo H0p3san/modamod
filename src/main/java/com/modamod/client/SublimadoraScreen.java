@@ -342,7 +342,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
                 Text.translatable(be.simetria() ? "modamod.si" : "modamod.no")));
         w.get("quitarFoto").active = reposo && !be.getStack(be.getSeleccion().ordinal()).isEmpty();
         w.get("quitarMascara").active = reposo && be.hayMascara();
-        btnPrensar.active = reposo && !be.getRemera().isEmpty() && be.getSalida().isEmpty();
+        btnPrensar.active = reposo && !be.getPrenda().isEmpty() && be.getSalida().isEmpty();
 
         for (int c = 0; c < 2; c++) {
             Estampa.Cara cara = Estampa.Cara.values()[c];
@@ -785,7 +785,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
             return Text.translatable("modamod.sublimadora.gui.ayuda.foto");
         }
         if (!be.hayFijadas() && be.capas().isEmpty()) return Text.translatable("modamod.sublimadora.hint.ajustar");
-        if (be.getRemera().isEmpty()) return Text.translatable("modamod.sublimadora.hint.sin_prenda");
+        if (be.getPrenda().isEmpty()) return Text.translatable("modamod.sublimadora.hint.sin_prenda");
         return Text.translatable("modamod.sublimadora.hint.fijado");
     }
 
