@@ -198,10 +198,9 @@ public class ModamodClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(
                 ModamodItems.MOLDE_APLIQUE_PERSONALIZADO, new MoldeApliqueItemRenderer());
 
-        // Retazo de aplique (2026-10-01): el ícono provisorio se tiñe con la zona 1.
-        ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex == 0
-                ? 0xFF000000 | com.modamod.aplique.RetazoApliqueItem.colores(stack).get(0) : -1,
-                ModamodItems.RETAZO_APLIQUE);
+        // Retazo de aplique: tres franjas con el color y las tramas de cada zona.
+        net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(
+                ModamodItems.RETAZO_APLIQUE, new RetazoItemRenderer());
 
         // Sin esto, F3+T releía los .png del disco pero ClothingTextureCache
         // seguía devolviendo la composición vieja desde su cache estático
