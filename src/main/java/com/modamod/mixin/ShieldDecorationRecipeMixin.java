@@ -1,6 +1,5 @@
 package com.modamod.mixin;
 
-import com.modamod.sublimadora.ModItems;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.ShieldDecorationRecipe;
@@ -22,7 +21,7 @@ public abstract class ShieldDecorationRecipeMixin {
             ItemStack s = input.getStackInSlot(i);
             if (s.getItem() instanceof BannerItem) {
                 // La foto y el tinte (2026-10-24) pasan al escudo.
-                if (s.contains(ModItems.BANNER_ESTAMPA)) cir.getReturnValue().set(ModItems.BANNER_ESTAMPA, s.get(ModItems.BANNER_ESTAMPA));
+                if (s.contains(com.modamod.sublimadora.Estampas.Tipo.COMPONENTE)) cir.getReturnValue().set(com.modamod.sublimadora.Estampas.Tipo.COMPONENTE, s.get(com.modamod.sublimadora.Estampas.Tipo.COMPONENTE));
                 if (s.contains(com.modamod.item.ModamodComponents.CAPAS_TINTE)) {
                     cir.getReturnValue().set(com.modamod.item.ModamodComponents.CAPAS_TINTE, s.get(com.modamod.item.ModamodComponents.CAPAS_TINTE));
                 }

@@ -1,7 +1,6 @@
 package com.modamod.mixin;
 
 import com.modamod.sublimadora.BannerHD;
-import com.modamod.sublimadora.ModItems;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -19,7 +18,7 @@ public abstract class BuiltinModelItemRendererMixin {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void modamod$entra(ItemStack stack, ModelTransformationMode modo, MatrixStack m, VertexConsumerProvider v, int luz, int overlay, CallbackInfo ci) {
-        BannerHD.contexto = stack.isOf(Items.SHIELD) ? BannerHD.Contexto.de(stack.get(ModItems.BANNER_ESTAMPA),
+        BannerHD.contexto = stack.isOf(Items.SHIELD) ? BannerHD.Contexto.de(com.modamod.sublimadora.Estampas.frente(stack),
                 stack.get(com.modamod.item.ModamodComponents.CAPAS_TINTE)) : null;
     }
 

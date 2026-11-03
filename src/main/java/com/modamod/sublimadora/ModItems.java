@@ -7,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
 
 import java.util.UUID;
 
@@ -23,29 +22,6 @@ import java.util.UUID;
  */
 public final class ModItems {
 
-    /** Foto estampada en el frente. Ausente = ese lado en blanco. */
-    public static final ComponentType<Estampa> ESTAMPA_FRENTE = registrarEstampa("estampa_frente");
-    /** Idem en la espalda. Estampar las dos caras cuesta dos pasadas. */
-    public static final ComponentType<Estampa> ESTAMPA_ESPALDA = registrarEstampa("estampa_espalda");
-    /**
-     * Foto sublimada en un banner (2026-10-06, "solo tintes y sublimadoras a banners y 16x"): la dibuja
-     * {@link BannerHD} a 16x sobre la cara del banner y, si el banner se usa en la receta del escudo, sobre el escudo.
-     */
-    public static final ComponentType<Estampa> BANNER_ESTAMPA = registrarEstampa("banner_estampa");
-
-    /**
-     * Las capas de estampa con máscara (2026-10-02, "mascaras de sublimacion...
-     * varias layers 12 quizas entre frente y atras"): en orden, cada una pinta
-     * encima de la anterior, después de las estampas de frente y espalda.
-     */
-    public static final ComponentType<java.util.List<CapaEstampa>> ESTAMPAS_CAPAS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(Modamod.MOD_ID, "estampas_capas"),
-            ComponentType.<java.util.List<CapaEstampa>>builder()
-                    .codec(CapaEstampa.CODEC.listOf())
-                    .packetCodec(net.minecraft.network.codec.PacketCodecs.codec(CapaEstampa.CODEC.listOf()))
-                    .build());
-
     /** Los moldes de máscara, uno por forma (en el orden de {@link FormaMascara}). */
     public static final MoldeMascaraItem[] MOLDES_MASCARA = registrarMoldesMascara();
 
@@ -59,19 +35,6 @@ public final class ModItems {
         }
         return out;
     }
-
-    /**
-     * El componente viejo, de cuando la estampa era un UUID pelado y siempre
-     * iba centrada en el frente. Sigue registrado para poder leer las remeras
-     * que ya existen en mundos guardados; nada lo escribe.
-     */
-    public static final ComponentType<UUID> PICTURE_ID = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(Modamod.MOD_ID, "picture_id"),
-            ComponentType.<UUID>builder()
-                    .codec(Uuids.CODEC)
-                    .packetCodec(Uuids.PACKET_CODEC)
-                    .build());
 
     /**
      * Las cuatro cargas de tinta, para que viajen adentro del item cuando se
@@ -104,7 +67,6 @@ public final class ModItems {
                     .codec(Codec.INT)
                     .packetCodec(net.minecraft.network.codec.PacketCodecs.INTEGER)
                     .build());
-
 
     // maxCount(16): dos remeras con distinto corte/color/estampa tienen
     // distintos componentes, así que Minecraft nunca las apila entre sí de
@@ -143,16 +105,6 @@ public final class ModItems {
                 // Gorras con visera (2026-10-25): foto en el frente de la copa, ver SombreroRenderer.
                 || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
                         && com.modamod.item.SombreroBrujaItem.ala(stack).esVisera());
-    }
-
-    private static ComponentType<Estampa> registrarEstampa(String nombre) {
-        return Registry.register(
-                Registries.DATA_COMPONENT_TYPE,
-                Identifier.of(Modamod.MOD_ID, nombre),
-                ComponentType.<Estampa>builder()
-                        .codec(Estampa.CODEC)
-                        .packetCodec(Estampa.PACKET_CODEC)
-                        .build());
     }
 
     /**

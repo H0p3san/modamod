@@ -2,7 +2,6 @@ package com.modamod.mixin;
 
 import com.modamod.sublimadora.BannerConImagen;
 import com.modamod.sublimadora.Estampa;
-import com.modamod.sublimadora.ModItems;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
@@ -41,19 +40,19 @@ public abstract class BannerBlockEntityMixin extends BlockEntity implements Bann
     /** El banner "de ítem" que dibuja el render del inventario y de la mano. */
     @Inject(method = "readFrom", at = @At("TAIL"))
     private void modamod$leerDelItem(ItemStack stack, DyeColor color, CallbackInfo ci) {
-        modamod$imagen = stack.get(ModItems.BANNER_ESTAMPA);
+        modamod$imagen = com.modamod.sublimadora.Estampas.frente(stack);
         modamod$capas = stack.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE, java.util.List.of());
     }
 
     @Inject(method = "readComponents", at = @At("TAIL"))
     private void modamod$leerComponentes(BlockEntity.ComponentsAccess componentes, CallbackInfo ci) {
-        modamod$imagen = componentes.get(ModItems.BANNER_ESTAMPA);
+        modamod$imagen = com.modamod.sublimadora.Estampas.frenteDe(componentes.get(com.modamod.sublimadora.Estampas.Tipo.COMPONENTE));
         modamod$capas = componentes.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE, java.util.List.of());
     }
 
     @Inject(method = "addComponents", at = @At("TAIL"))
     private void modamod$sumarComponentes(ComponentMap.Builder builder, CallbackInfo ci) {
-        if (modamod$imagen != null) builder.add(ModItems.BANNER_ESTAMPA, modamod$imagen);
+        if (modamod$imagen != null) builder.add(com.modamod.sublimadora.Estampas.Tipo.COMPONENTE, com.modamod.sublimadora.Estampas.soloFrente(modamod$imagen));
         if (!modamod$capas.isEmpty()) builder.add(com.modamod.item.ModamodComponents.CAPAS_TINTE, modamod$capas);
     }
 

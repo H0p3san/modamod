@@ -1,7 +1,6 @@
 package com.modamod.mixin;
 
 import com.modamod.sublimadora.BannerConImagen;
-import com.modamod.sublimadora.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BannerBlockEntity;
@@ -30,7 +29,7 @@ public abstract class BannerDropsMixin {
         if (c.modamod$imagen() == null && c.modamod$capas().isEmpty()) return;
         for (ItemStack s : cir.getReturnValue()) {
             if (!(s.getItem() instanceof BannerItem)) continue;
-            if (c.modamod$imagen() != null) s.set(ModItems.BANNER_ESTAMPA, c.modamod$imagen());
+            if (c.modamod$imagen() != null) s.set(com.modamod.sublimadora.Estampas.Tipo.COMPONENTE, com.modamod.sublimadora.Estampas.soloFrente(c.modamod$imagen()));
             // El tinte (2026-10-24) también.
             if (!c.modamod$capas().isEmpty()) s.set(com.modamod.item.ModamodComponents.CAPAS_TINTE, c.modamod$capas());
         }

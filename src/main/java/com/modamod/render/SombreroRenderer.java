@@ -111,7 +111,7 @@ public final class SombreroRenderer {
         // Gorras con foto de la Sublimadora en el frente de la copa (2026-10-25), a 16x encima del tinte.
         if (SombreroBrujaItem.ala(sombrero).esVisera()) {
             Identifier foto = com.modamod.sublimadora.BannerHD.foto(com.modamod.sublimadora.BannerHD.Forma.GORRA,
-                    sombrero.get(com.modamod.sublimadora.ModItems.ESTAMPA_FRENTE));
+                    com.modamod.sublimadora.Estampas.frente(sombrero));
             if (foto != null) {
                 VertexConsumer vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(foto));
                 for (Armada a : armar(sombrero)) {

@@ -53,7 +53,7 @@ public final class CaraRenderer {
                 stack.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.of()), false);
         CapuchaArchivo.cara(item.modelo, tela, cabeza, matrices, vcp, luz);
         Identifier foto = com.modamod.sublimadora.BannerHD.foto(com.modamod.sublimadora.BannerHD.Forma.CARA,
-                stack.get(com.modamod.sublimadora.ModItems.ESTAMPA_FRENTE));
+                com.modamod.sublimadora.Estampas.frente(stack));
         if (foto != null) CapuchaArchivo.cara(item.modelo, foto, cabeza, matrices, vcp, luz);
     }
 }

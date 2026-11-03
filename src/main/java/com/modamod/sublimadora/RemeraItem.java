@@ -1,6 +1,5 @@
 package com.modamod.sublimadora;
 
-import net.minecraft.component.ComponentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -9,7 +8,6 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.UUID;
 
 public class RemeraItem extends Item {
 
@@ -17,29 +15,10 @@ public class RemeraItem extends Item {
         super(settings);
     }
 
-    public static ComponentType<Estampa> componente(Estampa.Cara cara) {
-        return cara == Estampa.Cara.FRENTE ? ModItems.ESTAMPA_FRENTE : ModItems.ESTAMPA_ESPALDA;
-    }
-
-    /**
-     * La estampa de esa cara, o null.
-     *
-     * El frente cae al componente viejo si no encuentra el nuevo: las remeras
-     * de antes guardaban un UUID pelado y siempre iban centradas adelante.
-     */
+    /** La estampa de esa cara, o null. Un banner lleva solo la del frente. */
     @Nullable
     public static Estampa estampaDe(ItemStack stack, Estampa.Cara cara) {
-        // Un banner (2026-10-06, "sublimadoras a banners") lleva una sola foto, la del Frente.
-        if (stack.getItem() instanceof net.minecraft.item.BannerItem) {
-            return cara == Estampa.Cara.FRENTE ? stack.get(ModItems.BANNER_ESTAMPA) : null;
-        }
-        Estampa estampa = stack.get(componente(cara));
-        if (estampa != null) return estampa;
-        if (cara == Estampa.Cara.FRENTE) {
-            UUID viejo = stack.get(ModItems.PICTURE_ID);
-            if (viejo != null) return Estampa.centrada(viejo);
-        }
-        return null;
+        return Estampas.de(stack).de(cara);
     }
 
     /** El corte de la prenda. Sin componente, la remera comun. */
@@ -131,8 +110,7 @@ public class RemeraItem extends Item {
 
     /** Las capas con máscara de la prenda (2026-10-02), en orden; vacía si no tiene. */
     public static List<CapaEstampa> capasDe(ItemStack stack) {
-        List<CapaEstampa> capas = stack.get(ModItems.ESTAMPAS_CAPAS);
-        return capas == null ? List.of() : capas;
+        return Estampas.de(stack).capas();
     }
 
     /** Copia la prenda con estas capas con máscara (hasta {@link CapaEstampa#MAXIMO}); vacía las saca. */
@@ -141,19 +119,16 @@ public class RemeraItem extends Item {
         // El banner, la máscara y el barbijo (2026-10-24) no llevan capas con máscara.
         if (base.getItem() instanceof net.minecraft.item.BannerItem || base.getItem() instanceof com.modamod.item.CaraItem
                 || com.modamod.prenda.Prendas.es(base, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) return out;
-        if (capas.isEmpty()) out.remove(ModItems.ESTAMPAS_CAPAS);
-        else out.set(ModItems.ESTAMPAS_CAPAS, List.copyOf(capas.subList(0, Math.min(CapaEstampa.MAXIMO, capas.size()))));
+        Estampas.guardar(out, Estampas.de(out).conCapas(capas));
         return out;
     }
 
     /** Copia la remera con la estampa aplicada en esa cara. */
     public static ItemStack estampar(ItemStack base, Estampa.Cara cara, Estampa estampa) {
         ItemStack out = base.copyWithCount(1);
-        if (base.getItem() instanceof net.minecraft.item.BannerItem) {
-            if (cara == Estampa.Cara.FRENTE) out.set(ModItems.BANNER_ESTAMPA, estampa);   // 2026-10-06: sin espalda ni simetría
-            return out;
-        }
-        out.set(componente(cara), estampa);
+        // Un banner (2026-10-06) lleva solo el frente, sin espalda ni simetría.
+        if (base.getItem() instanceof net.minecraft.item.BannerItem && cara != Estampa.Cara.FRENTE) return out;
+        Estampas.guardar(out, Estampas.de(out).con(cara, estampa));
         return out;
     }
 
