@@ -1,5 +1,6 @@
 package com.modamod.tinturas;
 
+import com.modamod.maquina.MaquinaBlockEntity;
 import com.modamod.item.ClothingPatternItem;
 import com.modamod.item.TamanoPatron;
 import com.modamod.region.Lado;
@@ -81,7 +82,7 @@ import java.util.Map;
  * ver la nota de migración en {@code ClothingLoomScreenHandler
  * .reformarRemera}, que ya anticipaba esta estación.
  */
-public class TinturasBlockEntity extends BlockEntity
+public class TinturasBlockEntity extends MaquinaBlockEntity
         implements ExtendedScreenHandlerFactory<BlockPos>, GeoBlockEntity, SidedInventory, com.modamod.util.ConSalida,
         com.modamod.util.MaquinaCreativa.Cargable , com.modamod.util.LimiteEntrada {
 
@@ -2056,7 +2057,7 @@ public class TinturasBlockEntity extends BlockEntity
                 ItemStack copia = stack.copyWithCount(1);
                 Categoria catCadena = categoriaDe(copia);
                 if (catCadena != null) categoria = catCadena;   // la GUI sigue a la prenda que entra (2026-10-04)
-                if ((com.modamod.util.InventarioUtil.enCadena && linea) && estado == Estado.REPOSO
+                if ((com.modamod.util.InventarioUtil.enCadena && linea()) && estado == Estado.REPOSO
                         && prendaEntrada.isEmpty() && salida.isEmpty()
                         && (catCadena == null || capasDe(catCadena, false).isEmpty())) {
                     // Llegó por la cadena y no hay nada que teñir: pasa de
@@ -2130,57 +2131,14 @@ public class TinturasBlockEntity extends BlockEntity
         sincronizar();
     }
 
-    // ── SidedInventory: prenda por el costado IZQUIERDO, tinta por ATRÁS
-    // (2026-09-20). Desde 2026-10-15 el modelo ya no está invertido y esto es igual que en Modeladora/Sublimadora.
-    private Direction ladoAtras() {
-        return getCachedState().get(TinturasBlock.FACING).getOpposite();
-    }
-
-    private Direction ladoIzquierdo() {
-        return getCachedState().get(TinturasBlock.FACING).getOpposite().rotateYCounterclockwise();
-    }
-
-    @Override
-    public Direction ladoSalida() { return ladoDerecho(); }
-
-    /** El lado opuesto al de carga — hacia ahí se empuja la prenda ya teñida. */
-    private Direction ladoDerecho() {
-        return ladoIzquierdo().getOpposite();
-    }
-
     /**
-     * Empuja la prenda de {@link #SLOT_SALIDA} hacia la derecha — a
-     * pedido (2026-09-20, "las 3 maquinas hacen como el crafter..."),
-     * mismo mecanismo que {@code SublimadoraBlockEntity#empujarSalida}.
-     * Se llama UNA vez, justo al terminar de teñir (no hay tick propio en
-     * esta máquina) — si no hay dónde depositarla, se queda en
-     * {@link #salida} para sacarla a mano o esperar el próximo intento.
+     * Empuja la prenda teñida al inventario de la derecha, como un Crafter. Se llama una vez, justo al terminar de teñir
+     * (no hay tick propio); si no hay dónde dejarla, queda en {@link #salida} para sacarla a mano.
      */
-    /**
-     * Línea de producción (2026-10-08, "un boton activador de la linea de produccion en la gui para que se los pueda
-     * usar individuales por default sin que se pasen los items"): apagada de fábrica, la máquina no empuja su salida
-     * al vecino ni saltea las prendas que le llegan por la cadena; la prenda queda para sacarla a mano.
-     */
-    private boolean linea;
-
-    public boolean linea() { return linea; }
-
-    public static final int BTN_LINEA = 900;
-
-    /** Alterna la línea de producción y avisa al cliente. */
-    public void alternarLinea() {
-        linea = !linea;
-        sincronizar();
-    }
-
     private void empujarSalida() {
-        if (salida.isEmpty() || world == null || !linea) return;
-        Direction derecha = ladoDerecho();
-        ItemStack sobrante = com.modamod.util.InventarioUtil.empujarA(
-                world, pos.offset(derecha), derecha.getOpposite(), salida);
-        if (sobrante.getCount() != salida.getCount()) {
-            salida = sobrante;
-        }
+        if (salida.isEmpty()) return;
+        ItemStack sobrante = empujarALaDerecha(salida);
+        if (sobrante.getCount() != salida.getCount()) salida = sobrante;
         sincronizar();
     }
 
@@ -2234,13 +2192,6 @@ public class TinturasBlockEntity extends BlockEntity
         return player.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
     }
 
-    private void sincronizar() {
-        markDirty();
-        if (world != null && !world.isClient) {
-            world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-        }
-    }
-
     /**
      * Vista → autoridad para la tinta (2026-09-20) — mismo mecanismo que
      * {@code SublimadoraBlockEntity#markDirty}: si un hopper mutó
@@ -2269,7 +2220,6 @@ public class TinturasBlockEntity extends BlockEntity
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
         com.modamod.util.DisenosMaquina.escribir(nbt, blancoDiseno, registries);
-        nbt.putBoolean("linea", linea);
         net.minecraft.nbt.NbtList listaBolsa = new net.minecraft.nbt.NbtList();
         for (var e : bolsaPatrones.entrySet()) {
             NbtCompound c = new NbtCompound();
@@ -2345,7 +2295,6 @@ public class TinturasBlockEntity extends BlockEntity
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.readNbt(nbt, registries);
         com.modamod.util.DisenosMaquina.leer(nbt, blancoDiseno, registries);
-        linea = nbt.getBoolean("linea");
         bolsaPatrones.clear();
         net.minecraft.nbt.NbtList listaBolsa = nbt.getList("bolsa_patrones", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < listaBolsa.size(); i++) {
@@ -2451,13 +2400,4 @@ public class TinturasBlockEntity extends BlockEntity
         nbt.remove("Cargas");
     }
 
-    @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
-        return createNbt(registries);
-    }
-
-    @Override
-    public net.minecraft.network.packet.Packet<net.minecraft.network.listener.ClientPlayPacketListener> toUpdatePacket() {
-        return net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket.create(this);
-    }
 }

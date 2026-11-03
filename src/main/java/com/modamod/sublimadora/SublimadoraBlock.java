@@ -1,13 +1,13 @@
 package com.modamod.sublimadora;
 
 import net.minecraft.block.BlockState;
+import com.modamod.maquina.MaquinaBlock;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
@@ -15,16 +15,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,18 +28,14 @@ import org.jetbrains.annotations.Nullable;
  * El render lo hace GeckoLib desde el block entity, asi que para el
  * renderer de mundo el bloque es INVISIBLE (asi lo pide la wiki de GeckoLib).
  */
-public class SublimadoraBlock extends BlockWithEntity {
+public class SublimadoraBlock extends MaquinaBlock {
     public static final MapCodec<SublimadoraBlock> CODEC = createCodec(SublimadoraBlock::new);
 
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final BooleanProperty OPEN = Properties.OPEN;
-
-    private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 16, 16);
 
     public SublimadoraBlock(Settings settings) {
         super(settings);
-        setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(OPEN, false)
-                .with(com.modamod.util.LuzMaquina.LIT, false));
+        setDefaultState(getDefaultState().with(OPEN, false));
     }
 
     @Override
@@ -54,17 +45,8 @@ public class SublimadoraBlock extends BlockWithEntity {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, OPEN, com.modamod.util.LuzMaquina.LIT);
-    }
-
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
-    }
-
-    @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext ctx) {
-        return SHAPE;
+        super.appendProperties(builder);
+        builder.add(OPEN);
     }
 
     /**
@@ -75,17 +57,9 @@ public class SublimadoraBlock extends BlockWithEntity {
      * interaccion — por eso no matcheaba y terminaba cerrando la tapa.
      */
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world,
+    protected ItemActionResult usarConItem(ItemStack stack, BlockState state, World world,
                                              BlockPos pos, PlayerEntity player, Hand hand,
                                              BlockHitResult hit) {
-        // Botón de la línea de producción en el frente (2026-10-08): va primero, con o sin ítem en la mano.
-        if (com.modamod.util.BotonLinea.golpea(state.get(FACING), pos, hit)) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof SublimadoraBlockEntity botonLinea) {
-                botonLinea.alternarLinea();
-                com.modamod.util.BotonLinea.avisar(world, pos, player, botonLinea.linea());
-            }
-            return ItemActionResult.SUCCESS;
-        }
         // Abajo (cualquier costado) se abre la pantalla aunque tengas algo en la mano (2026-10-08).
         if (queControl(state, pos, hit) != 0) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (world.isClient) return ItemActionResult.SUCCESS;
@@ -132,16 +106,8 @@ public class SublimadoraBlock extends BlockWithEntity {
 
     /** Interaccion con la MANO VACIA: retirar, o abrir y cerrar la tapa. */
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
+    protected ActionResult usar(BlockState state, World world, BlockPos pos, PlayerEntity player,
                                  BlockHitResult hit) {
-        // Botón de la línea de producción en el frente (2026-10-08): va primero, con o sin ítem en la mano.
-        if (com.modamod.util.BotonLinea.golpea(state.get(FACING), pos, hit)) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof SublimadoraBlockEntity botonLinea) {
-                botonLinea.alternarLinea();
-                com.modamod.util.BotonLinea.avisar(world, pos, player, botonLinea.linea());
-            }
-            return ActionResult.SUCCESS;
-        }
         if (world.isClient) return ActionResult.SUCCESS;
         if (!(world.getBlockEntity(pos) instanceof SublimadoraBlockEntity be)) return ActionResult.PASS;
 
@@ -332,45 +298,6 @@ public class SublimadoraBlock extends BlockWithEntity {
             return null;   // cambio de version del mod: mejor sin estampa que crashear
         }
     }
-    /** Cae con todo adentro, como una shulker (ver {@link com.modamod.util.DropMaquina}). */
-    @Override
-    protected java.util.List<ItemStack> getDroppedStacks(BlockState state,
-            net.minecraft.loot.context.LootContextParameterSet.Builder builder) {
-        return com.modamod.util.DropMaquina.drops(this, builder);
-    }
-
-    @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        com.modamod.util.DropMaquina.enCreativo(world, pos, player, this,
-                !(world.getBlockEntity(pos) instanceof SublimadoraBlockEntity be) || be.isEmpty());
-        return super.onBreak(world, pos, state, player);
-    }
-
-    /** GeckoLib dibuja el bloque completo desde el block entity renderer. */
-    @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.INVISIBLE;
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(FACING, rotation.rotate(state.get(FACING)));
-    }
-
-    @Override
-    protected BlockState mirror(BlockState state, BlockMirror mirror) {
-        return state.rotate(mirror.getRotation(state.get(FACING)));
-    }
-
-    @Nullable
-    /** Sublimadora creativa: viene con todas las máscaras en su bolsa (2026-10-14, "la sublimadora creativa no trae las mascaras"). */
-    @Override
-    public void onPlaced(net.minecraft.world.World world, BlockPos pos, BlockState state,
-                         @org.jetbrains.annotations.Nullable net.minecraft.entity.LivingEntity placer, ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        com.modamod.util.MaquinaCreativa.alColocar(world, pos, state, itemStack);
-    }
-
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new SublimadoraBlockEntity(pos, state);

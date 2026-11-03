@@ -1,5 +1,6 @@
 package com.modamod.telar;
 
+import com.modamod.maquina.MaquinaBlockEntity;
 import com.modamod.util.InventarioUtil;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
@@ -43,7 +44,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * en el orden fijo del enum, saltando la que no alcance con los insumos; el lote es el total de prendas (0 = sin límite)
  * y la máquina se detiene al terminarlo.
  */
-public class TelarBlockEntity extends BlockEntity implements SidedInventory, com.modamod.util.ConSalida,
+public class TelarBlockEntity extends MaquinaBlockEntity implements SidedInventory, com.modamod.util.ConSalida,
         ExtendedScreenHandlerFactory<BlockPos>, GeoBlockEntity {
 
     public static final int SLOT_LANA = 0, SLOT_HILO = 1, SLOT_SALIDA = 2, SLOT_CUERO = 3, TAMANO = 4;
@@ -294,37 +295,10 @@ public class TelarBlockEntity extends BlockEntity implements SidedInventory, com
 
     // ── la cadena (igual que la Modeladora y la Estilista) ──
 
-    private Direction ladoIzquierdo() {
-        return getCachedState().get(TelarBlock.FACING).getOpposite().rotateYCounterclockwise();
-    }
-
-    private Direction ladoDerecho() { return ladoIzquierdo().getOpposite(); }
-
-    @Override
-    public Direction ladoSalida() { return ladoDerecho(); }
-
-    /**
-     * Línea de producción (2026-10-08, "un boton activador de la linea de produccion en la gui para que se los pueda
-     * usar individuales por default sin que se pasen los items"): apagada de fábrica, la máquina no empuja su salida
-     * al vecino ni saltea las prendas que le llegan por la cadena; la prenda queda para sacarla a mano.
-     */
-    private boolean linea;
-
-    public boolean linea() { return linea; }
-
-    public static final int BTN_LINEA = 900;
-
-    /** Alterna la línea de producción y avisa al cliente. */
-    public void alternarLinea() {
-        linea = !linea;
-        sincronizar();
-    }
-
+    /** Empuja el resultado al inventario de la derecha, como un Crafter; lo que no entra queda en la salida. */
     private void empujarSalida(World world, BlockPos pos) {
         ItemStack actual = items.get(SLOT_SALIDA);
-        if (actual.isEmpty() || !linea) return;
-        Direction derecha = ladoDerecho();
-        ItemStack sobrante = InventarioUtil.empujarA(world, pos.offset(derecha), derecha.getOpposite(), actual);
+        ItemStack sobrante = empujarALaDerecha(actual);
         if (sobrante.getCount() != actual.getCount()) {
             items.set(SLOT_SALIDA, sobrante);
             markDirty();
@@ -416,15 +390,9 @@ public class TelarBlockEntity extends BlockEntity implements SidedInventory, com
 
     // ── NBT y sincronización ──
 
-    private void sincronizar() {
-        markDirty();
-        if (world != null && !world.isClient) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-    }
-
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
-        nbt.putBoolean("linea", linea);
         Inventories.writeNbt(nbt, items, registries);
         nbt.putInt("estado", estado.ordinal());
         nbt.putInt("progreso", progreso);
@@ -439,7 +407,6 @@ public class TelarBlockEntity extends BlockEntity implements SidedInventory, com
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.readNbt(nbt, registries);
-        linea = nbt.getBoolean("linea");
         // Vaciar antes de leer (2026-10-24, "les queda la figura de la prenda arriba incluso despues de haberla sacado"):
         // readNbt solo pisa los casilleros que vienen llenos, así que en el cliente la salida ya retirada seguía puesta.
         items.clear();
@@ -457,11 +424,4 @@ public class TelarBlockEntity extends BlockEntity implements SidedInventory, com
         colorEnCurso = nbt.contains("color_en_curso") ? nbt.getInt("color_en_curso") : 0xFFFFFF;
     }
 
-    @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) { return createNbt(registries); }
-
-    @Override
-    public net.minecraft.network.packet.Packet<net.minecraft.network.listener.ClientPlayPacketListener> toUpdatePacket() {
-        return net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket.create(this);
-    }
 }

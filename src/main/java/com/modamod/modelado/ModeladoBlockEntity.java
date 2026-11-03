@@ -1,5 +1,6 @@
 package com.modamod.modelado;
 
+import com.modamod.maquina.MaquinaBlockEntity;
 import com.modamod.item.Botamanga;
 import com.modamod.item.ClothingPatternItem;
 import com.modamod.item.PantalonTiro;
@@ -60,7 +61,7 @@ import java.util.Map;
  * categoría actual se ve/usa. {@link #PRENDA} (1, física) y {@link #SALIDA}
  * (1, resultado) son genéricos, no por categoría.
  */
-public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, com.modamod.util.ConSalida,
+public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInventory, com.modamod.util.ConSalida,
         net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory<BlockPos>, GeoBlockEntity,
         com.modamod.util.MaquinaCreativa.Cargable , com.modamod.util.LimiteEntrada {
 
@@ -784,9 +785,7 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
     public boolean onButtonClick(int id) {
         LOG.info("onButtonClick(id={}) side={}", id, world != null && world.isClient ? "CLIENTE" : "SERVIDOR");
         if (id == BTN_LINEA) {
-            linea = !linea;
-            markDirty();
-            if (world != null) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+            alternarLinea();
             return true;
         }
         if (encendida && id != BTN_ENCENDER) return false; // config bloqueada mientras produce
@@ -1978,7 +1977,7 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
                 boolean prendaOk = !be.items.get(PRENDA).isEmpty();
                 boolean salidaOk = be.items.get(SALIDA).isEmpty();
                 boolean fijadaOk = be.fijadasPorCategoria.values().stream().anyMatch(l -> !l.isEmpty());
-                if (be.linea && be.guiAbiertas == 0 && !be.encendida
+                if (be.linea() && be.guiAbiertas == 0 && !be.encendida
                         && prendaOk && salidaOk && fijadaOk && be.tijeraOk()) {
                     be.encenderAlCerrar();
                 }
@@ -2116,25 +2115,6 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
         if (world != null) world.playSound(null, pos, evento, SoundCategory.BLOCKS, volumen, tono);
     }
 
-    /**
-     * {@code markDirty()} sola NO manda el paquete de sync al cliente
-     * (solo marca el chunk para guardar) — bug real (2026-09-22, "no
-     * prende los leds"/"no anima la guillotina"): las 3 transiciones de
-     * {@link #tick} solo llamaban {@code markDirty()}, así que el
-     * cliente nunca se enteraba del cambio de {@code estado} fuera de
-     * cuando la GUI estaba abierta (el {@code PropertyDelegate} la
-     * sincroniza aparte) — ni el LED ({@link ModeladoGeoModel#coloresLed})
-     * ni el controlador de animación de guillotina/aguja (que leen
-     * {@code estado()} del lado cliente) veían nunca PROCESANDO. Mismo
-     * mecanismo que {@code TinturasBlockEntity#sincronizar}.
-     */
-    private void sincronizar() {
-        markDirty();
-        if (world != null && !world.isClient) {
-            world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-        }
-    }
-
     // ── Inventory ────────────────────────────────────────────────────
 
     @Override
@@ -2194,7 +2174,7 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
             if (!stack.isEmpty() && pinCombo[pin] != null && chinchetaPin(pin)) sincronizar();
         }
         if (stack.getCount() > getMaxCountPerStack()) stack.setCount(getMaxCountPerStack());
-        if (slot == PRENDA && !stack.isEmpty() && (com.modamod.util.InventarioUtil.enCadena && linea)
+        if (slot == PRENDA && !stack.isEmpty() && (com.modamod.util.InventarioUtil.enCadena && linea())
                 && guiAbiertas == 0 && !hayFijadas() && estado == Estado.REPOSO
                 && !encendida && items.get(SALIDA).isEmpty()) {
             // Llegó por la cadena y no hay nada que cortar: la saltea
@@ -2277,52 +2257,10 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
         return esMoldeCompartido(stack);
     }
 
-    // ── SidedInventory: la prenda física por ARRIBA (2026-09-21, "que las
-    // tres carguen por arriba" — reemplaza el costado izquierdo de
-    // 2026-09-20). Nada más se expone: ni almacén ni activo ni salida son
-    // alcanzables por hopper todavía (a propósito, fuera de alcance de
-    // este pedido).
-    private net.minecraft.util.math.Direction ladoIzquierdo() {
-        return getCachedState().get(ModeladoBlock.FACING).getOpposite().rotateYCounterclockwise();
-    }
-
-    @Override
-    public net.minecraft.util.math.Direction ladoSalida() { return ladoDerecho(); }
-
-    /** El lado opuesto al de carga — hacia ahí se empuja el resultado (ver {@link #tick}, caso LISTO). */
-    private net.minecraft.util.math.Direction ladoDerecho() {
-        return ladoIzquierdo().getOpposite();
-    }
-
-    /**
-     * Empuja el resultado hacia la derecha — a pedido (2026-09-20, "las 3
-     * maquinas hacen como el crafter..."), mismo mecanismo que
-     * {@code SublimadoraBlockEntity#empujarSalida}.
-     */
-    /**
-     * Línea de producción (2026-10-08, "un boton activador de la linea de produccion en la gui para que se los pueda
-     * usar individuales por default sin que se pasen los items"): apagada de fábrica, la máquina no empuja su salida
-     * al vecino ni saltea las prendas que le llegan por la cadena; la prenda queda para sacarla a mano.
-     */
-    private boolean linea;
-
-    public boolean linea() { return linea; }
-
-    /** Alterna la línea de producción (botón del frente, 2026-10-08): igual que el botón de la pantalla. */
-    public void alternarLinea() {
-        linea = !linea;
-        markDirty();
-        if (world != null) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-    }
-
-    public static final int BTN_LINEA = 900;
-
+    /** Empuja el resultado al inventario de la derecha, como un Crafter; lo que no entra queda en la salida. */
     private void empujarSalida(net.minecraft.world.World world, BlockPos pos) {
         ItemStack actual = items.get(SALIDA);
-        if (actual.isEmpty() || !linea) return;
-        net.minecraft.util.math.Direction derecha = ladoDerecho();
-        ItemStack sobrante = com.modamod.util.InventarioUtil.empujarA(
-                world, pos.offset(derecha), derecha.getOpposite(), actual);
+        ItemStack sobrante = empujarALaDerecha(actual);
         if (sobrante.getCount() != actual.getCount()) {
             items.set(SALIDA, sobrante);
             markDirty();
@@ -2422,7 +2360,6 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
         ladoBorrador = Lado.values()[nbt.getInt("lado_borrador")];
         categoria = Categoria.values()[nbt.getInt("categoria")];
         remeraSimetria = !nbt.contains("remera_simetria") || nbt.getBoolean("remera_simetria");
-        linea = nbt.getBoolean("linea");
         cajones.clear();
         if (nbt.contains("cajones_bits")) {
             cajones.or(java.util.BitSet.valueOf(nbt.getLongArray("cajones_bits")));
@@ -2525,7 +2462,6 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
         nbt.putInt("lado_borrador", ladoBorrador.ordinal());
         nbt.putInt("categoria", categoria.ordinal());
         nbt.putBoolean("remera_simetria", remeraSimetria);
-        nbt.putBoolean("linea", linea);
         nbt.putLongArray("cajones_bits", cajones.toLongArray());
 
         for (Categoria cat : Categoria.values()) {
@@ -2575,22 +2511,6 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
     @Override
     public Text getDisplayName() {
         return Text.translatable("block.modamod.modelado");
-    }
-
-    /**
-     * Sin esto la lista de fijadas (y el resto del NBT) nunca llega al
-     * cliente en vivo — el PropertyDelegate solo cubre los campos escalares
-     * del borrador, no una lista de tamaño variable. Mismo mecanismo que ya
-     * usa {@code SublimadoraBlockEntity} para sus barras de tinta.
-     */
-    @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
-        return createNbt(registries);
-    }
-
-    @Override
-    public net.minecraft.network.packet.Packet<net.minecraft.network.listener.ClientPlayPacketListener> toUpdatePacket() {
-        return net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket.create(this);
     }
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {

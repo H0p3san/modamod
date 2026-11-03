@@ -1,5 +1,6 @@
 package com.modamod.sublimadora;
 
+import com.modamod.maquina.MaquinaBlockEntity;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -37,7 +38,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * sino escala de hueso aplicada en SublimadoraGeoModel#setCustomAnimations.
  * Aca solo vive el dato: cuanta tinta queda, y su suavizado por tick.
  */
-public class SublimadoraBlockEntity extends BlockEntity
+public class SublimadoraBlockEntity extends MaquinaBlockEntity
         implements GeoBlockEntity, ExtendedScreenHandlerFactory<BlockPos>, SidedInventory, com.modamod.util.ConSalida,
         com.modamod.util.MaquinaCreativa.Cargable , com.modamod.util.LimiteEntrada {
 
@@ -929,7 +930,7 @@ public class SublimadoraBlockEntity extends BlockEntity
             }
             case SLOT_REMERA -> {
                 ItemStack nueva = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
-                if (!nueva.isEmpty() && (com.modamod.util.InventarioUtil.enCadena && linea) && estado == Estado.REPOSO
+                if (!nueva.isEmpty() && (com.modamod.util.InventarioUtil.enCadena && linea()) && estado == Estado.REPOSO
                         && remera.isEmpty() && salida.isEmpty() && !hayFijadas() && capas.isEmpty()) {
                     // Llegó por la cadena y no hay nada que estampar: pasa de
                     // largo (2026-10-04, "me parece perfecto que saltee").
@@ -1067,58 +1068,9 @@ public class SublimadoraBlockEntity extends BlockEntity
         return stack.isOf(SublimadoraBlock.TINTES[canal]) && cargas[canal] < CARGA_MAXIMA;
     }
 
-    // ── SidedInventory: remera por ARRIBA (2026-09-21, "que las tres
-    // carguen por arriba" — reemplaza el costado izquierdo de
-    // 2026-09-20), papel/tinta siguen por ATRÁS, relativo a FACING como
-    // si un jugador estuviera parado frente al panel mirándolo. Las fotos
-    // (0-1) no aparecen en ningún lado: siguen siendo solo-GUI a propósito.
-    private Direction ladoIzquierdo() {
-        return getCachedState().get(SublimadoraBlock.FACING).getOpposite().rotateYCounterclockwise();
-    }
-
-    private Direction ladoAtras() {
-        return getCachedState().get(SublimadoraBlock.FACING).getOpposite();
-    }
-
-    @Override
-    public Direction ladoSalida() { return ladoDerecho(); }
-
-    /** El lado opuesto al de carga — hacia ahí se empuja el resultado (ver {@link #empujarSalida}). */
-    private Direction ladoDerecho() {
-        return ladoIzquierdo().getOpposite();
-    }
-
-    /**
-     * Empuja la remera lista hacia la derecha — a pedido (2026-09-20,
-     * "las 3 maquinas hacen como el crafter y depositan el resultado en
-     * el bloque siguiente si es una de las 3 maquinas o si es
-     * contenedor"): mismo mecanismo que un Crafter vanilla, ver
-     * {@link com.modamod.util.InventarioUtil#empujarA}. Si no hay
-     * nada del otro lado (o está lleno) la remera simplemente se queda
-     * en {@code salida}, recuperable como siempre.
-     */
-    /**
-     * Línea de producción (2026-10-08, "un boton activador de la linea de produccion en la gui para que se los pueda
-     * usar individuales por default sin que se pasen los items"): apagada de fábrica, la máquina no empuja su salida
-     * al vecino ni saltea las prendas que le llegan por la cadena; la prenda queda para sacarla a mano.
-     */
-    private boolean linea;
-
-    public boolean linea() { return linea; }
-
-    public static final int BTN_LINEA = 900;
-
-    /** Alterna la línea de producción y avisa al cliente. */
-    public void alternarLinea() {
-        linea = !linea;
-        sincronizar();
-    }
-
+    /** Empuja la remera lista al inventario de la derecha, como un Crafter; lo que no entra queda en la salida. */
     private void empujarSalida(net.minecraft.world.World world, BlockPos pos) {
-        if (salida.isEmpty() || !linea) return;
-        Direction derecha = ladoDerecho();
-        ItemStack sobrante = com.modamod.util.InventarioUtil.empujarA(
-                world, pos.offset(derecha), derecha.getOpposite(), salida);
+        ItemStack sobrante = empujarALaDerecha(salida);
         if (sobrante.getCount() != salida.getCount()) {
             salida = sobrante;
             if (salida.isEmpty()) estado = Estado.REPOSO;
@@ -1990,13 +1942,6 @@ public class SublimadoraBlockEntity extends BlockEntity
         return null;
     }
 
-    private void sincronizar() {
-        markDirty();
-        if (world != null && !world.isClient) {
-            world.updateListeners(pos, getCachedState(), getCachedState(), 3);
-        }
-    }
-
     /** Nivel a dibujar este frame, interpolado entre ticks. */
     public float getNivelInterpolado(int canal, float parcial) {
         return MathHelper.lerp(parcial, anterior[canal], mostrado[canal]);
@@ -2027,7 +1972,6 @@ public class SublimadoraBlockEntity extends BlockEntity
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.writeNbt(nbt, registries);
         com.modamod.util.DisenosMaquina.escribir(nbt, blancoDiseno, registries);
-        nbt.putBoolean("linea", linea);
         for (int i = 0; i < 4; i++) {
             nbt.putFloat(CLAVES[i], tinta[i]);
             nbt.putInt(CLAVES[i] + "Cargas", cargas[i]);
@@ -2110,7 +2054,6 @@ public class SublimadoraBlockEntity extends BlockEntity
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         super.readNbt(nbt, registries);
         com.modamod.util.DisenosMaquina.leer(nbt, blancoDiseno, registries);
-        linea = nbt.getBoolean("linea");
         for (int i = 0; i < 4; i++) {
             if (nbt.contains(CLAVES[i] + "Cargas")) {
                 cargas[i] = nbt.getInt(CLAVES[i] + "Cargas");
@@ -2264,14 +2207,4 @@ public class SublimadoraBlockEntity extends BlockEntity
         nbt.remove("PapelCargado");
     }
 
-    /** El cliente necesita los niveles para dibujar el display. */
-    @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
-        return createNbt(registries);
-    }
-
-    @Override
-    public net.minecraft.network.packet.Packet<net.minecraft.network.listener.ClientPlayPacketListener> toUpdatePacket() {
-        return net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket.create(this);
-    }
 }

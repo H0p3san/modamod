@@ -1,32 +1,19 @@
 package com.modamod.modelado;
 
+import com.modamod.maquina.MaquinaBlock;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,51 +21,16 @@ import org.jetbrains.annotations.Nullable;
  * con una prenda en mano aplica el molde de corte activo instantáneamente;
  * mano vacía abre la GUI de armado. Ver docs/archivo/MAQUINAS.md sección 3.
  */
-public class ModeladoBlock extends BlockWithEntity {
+public class ModeladoBlock extends MaquinaBlock {
 
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     private static final MapCodec<ModeladoBlock> CODEC = createCodec(ModeladoBlock::new);
-    private static final VoxelShape FORMA = VoxelShapes.cuboid(0, 0, 0, 1, 1, 1);
 
     public ModeladoBlock(Settings settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH)
-                .with(com.modamod.util.LuzMaquina.LIT, false));
     }
 
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() { return CODEC; }
-
-    /** Máquina creativa (2026-10-01): viene cargada al colocarla — ver {@code util.MaquinaCreativa}. */
-    @Override
-    public void onPlaced(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos, BlockState state,
-                         @org.jetbrains.annotations.Nullable net.minecraft.entity.LivingEntity placer,
-                         net.minecraft.item.ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        com.modamod.util.MaquinaCreativa.alColocar(world, pos, state, itemStack);
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, com.modamod.util.LuzMaquina.LIT);
-    }
-
-    @Override
-    @Nullable
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
-    }
-
-    @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return FORMA;
-    }
-
-    /** GeckoLib dibuja el bloque completo desde el block entity renderer. */
-    @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.INVISIBLE;
-    }
 
     @Override
     @Nullable
@@ -103,16 +55,8 @@ public class ModeladoBlock extends BlockWithEntity {
      * apagada — {@code isValid} ya lo exige).
      */
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
+    protected ItemActionResult usarConItem(ItemStack stack, BlockState state, World world, BlockPos pos,
                                               PlayerEntity player, Hand hand, net.minecraft.util.hit.BlockHitResult hit) {
-        // Botón de la línea de producción en el frente (2026-10-08): va primero, con o sin ítem en la mano.
-        if (com.modamod.util.BotonLinea.golpea(state.get(FACING), pos, hit)) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof ModeladoBlockEntity botonLinea) {
-                botonLinea.alternarLinea();
-                com.modamod.util.BotonLinea.avisar(world, pos, player, botonLinea.linea());
-            }
-            return ItemActionResult.SUCCESS;
-        }
         if (!(world.getBlockEntity(pos) instanceof ModeladoBlockEntity be)) return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
         if (stack.isOf(net.minecraft.item.Items.SHEARS)) {
@@ -174,16 +118,8 @@ public class ModeladoBlock extends BlockWithEntity {
      * prendida APAGA (toggle); apagada abre la GUI.
      */
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player,
+    protected ActionResult usar(BlockState state, World world, BlockPos pos, PlayerEntity player,
                                   net.minecraft.util.hit.BlockHitResult hit) {
-        // Botón de la línea de producción en el frente (2026-10-08): va primero, con o sin ítem en la mano.
-        if (com.modamod.util.BotonLinea.golpea(state.get(FACING), pos, hit)) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof ModeladoBlockEntity botonLinea) {
-                botonLinea.alternarLinea();
-                com.modamod.util.BotonLinea.avisar(world, pos, player, botonLinea.linea());
-            }
-            return ActionResult.SUCCESS;
-        }
         if (world.isClient) return ActionResult.SUCCESS;
         if (!(world.getBlockEntity(pos) instanceof ModeladoBlockEntity be)) return ActionResult.PASS;
 
@@ -241,17 +177,4 @@ public class ModeladoBlock extends BlockWithEntity {
                 .formatted(net.minecraft.util.Formatting.RED), true);
     }
 
-    /** Cae con todo adentro, como una shulker (ver {@link com.modamod.util.DropMaquina}). */
-    @Override
-    protected java.util.List<ItemStack> getDroppedStacks(BlockState state,
-            net.minecraft.loot.context.LootContextParameterSet.Builder builder) {
-        return com.modamod.util.DropMaquina.drops(this, builder);
-    }
-
-    @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        com.modamod.util.DropMaquina.enCreativo(world, pos, player, this,
-                !(world.getBlockEntity(pos) instanceof ModeladoBlockEntity be) || be.isEmpty());
-        return super.onBreak(world, pos, state, player);
-    }
 }

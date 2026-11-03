@@ -1,24 +1,18 @@
 package com.modamod.tinturas;
 
+import com.modamod.maquina.MaquinaBlock;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -26,10 +20,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,73 +33,21 @@ import org.jetbrains.annotations.Nullable;
  * {@link TinturasBlockEntity#SLOT_SALIDA}, mismo mecanismo que
  * Modeladora/Sublimadora.
  */
-public class TinturasBlock extends BlockWithEntity {
+public class TinturasBlock extends MaquinaBlock {
 
-    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     private static final MapCodec<TinturasBlock> CODEC = createCodec(TinturasBlock::new);
-    private static final VoxelShape FORMA = VoxelShapes.cuboid(0, 0, 0, 1, 1, 1);
 
     public TinturasBlock(Settings settings) {
         super(settings);
-        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH)
-                .with(com.modamod.util.LuzMaquina.LIT, false));
     }
 
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() { return CODEC; }
 
-    /** Máquina creativa (2026-10-01): viene cargada al colocarla — ver {@code util.MaquinaCreativa}. */
-    @Override
-    public void onPlaced(net.minecraft.world.World world, net.minecraft.util.math.BlockPos pos, BlockState state,
-                         @org.jetbrains.annotations.Nullable net.minecraft.entity.LivingEntity placer,
-                         net.minecraft.item.ItemStack itemStack) {
-        super.onPlaced(world, pos, state, placer, itemStack);
-        com.modamod.util.MaquinaCreativa.alColocar(world, pos, state, itemStack);
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(FACING, com.modamod.util.LuzMaquina.LIT);
-    }
-
-    @Override
-    @Nullable
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        // Como las demás máquinas (2026-10-15, "habria que resolver la inversion"): el modelo se giró 180° en el .geo.json y
-        // ahora lleva el panel en -Z, la convención de GeckoLib; antes se colocaba SIN getOpposite() para compensar. Las
-        // Tintes ya colocadas quedan dadas vuelta: hay que volver a ponerlas.
-        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
-    }
-
-    @Override
-    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return FORMA;
-    }
-
     @Override
     @Nullable
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new TinturasBlockEntity(pos, state);
-    }
-
-    /** GeckoLib dibuja el bloque completo desde el block entity renderer (modelo dye_station). */
-    /** Cae con todo adentro, como una shulker (ver {@link com.modamod.util.DropMaquina}). */
-    @Override
-    protected java.util.List<ItemStack> getDroppedStacks(BlockState state,
-            net.minecraft.loot.context.LootContextParameterSet.Builder builder) {
-        return com.modamod.util.DropMaquina.drops(this, builder);
-    }
-
-    @Override
-    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        com.modamod.util.DropMaquina.enCreativo(world, pos, player, this,
-                !(world.getBlockEntity(pos) instanceof TinturasBlockEntity be) || be.isEmpty());
-        return super.onBreak(world, pos, state, player);
-    }
-
-    @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.INVISIBLE;
     }
 
     /**
@@ -146,16 +84,8 @@ public class TinturasBlock extends BlockWithEntity {
      * la Modeladora, así que no necesita rama acá.
      */
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
+    protected ItemActionResult usarConItem(ItemStack stack, BlockState state, World world, BlockPos pos,
                                               PlayerEntity player, Hand hand, BlockHitResult hit) {
-        // Botón de la línea de producción (2026-10-08): en la cara del panel, o sea FACING (2026-10-15: el modelo ya no está invertido).
-        if (com.modamod.util.BotonLinea.golpea(state.get(FACING), pos, hit)) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof TinturasBlockEntity botonLinea) {
-                botonLinea.alternarLinea();
-                com.modamod.util.BotonLinea.avisar(world, pos, player, botonLinea.linea());
-            }
-            return ItemActionResult.SUCCESS;
-        }
         if (!(world.getBlockEntity(pos) instanceof TinturasBlockEntity be)) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
@@ -206,15 +136,7 @@ public class TinturasBlock extends BlockWithEntity {
      * config (agachado, resetea los 4 sliders a 0 en vez de abrir).
      */
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        // Botón de la línea de producción (2026-10-08): en la cara del panel, o sea FACING (2026-10-15: el modelo ya no está invertido).
-        if (com.modamod.util.BotonLinea.golpea(state.get(FACING), pos, hit)) {
-            if (!world.isClient && world.getBlockEntity(pos) instanceof TinturasBlockEntity botonLinea) {
-                botonLinea.alternarLinea();
-                com.modamod.util.BotonLinea.avisar(world, pos, player, botonLinea.linea());
-            }
-            return ActionResult.SUCCESS;
-        }
+    protected ActionResult usar(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!(world.getBlockEntity(pos) instanceof TinturasBlockEntity be)) return ActionResult.PASS;
         if (world.isClient) return ActionResult.SUCCESS;
 
