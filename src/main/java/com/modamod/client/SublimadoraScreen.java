@@ -223,6 +223,8 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         if (c == com.modamod.sublimadora.ModItems.REMERA) return List.of(Enfoque.TORSO, Enfoque.ENTERO);
         if (c == com.modamod.item.ModamodItems.SOCKS_SOLID || c == com.modamod.item.ModamodItems.PANTALON) return List.of(Enfoque.PIERNAS, Enfoque.ENTERO);
         if (c == com.modamod.item.ModamodItems.CALIENTABRAZOS) return List.of(Enfoque.BRAZOS, Enfoque.ENTERO);
+        if (c == com.modamod.item.ModamodItems.BANDA) return List.of(Enfoque.TORSO, Enfoque.ENTERO);
+        if (c == com.modamod.item.ModamodItems.BORCEGOS) return List.of(Enfoque.PIERNAS, Enfoque.ENTERO);
         return List.of(Enfoque.ENTERO);
     }
 
@@ -258,8 +260,9 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         }
         List<ItemStack> prendas = new ArrayList<>(GarmentFeatureRenderer.equipadas(jugador));
         boolean esCara = vista.getItem() instanceof com.modamod.item.CaraItem;   // la dibuja CaraRenderer (2026-10-24)
-        boolean esGorra = com.modamod.prenda.Prendas.es(vista, com.modamod.prenda.CategoriaDePrenda.SOMBRERO);   // la dibuja SombreroRenderer (2026-10-25)
-        if (!vista.isEmpty() && !esCara && !esGorra) {
+        // Gorra, banda y calzado no son ropa del cuerpo: los dibuja AccesorioRenderer, desde el override (2026-11-03).
+        boolean esAccesorio = com.modamod.render.AccesorioRenderer.es(vista);
+        if (!vista.isEmpty() && !esCara && !esAccesorio) {
             prendas.removeIf(s -> s.getItem().getClass() == vista.getItem().getClass());
             prendas.add(vista);
         }
@@ -271,7 +274,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         tamActual += (enfoque.tamano - tamActual) * k;
         GarmentFeatureRenderer.previewOverride = prendas;
         com.modamod.render.CaraRenderer.override = esCara ? vista : null;
-        GarmentFeatureRenderer.sombreroOverride = esGorra ? vista : null;
+        GarmentFeatureRenderer.sombreroOverride = esAccesorio ? vista : null;
         try {
             PreviewJugador.dibujar(context, jugador, x1, y1, x2, y2, Math.round(tamActual * zoomVista), anguloVista,
                     (y1 + y2) / 2f, inclinacionVista, focoActual);
