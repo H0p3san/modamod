@@ -20,6 +20,9 @@ public class ModamodClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // Los íconos de los accesorios se dibujan fuera del render del mundo (2026-11-03).
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
+                c -> com.modamod.render.IconoAccesorioImagen.procesar());
         // Falla al arrancar si la columna de la Estilista tiene controles superpuestos (2026-10-13, infraestructura de chequeo).
         DisposicionEstilista.autoverificar();
         DisposicionSublimadora.autoverificar();
@@ -217,6 +220,7 @@ public class ModamodClient implements ClientModInitializer {
                     public void reload(ResourceManager manager) {
                         ClothingTextureCache.limpiarCache();
                         com.modamod.render.IconoPrenda.limpiar();
+                        com.modamod.render.IconoAccesorioImagen.limpiar();
                     }
                 });
     }

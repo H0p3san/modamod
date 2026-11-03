@@ -185,11 +185,12 @@ public final class PantallaMaquina {
         // El ícono nuevo puede estar esperando una textura (la foto bajando):
         // se repinta hasta que quede completo.
         long ahora = System.currentTimeMillis();
-        if (cambio || (entrada.incompleta && ahora - entrada.ultimoIntento > 1000)) {
+        if (cambio || (entrada.incompleta && ahora - entrada.ultimoIntento > 250)) {
             entrada.ultimoIntento = ahora;
             repintar(entrada, rect, vistaPrevia);
             entrada.ultimaVistaPrevia = vistaPrevia.copy();
-            entrada.incompleta = !vistaPrevia.isEmpty() && !IconoPrenda.completo(vistaPrevia);
+            entrada.incompleta = !vistaPrevia.isEmpty()
+                    && (!IconoPrenda.completo(vistaPrevia) || IconoAccesorioImagen.pendiente(vistaPrevia));
         }
         return entrada.id;
     }
@@ -316,6 +317,8 @@ public final class PantallaMaquina {
         // que aparece en la pantallita?"): el mismo que el inventario y la mesa.
         NativeImage nuevo = IconoPrenda.copia(stack);
         if (nuevo != null) return nuevo;
+        // Los accesorios no tienen plantilla: su ítem dibujado de verdad (2026-11-03).
+        if (com.modamod.render.AccesorioRenderer.es(stack)) return IconoAccesorioImagen.copia(stack);
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
             return com.modamod.sublimadora.EstampaTextures.iconoParaPantalla(stack);
         }
