@@ -84,21 +84,26 @@ public class IconoAccesorioItemRenderer implements BuiltinItemRendererRegistry.D
         });
     }
 
+    /** Cuánto se aplasta la pieza contra la mesa: una cuarta parte de su espesor. */
+    private static final float APLASTADO = 0.25f;
+
     /**
-     * La pieza apoyada sobre una mesa (la prenda cargada en una máquina): parada, mirando hacia −Z, con la base en el
-     * origen de {@code matrices} y la mayor dimensión escalada a {@code ladoPx} píxeles. Mismo dibujo que el ícono.
+     * La pieza tendida sobre una mesa (la prenda cargada en una máquina), como las prendas de cuerpo: mostrando el frente
+     * hacia arriba, con la parte de arriba hacia el fondo y aplastada para que parezca una prenda y no un objeto parado.
+     * La base queda en el origen de {@code matrices} y la mayor dimensión se escala a {@code ladoPx} píxeles.
      */
     public static void dibujarSobreMesa(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
                                         int luz, float ladoPx) {
         if (!AccesorioRenderer.es(stack)) return;
         float[][] lim = limites(stack);
         float k = ladoPx / Math.max(4f, extension(lim[0], lim[1]));
-        float alto = lim[1][1] - lim[0][1];
-        // Girada 180° sobre Z: la Y del modelo (hacia abajo) pasa a subir y el frente sigue mirando a −Z.
+        float espesor = (lim[1][2] - lim[0][2]) * k * APLASTADO;
         dibujarPieza(stack, lim, matrices, vertexConsumers, luz, m -> {
-            m.translate(0f, alto * k / 32f, 0f);
+            m.translate(0f, espesor / 32f, 0f);
             girarMaletin(stack, m);
-            m.scale(-k, -k, k);
+            // El frente del modelo (−Z) pasa a mirar arriba y su Y (hacia abajo) al fondo; la X se invierte para no espejar.
+            m.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_X.rotationDegrees(90f));
+            m.scale(-k, -k, k * APLASTADO);
         });
     }
 
