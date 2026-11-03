@@ -47,7 +47,10 @@ public enum RegionPintura implements StringIdentifiable {
     // Las 3 zonas de un accesorio de cajas (2026-10-15, "aplicar patrones a sombrero calzado y cintos" en Tintes): sombrero
     // (ala, copa, cinta), banda (banda, borde, herraje) y calzado (zonas 1-3 el pie derecho, 4-6 el izquierdo). No son
     // rects de la skin: las lee render.ZonaTextura sobre la textura de cada zona. Nuevos al final.
-    ZONA_1("zona_1"), ZONA_2("zona_2"), ZONA_3("zona_3"), ZONA_4("zona_4"), ZONA_5("zona_5"), ZONA_6("zona_6");
+    ZONA_1("zona_1"), ZONA_2("zona_2"), ZONA_3("zona_3"), ZONA_4("zona_4"), ZONA_5("zona_5"), ZONA_6("zona_6"),
+    // Una pierna o un brazo entero (rediseño, "que se pueda aplicar a la media derecha o izquierda entera"): las dos
+    // mitades de SUP/INF juntas. Nuevos al final.
+    LADO_IZQ("lado_izq"), LADO_DER("lado_der");
 
     public final String clave;
 
@@ -132,8 +135,8 @@ public enum RegionPintura implements StringIdentifiable {
                  SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA, SOLAPA_CHAL_ABIERTA, SOLAPA_CAMISA -> Parte.TORSO;
             case MANGA_IZQ -> Parte.BRAZO_IZQ;
             case MANGA_DER -> Parte.BRAZO_DER;
-            case SUP_IZQ, INF_IZQ -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_IZQ : Parte.PIERNA_IZQ;
-            case SUP_DER, INF_DER -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_DER : Parte.PIERNA_DER;
+            case SUP_IZQ, INF_IZQ, LADO_IZQ -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_IZQ : Parte.PIERNA_IZQ;
+            case SUP_DER, INF_DER, LADO_DER -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_DER : Parte.PIERNA_DER;
         };
     }
 
@@ -141,7 +144,7 @@ public enum RegionPintura implements StringIdentifiable {
     private int[] filas() {
         return switch (this) {
             case TODO, MANGA_IZQ, MANGA_DER, CAPA_EXTERIOR, CAPA_FORRO, CAPA_DETALLES, DELANTAL_PETO, DELANTAL_FALDA,
-                 ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6 -> new int[]{0, 12};
+                 ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6, LADO_IZQ, LADO_DER -> new int[]{0, 12};
             case CUELLO -> new int[]{0, FILAS_CUELLO};
             case BORDE_INFERIOR -> new int[]{12 - FILAS_BORDE, 12};
             case SUP_IZQ, SUP_DER -> new int[]{0, 6};
@@ -191,7 +194,7 @@ public enum RegionPintura implements StringIdentifiable {
         Parte parte = parte(cat);
         if (parte == null) return null;
         CajaSkin caja = LayoutSkin.base(parte, false).escalada(escala);
-        if (this == MANGA_IZQ || this == MANGA_DER) {
+        if (this == MANGA_IZQ || this == MANGA_DER || this == LADO_IZQ || this == LADO_DER) {
             return List.of(caja.todo());
         }
         List<CajaSkin.Rect> rects = new java.util.ArrayList<>(4);

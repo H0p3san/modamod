@@ -1626,5 +1626,7 @@
   "item.modamod.molde_capucha_malla": "Molde de capucha: Malla",
   "item.modamod.molde_capucha_cajas": "Molde de capucha: Cajas",
   "modamod.pattern.liso": "Liso",
-  "modamod.pattern.mas": "… y %s capas más"
+  "modamod.pattern.mas": "… y %s capas más",
+  "modamod.region_pintura.lado_izq": "Lado izq. entero",
+  "modamod.region_pintura.lado_der": "Lado der. entero"
 }

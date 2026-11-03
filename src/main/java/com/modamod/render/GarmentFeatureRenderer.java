@@ -97,10 +97,13 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * ¿Lleva la media con volumen el cubo del pie de adelante? (2026-10-21, "skin tight y fitted: z-fighting y cuboide separado"): con
      * calce Pegado o Ajustado la media es una segunda piel que copia la pierna, que no tiene pie: el cubo quedaba suelto delante de la
      * pierna (con su planta aparte) y peleaba los planos con la piel. Solo lo llevan las medias con volumen (Normal, Suelto, Oversize),
-     * y ninguna si el calzado abierto dibuja el pie.
+     * ninguna si el calzado abierto dibuja el pie, y ninguna si la media no llega al pie.
      */
     private static boolean conPuntaDeMedia(Pieza p, Parte parte) {
         if (pieDelCalzado(parte)) return false;
+        // Rediseño ("el cubo de pie se empieza a pintar antes de que el largo llegue hasta el cubo"): la punta es del pie, así
+        // que solo va cuando la media llega hasta la última fila; una media cortada más arriba no la tiene.
+        if (p.filaHasta() < 12) return false;
         com.modamod.item.Calce c = com.modamod.item.Calce.de(p.dilatacion());
         return c != com.modamod.item.Calce.PEGADO && c != com.modamod.item.Calce.AJUSTADO;
     }

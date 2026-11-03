@@ -541,13 +541,14 @@ public class TinturasBlockEntity extends BlockEntity
             com.modamod.region.RegionPintura.MANGA_IZQ, com.modamod.region.RegionPintura.MANGA_DER,
             com.modamod.region.RegionPintura.BORDE_INFERIOR, com.modamod.region.RegionPintura.SOLAPAS};
     private static final com.modamod.region.RegionPintura[] ZONAS_PANTALON = {
-            com.modamod.region.RegionPintura.CINTURA, TODO, TODO, TODO, null,
+            com.modamod.region.RegionPintura.CINTURA, TODO,
+            com.modamod.region.RegionPintura.LADO_DER, com.modamod.region.RegionPintura.LADO_IZQ, null,
             com.modamod.region.RegionPintura.INF_IZQ, com.modamod.region.RegionPintura.INF_DER};
     /** Medias y calientabrazos (se leen de frente: la izquierda del dibujo es el lado derecho). */
     private static final com.modamod.region.RegionPintura[] ZONAS_MEDIAS = {
             com.modamod.region.RegionPintura.SUP_DER, com.modamod.region.RegionPintura.SUP_IZQ,
             com.modamod.region.RegionPintura.INF_DER, com.modamod.region.RegionPintura.INF_IZQ, null,
-            TODO, TODO, TODO, TODO, TODO, TODO};
+            com.modamod.region.RegionPintura.LADO_DER, com.modamod.region.RegionPintura.LADO_IZQ, TODO, TODO, TODO, TODO};
 
     private static int[] ordenInicial(Categoria cat) {
         int[] o = new int[CASILLAS];
