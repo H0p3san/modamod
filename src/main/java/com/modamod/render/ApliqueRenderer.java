@@ -688,9 +688,28 @@ public final class ApliqueRenderer {
      * cara por su eje dominante), con un paño de trama cada 16 px del modelo, y se dibuja sobre las mismas caras, un pelo
      * hacia afuera.
      */
+    private static final java.util.Set<String> DIAGNOSTICADOS = new java.util.HashSet<>();
+
     private static void dibujarTramas(Aplique a, BakedGeoModel modelo, MatrixStack matrices, Matrix4f pm,
                                       VertexConsumerProvider vertexConsumers, int luz, Blando blando) {
         int z1 = com.modamod.region.RegionPintura.ZONA_1.ordinal();
+        // DIAGNÓSTICO (tramas de apliques, 2026-11-03): cuántas caras de cada zona tiene el modelo. Sacar cuando se vean.
+        if (DIAGNOSTICADOS.add(a.modelo().geo().toString())) {
+            int[] caras = new int[3];
+            java.util.ArrayDeque<GeoBone> pend = new java.util.ArrayDeque<>(modelo.topLevelBones());
+            float umin = 9, umax = -9;
+            while (!pend.isEmpty()) {
+                GeoBone h = pend.pop();
+                pend.addAll(h.getChildBones());
+                for (GeoCube c : h.getCubes()) for (GeoQuad q : c.quads()) {
+                    if (q == null) continue;
+                    caras[zonaDe(q)]++;
+                    for (GeoVertex v : q.vertices()) { umin = Math.min(umin, v.texU()); umax = Math.max(umax, v.texU()); }
+                }
+            }
+            com.mojang.logging.LogUtils.getLogger().info("[ModaMod/tramas] aplique {}: {} capas, caras por zona {}/{}/{}, u {}..{}",
+                    a.modelo().geo(), a.capas().size(), caras[0], caras[1], caras[2], umin, umax);
+        }
         for (int zona = 0; zona < 3; zona++) {
             List<com.modamod.region.RegionResolver.CapaPatron> capas = new java.util.ArrayList<>();
             for (var c : a.capas()) if (c.region().ordinal() - z1 == zona && !c.lisa()) capas.add(c);
