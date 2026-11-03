@@ -472,4 +472,35 @@ final class CalzadoMalla {
             vc.vertex(w.x, w.y, w.z, 0xFFFFFFFF, u, t, OverlayTexture.DEFAULT_UV, luz, nn.x, nn.y, nn.z);
         }
     }
+
+    /**
+     * La foto de la Sublimadora sobre las caras de la pieza que miran hacia afuera del pie (2026-11-03): la misma malla,
+     * apenas inflada, con la UV proyectada de costado: la z recorre el ancho de la foto de {@code zA} a {@code zB} y la y
+     * su alto de {@code yArriba} a {@code yAbajo}; {@code uv} es el rectángulo de la foto en su textura.
+     */
+    static void emitirFoto(SombreroMalla.Quads q, float[][] plantilla, boolean espejo, float zA, float zB,
+                           float yArriba, float yAbajo, float[] uv, Matrix4f pos, Matrix3f nor, VertexConsumer vc, int luz) {
+        Vector3f v = new Vector3f(), nv = new Vector3f();
+        float afuera = espejo ? 1f : -1f;   // el costado de afuera: −X en el pie derecho, +X en el izquierdo (ya espejado)
+        for (int i = 0; i + 3 < q.vertices; i += 4) {
+            float nx = 0f;
+            for (int k = i; k < i + 4; k++) nx += q.nor[k * 3] * (espejo ? -1f : 1f);
+            if (nx * afuera < 4f * 0.3f) continue;   // solo las caras que miran hacia afuera
+            for (int k = i; k < i + 4; k++) {
+                v.set(q.pos[k * 3], q.pos[k * 3 + 1], q.pos[k * 3 + 2]);
+                nv.set(q.nor[k * 3], q.nor[k * 3 + 1], q.nor[k * 3 + 2]);
+                if (plantilla != null) v.y += alturaPlantilla(plantilla, v.z) - 11f;
+                if (espejo) {
+                    v.x = -v.x;
+                    nv.x = -nv.x;
+                }
+                v.add(nv.x * 0.02f, nv.y * 0.02f, nv.z * 0.02f);   // apenas afuera, para no pelear el plano
+                float u = uv[0] + (v.z - zA) / (zB - zA) * (uv[2] - uv[0]);
+                float t = uv[1] + (v.y - yArriba) / (yAbajo - yArriba) * (uv[3] - uv[1]);
+                Vector3f w = pos.transformPosition(v.x / 16f, v.y / 16f, v.z / 16f, new Vector3f());
+                Vector3f nn = nor.transform(nv, new Vector3f()).normalize();
+                vc.vertex(w.x, w.y, w.z, 0xFFFFFFFF, u, t, OverlayTexture.DEFAULT_UV, luz, nn.x, nn.y, nn.z);
+            }
+        }
+    }
 }
