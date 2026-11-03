@@ -385,6 +385,20 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
 
     private static final Logger LOG = LoggerFactory.getLogger("modamod-modelado");
 
+    /** DIAGNOSTICO TEMPORAL: anota en el registro cada cambio de lo que decide si la Modeladora trabaja. */
+    private String diagUltimo = "";
+
+    private void diagnosticar() {
+        String ahora = "estado=" + estado + " encendida=" + encendida + " linea=" + linea()
+                + " prenda=" + (items.get(PRENDA).isEmpty() ? "VACIA" : items.get(PRENDA).getItem().toString())
+                + " salida=" + (items.get(SALIDA).isEmpty() ? "vacia" : "LLENA")
+                + " fijadas=" + hayFijadas() + " tijeraOk=" + tijeraOk() + " guis=" + guiAbiertas;
+        if (!ahora.equals(diagUltimo)) {
+            LOG.info("[diag] {} @{} t={} progreso={}", ahora, pos.toShortString(), world == null ? -1 : world.getTime() % 100000, progreso);
+            diagUltimo = ahora;
+        }
+    }
+
     // Modelo "garment_shaper" v2 (bloques de moda 2.0, ver HUESOS.md): dos
     // controladores independientes, no un solo reposo/trabajo — "trabajo"
     // mueve guillotine/needle/cargo (solo mientras PROCESANDO), "en_marcha"
@@ -1972,6 +1986,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             rafaga(servidor, pos);
         }
 
+        be.diagnosticar();   // DIAGNOSTICO TEMPORAL (sacar al encontrar la causa)
         switch (be.estado) {
             case REPOSO -> {
                 boolean prendaOk = !be.items.get(PRENDA).isEmpty();
@@ -2034,6 +2049,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 // mismo intervalo que TinturasBlockEntity#tick.
                 if (be.progreso % 20 == 0) be.sincronizar();
                 if (be.progreso >= com.modamod.util.MaquinaCreativa.duracion(be, TICKS_PROCESO)) {
+                    if (be.items.get(PRENDA).isEmpty()) LOG.warn("[diag] termina de PROCESAR con la PRENDA VACIA @{}", be.pos.toShortString());   // DIAGNOSTICO TEMPORAL
                     ItemStack resultado = be.procesar(be.items.get(PRENDA));
                     be.items.set(SALIDA, resultado);
                     be.items.set(PRENDA, ItemStack.EMPTY);
