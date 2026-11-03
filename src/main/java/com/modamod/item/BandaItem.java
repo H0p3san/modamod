@@ -2,7 +2,6 @@ package com.modamod.item;
 
 import com.modamod.garment.Parte;
 import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -19,7 +18,7 @@ import java.util.List;
  * se ponen en la Mesa de estilado, que también le pone apliques como colgantes. La dibuja
  * {@link com.modamod.render.BandaRenderer}.
  */
-public class BandaItem extends TrinketItem implements ZonasTenibles {
+public class BandaItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
 
     /** Cuero oscuro, borde claro y herraje dorado de fábrica. */
     private static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x8A6240, 0xC9A24A);
@@ -96,6 +95,5 @@ public class BandaItem extends TrinketItem implements ZonasTenibles {
         tooltip.add(Text.translatable("modamod.banda.tooltip", Text.translatable(zona(stack).traduccion()),
                 Text.translatable(ancho(stack).traduccion()), Text.translatable(herraje(stack).traduccion()))
                 .formatted(Formatting.GRAY));
-        ClothingTrinketItem.lineasDePintura(stack, tooltip);
     }
 }

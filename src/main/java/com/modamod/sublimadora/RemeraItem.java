@@ -1,6 +1,5 @@
 package com.modamod.sublimadora;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -9,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class RemeraItem extends Item {
+public class RemeraItem extends com.modamod.prenda.PrendaItem {
 
     public RemeraItem(Settings settings) {
         super(settings);
@@ -102,6 +101,11 @@ public class RemeraItem extends Item {
         return net.minecraft.component.type.DyedColorComponent.getColor(stack, BLANCO);
     }
 
+    @Override
+    public int colorDeFabrica() {
+        return BLANCO;
+    }
+
     public static boolean estaEstampada(ItemStack stack) {
         return estampaDe(stack, Estampa.Cara.FRENTE) != null
                 || estampaDe(stack, Estampa.Cara.ESPALDA) != null
@@ -177,8 +181,6 @@ public class RemeraItem extends Item {
                 Text.translatable("modamod.sublimadora.cuello." + v.cuello().clave))
                 .formatted(Formatting.GRAY));
 
-        // Las capas de Tintes, igual que las medias.
-        com.modamod.item.ClothingTrinketItem.lineasDePintura(stack, tooltip);
 
         tooltipEstampa(stack, tooltip);
     }

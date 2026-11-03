@@ -1,8 +1,6 @@
 package com.modamod.region;
 
-import com.modamod.item.ClothingTrinketItem;
 import com.modamod.item.ModamodComponents;
-import com.modamod.item.ModamodDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -45,12 +43,12 @@ public final class RegionResolver {
     // --- Color base ---
 
     public static int colorBase(ItemStack stack) {
-        if (stack.getItem() instanceof ClothingTrinketItem prenda) return prenda.getColor(stack);
+        if (stack.getItem() instanceof com.modamod.prenda.PrendaItem prenda) return prenda.getColor(stack);
         return 0xFFFFFF;
     }
 
     public static void ponerColorBase(ItemStack stack, int rgb) {
-        ModamodDye.setBaseColor(stack, rgb);
+        com.modamod.prenda.PrendaItem.setColor(stack, rgb);
     }
 
     // --- Capas ---

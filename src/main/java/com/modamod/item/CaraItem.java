@@ -1,6 +1,5 @@
 package com.modamod.item;
 
-import dev.emi.trinkets.api.TrinketItem;
 
 /**
  * Máscaras y barbijo (2026-10-24, "quiero una mascara y un barbijo tinteables y sublimables"): antifaz, media máscara y
@@ -9,7 +8,7 @@ import dev.emi.trinkets.api.TrinketItem;
  * dibuja {@code render.CaraRenderer}: tela blanca con las capas de la Estación de Tintes ({@code CAPAS_TINTE}) y la foto
  * de la Sublimadora en el frente ({@code Estampas#frente}).
  */
-public class CaraItem extends TrinketItem {
+public class CaraItem extends com.modamod.prenda.PrendaItem {
 
     /** El nombre del modelo ({@code cara/<modelo>.json}) y del ítem. */
     public final String modelo;

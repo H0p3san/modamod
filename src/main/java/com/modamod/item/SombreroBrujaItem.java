@@ -1,6 +1,5 @@
 package com.modamod.item;
 
-import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -10,12 +9,12 @@ import java.util.List;
 
 /**
  * Sombrero de bruja (2026-10-04, "modelemos y agreguemos un sombrero de bruja"): va en su propio slot de Trinkets
- * ({@code head/sombrero}), junto al casco. NO extiende {@link ClothingTrinketItem} a propósito: las máquinas de
+ * ({@code head/sombrero}), junto al casco. NO es ropa de cuerpo a propósito: las máquinas de
  * prendas (Modeladora, Sublimadora, Guardarropas) lo tratarían como ropa de cuerpo. Tiene 3 zonas teñibles (ala,
  * cono y cinta, en {@code modamod:colores_sombrero}), un ala (ancha/corta) y una punta (recta/doblada) y la
  * dibuja {@link com.modamod.render.SombreroRenderer}; la punta se mece con la tela blanda de los apliques.
  */
-public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
+public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
 
     /** Blanco de fábrica (2026-10-05, "sale blanco de fabrica"): igual que el retazo sin teñir; los colores se ponen en la Mesa de estilado. */
     private static final List<Integer> DE_FABRICA = List.of(0xF2F2F6, 0xF2F2F6, 0xF2F2F6);
@@ -107,6 +106,5 @@ public class SombreroBrujaItem extends TrinketItem implements ZonasTenibles {
         tooltip.add(Text.translatable("modamod.sombrero.tooltip",
                 Text.translatable(ala(stack).traduccion()), Text.translatable(punta(stack).traduccion()))
                 .formatted(Formatting.GRAY));
-        ClothingTrinketItem.lineasDePintura(stack, tooltip);
     }
 }

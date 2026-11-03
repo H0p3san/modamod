@@ -2,7 +2,6 @@ package com.modamod.item;
 
 import com.modamod.garment.Parte;
 import com.modamod.region.Lado;
-import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -20,7 +19,7 @@ import java.util.List;
  * <p>Los dos pies son independientes (2026-10-11, "no se puede independizar derecho e izquierdo?"): los componentes de
  * siempre son del pie DERECHO y los {@code _izq} son del izquierdo; si el izquierdo no tiene el suyo, copia al derecho.
  */
-public class BorcegosItem extends TrinketItem implements ZonasTenibles {
+public class BorcegosItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
 
     /** Cuero marrón oscuro, suela casi negra y cordones crema de fábrica. */
     private static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x2E2824, 0xD9CDB0);
@@ -202,6 +201,5 @@ public class BorcegosItem extends TrinketItem implements ZonasTenibles {
         tooltip.add(Text.translatable("modamod.calzado.tooltip", Text.translatable(punta(stack, false).traduccion()),
                 Text.translatable(cierre(stack, false).traduccion()), Text.translatable(detalle(stack, false).traduccion()))
                 .formatted(Formatting.GRAY));
-        ClothingTrinketItem.lineasDePintura(stack, tooltip);
     }
 }

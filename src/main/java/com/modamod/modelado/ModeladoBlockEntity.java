@@ -1900,7 +1900,7 @@ public class ModeladoBlockEntity extends BlockEntity implements SidedInventory, 
 
     /** Lo que entra en el slot de prenda: la ropa de siempre y el sombrero de bruja (2026-10-05; no es ropa para el resto de las máquinas). */
     public static boolean esPrendaModelable(ItemStack stack) {
-        return com.modamod.item.ModamodDye.isClothing(stack)
+        return com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO);

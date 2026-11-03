@@ -16,10 +16,10 @@ import java.util.List;
  * cadera a los pies); la silueta ({@link DelantalForma}) y las esquinas de abajo ({@link CapaRuedo}) se recortan sobre
  * la tela.
  */
-public class DelantalItem extends ClothingTrinketItem {
+public class DelantalItem extends com.modamod.prenda.PrendaItem {
 
     public DelantalItem(Settings settings) {
-        super(settings, true);
+        super(settings);
     }
 
     /** Nivel de rango por defecto del inicio (más alto = pecho) y del largo (3 = a la rodilla). */

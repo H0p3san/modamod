@@ -21,10 +21,10 @@ import java.util.List;
  * NO tiene tiro — sigue sin tenerlo, tiro es exclusivo de prendas
  * inferiores (ver docs/archivo/MAQUINAS.md §"Categorías de patrones de modelado").
  */
-public class CalientabrazosItem extends ClothingTrinketItem {
+public class CalientabrazosItem extends com.modamod.prenda.PrendaItem {
 
     public CalientabrazosItem(Settings settings) {
-        super(settings, true);
+        super(settings);
     }
 
     // ── anclaje SUPERIOR: hombro hacia abajo (el que ya existía) ────────

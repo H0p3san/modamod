@@ -12,8 +12,8 @@ public final class ModamodItems {
     // maxCount(16): mismo criterio que remera -dos medias con distinto largo/
     // color/patrón tienen distintos componentes y nunca se apilan entre sí,
     // esto solo junta medias realmente iguales.
-    public static final ClothingTrinketItem SOCKS_SOLID = register("socks_solid",
-            new ClothingTrinketItem(new Item.Settings().maxCount(16), true));
+    public static final MediasItem SOCKS_SOLID = register("socks_solid",
+            new MediasItem(new Item.Settings().maxCount(16)));
 
     // socks_stripe_top / socks_stripe_alt SE FUERON: eran un item por
     // combinacion de colores. Ahora son patrones que se aplican sobre

@@ -1,10 +1,11 @@
-package com.modamod.item;
+package com.modamod.prenda;
 
+import com.modamod.item.ClothingPatternItem;
+import com.modamod.item.ModamodComponents;
+import com.modamod.region.RegionResolver;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
-import com.modamod.region.Lado;
-import com.modamod.region.RegionResolver;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -13,59 +14,42 @@ import net.minecraft.util.Formatting;
 import java.util.List;
 
 /**
- * Prenda "pegada al cuerpo" (medias y las que heredan de esta). No usa la
- * geometría de armadura (más ancha): se registra en un slot custom de Trinkets y se dibuja directo sobre
- * las ModelPart reales del jugador vía GarmentFeatureRenderer, así que
- * queda pegada al cuerpo como una "segunda piel" en vez de verse como
- * una bota/peto puestos encima.
+ * La base de toda prenda que se pone en un slot de Trinkets: ropa de cuerpo, sombreros, bandas, calzado y máscaras.
+ * Lo común vive acá: el color base ({@code dyed_color}, con el de fábrica de cada prenda) y la descripción de la
+ * pintura de Tintes. Qué es cada prenda (categoría, forma de dibujo, partes) lo dice su {@link DefinicionDePrenda} en
+ * {@link Prendas}; el corte, {@link Corte}; el acabado, {@link Acabado}.
  */
-public class ClothingTrinketItem extends TrinketItem {
+public class PrendaItem extends TrinketItem {
 
-    public final boolean dyeable;
-
-    public ClothingTrinketItem(Settings settings, boolean dyeable) {
+    public PrendaItem(Settings settings) {
         super(settings);
-        this.dyeable = dyeable;
+    }
+
+    /** El color sin teñir. */
+    public int colorDeFabrica() {
+        return 0xFFFFFF;
     }
 
     public int getColor(ItemStack stack) {
-        if (!dyeable) return 0xFFFFFF;
         DyedColorComponent c = stack.get(DataComponentTypes.DYED_COLOR);
-        return c != null ? c.rgb() : 0xFFFFFF;
+        return c != null ? c.rgb() : colorDeFabrica();
     }
 
     public static void setColor(ItemStack stack, int rgb) {
-        stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(rgb, true));
+        stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(rgb & 0xFFFFFF, false));
     }
 
-    /**
-     * Muestra que patron tiene puesto la prenda, y de que color. Sin esto la
-     * unica forma de saberlo era ponersela.
-     *
-     * El nombre del patron se pinta CON el color del patron, asi el tooltip
-     * dice las dos cosas de un saque. Si las piernas estan configuradas
-     * distinto, se listan por separado.
-     */
-    /** Las medias, según dónde empieza y termina la tela (2026-10-23): soquetes, bucaneras, calzas, calientapiernas... */
-    @Override
-    public Text getName(ItemStack stack) {
-        if (this != ModamodItems.SOCKS_SOLID) return super.getName(stack);
-        int[] der = MediasLargo.filasVisibles(stack, com.modamod.region.Lado.DERECHA);
-        int[] izq = MediasLargo.filasVisibles(stack, com.modamod.region.Lado.IZQUIERDA);
-        return Text.translatable("item.modamod.socks_solid." + (java.util.Arrays.equals(der, izq) ? NombresDePrenda.medias(der) : "medias"));
+    public DefinicionDePrenda definicion() {
+        return Prendas.de(this);
     }
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-
         lineasDePintura(stack, tooltip);
     }
 
-    /**
-     * Una línea por capa de Tintes, en el orden en que se pintan: "Vichy · Sup. Izq." en el color de la capa. Sin capas,
-     * "Sin patrón". También la usa la remera.
-     */
+    /** Una línea por capa de Tintes, en el orden en que se pintan: "Vichy · Sup. Izq." en el color de la capa. */
     public static void lineasDePintura(ItemStack stack, List<Text> tooltip) {
         List<RegionResolver.CapaPatron> capas = stack.getOrDefault(ModamodComponents.CAPAS_TINTE, List.of());
         if (capas.isEmpty()) {

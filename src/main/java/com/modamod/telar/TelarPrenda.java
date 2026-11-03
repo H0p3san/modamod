@@ -75,8 +75,7 @@ public enum TelarPrenda {
                 com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.COFIA);
                 ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
-            default -> s.set(net.minecraft.component.DataComponentTypes.DYED_COLOR,
-                    new net.minecraft.component.type.DyedColorComponent(rgb, true));
+            default -> com.modamod.prenda.PrendaItem.setColor(s, rgb);
         }
         return s;
     }

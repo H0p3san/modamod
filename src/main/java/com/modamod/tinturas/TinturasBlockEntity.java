@@ -1,7 +1,6 @@
 package com.modamod.tinturas;
 
 import com.modamod.item.ClothingPatternItem;
-import com.modamod.item.ModamodDye;
 import com.modamod.item.TamanoPatron;
 import com.modamod.region.Lado;
 import com.modamod.region.RegionResolver;
@@ -10,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SidedInventory;
@@ -1771,7 +1769,7 @@ public class TinturasBlockEntity extends BlockEntity
      */
     /** ¿Entra al slot de entrada? Las prendas y el retazo de aplique (2026-10-04, fase 4). */
     public static boolean aceptaEntrada(ItemStack stack) {
-        return ModamodDye.isClothing(stack) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
+        return com.modamod.prenda.Prendas.esRopaDeCuerpo(stack) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
                 || stack.getItem() instanceof com.modamod.item.ZonasTenibles || stack.getItem() instanceof net.minecraft.item.BannerItem
                 || stack.getItem() instanceof com.modamod.item.CaraItem;
     }
@@ -1843,11 +1841,7 @@ public class TinturasBlockEntity extends BlockEntity
             if (c.lisa() && c.region() == com.modamod.region.RegionPintura.TODO && c.opacidad() >= 100
                     && c.modo() == com.modamod.region.ModoMezcla.NORMAL && c.extras().isEmpty()
                     && (c.color() >>> 24) == 0) {
-                if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
-                    stack.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(c.color() & 0xFFFFFF, false));
-                } else {
-                    RegionResolver.ponerColorBase(stack, c.color() & 0xFFFFFF);
-                }
+                RegionResolver.ponerColorBase(stack, c.color() & 0xFFFFFF);
                 break;
             }
         }

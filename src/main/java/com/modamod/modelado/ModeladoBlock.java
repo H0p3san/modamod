@@ -1,6 +1,5 @@
 package com.modamod.modelado;
 
-import com.modamod.item.ModamodDye;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

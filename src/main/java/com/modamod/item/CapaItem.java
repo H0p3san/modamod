@@ -16,10 +16,10 @@ import java.util.List;
  * capucha y cuello alto — salen de la Modeladora; la tela tiene exterior y
  * forro aparte para Tintes y la Sublimadora.
  */
-public class CapaItem extends ClothingTrinketItem {
+public class CapaItem extends com.modamod.prenda.PrendaItem {
 
     public CapaItem(Settings settings) {
-        super(settings, true);
+        super(settings);
     }
 
     public static CapaLargo largo(ItemStack stack) {

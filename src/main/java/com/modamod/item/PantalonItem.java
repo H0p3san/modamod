@@ -13,17 +13,17 @@ import java.util.List;
  * craftea de una sola longitud (largo completo) y se recorta después con
  * el molde de rango en la Mesa de Modelado.
  *
- * Es un {@link ClothingTrinketItem} normal —el tinte, el slot y el resto del
+ * Es un {@link com.modamod.prenda.PrendaItem} normal —el tinte, el slot y el resto del
  * mecanismo son los mismos que cualquier otra prenda bilateral (medias)—;
  * lo propio son DOS ejes: la cobertura de pierna (dos anclajes que se
  * intersecan, ver {@link #filasVisibles}) y el tiro
  * ({@code PANTALON_TIRO}, cuánto sube la cintura sobre el torso — sin
  * cambios, sigue siendo un solo valor, no es cobertura de extremidad).
  */
-public class PantalonItem extends ClothingTrinketItem {
+public class PantalonItem extends com.modamod.prenda.PrendaItem {
 
     public PantalonItem(Settings settings) {
-        super(settings, true);
+        super(settings);
     }
 
     /** Textura base COMPLETA del pantalón (12 filas) — el recorte real es en runtime, ver {@link #filasVisibles}. */

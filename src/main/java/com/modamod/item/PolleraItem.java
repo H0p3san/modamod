@@ -18,10 +18,10 @@ import java.util.List;
  * malla propia en {@code render.PolleraMalla} y tela con el layout de la
  * caja del torso, así Tintes y la Sublimadora la tratan como a las demás.
  */
-public class PolleraItem extends ClothingTrinketItem {
+public class PolleraItem extends com.modamod.prenda.PrendaItem {
 
     public PolleraItem(Settings settings) {
-        super(settings, true);
+        super(settings);
     }
 
     public static PolleraLargo largo(ItemStack stack) {

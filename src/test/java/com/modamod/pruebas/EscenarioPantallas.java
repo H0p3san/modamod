@@ -4,7 +4,6 @@ import com.modamod.client.ModeladoScreen;
 import com.modamod.client.TelarScreen;
 import com.modamod.item.Calce;
 import com.modamod.item.ModamodComponents;
-import com.modamod.item.ModamodDye;
 import com.modamod.item.ModamodItems;
 import com.modamod.item.Ruedo;
 import com.modamod.modelado.ElegirMoldePayload;
@@ -218,7 +217,7 @@ public final class EscenarioPantallas {
         r.paso("el telar teje una prenda", c -> telar(c, be -> !be.salidaVisible().isEmpty()));
         r.hacer("la salida del telar es ropa", 5, c -> {
             ItemStack out = telar(c, be -> be.salidaVisible().copy());
-            verificar(ModamodDye.isClothing(out), "salida del telar no es ropa: " + out);
+            verificar(com.modamod.prenda.Prendas.esRopaDeCuerpo(out), "salida del telar no es ropa: " + out);
         });
         r.hacer("cerrar y reabrir Telar", 10, c -> { if (c.currentScreen != null) c.player.closeHandledScreen(); abrirTelar(c); });
         r.paso("Telar reabierto", c -> c.currentScreen instanceof TelarScreen);
