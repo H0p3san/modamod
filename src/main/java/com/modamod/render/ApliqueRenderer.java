@@ -513,6 +513,15 @@ public final class ApliqueRenderer {
         dibujarHueso(hueso, matrices, vc, luz, blando, -1);
     }
 
+    /** La zona de una cara: la columna del atlas donde cae el centro de su UV (UV normalizada, o en px de 96 si viene así). */
+    private static int zonaDe(GeoQuad quad) {
+        float u = 0f;
+        for (GeoVertex v : quad.vertices()) u += v.texU();
+        u /= quad.vertices().length;
+        if (u > 1.0001f) u /= 96f;
+        return Math.max(0, Math.min(2, (int) (u * 3f)));
+    }
+
     /**
      * {@code zonaTrama} -1: la tela, con las UV del atlas. 0..2: solo las caras de esa zona (su columna del atlas), con la
      * UV proyectada desde la posición para la pasada de tramas.
@@ -531,12 +540,17 @@ public final class ApliqueRenderer {
             Matrix3f normales = matrices.peek().getNormalMatrix();
             for (GeoQuad quad : cubo.quads()) {
                 if (quad == null) continue;
-                if (zonaTrama >= 0 && Math.min(2, (int) (quad.vertices()[0].texU() * 3f)) != zonaTrama) continue;
+                if (zonaTrama >= 0 && zonaDe(quad) != zonaTrama) continue;
                 Vector3f nq = normales.transform(new Vector3f(quad.normal()));
                 float ax = Math.abs(quad.normal().x()), ay = Math.abs(quad.normal().y()), az = Math.abs(quad.normal().z());
                 for (GeoVertex v : quad.vertices()) {
                     Vector4f p = pos.transform(new Vector4f(v.position().x(), v.position().y(), v.position().z(), 1f));
                     float u = v.texU(), t = v.texV();
+                    if (zonaTrama >= 0 && nq.lengthSquared() > 1e-10f) {
+                        // Apenas afuera de la tela (no calca la profundidad: el orden en que se vuelcan las capas no importa).
+                        Vector3f n = new Vector3f(nq).normalize(0.0025f);
+                        p.add(n.x, n.y, n.z, 0f);
+                    }
                     if (zonaTrama >= 0) {
                         // Un paño de trama cada 16 px del modelo (posiciones en bloques), centrado en el aplique.
                         float px = v.position().x(), py = v.position().y(), pz = v.position().z();
@@ -671,8 +685,8 @@ public final class ApliqueRenderer {
     /**
      * Las tramas del retazo encima de la tela del aplique, una pasada por zona. Las caras de los modelos toman de su columna
      * del atlas apenas un recuadro de 1-2 px, así que la trama no puede ir en el atlas: se proyecta sobre la forma (cada
-     * cara por su eje dominante), con un paño de trama cada 16 px del modelo, y se dibuja como calco sobre los mismos
-     * vértices (prueba de profundidad igual, sin pelearse con la tela).
+     * cara por su eje dominante), con un paño de trama cada 16 px del modelo, y se dibuja sobre las mismas caras, un pelo
+     * hacia afuera.
      */
     private static void dibujarTramas(Aplique a, BakedGeoModel modelo, MatrixStack matrices, Matrix4f pm,
                                       VertexConsumerProvider vertexConsumers, int luz, Blando blando) {
@@ -681,7 +695,7 @@ public final class ApliqueRenderer {
             List<com.modamod.region.RegionResolver.CapaPatron> capas = new java.util.ArrayList<>();
             for (var c : a.capas()) if (c.region().ordinal() - z1 == zona && !c.lisa()) capas.add(c);
             if (capas.isEmpty()) continue;
-            VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getEntityDecal(ZonaTextura.tramas(capas)));
+            VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(ZonaTextura.tramas(capas)));
             for (int i = 0; i < a.fila().cantidad(); i++) {
                 matrices.push();
                 matrices.translate(0f, -i * a.fila().separacion() / 16f / a.escala(), 0f);
