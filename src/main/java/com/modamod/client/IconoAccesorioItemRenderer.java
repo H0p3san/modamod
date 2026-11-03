@@ -55,9 +55,12 @@ public class IconoAccesorioItemRenderer implements BuiltinItemRendererRegistry.D
         return new float[][] {min, max};
     }
 
+    private static float extension(float[] min, float[] max) {
+        return Math.max(max[0] - min[0], Math.max(max[1] - min[1], max[2] - min[2]));
+    }
+
     private static float escala(float[] min, float[] max) {
-        float extension = Math.max(max[0] - min[0], Math.max(max[1] - min[1], max[2] - min[2]));
-        return 0.8f * 16f / Math.max(4f, extension);
+        return 0.8f * 16f / Math.max(4f, extension(min, max));
     }
 
     /** Medio alto del ícono en el cubo 0..1 (lo usa el maletín apoyado para poner la base en el piso). */
@@ -71,9 +74,47 @@ public class IconoAccesorioItemRenderer implements BuiltinItemRendererRegistry.D
                        VertexConsumerProvider vertexConsumers, int luz, int overlay) {
         if (!AccesorioRenderer.es(stack)) return;
         float[][] lim = limites(stack);
+        float k = escala(lim[0], lim[1]);
+        int l = modo == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : luz;
+        // El marco del modelo tiene la Y hacia abajo y el frente en −Z: se da vuelta para mirar de frente al ítem.
+        dibujarPieza(stack, lim, matrices, vertexConsumers, l, m -> {
+            m.translate(0.5f, 0.5f, 0.5f);
+            girarMaletin(stack, m);
+            m.scale(k, -k, -k);
+        });
+    }
+
+    /**
+     * La pieza apoyada sobre una mesa (la prenda cargada en una máquina): parada, mirando hacia −Z, con la base en el
+     * origen de {@code matrices} y la mayor dimensión escalada a {@code ladoPx} píxeles. Mismo dibujo que el ícono.
+     */
+    public static void dibujarSobreMesa(ItemStack stack, MatrixStack matrices, VertexConsumerProvider vertexConsumers,
+                                        int luz, float ladoPx) {
+        if (!AccesorioRenderer.es(stack)) return;
+        float[][] lim = limites(stack);
+        float k = ladoPx / Math.max(4f, extension(lim[0], lim[1]));
+        float alto = lim[1][1] - lim[0][1];
+        // Girada 180° sobre Z: la Y del modelo (hacia abajo) pasa a subir y el frente sigue mirando a −Z.
+        dibujarPieza(stack, lim, matrices, vertexConsumers, luz, m -> {
+            m.translate(0f, alto * k / 32f, 0f);
+            girarMaletin(stack, m);
+            m.scale(-k, -k, k);
+        });
+    }
+
+    /** El maletín cuelga de costado (su largo va hacia adelante): se gira para mostrar la cara ancha. */
+    private static void girarMaletin(ItemStack stack, MatrixStack m) {
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)) {
+            m.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(90f));
+        }
+    }
+
+    /** Dibuja la pieza centrada en su caja, después de que {@code colocar} la pone en su lugar y escala. */
+    private static void dibujarPieza(ItemStack stack, float[][] lim, MatrixStack matrices,
+                                     VertexConsumerProvider vertexConsumers, int luz,
+                                     java.util.function.Consumer<MatrixStack> colocar) {
         float[] min = lim[0], max = lim[1];
         if (min[0] > max[0]) return;
-        float k = escala(min, max);
         var cliente = MinecraftClient.getInstance();
         BorcegosRenderer.pielActual = cliente.player != null ? cliente.player.getSkinTextures().texture()
                 : net.minecraft.client.util.DefaultSkinHelper.getTexture();
@@ -81,16 +122,9 @@ public class IconoAccesorioItemRenderer implements BuiltinItemRendererRegistry.D
         FisicaApliques.actual = null;   // sin el bamboleo de la última entidad dibujada
         matrices.push();
         try {
-            // El marco del modelo tiene la Y hacia abajo y el frente en −Z: se da vuelta para mirar de frente al ítem.
-            matrices.translate(0.5f, 0.5f, 0.5f);
-            // El maletín cuelga de costado (su largo va hacia adelante): se gira para mostrar la cara ancha.
-            if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)) {
-                matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(90f));
-            }
-            matrices.scale(k, -k, -k);
+            colocar.accept(matrices);
             matrices.translate(-(min[0] + max[0]) / 32f, -(min[1] + max[1]) / 32f, -(min[2] + max[2]) / 32f);
-            int l = modo == ModelTransformationMode.GUI ? LightmapTextureManager.MAX_LIGHT_COORDINATE : luz;
-            AccesorioRenderer.dibujar(stack, modelo(), matrices, vertexConsumers, l, 0f);
+            AccesorioRenderer.dibujar(stack, modelo(), matrices, vertexConsumers, luz, 0f);
         } finally {
             matrices.pop();
             FisicaApliques.actual = inercia;

@@ -87,7 +87,18 @@ public class PrendaEnMaquinaLayer<T extends GeoAnimatable> extends GeoRenderLaye
         ItemStack stack = prenda.apply(animatable);
         if (stack == null || stack.isEmpty()) return;
         Identifier icono = IconoPrenda.de(stack);
-        if (icono == null) return;
+        if (icono == null) {
+            // Sombrero, calzado, banda y maletín no tienen plantilla: se muestran armados de verdad, parados sobre la mesa.
+            if (AccesorioRenderer.es(stack)) {
+                matrices.push();
+                // Sobre el rodillo (Tintes) se apoya encima de él.
+                float base = apoyo == Apoyo.ENROLLADA_EJE_X || apoyo == Apoyo.ENROLLADA_EJE_X_FRENTE_MENOS_Z ? radio : 0f;
+                matrices.translate(-cx / 16f, (cy + base) / 16f, cz / 16f);
+                com.modamod.client.IconoAccesorioItemRenderer.dibujarSobreMesa(stack, matrices, buffers, luz, lado);
+                matrices.pop();
+            }
+            return;
+        }
 
         VertexConsumer vc = buffers.getBuffer(RenderLayer.getEntityCutoutNoCull(icono));
         MatrixStack.Entry e = matrices.peek();
