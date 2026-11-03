@@ -1805,7 +1805,13 @@ public class TinturasBlockEntity extends BlockEntity
         for (int i = 0; i < 3; i++) {
             Casilla cas = casillas[c][i];
             boolean aplica = (borrador ? enBorrador(cat, i) : cas.fijada) && !cas.oculta;
-            nuevos[i] = aplica ? cas.color() & 0xFFFFFF : actuales.get(i);
+            // Con trama, el color 1 es la tinta de la trama: el fondo de la zona es el último color si tiene "fondo", y
+            // si no, el que ya tenía el retazo (la trama se pinta encima, como en una prenda).
+            Identifier patron = aplica ? patronEnBorrador(cat, i) : null;
+            nuevos[i] = !aplica ? actuales.get(i)
+                    : patron == null ? cas.color() & 0xFFFFFF
+                    : cas.fondo && cas.colores > 1 ? cas.colorDe(cas.colores - 1) & 0xFFFFFF
+                    : actuales.get(i);
         }
         com.modamod.aplique.RetazoApliqueItem.conColores(stack, nuevos[0], nuevos[1], nuevos[2]);
         // Las tramas de cada zona van como capas (las lisas ya están en los colores de arriba).

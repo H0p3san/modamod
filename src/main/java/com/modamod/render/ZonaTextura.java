@@ -76,7 +76,6 @@ public final class ZonaTextura {
             if (m != null) mascaras.add(ClothingTextureCache.CapaMascara.de(c, m, null));
         }
         NativeImage img = new NativeImage(TEX, TEX, true);
-        int cubiertos = 0;
         for (int y = 0; y < TEX; y++) {
             for (int x = 0; x < TEX; x++) {
                 int acc = 0;
@@ -87,13 +86,9 @@ public final class ZonaTextura {
                     int rgb = cm.colorEn(mx, my);
                     acc = 0xFF000000 | ((rgb & 0xFF) << 16) | (rgb & 0xFF00) | ((rgb >> 16) & 0xFF);
                 }
-                if (acc != 0) cubiertos++;
                 img.setColor(x, y, acc);
             }
         }
-        // DIAGNÓSTICO (tramas de apliques, 2026-11-03): sacar cuando se vean.
-        com.mojang.logging.LogUtils.getLogger().info("[ModaMod/tramas] {} capas, {} mascaras, {} de {} px cubiertos",
-                capas.size(), mascaras.size(), cubiertos, TEX * TEX);
         Identifier id = Identifier.of(Modamod.MOD_ID, "dynamic/tramas_" + Integer.toHexString(key.hashCode()));
         MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
         CACHE.put(key, id);
