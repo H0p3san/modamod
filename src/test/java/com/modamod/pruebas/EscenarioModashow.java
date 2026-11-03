@@ -51,8 +51,8 @@ public final class EscenarioModashow {
 
     private static ItemStack conTrim(ItemStack s, String patron, String material, int color) {
         s.set(DataComponentTypes.DYED_COLOR, new DyedColorComponent(color, true));
-        s.set(ModamodComponents.ACABADO_TRIM, patron.contains(":") ? Identifier.of(patron) : Identifier.ofVanilla(patron));
-        if (material != null) s.set(ModamodComponents.ACABADO_MATERIAL, Identifier.ofVanilla(material));
+        com.modamod.prenda.Acabado.ponerTrim(s, patron.contains(":") ? Identifier.of(patron) : Identifier.ofVanilla(patron),
+                material != null ? Identifier.ofVanilla(material) : null);
         return s;
     }
 

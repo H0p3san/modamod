@@ -1205,8 +1205,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 ItemStack prenda = origen.get(pieza);
                 previo = com.modamod.render.relieve.RelieveTela.de(previo, com.modamod.item.Calce.de(base),
                         prenda == null ? com.modamod.item.TexturaTela.LISA
-                                : prenda.getOrDefault(com.modamod.item.ModamodComponents.TEXTURA_TELA,
-                                        com.modamod.item.TexturaTela.LISA),
+                                : com.modamod.prenda.Acabado.textura(prenda),
                         prenda == null ? null : com.modamod.render.relieve.RelieveTela.extrusionDe(
                                 net.minecraft.registry.Registries.ITEM.getId(prenda.getItem())));
                 com.modamod.render.relieve.RelieveRender.actual =

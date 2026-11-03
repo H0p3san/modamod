@@ -1407,14 +1407,13 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 hay ? Math.round(apliques.get(sel).escala() * 100) : 100));
 
         ItemStack prendaPuesta = be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
-        com.modamod.item.TexturaTela actual = prendaPuesta.getOrDefault(
-                com.modamod.item.ModamodComponents.TEXTURA_TELA, com.modamod.item.TexturaTela.LISA);
+        com.modamod.item.TexturaTela actual = com.modamod.prenda.Acabado.textura(prendaPuesta);
         net.minecraft.util.Identifier trim = be.patronDeTrim(be.getStack(EstiladoBlockEntity.SLOT_MOLDE));
         if (trim != null) {
             // Molde de trim de vanilla: acabado animado de toda la prenda (2026-10-06).
             net.minecraft.util.Identifier matSlot = be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL));
-            boolean ya = trim.equals(prendaPuesta.get(com.modamod.item.ModamodComponents.ACABADO_TRIM))
-                    && (matSlot == null || matSlot.equals(prendaPuesta.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL)));
+            boolean ya = trim.equals(com.modamod.prenda.Acabado.trim(prendaPuesta))
+                    && (matSlot == null || matSlot.equals(com.modamod.prenda.Acabado.material(prendaPuesta)));
             btnTextura.active = !prendaPuesta.isEmpty() && EstiladoBlockEntity.admiteAcabado(prendaPuesta);
             btnTextura.setMessage(Text.translatable(ya ? "modamod.estilado.acabado.quitar" : "modamod.estilado.acabado.poner",
                     Text.translatable("modamod.efecto." + com.modamod.render.EfectoTrim.tipoDe(trim).name().toLowerCase())));
@@ -1424,9 +1423,9 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
             btnTextura.setMessage(Text.translatable(actual == mt.textura ? "modamod.estilado.textura.quitar"
                     : "modamod.estilado.textura.poner", Text.translatable(mt.textura.traduccion())));
         } else if (be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL)) != null
-                && prendaPuesta.get(com.modamod.item.ModamodComponents.ACABADO_TRIM) != null
+                && com.modamod.prenda.Acabado.trim(prendaPuesta) != null
                 && !be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL))
-                        .equals(prendaPuesta.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL))) {
+                        .equals(com.modamod.prenda.Acabado.material(prendaPuesta))) {
             // Sin molde pero con material: solo cambia el material del acabado que ya está.
             btnTextura.active = true;
             net.minecraft.util.Identifier m = be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL));
@@ -1487,8 +1486,8 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         ItemStack enPrendaF = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
         if (pestana == 2 && !enPrendaF.isEmpty() && !(enPrendaF.getItem() instanceof com.modamod.item.ZonasTenibles)) {
             // Qué lleva la prenda y cómo se pone (2026-10-06).
-            net.minecraft.util.Identifier t = enPrendaF.get(com.modamod.item.ModamodComponents.ACABADO_TRIM);
-            net.minecraft.util.Identifier m = enPrendaF.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL);
+            net.minecraft.util.Identifier t = com.modamod.prenda.Acabado.trim(enPrendaF);
+            net.minecraft.util.Identifier m = com.modamod.prenda.Acabado.material(enPrendaF);
             Text actual = t == null ? Text.translatable("modamod.estilado.acabado.ninguno")
                     : Text.translatable("modamod.acabado.tooltip", Text.translatable(
                             "modamod.efecto." + com.modamod.render.EfectoTrim.tipoDe(t).name().toLowerCase()));

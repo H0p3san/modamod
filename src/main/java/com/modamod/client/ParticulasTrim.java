@@ -39,7 +39,7 @@ public final class ParticulasTrim {
             if (j == c.player && c.options.getPerspective().isFirstPerson()) continue;
             List<ItemStack> conTrim = new ArrayList<>();
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(j).ifPresent(comp -> {
-                for (var par : comp.getAllEquipped()) if (par.getRight().contains(ModamodComponents.ACABADO_TRIM)) conTrim.add(par.getRight());
+                for (var par : comp.getAllEquipped()) if ((com.modamod.prenda.Acabado.trim(par.getRight()) != null)) conTrim.add(par.getRight());
             });
             if (conTrim.isEmpty()) continue;
             float twirl = TwirlCliente.progreso(j, 0f);
@@ -69,10 +69,10 @@ public final class ParticulasTrim {
         MANIQUIES.put(pos, mundo.getTime());
         if (MANIQUIES.size() > 256) MANIQUIES.clear();
         int n = 0;
-        for (ItemStack prenda : prendas) if (prenda.contains(ModamodComponents.ACABADO_TRIM)) n++;
+        for (ItemStack prenda : prendas) if ((com.modamod.prenda.Acabado.trim(prenda) != null)) n++;
         float tasa = repartir(twirl ? 1.2f : 0.1f, n);
         for (ItemStack prenda : prendas) {
-            if (prenda.contains(ModamodComponents.ACABADO_TRIM)) soltar(mundo, mundo.getRandom(), prenda, x, y, z, 1f, tasa, twirl);
+            if ((com.modamod.prenda.Acabado.trim(prenda) != null)) soltar(mundo, mundo.getRandom(), prenda, x, y, z, 1f, tasa, twirl);
         }
     }
 
@@ -88,7 +88,7 @@ public final class ParticulasTrim {
                                float agachado, float tasa, boolean twirl) {
         int n = (int) tasa + (r.nextFloat() < tasa - (int) tasa ? 1 : 0);
         if (n == 0) return;
-        Identifier patron = prenda.get(ModamodComponents.ACABADO_TRIM);
+        Identifier patron = com.modamod.prenda.Acabado.trim(prenda);
         EfectoTrim.Tipo tipo = EfectoTrim.tipoDe(patron);
         // La altura de la prenda: abajo las piernas y el calzado, arriba el torso y la cabeza.
         float[] alto = altura(prenda);

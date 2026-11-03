@@ -633,30 +633,24 @@ public class EstiladoBlockEntity extends BlockEntity
         ItemStack prenda = items.get(SLOT_PRENDA);
         if (prenda.isEmpty() || !admiteAcabado(prenda)) return false;
         net.minecraft.util.Identifier mat = materialDe(items.get(SLOT_MATERIAL));
-        net.minecraft.util.Identifier patronActual = prenda.get(ModamodComponents.ACABADO_TRIM);
-        net.minecraft.util.Identifier matActual = prenda.get(ModamodComponents.ACABADO_MATERIAL);
+        net.minecraft.util.Identifier patronActual = com.modamod.prenda.Acabado.trim(prenda);
+        net.minecraft.util.Identifier matActual = com.modamod.prenda.Acabado.material(prenda);
         if (patron == null) {
             // Solo cambiar el material de un acabado que ya está.
             if (patronActual == null || mat == null || mat.equals(matActual)) return false;
-            prenda.set(ModamodComponents.ACABADO_MATERIAL, mat);
+            com.modamod.prenda.Acabado.ponerTrim(prenda, patronActual, mat);
             if (!gratis()) items.get(SLOT_MATERIAL).decrement(1);
             markDirty();
             return true;
         }
         boolean cambiaPatron = !patron.equals(patronActual);
         if (!cambiaPatron && (mat == null || mat.equals(matActual))) {
-            prenda.remove(ModamodComponents.ACABADO_TRIM);
-            prenda.remove(ModamodComponents.ACABADO_MATERIAL);
+            com.modamod.prenda.Acabado.ponerTrim(prenda, null, null);
         } else {
-            if (cambiaPatron) {
-                prenda.set(ModamodComponents.ACABADO_TRIM, patron);
-                if (!gratis()) items.get(SLOT_MOLDE).decrement(1);
-                if (mat == null) prenda.remove(ModamodComponents.ACABADO_MATERIAL);   // paleta de fábrica
-            }
-            if (mat != null && (cambiaPatron || !mat.equals(matActual))) {
-                prenda.set(ModamodComponents.ACABADO_MATERIAL, mat);
-                if (!gratis()) items.get(SLOT_MATERIAL).decrement(1);
-            }
+            // Con un patrón nuevo y sin material, la paleta de fábrica; si no, el material del slot o el que ya tenía.
+            com.modamod.prenda.Acabado.ponerTrim(prenda, patron, mat != null ? mat : cambiaPatron ? null : matActual);
+            if (cambiaPatron && !gratis()) items.get(SLOT_MOLDE).decrement(1);
+            if (mat != null && (cambiaPatron || !mat.equals(matActual)) && !gratis()) items.get(SLOT_MATERIAL).decrement(1);
         }
         markDirty();
         return true;
@@ -676,8 +670,7 @@ public class EstiladoBlockEntity extends BlockEntity
         if (!(items.get(SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem)
                 && materialDe(items.get(SLOT_MATERIAL)) != null) return aplicarAcabado(null);
         if (prenda.isEmpty() || !(items.get(SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem m)) return false;
-        if (prenda.get(ModamodComponents.TEXTURA_TELA) == m.textura) prenda.remove(ModamodComponents.TEXTURA_TELA);
-        else prenda.set(ModamodComponents.TEXTURA_TELA, m.textura);
+        com.modamod.prenda.Acabado.ponerTextura(prenda, com.modamod.prenda.Acabado.textura(prenda) == m.textura ? com.modamod.item.TexturaTela.LISA : m.textura);
         markDirty();
         return true;
     }

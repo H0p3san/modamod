@@ -120,9 +120,9 @@ public final class EfectoTrim {
      */
     public static VertexConsumerProvider envolver(@Nullable ItemStack prenda, VertexConsumerProvider real) {
         if (prenda == null || real instanceof Proveedor) return real;
-        Identifier patron = prenda.get(ModamodComponents.ACABADO_TRIM);
+        Identifier patron = com.modamod.prenda.Acabado.trim(prenda);
         if (patron == null) return real;
-        Identifier mat = prenda.get(ModamodComponents.ACABADO_MATERIAL);
+        Identifier mat = com.modamod.prenda.Acabado.material(prenda);
         return new Proveedor(real, tipoDe(patron), colorDeMaterial(mat), Material.de(mat));
     }
 

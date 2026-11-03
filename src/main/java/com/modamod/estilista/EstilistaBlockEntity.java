@@ -72,8 +72,7 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
     /** Lo que copia un diseño de la prenda de muestra (lo demás de la prenda no se toca). */
     private static final java.util.List<net.minecraft.component.ComponentType<?>> COMPONENTES_DE_DISENO = java.util.List.of(
             com.modamod.item.ModamodComponents.APLIQUES, com.modamod.item.ModamodComponents.CORREAS,
-            com.modamod.item.ModamodComponents.TEXTURA_TELA, com.modamod.item.ModamodComponents.ACABADO_TRIM,
-            com.modamod.item.ModamodComponents.ACABADO_MATERIAL);
+            com.modamod.prenda.Acabado.Tipo.COMPONENTE);
 
     /** Los tics del trabajo (de la animación `trabajo`) en que el pórtico arranca un recorrido: horizontal o de subida y bajada. */
     private static final int[] TICS_HORIZONTAL = {0, 18, 42, 52, 70, 94, 104, 122, 146, 156, 174, 198};
@@ -532,14 +531,14 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
     /** Qué lleva un diseño, para los avisos y el panel (2026-10-06: "decia 0 straps 0 apliques" aunque tuviera un acabado). */
     public static Text resumen(ItemStack d) {
         net.minecraft.text.MutableText t = Text.translatable("modamod.estilista.resumen_base", apliquesDe(d), correasDe(d));
-        net.minecraft.util.Identifier trim = d.get(com.modamod.item.ModamodComponents.ACABADO_TRIM);
+        net.minecraft.util.Identifier trim = com.modamod.prenda.Acabado.trim(d);
         if (trim != null) {
             t.append(", ").append(Text.translatable("modamod.acabado.tooltip", Text.translatable(
                     "modamod.efecto." + com.modamod.render.EfectoTrim.tipoDe(trim).name().toLowerCase())));
-            net.minecraft.util.Identifier mat = d.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL);
+            net.minecraft.util.Identifier mat = com.modamod.prenda.Acabado.material(d);
             if (mat != null) t.append(" · ").append(Text.translatable("trim_material." + mat.getNamespace() + "." + mat.getPath()));
         }
-        com.modamod.item.TexturaTela tx = d.get(com.modamod.item.ModamodComponents.TEXTURA_TELA);
+        com.modamod.item.TexturaTela tx = com.modamod.prenda.Acabado.textura(d);
         if (tx != null && tx != com.modamod.item.TexturaTela.LISA) {
             t.append(", ").append(Text.translatable("modamod.estilado.textura.actual", Text.translatable(tx.traduccion())));
         }
@@ -572,16 +571,16 @@ public class EstilistaBlockEntity extends BlockEntity implements SidedInventory,
      */
     private java.util.List<ItemStack> costoAcabado(ItemStack d, ItemStack prenda) {
         java.util.List<ItemStack> costo = new java.util.ArrayList<>();
-        net.minecraft.util.Identifier patron = d.get(com.modamod.item.ModamodComponents.ACABADO_TRIM);
+        net.minecraft.util.Identifier patron = com.modamod.prenda.Acabado.trim(d);
         if (patron == null || world == null) return costo;
-        net.minecraft.util.Identifier material = d.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL);
-        boolean cambiaPatron = !patron.equals(prenda.get(com.modamod.item.ModamodComponents.ACABADO_TRIM));
+        net.minecraft.util.Identifier material = com.modamod.prenda.Acabado.material(d);
+        boolean cambiaPatron = !patron.equals(com.modamod.prenda.Acabado.trim(prenda));
         var reg = world.getRegistryManager();
         if (cambiaPatron) {
             reg.getOptional(net.minecraft.registry.RegistryKeys.TRIM_PATTERN).flatMap(r -> r.getEntry(patron))
                     .ifPresent(e -> costo.add(new ItemStack(e.value().templateItem())));
         }
-        if (material != null && (cambiaPatron || !material.equals(prenda.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL)))) {
+        if (material != null && (cambiaPatron || !material.equals(com.modamod.prenda.Acabado.material(prenda)))) {
             reg.getOptional(net.minecraft.registry.RegistryKeys.TRIM_MATERIAL).flatMap(r -> r.getEntry(material))
                     .ifPresent(e -> costo.add(new ItemStack(e.value().ingredient())));
         }

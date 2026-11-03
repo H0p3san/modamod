@@ -25,12 +25,12 @@ public class ModamodClient implements ClientModInitializer {
         DisposicionSublimadora.autoverificar();
         // Acabado con trim (2026-10-06): la prenda lo dice en su descripción.
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, contexto, tipo, lineas) -> {
-            net.minecraft.util.Identifier trim = stack.get(com.modamod.item.ModamodComponents.ACABADO_TRIM);
+            net.minecraft.util.Identifier trim = com.modamod.prenda.Acabado.trim(stack);
             if (trim == null) return;
             net.minecraft.text.MutableText linea = net.minecraft.text.Text.translatable("modamod.acabado.tooltip",
                     net.minecraft.text.Text.translatable(
                             "modamod.efecto." + com.modamod.render.EfectoTrim.tipoDe(trim).name().toLowerCase()));
-            net.minecraft.util.Identifier material = stack.get(com.modamod.item.ModamodComponents.ACABADO_MATERIAL);
+            net.minecraft.util.Identifier material = com.modamod.prenda.Acabado.material(stack);
             if (material != null) {
                 linea.append(" · ").append(net.minecraft.text.Text.translatable(
                         "trim_material." + material.getNamespace() + "." + material.getPath()));

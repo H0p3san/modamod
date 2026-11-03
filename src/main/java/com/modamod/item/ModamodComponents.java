@@ -103,32 +103,6 @@ public final class ModamodComponents {
                     .build());
 
     /** Los 3 colores de zona (RGB) de un retazo de aplique (2026-10-01). */
-    /**
-     * Volumen propio de la tela (2026-10-01, relieve) — ver {@link TexturaTela}.
-     * Se pone con un Molde de textura en la Mesa de estilado.
-     */
-    public static final ComponentType<TexturaTela> TEXTURA_TELA = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "textura_tela"),
-            ComponentType.<TexturaTela>builder().codec(TexturaTela.CODEC)
-                    .packetCodec(PacketCodecs.VAR_INT.xmap(i -> TexturaTela.values()[i], TexturaTela::ordinal)).build());
-
-    /**
-     * Acabado de tela con un trim (2026-10-06, "los trims puedan agregar a las prendas texturas animadas, brillo,
-     * policromatismo, reflejos"): el id del patrón de trim (ej. {@code minecraft:snout}); el efecto sale del patrón
-     * ({@code render.EfectoTrim}). Se pone en la Mesa de estilado / Estilista con un molde de trim de vanilla.
-     */
-    public static final ComponentType<Identifier> ACABADO_TRIM = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "acabado_trim"),
-            ComponentType.<Identifier>builder().codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC).build());
-
-    /**
-     * Material del acabado (2026-10-06, "el material por separado, opcional"): el id del material de trim de vanilla
-     * (ej. {@code minecraft:gold}); cambia la paleta del efecto. Ausente = la paleta de fábrica del patrón.
-     */
-    public static final ComponentType<Identifier> ACABADO_MATERIAL = Registry.register(
-            Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "acabado_material"),
-            ComponentType.<Identifier>builder().codec(Identifier.CODEC).packetCodec(Identifier.PACKET_CODEC).build());
-
     public static final ComponentType<java.util.List<Integer>> COLORES_APLIQUE = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "colores_aplique"),
             ComponentType.<java.util.List<Integer>>builder()
@@ -137,8 +111,6 @@ public final class ModamodComponents {
                     .build());
 
     // ── sombrero de bruja (2026-10-04) — ausentes = ala ancha / punta recta / colores de fábrica ──
-
-
 
     /** La mezcla C/M/Y/K/T de una muestra de color (2026-09-30), 5 niveles de 0..20. */
     public static final ComponentType<java.util.List<Integer>> MEZCLA_COLOR = Registry.register(
