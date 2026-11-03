@@ -1620,5 +1620,9 @@
   "modamod.pattern.mas": "… and %s more layers",
   "modamod.region_pintura.lado_izq": "Whole left side",
   "modamod.region_pintura.lado_der": "Whole right side",
-  "modamod.estilado.ayuda_accesorio": "Hats, bands, footwear and briefcases are dyed at the Dye Station; here you add appliqués, straps and finishes."
+  "modamod.estilado.ayuda_accesorio": "Hats, bands, footwear and briefcases are dyed at the Dye Station; here you add appliqués, straps and finishes.",
+  "modamod.estilado.asignar": "Z%s←%s",
+  "modamod.estilado.tooltip.asignar": "Which swatch zone (color and pattern) goes to this appliqué zone. Click to change.",
+  "modamod.estilado.tenir_elegido": "Re-dye selected",
+  "modamod.estilado.tooltip.tenir_elegido": "Re-dyes the selected appliqué with the swatch in the slot and these zones, without using it up."
 }

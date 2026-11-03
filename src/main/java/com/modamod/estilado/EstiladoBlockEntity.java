@@ -107,11 +107,19 @@ public class EstiladoBlockEntity extends BlockEntity
     public static final float ESCALA_MIN = 0.5f, ESCALA_MAX = 2.5f, PASO_ESCALA = 0.25f;
     /** Fila del aplique (2026-10-22, botonera): cantidad y separación, cada uno con su menos y su más. */
     public static final int BTN_FILA_MAS = 50, BTN_FILA_MENOS = 51, BTN_SEPARACION_MAS = 52, BTN_SEPARACION_MENOS = 53;
+    /**
+     * Qué zona del retazo va a cada zona del aplique (rediseño, "elegir qué va a cada zona del aplique de los colores del
+     * retazo"): {@code BTN_ASIGNAR_BASE + zona} pasa la zona del aplique a la siguiente zona del retazo; {@code
+     * BTN_TENIR_ELEGIDO} vuelve a teñir el aplique elegido con el retazo del slot, sin gastarlo.
+     */
+    public static final int BTN_ASIGNAR_BASE = 60, BTN_TENIR_ELEGIDO = 63;
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(TAMANO, ItemStack.EMPTY);
     /** Qué aplique de la prenda editan los botones (-1 = ninguno). */
     private int seleccionado = -1;
+    /** La zona del retazo que lleva cada zona del aplique (de fábrica, la misma). */
+    private final int[] asignacion = {0, 1, 2};
 
     public EstiladoBlockEntity(BlockPos pos, BlockState state) {
         super(EstiladoMod.ESTILADO_BLOCK_ENTITY, pos, state);
@@ -145,6 +153,8 @@ public class EstiladoBlockEntity extends BlockEntity
     }
 
     public int seleccionado() { return seleccionado; }
+
+    public int asignacion(int zona) { return asignacion[zona]; }
 
     public List<Aplique> apliques() {
         List<Aplique> a = items.get(SLOT_PRENDA).get(ModamodComponents.APLIQUES);
@@ -266,16 +276,22 @@ public class EstiladoBlockEntity extends BlockEntity
             ItemStack muestra = plantilla.objeto() != null && retazo.getItem() instanceof com.modamod.item.MuestraColorItem
                     ? retazo : ItemStack.EMPTY;
             ObjetoAplique ob = plantilla.objeto() == null ? null : plantilla.objeto().paraPoner(muestra);
-            java.util.List<Integer> colores = plantilla.objeto() == null && com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
-                    ? RetazoApliqueItem.colores(retazo) : RetazoApliqueItem.BLANCO;
-            actuales.add(new Aplique(plantilla.modelo(), parte, x, y, z, cara, plantilla.giro(), plantilla.escala(), colores,
-                    superficie, plantilla.blandura(), ob, plantilla.colocacion(), plantilla.oscilacion()).conFila(plantilla.fila()));
+            boolean conRetazo = plantilla.objeto() == null && com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE);
+            Aplique nuevo = new Aplique(plantilla.modelo(), parte, x, y, z, cara, plantilla.giro(), plantilla.escala(),
+                    RetazoApliqueItem.BLANCO, superficie, plantilla.blandura(), ob, plantilla.colocacion(), plantilla.oscilacion())
+                    .conFila(plantilla.fila());
+            if (conRetazo) {
+                var tela = RetazoApliqueItem.tela(retazo, asignacion);
+                nuevo = nuevo.conTela(tela.getFirst(), tela.getSecond());
+            }
+            actuales.add(nuevo);
             // Un objeto de molde no gasta nada (ni el objeto ni la muestra de color); un modelo del mod gasta su retazo.
             if (!gratis && plantilla.objeto() == null) retazo.decrement(1);
         } else {
             MoldeApliqueItem m = (MoldeApliqueItem) molde.getItem();
-            actuales.add(new Aplique(m.modelo, parte, x, y, z, cara, 0f, 1f, RetazoApliqueItem.colores(retazo), superficie, BLANDURA_INICIAL)
-                    .conFila(m.fila));
+            var tela = RetazoApliqueItem.tela(retazo, asignacion);
+            actuales.add(new Aplique(m.modelo, parte, x, y, z, cara, 0f, 1f, tela.getFirst(), superficie, BLANDURA_INICIAL)
+                    .conFila(m.fila).conTela(tela.getFirst(), tela.getSecond()));
             if (!gratis) retazo.decrement(1);
         }
         if (superficie == Aplique.Superficie.APLIQUE) {
@@ -329,9 +345,7 @@ public class EstiladoBlockEntity extends BlockEntity
                 if (!a.objeto().muestra().isEmpty()) jugador.getInventory().offerOrDrop(a.objeto().muestra().copy());
             }
         } else if (anfitrion == null) {                // el editor de la Estilista no gasta retazos: no hay nada que devolver
-            ItemStack retazo = RetazoApliqueItem.conColores(new ItemStack(ModamodItems.RETAZO_APLIQUE),
-                    a.color(0), a.color(1), a.color(2));
-            jugador.getInventory().offerOrDrop(retazo);
+            jugador.getInventory().offerOrDrop(RetazoApliqueItem.de(a));
         }
     }
 
@@ -446,8 +460,23 @@ public class EstiladoBlockEntity extends BlockEntity
             markDirty();
             return true;
         }
+        if (id >= BTN_ASIGNAR_BASE && id < BTN_ASIGNAR_BASE + 3) {
+            int zona = id - BTN_ASIGNAR_BASE;
+            asignacion[zona] = (asignacion[zona] + 1) % 3;
+            markDirty();
+            return true;
+        }
         if (seleccionado < 0 || seleccionado >= actuales.size()) return false;
         Aplique a = actuales.get(seleccionado);
+        if (id == BTN_TENIR_ELEGIDO) {
+            // Volver a teñir el elegido con el retazo del slot y la asignación de zonas, sin gastar el retazo.
+            ItemStack retazo = items.get(SLOT_RETAZO);
+            if (a.objeto() != null || !com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)) return false;
+            var tela = RetazoApliqueItem.tela(retazo, asignacion);
+            actuales.set(seleccionado, a.conTela(tela.getFirst(), tela.getSecond()));
+            guardarApliques(actuales);
+            return true;
+        }
         if (id >= BTN_BLANDURA_BASE && id <= BTN_BLANDURA_BASE + BLANDURA_PASOS) {
             actuales.set(seleccionado, a.conBlandura((id - BTN_BLANDURA_BASE) / (float) BLANDURA_PASOS));
             guardarApliques(actuales);
@@ -836,6 +865,7 @@ public class EstiladoBlockEntity extends BlockEntity
         super.writeNbt(nbt, registries);
         Inventories.writeNbt(nbt, items, registries);
         nbt.putInt("Seleccionado", seleccionado);
+        nbt.putIntArray("Asignacion", asignacion);
     }
 
     @Override
@@ -844,6 +874,8 @@ public class EstiladoBlockEntity extends BlockEntity
         items.clear();
         Inventories.readNbt(nbt, items, registries);
         seleccionado = nbt.contains("Seleccionado") ? nbt.getInt("Seleccionado") : -1;
+        int[] asig = nbt.getIntArray("Asignacion");
+        for (int z = 0; z < 3; z++) asignacion[z] = z < asig.length && asig[z] >= 0 && asig[z] < 3 ? asig[z] : z;
     }
 
     @Override

@@ -631,7 +631,14 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
         for (int i = 0; i < 3; i++) {
             int ty = y1 + 70 + i * (alto + 6);
             context.fill(x1 + 20, ty - 1, x2 - 20, ty + alto + 1, 0xFF2A180C);
-            context.fill(x1 + 21, ty, x2 - 21, ty + alto, 0xFF000000 | colores.get(i));
+            // La zona con sus tramas (si tiene), sobre su color.
+            var reg = com.modamod.region.RegionPintura.values()[com.modamod.region.RegionPintura.ZONA_1.ordinal() + i];
+            List<com.modamod.region.RegionResolver.CapaPatron> capas = new ArrayList<>();
+            for (var c : retazo.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE,
+                    List.<com.modamod.region.RegionResolver.CapaPatron>of())) if (c.region() == reg) capas.add(c);
+            if (capas.isEmpty()) context.fill(x1 + 21, ty, x2 - 21, ty + alto, 0xFF000000 | colores.get(i));
+            else context.drawTexture(com.modamod.render.ZonaTextura.banner(colores.get(i), capas),
+                    x1 + 21, ty, 0, 0, x2 - x1 - 42, alto, 256, 256);
             context.drawText(this.textRenderer, Text.translatable("modamod.aplique.zona", i + 1),
                     x1 + 26, ty + alto / 2 - 4, 0xFFFFFFFF, true);
         }

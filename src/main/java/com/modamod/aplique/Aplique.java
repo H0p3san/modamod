@@ -25,11 +25,13 @@ import java.util.List;
  *                 (2026-10-04, "tela blanda afectada por el movimiento... configurable por
  *                 aplique"); 0 = rígido. Ver {@code render.FisicaApliques}.
  * @param fila    copias hacia abajo (botonera, 2026-10-22); {@link Fila#DEFECTO} = una sola
+ * @param capas   las capas de Tintes del retazo (tramas incluidas), cada una en su zona ZONA_1..3
  */
 public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float z, Direction cara,
                       float giro, float escala, List<Integer> colores, Superficie superficie, float blandura,
                       @org.jetbrains.annotations.Nullable ObjetoAplique objeto,
-                      Colocacion colocacion, Oscilacion oscilacion, int padre, Fila fila) {
+                      Colocacion colocacion, Oscilacion oscilacion, int padre, Fila fila,
+                      List<com.modamod.region.RegionResolver.CapaPatron> capas) {
 
     /** 12 (2026-10-04, apliques sobre apliques: los que van sobre otro también cuentan). */
     public static final int MAXIMO_POR_PRENDA = 12;
@@ -70,6 +72,16 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
         if (colocacion == null) colocacion = Colocacion.DEFECTO;
         if (oscilacion == null) oscilacion = Oscilacion.DEFECTO;
         if (fila == null) fila = Fila.DEFECTO;
+        capas = capas == null ? List.of() : List.copyOf(capas);
+    }
+
+    /** Sin capas de Tintes (solo los 3 colores). */
+    public Aplique(ModeloAplique modelo, Parte parte, float x, float y, float z, Direction cara,
+                   float giro, float escala, List<Integer> colores, Superficie superficie, float blandura,
+                   @org.jetbrains.annotations.Nullable ObjetoAplique objeto, Colocacion colocacion, Oscilacion oscilacion,
+                   int padre, Fila fila) {
+        this(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila,
+                List.of());
     }
 
     /** Sin fila (un solo aplique, lo de antes de la botonera). */
@@ -113,6 +125,13 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
         this(modelo, parte, x, y, z, cara, giro, escala, colores, Superficie.CAJA);
     }
 
+    /** Los colores y las capas van en un solo campo del codec (el de registros admite hasta 16). */
+    private static final com.mojang.serialization.MapCodec<com.mojang.datafixers.util.Pair<List<Integer>, List<com.modamod.region.RegionResolver.CapaPatron>>> TELA =
+            RecordCodecBuilder.mapCodec(t -> t.group(
+                    Codec.INT.listOf().optionalFieldOf("colores", List.of(0xFFFFFF, 0xFFFFFF, 0xFFFFFF)).forGetter(com.mojang.datafixers.util.Pair::getFirst),
+                    com.modamod.region.RegionResolver.CapaPatron.CODEC.listOf().optionalFieldOf("capas", List.of()).forGetter(com.mojang.datafixers.util.Pair::getSecond)
+            ).apply(t, com.mojang.datafixers.util.Pair::of));
+
     public static final Codec<Parte> CODEC_PARTE = Codec.STRING.xmap(Parte::valueOf, Parte::name);
 
     public static final Codec<Aplique> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -124,7 +143,7 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
             Direction.CODEC.fieldOf("cara").forGetter(Aplique::cara),
             Codec.FLOAT.optionalFieldOf("giro", 0f).forGetter(Aplique::giro),
             Codec.FLOAT.optionalFieldOf("escala", 1f).forGetter(Aplique::escala),
-            Codec.INT.listOf().optionalFieldOf("colores", List.of(0xFFFFFF, 0xFFFFFF, 0xFFFFFF)).forGetter(Aplique::colores),
+            TELA.forGetter(ap -> com.mojang.datafixers.util.Pair.of(ap.colores(), ap.capas())),
             net.minecraft.util.StringIdentifiable.createCodec(Superficie::values)
                     .optionalFieldOf("superficie", Superficie.CAJA).forGetter(Aplique::superficie),
             Codec.FLOAT.optionalFieldOf("blandura", 0f).forGetter(Aplique::blandura),
@@ -134,15 +153,22 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
             Oscilacion.CODEC.optionalFieldOf("oscilacion", Oscilacion.DEFECTO).forGetter(Aplique::oscilacion),
             Codec.INT.optionalFieldOf("padre", -1).forGetter(Aplique::padre),
             Fila.CODEC.optionalFieldOf("fila", Fila.DEFECTO).forGetter(Aplique::fila)
-    ).apply(i, (modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila) -> {
+    ).apply(i, (modelo, parte, x, y, z, cara, giro, escala, tela, superficie, blandura, objeto, colocacion, oscilacion, padre, fila) -> {
         ObjetoAplique obj = objeto.orElse(null);
         // Migración (2026-10-04): las inclinaciones de antes del objeto pasan a ser rotación de la colocación.
         if (obj != null && (obj.inclinarX() != 0f || obj.inclinarY() != 0f)) {
             colocacion = colocacion.conRotacion(colocacion.rx() + obj.inclinarX(), colocacion.ry() + obj.inclinarY(), colocacion.rz());
             obj = obj.conInclinacion(0f, 0f);
         }
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, obj, colocacion, oscilacion, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, tela.getFirst(), superficie, blandura, obj, colocacion,
+                oscilacion, padre, fila, tela.getSecond());
     }));
+
+    /** El mismo aplique teñido de nuevo: colores y capas de Tintes por zona. */
+    public Aplique conTela(List<Integer> nuevos, List<com.modamod.region.RegionResolver.CapaPatron> nuevasCapas) {
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, nuevos, superficie, blandura, objeto, colocacion, oscilacion,
+                padre, fila, nuevasCapas);
+    }
 
     /** Color de la zona {@code zona} (0..2), blanco si falta. */
     public int color(int zona) {
@@ -150,34 +176,34 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
     }
 
     public Aplique conGiro(float g) {
-        return new Aplique(modelo, parte, x, y, z, cara, g, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, g, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila, capas);
     }
 
     public Aplique conEscala(float e) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, e, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, e, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila, capas);
     }
 
     public Aplique conObjeto(ObjetoAplique o) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, o, colocacion, oscilacion, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, o, colocacion, oscilacion, padre, fila, capas);
     }
 
     public Aplique conPadre(int p) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, p, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, p, fila, capas);
     }
 
     public Aplique conColocacion(Colocacion c) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, c, oscilacion, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, c, oscilacion, padre, fila, capas);
     }
 
     public Aplique conOscilacion(Oscilacion o) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, o, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, o, padre, fila, capas);
     }
 
     public Aplique conFila(Fila f) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, f);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, f, capas);
     }
 
     public Aplique conBlandura(float b) {
-        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, b, objeto, colocacion, oscilacion, padre, fila);
+        return new Aplique(modelo, parte, x, y, z, cara, giro, escala, colores, superficie, b, objeto, colocacion, oscilacion, padre, fila, capas);
     }
 }

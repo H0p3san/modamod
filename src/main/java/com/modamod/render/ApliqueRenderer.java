@@ -621,9 +621,13 @@ public final class ApliqueRenderer {
     // ── textura teñida por zona ────────────────────────────────────────────
     private static final Map<String, Identifier> CACHE = new HashMap<>();
 
-    /** El atlas gris con cada columna de zona multiplicada por su color. */
+    /**
+     * El atlas gris con cada columna de zona multiplicada por su tela: el color de la zona y, encima, las capas de Tintes del
+     * retazo que van a esa zona (tramas incluidas). La trama se estira a lo ancho de la columna de su zona.
+     */
     private static Identifier textura(Aplique a) {
-        String key = Integer.toHexString(a.color(0)) + "_" + Integer.toHexString(a.color(1)) + "_" + Integer.toHexString(a.color(2));
+        String key = Integer.toHexString(a.color(0)) + "_" + Integer.toHexString(a.color(1)) + "_" + Integer.toHexString(a.color(2))
+                + (a.capas().isEmpty() ? "" : "_" + Integer.toHexString(a.capas().hashCode()));
         Identifier id = CACHE.get(key);
         if (id != null) return id;
         NativeImage base = ClothingTextureCache.imagenBase(ATLAS);
@@ -631,18 +635,39 @@ public final class ApliqueRenderer {
         NativeImage img = new NativeImage(base.getWidth(), base.getHeight(), true);
         img.copyFrom(base);
         int escala = Math.max(1, base.getWidth() / 96);
+        int anchoZona = ANCHO_ZONA * escala;
+        // Las máscaras de cada zona (0..2), en el orden en que se pintan.
+        List<List<ClothingTextureCache.CapaMascara>> porZona = new java.util.ArrayList<>();
+        for (int z = 0; z < 3; z++) porZona.add(new java.util.ArrayList<>());
+        int z1 = com.modamod.region.RegionPintura.ZONA_1.ordinal();
+        for (var c : a.capas()) {
+            int z = c.region().ordinal() - z1;
+            if (z < 0 || z > 2) continue;
+            NativeImage m = com.modamod.render.PatronGenerador.mascaraDeCapa("zona", c);
+            if (!c.lisa() && m == null) continue;
+            porZona.get(z).add(ClothingTextureCache.CapaMascara.de(c, m, null));
+        }
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
-                int zona = Math.min(2, x / (ANCHO_ZONA * escala));
+                int zona = Math.min(2, x / anchoZona);
                 int c = img.getColor(x, y);            // ABGR
                 int rgb = a.color(zona);
-                int r = ((c & 0xFF) * ((rgb >> 16) & 0xFF)) / 255;
-                int g = (((c >> 8) & 0xFF) * ((rgb >> 8) & 0xFF)) / 255;
-                int b = (((c >> 16) & 0xFF) * (rgb & 0xFF)) / 255;
+                int tinta = 0xFF000000 | ((rgb & 0xFF) << 16) | (rgb & 0xFF00) | ((rgb >> 16) & 0xFF);
+                if (!porZona.get(zona).isEmpty()) {
+                    // La columna de la zona ocupa toda la máscara (512) a lo ancho; para abajo se repite al mismo paso.
+                    int mx = (x - zona * anchoZona) * 512 / anchoZona, my = (y * 512 / anchoZona) % 512;
+                    for (ClothingTextureCache.CapaMascara cm : porZona.get(zona)) {
+                        int op = cm.opacidadEn(mx, my);
+                        if (op > 0) tinta = ClothingTextureCache.mezclar(tinta, 0xFFFFFFFF, cm.colorEn(mx, my), cm.modo(), op);
+                    }
+                }
+                int r = ((c & 0xFF) * (tinta & 0xFF)) / 255;
+                int g = (((c >> 8) & 0xFF) * ((tinta >> 8) & 0xFF)) / 255;
+                int b = (((c >> 16) & 0xFF) * ((tinta >> 16) & 0xFF)) / 255;
                 img.setColor(x, y, (c & 0xFF000000) | (b << 16) | (g << 8) | r);
             }
         }
-        id = Identifier.of(Modamod.MOD_ID, "dynamic/aplique_" + key);
+        id = Identifier.of(Modamod.MOD_ID, "dynamic/aplique_" + Integer.toHexString(key.hashCode()));
         MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
         CACHE.put(key, id);
         return id;

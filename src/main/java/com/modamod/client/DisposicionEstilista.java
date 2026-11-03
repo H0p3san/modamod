@@ -78,12 +78,17 @@ public final class DisposicionEstilista {
                 y += H_FILA + SEP;
                 m.put("blandura", new R(X, y, ANCHO, H_FILA));
                 y += H_FILA + SEP;
+                for (int z = 0; z < 3; z++) m.put("asignar" + z, new R(X + z * 48, y, 46, H_FILA));
+                m.put("tenirElegido", new R(X + 146, y, 86, H_FILA));
+                y += H_FILA + SEP;
                 if (e.objeto()) {
-                    m.put("objModo", new R(X, y, 80, H_FILA));
-                    m.put("objVariante", new R(X + 82, y, 80, H_FILA));
-                    y += H_FILA + SEP;
+                    // Con objeto, el espejo va en la misma fila (si no, se pasaba del alto de la columna).
+                    m.put("objModo", new R(X, y, 76, H_FILA));
+                    m.put("objVariante", new R(X + 78, y, 76, H_FILA));
+                    if (e.pares()) m.put("espejo", new R(X + 156, y, 76, H_FILA));
+                } else if (e.pares()) {
+                    m.put("espejo", new R(X, y, 112, H_FILA));
                 }
-                if (e.pares()) m.put("espejo", new R(X, y, 112, H_FILA));
             }
             case CORREA -> {
                 y = elegidos(m, y);

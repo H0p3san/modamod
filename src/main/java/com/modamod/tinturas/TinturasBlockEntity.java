@@ -491,7 +491,10 @@ public class TinturasBlockEntity extends BlockEntity
     public static com.modamod.region.RegionPintura regionDe(Categoria cat, int i) {
         if (i < 0 || i >= CASILLAS) return null;
         if (cat == Categoria.POLLERA) return i < CASILLAS_POLLERA ? com.modamod.region.RegionPintura.TODO : null;
-        if (cat == Categoria.APLIQUE) return i < CASILLAS_APLIQUE ? com.modamod.region.RegionPintura.TODO : null;
+        // El retazo: un cuadradito por zona del aplique (ZONA_1..3), con su color y su trama.
+        if (cat == Categoria.APLIQUE) {
+            return i < CASILLAS_APLIQUE ? com.modamod.region.RegionPintura.values()[com.modamod.region.RegionPintura.ZONA_1.ordinal() + i] : null;
+        }
         // Banner (2026-10-24): como la pollera, 3 cuadraditos de banner entero que se apilan.
         if (cat == Categoria.BANNER || cat == Categoria.MASCARA || cat == Categoria.BARBIJO) {
             return i < CASILLAS_POLLERA ? com.modamod.region.RegionPintura.TODO : null;   // y máscara y barbijo (2026-10-24)
@@ -1805,6 +1808,11 @@ public class TinturasBlockEntity extends BlockEntity
             nuevos[i] = aplica ? cas.color() & 0xFFFFFF : actuales.get(i);
         }
         com.modamod.aplique.RetazoApliqueItem.conColores(stack, nuevos[0], nuevos[1], nuevos[2]);
+        // Las tramas de cada zona van como capas (las lisas ya están en los colores de arriba).
+        List<RegionResolver.CapaPatron> tramas = new ArrayList<>();
+        for (RegionResolver.CapaPatron capa : capasDe(cat, borrador)) if (!capa.lisa()) tramas.add(capa);
+        if (tramas.isEmpty()) stack.remove(com.modamod.item.ModamodComponents.CAPAS_TINTE);
+        else stack.set(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.copyOf(tramas));
     }
 
     /**

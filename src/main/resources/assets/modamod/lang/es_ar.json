@@ -1620,5 +1620,9 @@
   "modamod.pattern.mas": "… y %s capas más",
   "modamod.region_pintura.lado_izq": "Lado izq. entero",
   "modamod.region_pintura.lado_der": "Lado der. entero",
-  "modamod.estilado.ayuda_accesorio": "Sombreros, bandas, calzado y maletines se tiñen en la Estación de Tintes; acá van apliques, correas y acabados."
+  "modamod.estilado.ayuda_accesorio": "Sombreros, bandas, calzado y maletines se tiñen en la Estación de Tintes; acá van apliques, correas y acabados.",
+  "modamod.estilado.asignar": "Z%s←%s",
+  "modamod.estilado.tooltip.asignar": "Qué zona del retazo (color y trama) va a esta zona del aplique. Clic para cambiar.",
+  "modamod.estilado.tenir_elegido": "Reteñir elegido",
+  "modamod.estilado.tooltip.tenir_elegido": "Vuelve a teñir el aplique elegido con el retazo del slot y estas zonas, sin gastar el retazo."
 }

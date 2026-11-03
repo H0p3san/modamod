@@ -120,6 +120,9 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     void alCambiarPestana(int antes, int ahora) { }
     /** Los controles de apliques que se esconden mientras se colorea. */
     private final List<ButtonWidget> grupoAplique = new java.util.ArrayList<>();
+    /** Qué zona del retazo va a cada zona del aplique, y volver a teñir el elegido (rediseño). */
+    private final ButtonWidget[] btnAsignar = new ButtonWidget[3];
+    private ButtonWidget btnTenirElegido;
 
 
     public EstiladoScreen(EstiladoScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -169,6 +172,8 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         poner(btnGiro, "giro");
         poner(btnGiroAdelante, "giroAdelante");
         poner(btnQuitar, "quitar");
+        for (int z = 0; z < 3; z++) poner(btnAsignar[z], "asignar" + z);
+        poner(btnTenirElegido, "tenirElegido");
         poner(btnEscalaAtras, "escalaAtras");
         poner(btnEscala, "escala");
         poner(btnEscalaAdelante, "escalaAdelante");
@@ -308,6 +313,14 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         btnQuitar = boton(X_DER + 98, 88, 64, Text.translatable("modamod.estilado.quitar"),
                 "modamod.estilado.tooltip.quitar", () -> clickBoton(EstiladoBlockEntity.BTN_QUITAR));
         grupoAplique.add(btnQuitar);
+        for (int z = 0; z < 3; z++) {
+            final int id = EstiladoBlockEntity.BTN_ASIGNAR_BASE + z;
+            btnAsignar[z] = boton(X_DER + z * 48, 172, 46, Text.empty(), "modamod.estilado.tooltip.asignar", () -> clickBoton(id));
+            grupoAplique.add(btnAsignar[z]);
+        }
+        btnTenirElegido = boton(X_DER + 146, 172, 86, Text.translatable("modamod.estilado.tenir_elegido"),
+                "modamod.estilado.tooltip.tenir_elegido", () -> clickBoton(EstiladoBlockEntity.BTN_TENIR_ELEGIDO));
+        grupoAplique.add(btnTenirElegido);
         if (!conBolsas()) {
         btnVistaIzq = boton(X_DER + 98, 108, 31, Text.literal("⟲"), "modamod.estilado.tooltip.vista",
                 () -> anguloVista = Math.floorMod(Math.round(anguloVista) - 45, 360));
@@ -1375,6 +1388,17 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 : correaSel >= 0 ? "modamod.correa.boton.quitar_sel" : "modamod.correa.boton.quitar", correaSel >= 0 ? correaSel + 1 : be.correas().size()));
         btnCorreaQuitar.active = correaInicio != null || !be.correas().isEmpty();
         for (ButtonWidget b : grupoAplique) b.visible = pestana == 0;
+        // Zona del aplique ← zona del retazo, con el color que le va a tocar.
+        boolean conRetazo = com.modamod.prenda.Prendas.es(be.getStack(EstiladoBlockEntity.SLOT_RETAZO),
+                com.modamod.prenda.CategoriaDePrenda.APLIQUE);
+        java.util.List<Integer> delRetazo = conRetazo ? com.modamod.aplique.RetazoApliqueItem.colores(be.getStack(EstiladoBlockEntity.SLOT_RETAZO)) : null;
+        for (int z = 0; z < 3; z++) {
+            int desde = be.asignacion(z);
+            int rgb = delRetazo == null ? 0x808080 : delRetazo.get(desde);
+            btnAsignar[z].setMessage(Text.translatable("modamod.estilado.asignar", z + 1, desde + 1)
+                    .append(Text.literal(" ■").styled(st -> st.withColor(rgb))));
+        }
+        btnTenirElegido.active = conRetazo && hay && apliques.get(sel).objeto() == null;
         if (enPrenda.getItem() != ultimaPrendaEspejo) {
             // Cada prenda arranca con su espejo: prendido en las de a pares (borcegos), apagado en el resto.
             ultimaPrendaEspejo = enPrenda.getItem();
