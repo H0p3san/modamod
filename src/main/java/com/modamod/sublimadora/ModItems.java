@@ -102,9 +102,8 @@ public final class ModItems {
                 || stack.getItem() instanceof net.minecraft.item.BannerItem
                 // Máscaras y barbijo (2026-10-24): una foto en el Frente, ver CaraRenderer.
                 || stack.getItem() instanceof com.modamod.item.CaraItem
-                // El cinto (2026-11-03): la placa es el frente y la correa la espalda, ver BandaRenderer.
-                || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
-                        && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CINTURA)
+                // El cinto y el choker (2026-11-03): la placa es el frente y la correa la espalda, ver BandaRenderer.
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
                 // El calzado (2026-11-03): una foto en el costado de afuera de cada bota, ver BorcegosRenderer.
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)
                 // Gorras con visera (2026-10-25): foto en el frente de la copa, ver SombreroRenderer.
