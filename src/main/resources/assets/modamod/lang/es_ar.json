@@ -1624,5 +1624,7 @@
   "item.modamod.banda.cinto": "Cinto",
   "item.modamod.banda.choker": "Choker",
   "item.modamod.molde_capucha_malla": "Molde de capucha: Malla",
-  "item.modamod.molde_capucha_cajas": "Molde de capucha: Cajas"
+  "item.modamod.molde_capucha_cajas": "Molde de capucha: Cajas",
+  "modamod.pattern.liso": "Liso",
+  "modamod.pattern.mas": "… y %s capas más"
 }

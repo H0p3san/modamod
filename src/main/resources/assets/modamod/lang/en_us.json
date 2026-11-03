@@ -1624,5 +1624,7 @@
   "item.modamod.banda.cinto": "Belt",
   "item.modamod.banda.choker": "Choker",
   "item.modamod.molde_capucha_malla": "Hood Pattern: Mesh",
-  "item.modamod.molde_capucha_cajas": "Hood Pattern: Boxes"
+  "item.modamod.molde_capucha_cajas": "Hood Pattern: Boxes",
+  "modamod.pattern.liso": "Plain",
+  "modamod.pattern.mas": "… and %s more layers"
 }

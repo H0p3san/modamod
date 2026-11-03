@@ -59,15 +59,30 @@ public class ClothingTrinketItem extends TrinketItem {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
 
-        tooltip.add(patternLine(stack));
+        lineasDePintura(stack, tooltip);
     }
 
-    /** El nombre del primer molde de Tintes en su color; también lo usa la remera. */
-    public static Text patternLine(ItemStack stack) {
-        RegionResolver.CapaPatron capa = RegionResolver.primerPatron(stack);
-        return capa == null
-                ? Text.translatable("modamod.pattern.none").formatted(Formatting.DARK_GRAY)
-                : Text.translatable("modamod.pattern." + capa.patronId().getPath())
-                        .styled(st -> st.withColor(capa.color() & 0xFFFFFF));
+    /**
+     * Una línea por capa de Tintes, en el orden en que se pintan: "Vichy · Sup. Izq." en el color de la capa. Sin capas,
+     * "Sin patrón". También la usa la remera.
+     */
+    public static void lineasDePintura(ItemStack stack, List<Text> tooltip) {
+        List<RegionResolver.CapaPatron> capas = stack.getOrDefault(ModamodComponents.CAPAS_TINTE, List.of());
+        if (capas.isEmpty()) {
+            tooltip.add(Text.translatable("modamod.pattern.none").formatted(Formatting.DARK_GRAY));
+            return;
+        }
+        int max = 6;
+        for (int i = 0; i < Math.min(max, capas.size()); i++) {
+            RegionResolver.CapaPatron c = capas.get(i);
+            ClothingPatternItem molde = c.lisa() ? null : ClothingPatternItem.porId(c.patronId());
+            Text nombre = molde != null ? molde.getName() : Text.translatable("modamod.pattern.liso");
+            int color = c.color() & 0xFFFFFF;
+            tooltip.add(Text.literal("■ ").styled(st -> st.withColor(color))
+                    .append(nombre.copy().formatted(Formatting.GRAY))
+                    .append(Text.literal(" · ").formatted(Formatting.DARK_GRAY))
+                    .append(Text.translatable(c.region().traduccion()).formatted(Formatting.DARK_GRAY)));
+        }
+        if (capas.size() > max) tooltip.add(Text.translatable("modamod.pattern.mas", capas.size() - max).formatted(Formatting.DARK_GRAY));
     }
 }

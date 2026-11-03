@@ -202,8 +202,8 @@ public class RemeraItem extends Item {
                 Text.translatable("modamod.sublimadora.cuello." + v.cuello().clave))
                 .formatted(Formatting.GRAY));
 
-        // El nombre del primer molde EN su color, igual que las medias.
-        tooltip.add(com.modamod.item.ClothingTrinketItem.patternLine(stack));
+        // Las capas de Tintes, igual que las medias.
+        com.modamod.item.ClothingTrinketItem.lineasDePintura(stack, tooltip);
 
         tooltipEstampa(stack, tooltip);
     }
