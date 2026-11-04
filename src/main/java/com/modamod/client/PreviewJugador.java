@@ -25,6 +25,9 @@ public final class PreviewJugador {
 
     private PreviewJugador() {}
 
+    /** Verdadero mientras el Guardarropas dibuja un outfit con su armadura: ahí la del inventario del cliente es la que se ve. */
+    public static boolean conArmadura;
+
     /**
      * @param anguloGrados 0 = de frente (la pose de siempre), 90/-90 = de
      *                     perfil, 180 = de espaldas — cualquier valor vale,
@@ -92,7 +95,19 @@ public final class PreviewJugador {
         Vector3f vector3f = Float.isNaN(focoY) ? new Vector3f(0.0F, entity.getHeight() / 2.0F, 0.0F)
                 : new Vector3f(0.0F, focoY, 0.0F).rotate(quaternionf).negate();
         float q = size / p;
-        InventoryScreen.drawEntity(context, g, h, q, vector3f, quaternionf, quaternionf2, entity);
+        // Sin su armadura (2026-11-04, "las armaduras no dejan ver ninguna vista previa"): las vistas previas muestran la ropa y
+        // la armadura real la taparía. El Guardarropas pone la del outfit a propósito ({@link #conArmadura}).
+        var armadura = entity instanceof net.minecraft.entity.player.PlayerEntity jug && !conArmadura ? jug.getInventory().armor : null;
+        net.minecraft.item.ItemStack[] puesta = null;
+        if (armadura != null) {
+            puesta = new net.minecraft.item.ItemStack[armadura.size()];
+            for (int i = 0; i < puesta.length; i++) { puesta[i] = armadura.get(i); armadura.set(i, net.minecraft.item.ItemStack.EMPTY); }
+        }
+        try {
+            InventoryScreen.drawEntity(context, g, h, q, vector3f, quaternionf, quaternionf2, entity);
+        } finally {
+            if (armadura != null) for (int i = 0; i < puesta.length; i++) armadura.set(i, puesta[i]);
+        }
 
         entity.bodyYaw = bodyYawViejo;
         entity.setYaw(yawViejo);

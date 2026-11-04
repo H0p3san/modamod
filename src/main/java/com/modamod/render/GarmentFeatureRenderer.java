@@ -243,7 +243,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         calzado = calzadoDe(entidad);
         // La armadura que se ve infla capa, embozo y capucha (2026-10-28, "que la capa embozo y capucha se inflen mas
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
-        usarArmadura(previewOverride != null ? ArmaduraVisible.NINGUNA
+        usarArmadura(previewOverride != null ? (com.modamod.client.PreviewJugador.conArmadura
+                        ? ArmaduraVisible.de(entidad::getEquippedStack, 0) : ArmaduraVisible.NINGUNA)
                 : ArmaduraVisible.de(slot -> piezaVisible(entidad, slot), com.modamod.ropa.ListaDeRopa.prendasSobreLaArmadura(entidad)),
                 prendas.size());
         // Tela blanda de los apliques (2026-10-04): la inercia de esta entidad, o la de la vista previa.

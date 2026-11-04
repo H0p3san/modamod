@@ -206,8 +206,10 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
             for (int z = 0; z < armadura.length; z++) {
                 if (!armadura[z].isEmpty()) puesta.set(com.modamod.ropa.Cosmeticos.ZONAS[z].getEntitySlotId(), armadura[z]);
             }
+            PreviewJugador.conArmadura = true;
             PreviewJugador.dibujar(context, jugador, x1, y1, x2, y2, 35, angulo, (float) mouseY);
         } finally {
+            PreviewJugador.conArmadura = false;
             GarmentFeatureRenderer.previewOverride = null;
             GarmentFeatureRenderer.sombreroOverride = null;
             GarmentFeatureRenderer.calzadoOverride = null;
