@@ -628,13 +628,23 @@ public final class ApliqueRenderer {
             RenderUtil.translateAwayFromPivotPoint(matrices, cubo);
             Matrix4f pos = matrices.peek().getPositionMatrix();
             Matrix3f normales = matrices.peek().getNormalMatrix();
+            // Espejo (2026-11-04, "si los miro de abajo ahí están iluminadas"): la vista previa escala (s, s, −s) y una
+            // matriz con determinante negativo devuelve las normales al revés (la inversa transpuesta de un espejo
+            // invierte el sentido), así que el parche quedaba iluminado por detrás. En el mundo el jugador va con
+            // (−1, −1, 1): dos espejos, determinante positivo, nada que corregir.
+            float signo = pos.determinant() < 0f ? -1f : 1f;
             for (GeoQuad quad : cubo.quads()) {
                 if (quad == null) continue;
                 if (zonaTrama >= 0 && zonaDe(quad) != zonaTrama) continue;
                 // Normalizada (2026-11-04, "los apliques salen oscuros en la vista previa"): la matriz de normales de la pila no
                 // viene normalizada cuando la escala no es pareja (la vista de la GUI escala (s, s, -s)), y la luz del shader
                 // espera normales unitarias: sin esto, 1/s de luz = casi negro.
-                Vector3f nq = normales.transform(new Vector3f(quad.normal()));
+                Vector3f nl = new Vector3f(quad.normal());
+                // Un aplique es un parche PEGADO a una superficie y su +Z mira hacia adentro de ella (ver "atrás" en
+                // dibujarApoyado): la cara de adelante tiene que mirar hacia afuera, pase lo que pase en el .geo.json
+                // ("algunos salen más oscuros, en la pollera más claros que en la gorra" = cada modelo con su sentido).
+                if (Math.abs(nl.z) >= Math.abs(nl.x) && Math.abs(nl.z) >= Math.abs(nl.y) && nl.z > 0f) nl.negate();
+                Vector3f nq = normales.transform(nl).mul(signo);
                 if (nq.lengthSquared() > 1e-12f) nq.normalize();
                 float ax = Math.abs(quad.normal().x()), ay = Math.abs(quad.normal().y()), az = Math.abs(quad.normal().z());
                 for (GeoVertex v : quad.vertices()) {

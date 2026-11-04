@@ -288,8 +288,10 @@ public final class PolleraMalla {
                 float vv = Float.isNaN(vDesde) ? perfil.v[f] : vDesde + (vHasta - vDesde) * t;
                 if (hem == com.modamod.item.Ruedo.PIEL && Float.isNaN(vDesde)) {
                     // La franja de piel usa la última fila de la tira de la tela (31..32), la pollera lo de arriba (20..31).
+                    // La franja de piel se queda DENTRO de la última fila de tela (v 31..32): pasarse de 32 lee la fila 32
+                    // de pollera_tela.png, que es transparente, y el ruedo salía medio invisible.
                     float tope = perfil.vAlto * perfil.fraccion[FILAS - 3];
-                    vv = f >= FILAS - 2 ? 31f + (f - (FILAS - 2)) / 2f
+                    vv = f >= FILAS - 2 ? 31f + (f - (FILAS - 2)) * 0.49f
                             : 20f + (vv - 20f) * Math.min(1f, 11f / Math.max(1f, tope));
                 }
                 v[4] = vv / 64f;

@@ -1156,13 +1156,28 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static void dibujarBoca(Parte parte, boolean slim, Identifier textura, float dil, float dilInterior, float interno,
                                     int filaTextura, float y, ModelPart delModelo, MatrixStack matrices,
                                     VertexConsumerProvider vertexConsumers, int luz) {
-        if (dil <= 0.02F || dil - dilInterior <= 0.02F) return;
+        dibujarBoca(parte, slim, textura, dil, dilInterior, interno, filaTextura, y, 0F, delModelo, matrices, vertexConsumers, luz);
+    }
+
+    /**
+     * La ley del escalonado (2026-11-04, "debería haber alguna ley en todas las prendas sobre completar el escalonado"):
+     * con {@code hacia} distinto de 0 esto es el anillo de un ESCALÓN entre dos filas, no la boca de la prenda contra el
+     * cuerpo. Dos diferencias: se dibuja por chica que sea la diferencia (una boca de menos de 0,02 px no se ve, pero un
+     * escalón de 0,03 px deja pasar la luz igual — "cortes muy pequeños incluso en partes no escalonadas"), y la normal
+     * apunta hacia donde mira el anillo ({@code +1} abajo, {@code -1} arriba; en el modelo +y es hacia abajo), así no
+     * queda iluminado al revés. El contorno de adentro vale negativo (una fila Ajustado está por dentro de la piel).
+     */
+    private static void dibujarBoca(Parte parte, boolean slim, Identifier textura, float dil, float dilInterior, float interno,
+                                    int filaTextura, float y, float hacia, ModelPart delModelo, MatrixStack matrices,
+                                    VertexConsumerProvider vertexConsumers, int luz) {
+        boolean escalon = hacia != 0F;
+        if (escalon ? dil - dilInterior <= 0.002F : (dil <= 0.02F || dil - dilInterior <= 0.02F)) return;
         float[] c = ApliqueRenderer.caja(parte, slim);
         float x0 = c[0], y0 = c[1], z0 = c[2], w = c[3], d = c[5];
         float[] cx = CuerpoGeometria.costadosX(parte, dil, interno);
         float ox0 = x0 - cx[0], ox1 = x0 + w + cx[1], oz0 = z0 - dil, oz1 = z0 + d + dil;
         float ix0 = x0, ix1 = x0 + w, iz0 = z0, iz1 = z0 + d;
-        if (dilInterior > 0F) {
+        if (escalon || dilInterior > 0F) {
             float[] ci = CuerpoGeometria.costadosX(parte, dilInterior, interno);
             ix0 = x0 - ci[0];
             ix1 = x0 + w + ci[1];
@@ -1186,17 +1201,24 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         delModelo.rotate(matrices);
         MatrixStack.Entry e = matrices.peek();
         VertexConsumer vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(textura));
+        float ny = hacia < 0F ? -1F : 1F;
         // Frente (z mínimo), espalda (z máximo) y los dos costados: trapecios entre los dos contornos.
-        bocaQuad(vc, e, luz, v, ox0, oz0, ox1, oz0, ix1, iz0, ix0, iz0, yy, uFrente, uFrente + ancho);
-        bocaQuad(vc, e, luz, v, ox1, oz1, ox0, oz1, ix0, iz1, ix1, iz1, yy, uAtras, uAtras + ancho);
-        bocaQuad(vc, e, luz, v, ox1, oz0, ox1, oz1, ix1, iz1, ix1, iz0, yy, uDer, uDer + hondo);
-        bocaQuad(vc, e, luz, v, ox0, oz1, ox0, oz0, ix0, iz0, ix0, iz1, yy, uIzq, uIzq + hondo);
+        bocaQuad(vc, e, luz, v, ox0, oz0, ox1, oz0, ix1, iz0, ix0, iz0, yy, uFrente, uFrente + ancho, ny);
+        bocaQuad(vc, e, luz, v, ox1, oz1, ox0, oz1, ix0, iz1, ix1, iz1, yy, uAtras, uAtras + ancho, ny);
+        bocaQuad(vc, e, luz, v, ox1, oz0, ox1, oz1, ix1, iz1, ix1, iz0, yy, uDer, uDer + hondo, ny);
+        bocaQuad(vc, e, luz, v, ox0, oz1, ox0, oz0, ix0, iz0, ix0, iz1, yy, uIzq, uIzq + hondo, ny);
         matrices.pop();
     }
 
     private static void bocaQuad(VertexConsumer vc, MatrixStack.Entry e, int luz, float v,
                                  float ax, float az, float bx, float bz, float cx, float cz, float dx, float dz,
                                  float y, float u0, float u1) {
+        bocaQuad(vc, e, luz, v, ax, az, bx, bz, cx, cz, dx, dz, y, u0, u1, 1F);
+    }
+
+    private static void bocaQuad(VertexConsumer vc, MatrixStack.Entry e, int luz, float v,
+                                 float ax, float az, float bx, float bz, float cx, float cz, float dx, float dz,
+                                 float y, float u0, float u1, float ny) {
         float[][] p = {{ax, az, u0}, {bx, bz, u1}, {cx, cz, u1}, {dx, dz, u0}};
         for (float[] q : p) {
             vc.vertex(e.getPositionMatrix(), q[0] / 16F, y, q[1] / 16F)
@@ -1204,7 +1226,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     .texture(q[2] / 64F, v)
                     .overlay(OverlayTexture.DEFAULT_UV)
                     .light(luz)
-                    .normal(e, 0F, 1F, 0F);
+                    .normal(e, 0F, ny, 0F);
         }
     }
 
@@ -1357,9 +1379,23 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 ModelPart fruncida = pieza.fruncido() || pieza.fruncidoSup()
                         ? CuerpoGeometria.telaFruncidaVolumen(parte, base, desde, hasta, pieza.fruncido(), pieza.fruncidoSup(),
                                 conPuntaDeMedia(pieza, parte)) : null;
+                float[] dilMedia = filasDeMedia(pieza, base, desde, hasta);
                 dibujarModelPart(fruncida != null ? fruncida
-                                : CuerpoGeometria.telaConVolumenDePierna(parte, filasDeMedia(pieza, base, desde, hasta), conPuntaDeMedia(pieza, parte), desde, hasta),
+                                : CuerpoGeometria.telaConVolumenDePierna(parte, dilMedia, conPuntaDeMedia(pieza, parte), desde, hasta),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
+                // La misma ley del escalonado que las prendas de cajas: el perfil del muslo y el ribete de piel mueven la
+                // holgura fila por fila y cada escalón necesita su anillo (antes se cerraban en la geometría con una tapa
+                // que tomaba el UV de la tapa de la pierna — transparente en una media que no llega a la cadera).
+                if (fruncida == null) {
+                    for (int f = desde; f < hasta - 1; f++) {
+                        float sup = dilMedia[f], inf = dilMedia[f + 1];
+                        if (Math.abs(sup - inf) > 0.002F) {
+                            dibujarBoca(parte, slim, pieza.textura(), Math.max(sup, inf), Math.min(sup, inf), -1F,
+                                    sup > inf ? f : f + 1, f + 1, sup > inf ? 1F : -1F,
+                                    delModelo, matrices, vertexConsumers, luz);
+                        }
+                    }
+                }
                 for (int f = desde; f < hasta; f++) exterior[f] = Math.max(exterior[f], base);
                 continue;
             }
@@ -1374,6 +1410,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             int colgado = ruedoLibre ? calce.colgado : 0;
             // Una pierna entera no cuelga por debajo del pie (quedaría enterrada).
             if (pierna && hasta >= 12) colgado = 0;
+            // Un guante tampoco cuelga por debajo de la mano (2026-11-04, "¿cómo tapo las tapas?"): colgando, la tela
+            // pasaba la mano con la boca abierta y la tapa de la mano no se dibujaba (pide colgado == 0).
+            boolean guante = pieza.capa() == Capa.MANGA_INTERIOR
+                    && (parte == Parte.BRAZO_DER || parte == Parte.BRAZO_IZQ) && hasta >= 12;
+            if (guante) colgado = 0;
             if (cana > 0 && !botamangaAfuera) colgado = 0;     // la botamanga cortada no cuelga sobre el calzado
             if (hasta == desde) colgado = 0;
             // Elástico (puños y ruedo del hoodie): la banda sostiene la tela,
@@ -1485,7 +1526,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                 ? CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
                                         costadoInterno ? interno : -1F)
                                 : CuerpoGeometria.telaPorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F, pieza.capa() == Capa.MANGA_INTERIOR && esBrazo, desde),
+                                        costadoInterno ? interno : -1F, guante),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
             }
             // Los escalones hacia adentro (el puño o el ruedo elástico aprietan de golpe): el borde de la fila de arriba
@@ -1497,10 +1538,13 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     // escalonados por el ensanchamiento de la prenda... procedural"): la cara que une dos filas con
                     // distinta holgura se genera sola entre los dos contornos, sin mirar capturas caso por caso.
                     float sup = fila[f], inf = fila[f + 1];
-                    if (Math.abs(sup - inf) > 0.03F) {
+                    // Cualquier diferencia, no solo las que se ven de lejos (2026-11-04, "cortes muy pequeños pero
+                    // incluso en partes no escalonadas"): el escalonado del calce mueve las filas por centésimas y
+                    // esas rendijas también dejan ver el interior.
+                    if (Math.abs(sup - inf) > 0.002F) {
                         dibujarBoca(parte, slim, pieza.textura(), Math.max(sup, inf), Math.min(sup, inf),
-                                costadoInterno ? interno : -1F, sup > inf ? f : f + 1, f + 1, delModelo, matrices,
-                                vertexConsumers, luz);
+                                costadoInterno ? interno : -1F, sup > inf ? f : f + 1, f + 1, sup > inf ? 1F : -1F,
+                                delModelo, matrices, vertexConsumers, luz);
                     }
                 }
             }

@@ -60,6 +60,10 @@ final class SombreroMalla {
         int zona;
         float yBase, cx, cz;
         Quads base;
+        /** El perfil crudo (de abajo hacia arriba o al revés, como venga en el JSON) y sus columnas: lo usa {@link #piel}. */
+        Anillo[] anillos;
+        int columnas;
+        float[] escalaCol;
         List<Tramo> punta = new ArrayList<>();
         List<SombreroRenderer.Caja> apoyo = new ArrayList<>();
         /** Las mismas cajas gruesas como cuadros (se arma al primer pedido): el sombrero de cuboides. */
@@ -108,6 +112,9 @@ final class SombreroMalla {
                 }
             }
             Anillo[] anillos = anillos(j.getAsJsonArray("anillos"));
+            p.anillos = anillos;
+            p.columnas = cols;
+            p.escalaCol = escala;
             boolean plana = zonaEsAla(j) && !id.equals("vincha") && !id.equals("cofia");   // las alas planas miran hacia arriba y hacia abajo
             p.base = construir(anillos, cols, escala, dy, solo, cierre, grosor, p.yBase, p.cx, p.cz, plana);
             if (j.has("punta") && j.get("punta").isJsonArray()) {
@@ -129,6 +136,59 @@ final class SombreroMalla {
             org.slf4j.LoggerFactory.getLogger("modamod").warn("Sombrero: no se pudo leer la pieza {}/{}", carpeta, id, e);
             return null;
         }
+    }
+
+    /** Cuánto se mete la banda de piel DENTRO de la copa, para que no quede una rendija en la costura. */
+    private static final float PIEL_DENTRO = 0.15f;
+
+    private static final Map<String, Pieza> PIELES = new HashMap<>();
+
+    /**
+     * La cinta como banda de PIEL (2026-11-04, "debería conectar con el sombrero, no quedar como una cinta que lo rodea a
+     * cierta distancia sin planos en up y down"): en vez de empujar cada vértice de la cinta por su normal — que la
+     * separaba de la copa y la dejaba como un aro hueco — se arma un perfil CERRADO: borde de adentro pegado a la copa,
+     * pared de afuera a {@code grosor} px siguiendo la forma de la cinta, y las dos tapas (arriba y abajo) que las unen.
+     * Crece hacia afuera y hacia ABAJO (la piel cuelga): hacia arriba la copa se angosta y el borde de adentro quedaría
+     * por fuera de ella.
+     */
+    static Pieza piel(@org.jetbrains.annotations.Nullable Pieza cinta, float grosor, float alto) {
+        if (cinta == null || cinta.anillos == null || cinta.anillos.length < 2) return cinta;
+        String clave = cinta.id + "|" + grosor + "|" + alto;
+        Pieza hecha = PIELES.get(clave);
+        if (hecha != null) return hecha;
+        // De abajo (y mayor: +y es hacia abajo) hacia arriba.
+        Anillo[] a = cinta.anillos;
+        if (a[0].y() < a[a.length - 1].y()) {
+            Anillo[] r = new Anillo[a.length];
+            for (int i = 0; i < a.length; i++) r[i] = a[a.length - 1 - i];
+            a = r;
+        }
+        Anillo abajo = a[0], arriba = a[a.length - 1];
+        List<Anillo> perfil = new ArrayList<>(a.length + 2);
+        perfil.add(new Anillo(abajo.y() + alto, abajo.rx() - PIEL_DENTRO, abajo.rz() - PIEL_DENTRO));
+        perfil.add(new Anillo(abajo.y() + alto, abajo.rx() + grosor, abajo.rz() + grosor));
+        for (Anillo an : a) perfil.add(new Anillo(an.y(), an.rx() + grosor, an.rz() + grosor));
+        perfil.add(new Anillo(arriba.y(), arriba.rx() - PIEL_DENTRO, arriba.rz() - PIEL_DENTRO));
+
+        Pieza p = new Pieza();
+        p.id = cinta.id + "_piel";
+        p.zona = cinta.zona;
+        p.yBase = cinta.yBase;
+        p.cx = cinta.cx;
+        p.cz = cinta.cz;
+        p.anillos = perfil.toArray(new Anillo[0]);
+        p.columnas = cinta.columnas;
+        p.escalaCol = cinta.escalaCol;
+        p.base = construir(p.anillos, cinta.columnas, cinta.escalaCol, null, null, "abierto", 0f,
+                cinta.yBase, cinta.cx, cinta.cz, false);
+        // Las cajas de apoyo (clicks en la Mesa de estilado) crecen lo mismo que la banda.
+        for (SombreroRenderer.Caja c : cinta.apoyo) {
+            p.apoyo.add(new SombreroRenderer.Caja(c.zona(),
+                    new float[] {c.min()[0] - grosor, c.min()[1], c.min()[2] - grosor},
+                    new float[] {c.max()[0] + grosor, c.max()[1] + alto, c.max()[2] + grosor}));
+        }
+        PIELES.put(clave, p);
+        return p;
     }
 
     private static boolean zonaEsAla(JsonObject j) {
@@ -352,17 +412,11 @@ final class SombreroMalla {
      * la copa elegida; {@code pitch}/{@code roll} son lo que la tela blanda le suma a cada tramo de la punta.
      */
     static void dibujar(Pieza p, float dy, MatrixStackLike m, VertexConsumer vc, int luz, float pitch, float roll, boolean cuboides) {
-        dibujar(p, dy, m, vc, luz, pitch, roll, cuboides, 0f);
-    }
-
-    /** {@code infla}: px que se empuja cada vértice por su normal (la banda de piel gruesa). */
-    static void dibujar(Pieza p, float dy, MatrixStackLike m, VertexConsumer vc, int luz, float pitch, float roll, boolean cuboides,
-                        float infla) {
         if (cuboides) {
-            emitir(cuboides(p), dy, m, vc, luz, null, infla);
+            emitir(cuboides(p), dy, m, vc, luz, null);
             return;
         }
-        emitir(p.base, dy, m, vc, luz, null, infla);
+        emitir(p.base, dy, m, vc, luz, null);
         for (int i = 0; i < p.punta.size(); i++) {
             Tramo t = p.punta.get(i);
             // El tramo gira sobre su pivote y después lo arrastran los de abajo (la cadena anidada).
@@ -373,7 +427,7 @@ final class SombreroMalla {
                 giros.add(new Quaternionf().rotationZYX(roll * 0.5f, 0f, u.inclinacion + pitch * 0.5f));
                 pivotes.add(new float[] {0f, u.pivoteY, 0f});
             }
-            emitir(t.quads, dy, m, vc, luz, new Object[] {giros, pivotes}, infla);
+            emitir(t.quads, dy, m, vc, luz, new Object[] {giros, pivotes});
         }
     }
 
@@ -448,27 +502,12 @@ final class SombreroMalla {
 
     @SuppressWarnings("unchecked")
     private static void emitir(Quads q, float dy, MatrixStackLike m, VertexConsumer vc, int luz, Object[] cadena) {
-        emitir(q, dy, m, vc, luz, cadena, 0f);
-    }
-
-    private static void emitir(Quads q, float dy, MatrixStackLike m, VertexConsumer vc, int luz, Object[] cadena, float infla) {
         List<Quaternionf> giros = cadena == null ? null : (List<Quaternionf>) cadena[0];
         List<float[]> pivotes = cadena == null ? null : (List<float[]>) cadena[1];
         Vector3f v = new Vector3f(), nv = new Vector3f();
-        float centroY = 0f;
-        if (infla != 0f && q.vertices > 0) {
-            float mn = Float.MAX_VALUE, mx = -Float.MAX_VALUE;
-            for (int i = 0; i < q.vertices; i++) { mn = Math.min(mn, q.pos[i * 3 + 1]); mx = Math.max(mx, q.pos[i * 3 + 1]); }
-            centroY = (mn + mx) / 2f;
-        }
         for (int i = 0; i < q.vertices; i++) {
             v.set(q.pos[i * 3], q.pos[i * 3 + 1], q.pos[i * 3 + 2]);
             nv.set(q.nor[i * 3], q.nor[i * 3 + 1], q.nor[i * 3 + 2]);
-            if (infla != 0f) {
-            // La piel engorda hacia afuera y se estira a lo alto desde su centro, así abraza la copa en vez de flotar como un aro.
-            v.fma(infla, nv);
-            v.y = centroY + (v.y - centroY) * (1f + infla * 0.9f);
-        }
             if (giros != null) {
                 for (int k = 0; k < giros.size(); k++) {
                     float[] pv = pivotes.get(k);

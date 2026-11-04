@@ -36,8 +36,14 @@ public final class BandaRenderer {
     /** El collar más angosto y un píxel más arriba que el original (2026-10-11, "el choker esta muy ancho y no se si deberia elevarse un poquito mas"). */
     private static final float ANCHO_COLLAR = 10.6f;
 
-    private static float hx(BandaZona z, float dil) { return (z == BandaZona.CINTURA ? 4f : COLLAR_HX) + dil; }
-    private static float hz(BandaZona z, float dil) { return (z == BandaZona.CINTURA ? 2f : COLLAR_HZ) + dil; }
+    /**
+     * El radio de ADENTRO de la banda. El grosor del cinto crece hacia adentro (2026-11-04, "sigue notándose el grosor,
+     * en pegado debería parecer parte de la skin y en ajustado terminar antes del borde de la skin"): así su plano de
+     * AFUERA queda exactamente en la piel + la holgura del calce, igual que la tela de una prenda — Pegado al ras de la
+     * piel, Ajustado por debajo de ella y Suelto/Oversize separados.
+     */
+    private static float hx(BandaZona z, float dil) { return (z == BandaZona.CINTURA ? 4f - GROSOR : COLLAR_HX) + dil; }
+    private static float hz(BandaZona z, float dil) { return (z == BandaZona.CINTURA ? 2f - GROSOR : COLLAR_HZ) + dil; }
     private static float grosor(BandaZona z) { return z == BandaZona.CINTURA ? GROSOR : COLLAR_GROSOR; }
 
     public static void dibujar(ItemStack banda, BipedEntityModel<?> biped, MatrixStack matrices,

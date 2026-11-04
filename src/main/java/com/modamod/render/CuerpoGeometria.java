@@ -493,37 +493,12 @@ public final class CuerpoGeometria {
                     dil, 0F, dil,
                     false, texW, texW, caras));
         }
-        float[] exV = new float[12], oxV = new float[12], dzV = new float[12];
-        for (int f = 0; f < 12; f++) { exV[f] = dzV[f] = dilFila[f] * S; }
-        cerrarEscalones(cuboides, dilFila, desde, hasta, uvX, uvY, -2 * S, 0, -2 * S, 4 * S, 4 * S, exV, oxV, dzV, texW);
-        cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
+        // La planta y la punta solo si la tela llega al pie (2026-11-04): una media cortada más arriba las dejaba
+        // dibujadas al final de la pierna, contando con que su textura fuera transparente ahí.
+        if (hasta >= 12) cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
         ModelPart resultado = new ModelPart(cuboides, java.util.Map.of());
         RAICES_TELA_VOLUMEN.put(key, resultado);
         return resultado;
-    }
-
-    /**
-     * La ley del escalonado (2026-11-04, "debería haber alguna ley en todas las prendas sobre completar el escalonado"): donde
-     * dos filas vecinas de una prenda de cajas tienen distinta holgura, la más grande deja un pedazo de su borde a la vista
-     * (el escalón); sin una cara que lo cierre se ve a través. Se cierra con una cara horizontal sin alto, del tamaño de la fila
-     * más grande: hacia arriba si la de abajo es la más grande, hacia abajo si es la de arriba. Solo entre filas con tela
-     * ({@code desde ≤ fila < hasta}); el UV es el de la tapa de la parte, que lleva el mismo color de la prenda.
-     *
-     * @param ex  holgura en x de cada fila (px de textura), {@code ox} su corrimiento en x, {@code dz} la holgura en z
-     */
-    private static void cerrarEscalones(java.util.List<ModelPart.Cuboid> out, float[] dilFila, int desde, int hasta,
-                                        int uvX, int uvY, float originX, float originY, float originZ, float sizeX, float sizeZ,
-                                        float[] ex, float[] ox, float[] dz, float texW) {
-        final int S = Superficie.TELA.escala;
-        for (int f = Math.max(0, desde); f + 1 < Math.min(12, hasta); f++) {
-            float d = dilFila[f + 1] - dilFila[f];
-            if (Math.abs(d) < 0.05F) continue;
-            int grande = d > 0 ? f + 1 : f;
-            // Direction.DOWN = la cara de arriba, UP = la de abajo (nombres invertidos, ver telaPorFilas).
-            net.minecraft.util.math.Direction cara = d > 0 ? net.minecraft.util.math.Direction.DOWN : net.minecraft.util.math.Direction.UP;
-            out.add(new ModelPart.Cuboid(uvX, uvY, originX + ox[grande], originY + (f + 1) * S, originZ, sizeX, 0F, sizeZ,
-                    ex[grande], 0F, dz[grande], false, texW, texW, java.util.EnumSet.of(cara)));
-        }
     }
 
     /** Cuánto sobresale (px) la punta de tela de la de la piel en y, para que sus caras de arriba nunca coincidan. */
@@ -565,11 +540,14 @@ public final class CuerpoGeometria {
                 false, texW, texW, java.util.EnumSet.complementOf(java.util.EnumSet.of(net.minecraft.util.math.Direction.UP))));
         // Planta de la punta: sin altura, solo la cara de abajo, con el UV corrido para que
         // caiga en los primeros 3px de la tapa de abajo de la pierna (la del pie de verdad).
+        // La holgura del pie va en el ORIGEN y no como extra en z (2026-11-04, "z fighting en la planta"): con el extra, la
+        // planta de la punta se estiraba hacia atrás por debajo de la planta de la pierna y las dos caras quedaban a la
+        // misma altura, pisándose. Así el borde de atrás de la punta termina justo donde arranca la de la pierna.
         cuboides.add(new ModelPart.Cuboid(
                 uvX + 8 * S - prof - 4 * S, uvY,
-                -2 * S, 12 * S, -2 * S - prof,
-                4 * S, 0, prof,
-                dilPie, 0F, dilPie,
+                -2 * S, 12 * S, -2 * S - prof - dilPie + inset,
+                4 * S, 0, prof - inset,
+                dilPie, 0F, 0F,
                 false, texW, texW, java.util.EnumSet.of(net.minecraft.util.math.Direction.UP)));
         return cuboides;
     }
@@ -801,14 +779,8 @@ public final class CuerpoGeometria {
     /** {@code tapaMano}: un guante (calientabrazos que llega a la mano) cierra también la tapa de abajo del brazo. */
     public static ModelPart telaPorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
                                          float dilColgado, float interno, boolean tapaMano) {
-        return telaPorFilas(parte, slim, dilFila, hasta, colgado, dilColgado, interno, tapaMano, 0);
-    }
-
-    /** {@code desde}: primera fila con tela; los escalones solo se cierran entre filas con tela. */
-    public static ModelPart telaPorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
-                                         float dilColgado, float interno, boolean tapaMano, int desde) {
         String key = parte.clave() + "|" + slim + "|" + java.util.Arrays.toString(dilFila) + "|" + hasta
-                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano + "|" + desde;
+                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano;
         ModelPart cacheada = RAICES_TELA_POR_FILAS.get(key);
         if (cacheada != null) return cacheada;
         // Cada combinación de calces/largos/capas es una entrada: tope para
@@ -838,16 +810,6 @@ public final class CuerpoGeometria {
                     ex, 0F, dil,
                     false, texW, texW, costados));
         }
-
-        float[] exF = new float[12], oxF = new float[12], dzF = new float[12];
-        for (int f = 0; f < 12; f++) {
-            float[] c = costadosX(parte, dilFila[f], interno);
-            exF[f] = (c[0] + c[1]) / 2F * S;
-            oxF[f] = (c[1] - c[0]) / 2F * S;
-            dzF[f] = dilFila[f] * S;
-        }
-        cerrarEscalones(cuboides, dilFila, desde, hasta, t.uvX(), t.uvY(), t.originX(), t.originY(), t.originZ(), t.sizeX(), t.sizeZ(),
-                exF, oxF, dzF, texW);
 
         // Tapa de arriba (Direction.DOWN = arriba, nombres invertidos) a -dil,
         // como la caja entera, más la tira que cierra el costado hasta la fila 0.
@@ -1335,17 +1297,21 @@ public final class CuerpoGeometria {
         float dilSuela = (11 >= desde && 11 < hasta)
                 ? (dilTelaFila(dilatacionBase, 11) - MARGEN_PIEL) * S
                 : dilTelaFila(dilatacionBase, 11) * S;
+        // Un pelo más arriba que la planta de la tela (2026-11-04, "z fighting en la planta"): MARGEN_PIEL solo corría en
+        // x/z, así que las dos plantas quedaban a la misma altura y se pisaban en toda la pisada.
+        float dentro = MARGEN_PIEL * S;
         cuboides.add(new ModelPart.Cuboid(
                 t.uvX(), t.uvY(),
                 t.originX(), 0, t.originZ(),
-                t.sizeX(), 12 * S, t.sizeZ(),
+                t.sizeX(), 12 * S - dentro, t.sizeZ(),
                 dilSuela, 0F, dilSuela,
                 false, texW, texW, java.util.EnumSet.of(net.minecraft.util.math.Direction.UP)));
+        // Igual que la de tela: la holgura en el origen, para no pisar la planta de la pierna.
         if (conPunta) cuboides.add(new ModelPart.Cuboid(
                 t.uvX() + 8 * S - 3 * S - t.sizeX(), t.uvY(),
-                t.originX(), 12 * S, t.originZ() - 3 * S,
+                t.originX(), 12 * S - dentro, t.originZ() - 3 * S - dilSuela,
                 t.sizeX(), 0, 3 * S,
-                dilSuela, 0F, dilSuela,
+                dilSuela, 0F, 0F,
                 false, texW, texW, java.util.EnumSet.of(net.minecraft.util.math.Direction.UP)));
         // Piel adentro de la punta de la media (si no, el pie queda hueco): mismo acomodo
         // de UV que la punta de tela, a escala de cuerpo.
