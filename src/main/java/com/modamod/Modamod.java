@@ -393,7 +393,6 @@ public class Modamod implements ModInitializer {
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_CANA_BAJA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_CANA_ALTA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_SUELA_PLATAFORMA);
-            entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_BOTAMANGA_AFUERA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_CANA_BOTA_ALTA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_CANA_ZAPATO);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BORCEGO_CANA_MOCASIN);

@@ -265,8 +265,6 @@ public final class ModeladoMod {
             MoldeBorcegoItem.Tipo.CANA_ALTA);
     public static final MoldeBorcegoItem MOLDE_BORCEGO_SUELA_PLATAFORMA = new MoldeBorcegoItem(new Item.Settings().maxCount(1),
             MoldeBorcegoItem.Tipo.SUELA_PLATAFORMA);
-    public static final MoldeBorcegoItem MOLDE_BORCEGO_BOTAMANGA_AFUERA = new MoldeBorcegoItem(new Item.Settings().maxCount(1),
-            MoldeBorcegoItem.Tipo.BOTAMANGA_AFUERA);
     // Calzado del zip de Claude Design (2026-10-14): capelladas, suelas, puntas, cierres y detalles.
     public static final MoldeBorcegoItem MOLDE_BORCEGO_CANA_BOTA_ALTA = new MoldeBorcegoItem(new Item.Settings().maxCount(1),
             MoldeBorcegoItem.Tipo.CANA_BOTA_ALTA);
@@ -481,7 +479,6 @@ public final class ModeladoMod {
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_cana_baja"), MOLDE_BORCEGO_CANA_BAJA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_cana_alta"), MOLDE_BORCEGO_CANA_ALTA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_suela_plataforma"), MOLDE_BORCEGO_SUELA_PLATAFORMA);
-        Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_botamanga_afuera"), MOLDE_BORCEGO_BOTAMANGA_AFUERA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_cana_bota_alta"), MOLDE_BORCEGO_CANA_BOTA_ALTA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_cana_zapato"), MOLDE_BORCEGO_CANA_ZAPATO);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_borcego_cana_mocasin"), MOLDE_BORCEGO_CANA_MOCASIN);

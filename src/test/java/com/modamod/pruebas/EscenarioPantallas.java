@@ -163,42 +163,9 @@ public final class EscenarioPantallas {
                     + " | estado=" + modeladora(c, be -> be.estado() + " tijera=" + be.tijeraOk())
                     + " | procesar directo=" + modeladora(c, be -> { try { var m = ModeladoBlockEntity.class.getDeclaredMethod("procesar", ItemStack.class); m.setAccessible(true); return com.modamod.prenda.Corte.get((ItemStack) m.invoke(be, new ItemStack(ModamodItems.SOCKS_SOLID)), com.modamod.prenda.Ejes.RUEDOS); } catch (Exception e) { return e.toString(); } }));
         });
-        // ── Modeladora: pin "Pant leg" (botamanga) del calzado con el molde en blanco (reporte 2026-10-19) ─────────────
+        // ── (el pin "Pant leg" del calzado se sacó el 2026-11-04: la botamanga la decide el orden de la lista de ropa) ──
         r.hacer("retirar las medias", 0, c -> modeladora(c, be -> { be.setStack(ModeladoBlockEntity.SALIDA, ItemStack.EMPTY); return null; }));
         r.paso("la maquina vuelve a reposo (calzado)", c -> modeladora(c, be -> be.estado() == ModeladoBlockEntity.Estado.REPOSO));
-        r.hacer("reabrir Modeladora para el calzado", 0, c -> { if (!(c.currentScreen instanceof ModeladoScreen)) abrirModeladora(c); });
-        r.paso("pantalla lista para el calzado", c -> c.currentScreen instanceof ModeladoScreen);
-        r.hacer("cargar borcegos y moldes de botamanga", 5, c -> modeladora(c, be -> {
-            be.setStack(ModeladoBlockEntity.PRENDA, new ItemStack(ModamodItems.BORCEGOS));
-            be.absorber(new ItemStack(ModeladoMod.MOLDE_EN_BLANCO));
-            be.absorber(new ItemStack(ModeladoMod.MOLDE_BORCEGO_BOTAMANGA_AFUERA));
-            return null;
-        }));
-        irACategoria(r, Categoria.CALZADO);
-        int[] pantLeg = {-1};
-        r.hacer("buscar el pin Pant leg izquierdo", 0, c -> {
-            for (int i = 0; i < ModeladoBlockEntity.PINES_POR_CATEGORIA; i++) {
-                if (ModeladoBlockEntity.ROLES[Categoria.CALZADO.ordinal()][i] == ModeladoBlockEntity.Rol.BOTAMANGA_BORCEGO_IZQ) pantLeg[0] = i;
-            }
-            verificar(pantLeg[0] >= 0, "Calzado no tiene el pin de botamanga izquierda");
-            verificar(ModeladoBlockEntity.pinAcepta(Categoria.CALZADO, pantLeg[0], new ItemStack(ModeladoMod.MOLDE_BORCEGO_BOTAMANGA_AFUERA)),
-                    "el pin Pant leg no acepta el molde de botamanga afuera");
-        });
-        r.hacer("el pin Pant leg acepta el molde en blanco", 0, c -> verificar(
-                ModeladoBlockEntity.pinAcepta(Categoria.CALZADO, pantLeg[0], new ItemStack(ModeladoMod.MOLDE_EN_BLANCO)),
-                "el molde en blanco NO entra en el pin Pant leg (no se puede volver la botamanga a adentro)"));
-        r.hacer("poner botamanga afuera", 10, c -> ClientPlayNetworking.send(new ElegirMoldePayload(posModeladora, pantLeg[0],
-                Registries.ITEM.getId(ModeladoMod.MOLDE_BORCEGO_BOTAMANGA_AFUERA), ElegirMoldePayload.ELEGIR)));
-        r.paso("pin Pant leg fijado con afuera", c -> modeladora(c, be -> be.pinCombo(Categoria.CALZADO.ordinal() * ModeladoBlockEntity.PINES_POR_CATEGORIA + pantLeg[0]) != null));
-        r.hacer("poner el molde en blanco en el mismo pin", 10, c -> ClientPlayNetworking.send(new ElegirMoldePayload(posModeladora, pantLeg[0],
-                Registries.ITEM.getId(ModeladoMod.MOLDE_EN_BLANCO), ElegirMoldePayload.ELEGIR)));
-        r.dejarPasar(10).captura("modeladora-calzado-pant-leg");
-        modelar(r, "borcegos con molde en blanco");
-        r.hacer("la botamanga volvio a adentro", 5, c -> {
-            ItemStack out = modeladora(c, be -> be.getStack(ModeladoBlockEntity.SALIDA).copy());
-            var b = com.modamod.item.BorcegosItem.botamanga(out, true);
-            verificar(b == com.modamod.item.BorcegoBotamanga.ADENTRO, "botamanga de la salida: " + b + " (esperaba ADENTRO tras el molde en blanco)");
-        });
         r.hacer("cerrar Modeladora", 5, c -> c.player.closeHandledScreen());
 
         // ── Telar: boton Tejer ────────────────────────────────────────────────────────────

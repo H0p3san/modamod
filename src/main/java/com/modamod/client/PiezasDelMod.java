@@ -205,7 +205,8 @@ public final class PiezasDelMod {
                 RemeraItem.color(stack),
                 RegionResolver.capas(stack),
                 com.modamod.item.PatronRed.leer(stack),
-                RemeraItem.capasDe(stack));
+                RemeraItem.capasDe(stack),
+                new int[]{RemeraItem.manga(stack, Lado.IZQUIERDA).filas, RemeraItem.manga(stack, Lado.DERECHA).filas});
         // Si todavia no se pudo componer -la foto no bajo- se usa la lisa,
         // que es lo correcto mientras tanto.
         if (textura == null) textura = varianteBase.texturaCuerpo();

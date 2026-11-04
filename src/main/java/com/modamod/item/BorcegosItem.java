@@ -196,7 +196,7 @@ public class BorcegosItem extends com.modamod.prenda.PrendaItem implements Zonas
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
         tooltip.add(Text.translatable("modamod.borcegos.tooltip", Text.translatable(cana(stack).traduccion()),
-                Text.translatable(suela(stack).traduccion()), Text.translatable(botamanga(stack).traduccion()))
+                Text.translatable(suela(stack).traduccion()))
                 .formatted(Formatting.GRAY));
         tooltip.add(Text.translatable("modamod.calzado.tooltip", Text.translatable(punta(stack, false).traduccion()),
                 Text.translatable(cierre(stack, false).traduccion()), Text.translatable(detalle(stack, false).traduccion()))

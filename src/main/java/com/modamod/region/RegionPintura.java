@@ -52,7 +52,10 @@ public enum RegionPintura implements StringIdentifiable {
     // mitades de SUP/INF juntas. Nuevos al final.
     LADO_IZQ("lado_izq"), LADO_DER("lado_der"),
     // El ribete de piel del frente de la chaqueta (2026-11-04): solapa de tipo PIEL, cerrada y abierta. Nuevos al final.
-    SOLAPA_PIEL("solapa_piel"), SOLAPA_PIEL_ABIERTA("solapa_piel_abierta");
+    SOLAPA_PIEL("solapa_piel"), SOLAPA_PIEL_ABIERTA("solapa_piel_abierta"),
+    // Los puños de la remera (2026-11-04, "pintar solo el ruedo ensanchado de la manga"): las últimas 3 filas de cada manga, sea
+    // cual sea su largo. Nuevo al final.
+    PUNOS("punos");
 
     public final String clave;
 
@@ -72,6 +75,8 @@ public enum RegionPintura implements StringIdentifiable {
     /** Filas (de las 12 de la caja) que ocupa el cuello/borde inferior — aproximado, ajustable a ojo jugando. */
     private static final int FILAS_CUELLO = 2;
     private static final int FILAS_BORDE = 2;
+    /** Filas del puño de la manga (el ruedo ensanchado de campana abre las últimas 3). */
+    private static final int FILAS_PUNO = 3;
 
     /** Filas del frente donde puede caer una solapa (la más larga, el chal, baja 9). */
     private static final int FILAS_SOLAPA = 12;
@@ -137,7 +142,7 @@ public enum RegionPintura implements StringIdentifiable {
                  ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6 -> null;
             case CUELLO, BORDE_INFERIOR, PECHO, CINTURA, SOLAPAS, SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL,
                  SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA, SOLAPA_CHAL_ABIERTA, SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA, SOLAPA_CAMISA -> Parte.TORSO;
-            case MANGA_IZQ -> Parte.BRAZO_IZQ;
+            case MANGA_IZQ, PUNOS -> Parte.BRAZO_IZQ;
             case MANGA_DER -> Parte.BRAZO_DER;
             case SUP_IZQ, INF_IZQ, LADO_IZQ -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_IZQ : Parte.PIERNA_IZQ;
             case SUP_DER, INF_DER, LADO_DER -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_DER : Parte.PIERNA_DER;
@@ -177,7 +182,7 @@ public enum RegionPintura implements StringIdentifiable {
     private int[] filas() {
         return switch (this) {
             case TODO, MANGA_IZQ, MANGA_DER, CAPA_EXTERIOR, CAPA_FORRO, CAPA_DETALLES, DELANTAL_PETO, DELANTAL_FALDA,
-                 ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6, LADO_IZQ, LADO_DER -> new int[]{0, 12};
+                 ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6, LADO_IZQ, LADO_DER, PUNOS -> new int[]{0, 12};
             case CUELLO -> new int[]{0, FILAS_CUELLO};
             case BORDE_INFERIOR -> new int[]{12 - FILAS_BORDE, 12};
             case SUP_IZQ, SUP_DER -> new int[]{0, 6};
@@ -253,6 +258,18 @@ public enum RegionPintura implements StringIdentifiable {
             CajaSkin.Rect frente = caja.frente(), atras = caja.atras();
             rects.add(new CajaSkin.Rect(frente.x0(), frente.y0(), frente.x1(), frente.y0() + FILAS_ESCOTE * escala));
             rects.add(new CajaSkin.Rect(atras.x0(), atras.y0(), atras.x1(), atras.y0() + FILAS_ESCOTE * escala));
+            return rects;
+        }
+        if (this == PUNOS) {
+            // Las últimas 3 filas de cada manga con tela (y la tapa de abajo del puño si llega hasta el final).
+            for (Lado lado : new Lado[]{Lado.IZQUIERDA, Lado.DERECHA}) {
+                int[] v = visibles == null ? null : visibles.apply(lado);
+                int hasta = v == null ? 12 : v[1];
+                if (hasta <= 0) continue;
+                CajaSkin cajaBrazo = LayoutSkin.base(lado == Lado.IZQUIERDA ? Parte.BRAZO_IZQ : Parte.BRAZO_DER, false).escalada(escala);
+                rects.add(banda(cajaBrazo, new int[]{Math.max(0, hasta - FILAS_PUNO), hasta}, escala));
+                if (hasta >= 12) rects.add(cajaBrazo.abajo());
+            }
             return rects;
         }
         int[] filas = filas(torso, visibles);

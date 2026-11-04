@@ -17,9 +17,9 @@ public final class ZonasTintes {
     private static Zona z(String clave, Enfoque e, int... casillas) { return new Zona(clave, e, casillas); }
 
     private static final Zona[][] ZONAS = {
-            // Remera / Top: 0-1 prenda entera, 2 pecho, 3 cuello, 4-5 mangas, 6 borde de abajo, 7 solapas
+            // Remera / Top: 0-1 prenda entera, 2 pecho, 3 cuello, 4-5 mangas, 6 borde de abajo, 7 solapas, 8 puños
             {z("cabeza_cuello", Enfoque.CABEZA, 3, 7), z("torso", Enfoque.TORSO, 2, 6),
-                    z("brazos", Enfoque.BRAZOS, 4, 5), z("entero", Enfoque.ENTERO, 0, 1)},
+                    z("brazos", Enfoque.BRAZOS, 4, 5, 8), z("entero", Enfoque.ENTERO, 0, 1)},
             // Pantalón: 0 cintura, 1-3 prenda entera, 5-6 botamangas
             {z("cintura", Enfoque.CINTURA, 0), z("piernas", Enfoque.PIERNAS, 5, 6), z("entero", Enfoque.ENTERO, 1, 2, 3)},
             // Medias: 0-3 cortes sup./inf. de cada pierna, 5-10 prenda entera

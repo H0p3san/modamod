@@ -540,7 +540,8 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
     private static final com.modamod.region.RegionPintura[] ZONAS_REMERA = {
             TODO, TODO, com.modamod.region.RegionPintura.PECHO, com.modamod.region.RegionPintura.CUELLO,
             com.modamod.region.RegionPintura.MANGA_IZQ, com.modamod.region.RegionPintura.MANGA_DER,
-            com.modamod.region.RegionPintura.BORDE_INFERIOR, com.modamod.region.RegionPintura.SOLAPAS};
+            com.modamod.region.RegionPintura.BORDE_INFERIOR, com.modamod.region.RegionPintura.SOLAPAS,
+            com.modamod.region.RegionPintura.PUNOS};
     private static final com.modamod.region.RegionPintura[] ZONAS_PANTALON = {
             com.modamod.region.RegionPintura.CINTURA, TODO,
             com.modamod.region.RegionPintura.LADO_DER, com.modamod.region.RegionPintura.LADO_IZQ, null,

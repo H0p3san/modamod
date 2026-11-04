@@ -504,6 +504,18 @@ public final class EstampaTextures {
                                       @Nullable Estampa espalda, int color,
                                       java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas,
                                       @Nullable PatronRed red, java.util.List<CapaEstampa> mascaras) {
+        return cuerpoEstampado(variante, frente, espalda, color, capas, red, mascaras, new int[]{12, 12});
+    }
+
+    /**
+     * Con las filas con tela de cada manga {@code {izquierda, derecha}} (2026-11-04): las regiones de Tintes de los puños siguen el
+     * largo de cada manga. La textura base es siempre de manga larga; el recorte viene después, por lado.
+     */
+    @Nullable
+    public static Identifier cuerpoEstampado(Variante variante, @Nullable Estampa frente,
+                                      @Nullable Estampa espalda, int color,
+                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas,
+                                      @Nullable PatronRed red, java.util.List<CapaEstampa> mascaras, int[] mangas) {
         // Sin estampas, sin patron, sin red y sin tenir no hay nada que
         // componer: se usa la textura del pack tal cual.
         if (frente == null && espalda == null && capas.isEmpty() && red == null && color == RemeraItem.BLANCO
@@ -511,7 +523,8 @@ public final class EstampaTextures {
             return null;
         }
         String clave = variante.clave() + "|" + frente + "|" + espalda + "|" + color + "|" + capas + "|" + red
-                + "|" + mascaras;
+                + "|" + mascaras
+                + (capas.stream().anyMatch(c -> c.region() == com.modamod.region.RegionPintura.PUNOS) ? "|mangas" + mangas[0] + "," + mangas[1] : "");
         Identifier hecha = CACHE_CUERPO.get(clave);
         if (hecha != null) return hecha;
         if (FALLADAS.containsKey(clave)) return null;
@@ -525,7 +538,7 @@ public final class EstampaTextures {
                 base.getWidth(), base.getHeight(), false);
         salida.copyFrom(base);
         if (color != RemeraItem.BLANCO) tenir(salida, color);
-        if (!capas.isEmpty()) aplicarPatron(salida, base, capas, variante.largo().filas);
+        if (!capas.isEmpty()) aplicarPatron(salida, base, capas, variante.largo().filas, mangas);
 
         if (!estampar(salida, deLaRemera(variante), null, frente, espalda, mascaras)) {
             salida.close();
@@ -703,7 +716,7 @@ public final class EstampaTextures {
      * cae a la prenda tenida lisa, igual que cualquier patrón del mod.
      */
     private static void aplicarPatron(NativeImage tela, NativeImage cruda,
-                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas, int filasTorso) {
+                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas, int filasTorso, int[] mangas) {
         for (com.modamod.region.RegionResolver.CapaPatron capa : capas) {
             // Sin molde = capa lisa (2026-09-27, cuadradito de Tinturas):
             // máscara null, cubre toda su región.
@@ -716,7 +729,8 @@ public final class EstampaTextures {
             // null (TODO) no recorta nada.
             java.util.List<com.modamod.render.CajaSkin.Rect> region = capa.region() == com.modamod.region.RegionPintura.TODO
                     ? null : capa.region().rects(com.modamod.tinturas.TinturasBlockEntity.Categoria.REMERA,
-                            com.modamod.render.CuerpoGeometria.ESCALA_TELA, filasTorso, null);
+                            com.modamod.render.CuerpoGeometria.ESCALA_TELA, filasTorso,
+                            l -> new int[]{0, mangas[l == com.modamod.region.Lado.IZQUIERDA ? 0 : 1]});
             // Capas en orden: cada una pinta ENCIMA de la anterior donde su
             // máscara sea opaca — a pedido, "orden y cambio de color".
             // Mismo criterio de cobertura (región + máscara + invertido) y de

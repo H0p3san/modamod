@@ -111,6 +111,28 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         return c != com.modamod.item.Calce.PEGADO && c != com.modamod.item.Calce.AJUSTADO;
     }
 
+    /**
+     * ¿El pantalón va por fuera del calzado? Lo dice el orden de la lista de ropa (2026-11-04, "ahora que se resuelve con capas"):
+     * el que está más a la izquierda/arriba (índice menor, más de afuera) tapa al otro. Sin lista o sin alguno de los dos, por dentro.
+     */
+    private static boolean pantalonSobreElCalzado(@Nullable LivingEntity entidad) {
+        if (entidad == null) return false;
+        var inv = com.modamod.ropa.ListaDeRopa.de(entidad);
+        if (inv == null) return false;
+        int iCalzado = -1, iPantalon = -1;
+        var lugares = com.modamod.ropa.ListaDeRopa.lugares(inv);
+        for (int i = 0; i < lugares.size(); i++) {
+            ItemStack s = lugares.get(i);
+            if (s.isEmpty()) continue;
+            if (iCalzado < 0 && com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALZADO)) iCalzado = i;
+            if (iPantalon < 0 && com.modamod.prenda.Prendas.categoria(s) == com.modamod.prenda.CategoriaDePrenda.PANTALON) iPantalon = i;
+        }
+        return iCalzado >= 0 && iPantalon >= 0 && iPantalon < iCalzado;
+    }
+
+    /** Lo calcula {@link #render1} una vez por cuadro. */
+    private static boolean pantalonSobreCalzado;
+
     private static ItemStack calzadoDe(@Nullable LivingEntity entidad) {
         if (calzadoOverride != null) return calzadoOverride;
         if (sombreroOverride != null) {
@@ -274,6 +296,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
         List<ItemStack> prendas = previewOverride != null ? previewOverride : equipadas(entidad);
         calzado = calzadoDe(entidad);
+        pantalonSobreCalzado = pantalonSobreElCalzado(entidad);
         // La armadura que se ve infla capa, embozo y capucha (2026-10-28, "que la capa embozo y capucha se inflen mas
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
         usarArmadura(previewOverride != null ? (com.modamod.client.PreviewJugador.conArmadura
@@ -1305,7 +1328,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             if (pierna && calzado != null && pieza != conVolumen && pieza.capa() >= Capa.PIERNA_EXTERIOR) {
                 boolean izqPie = parte == Parte.PIERNA_IZQ;   // cada pie con su caña, suela y botamanga
                 cana = com.modamod.item.BorcegosItem.alturaCana(calzado, izqPie);   // 2026-10-14: la capellada y la suela elegidas
-                botamangaAfuera = com.modamod.item.BorcegosItem.botamanga(calzado, izqPie) == com.modamod.item.BorcegoBotamanga.AFUERA;
+                botamangaAfuera = pantalonSobreCalzado;   // lo decide el orden de la lista de ropa
                 if (!botamangaAfuera) hasta = Math.max(desde, Math.min(hasta, 12 - cana));
             }
             float base = pieza.dilatacion();

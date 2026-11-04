@@ -697,6 +697,8 @@ public final class ApliqueRenderer {
         static Blando de(Aplique a, Matrix3f local, Matrix3f marco) {
             FisicaApliques.Desplazamiento d = FisicaApliques.actual;
             if (a.blandura() <= 0f) return null;
+            // Bajo una prenda de arriba (la corbata dentro del saco) la tela no se mece: el vaivén la sacaba a través de la tela.
+            if (espacioSobre != Float.MAX_VALUE && a.parte() == Parte.TORSO) return null;
             Matrix3f aLocal = new Matrix3f(local).transpose().mul(marco);
             Vector3f suave = d == null ? new Vector3f() : aLocal.transform(new Vector3f(d.blando()));
             Vector3f firme = d == null ? new Vector3f() : aLocal.transform(new Vector3f(d.firme()));

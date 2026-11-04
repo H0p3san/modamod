@@ -301,10 +301,10 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             // Banda (2026-10-05): Zona, Ancho y Herraje.
             {Rol.ZONA_BANDA, Rol.ANCHO_BANDA, Rol.HERRAJE_BANDA, Rol.CALCE, Rol.NINGUNO, Rol.NINGUNO,
                     Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO},
-            // Borcegos (2026-10-08): Caña, Suela y Botamanga.
+            // Borcegos (2026-10-08): Caña y Suela (la botamanga ya no es un molde: la decide el orden de la lista de ropa, 2026-11-04).
             // (2026-10-11, "independizar derecho e izquierdo": un pin por pie; con la simetría activa mandan los dos.)
             {Rol.CANA_BORCEGO_IZQ, Rol.CANA_BORCEGO_DER, Rol.SUELA_BORCEGO_IZQ, Rol.SUELA_BORCEGO_DER,
-                    Rol.BOTAMANGA_BORCEGO_IZQ, Rol.BOTAMANGA_BORCEGO_DER, Rol.PUNTA_BORCEGO_IZQ, Rol.PUNTA_BORCEGO_DER,
+                    Rol.NINGUNO, Rol.NINGUNO, Rol.PUNTA_BORCEGO_IZQ, Rol.PUNTA_BORCEGO_DER,
                     Rol.CIERRE_BORCEGO_IZQ, Rol.CIERRE_BORCEGO_DER, Rol.DETALLE_BORCEGO_IZQ, Rol.DETALLE_BORCEGO_DER, Rol.ESTILO_CALZADO},
             // Delantal (2026-10-11): Forma, Largo (con el Inicio en su cajón), Calce, Trama, Volado (con el Ruedo en su
             // cajón) y Esquinas — sobre esquema_delantal.png (provisoriamente el de la pollera).
