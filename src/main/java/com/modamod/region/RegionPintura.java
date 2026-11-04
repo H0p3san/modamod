@@ -55,7 +55,9 @@ public enum RegionPintura implements StringIdentifiable {
     SOLAPA_PIEL("solapa_piel"), SOLAPA_PIEL_ABIERTA("solapa_piel_abierta"),
     // Los puños de la remera (2026-11-04, "pintar solo el ruedo ensanchado de la manga"): las últimas 3 filas de cada manga, sea
     // cual sea su largo. Nuevo al final.
-    PUNOS("punos");
+    PUNOS("punos"),
+    /** El ruedo de piel de la pollera: la última fila de la tira de tela (la franja aparte, 2026-11-04). */
+    RUEDO("ruedo");
 
     public final String clave;
 
@@ -140,7 +142,7 @@ public enum RegionPintura implements StringIdentifiable {
         return switch (this) {
             case TODO, CAPA_EXTERIOR, CAPA_FORRO, CAPA_DETALLES, DELANTAL_PETO, DELANTAL_FALDA,
                  ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6 -> null;
-            case CUELLO, BORDE_INFERIOR, PECHO, CINTURA, SOLAPAS, SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL,
+            case CUELLO, BORDE_INFERIOR, PECHO, CINTURA, RUEDO, SOLAPAS, SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL,
                  SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA, SOLAPA_CHAL_ABIERTA, SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA, SOLAPA_CAMISA -> Parte.TORSO;
             case MANGA_IZQ, PUNOS -> Parte.BRAZO_IZQ;
             case MANGA_DER -> Parte.BRAZO_DER;
@@ -193,6 +195,7 @@ public enum RegionPintura implements StringIdentifiable {
             case SOLAPAS, SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL, SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA,
                  SOLAPA_CHAL_ABIERTA, SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA, SOLAPA_CAMISA -> new int[]{0, FILAS_SOLAPA};
             case CINTURA -> new int[]{12 - FILAS_CINTURA, 12};
+            case RUEDO -> new int[]{11, 12};
         };
     }
 

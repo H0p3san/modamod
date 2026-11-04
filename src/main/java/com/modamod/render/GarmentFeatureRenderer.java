@@ -2094,6 +2094,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         usarArmadura(armadura, prendas.size());
         calzado = calzadoDeTela;
         calzadoDeTela = null;
+        pantalonSobreCalzado = false;   // el maniquí no tiene lista: nada de valores viejos del último jugador dibujado
         try {
             dibujarTelaConBusto(biped, slim, prendas, matrices, vertexConsumers, luz);
             EfectoTrim.volcar();   // el brillo de la última pieza con acabado (2026-10-22)

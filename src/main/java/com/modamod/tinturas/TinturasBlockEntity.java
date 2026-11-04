@@ -490,7 +490,10 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
     @Nullable
     public static com.modamod.region.RegionPintura regionDe(Categoria cat, int i) {
         if (i < 0 || i >= CASILLAS) return null;
-        if (cat == Categoria.POLLERA) return i < CASILLAS_POLLERA ? com.modamod.region.RegionPintura.TODO : null;
+        if (cat == Categoria.POLLERA) {
+            if (i == CASILLAS_POLLERA) return com.modamod.region.RegionPintura.RUEDO;
+            return i < CASILLAS_POLLERA ? com.modamod.region.RegionPintura.TODO : null;
+        }
         // El retazo: un cuadradito por zona del aplique (ZONA_1..3), con su color y su trama.
         if (cat == Categoria.APLIQUE) {
             return i < CASILLAS_APLIQUE ? com.modamod.region.RegionPintura.values()[com.modamod.region.RegionPintura.ZONA_1.ordinal() + i] : null;

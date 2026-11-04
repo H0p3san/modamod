@@ -537,6 +537,8 @@
   "modamod.modelado.categoria.pollera": "Pollera",
   "modamod.modelado.nombre_diseno": "Nombre del diseño",
   "modamod.tinturas.nombre_diseno": "Nombre del diseño",
+  "modamod.region_pintura.ruedo": "Ruedo",
+  "modamod.tinturas.zona.ruedo": "Ruedo",
   "modamod.region_pintura.punos": "Puños",
   "modamod.region_pintura.todo": "Toda la prenda",
   "modamod.region_pintura.cuello": "Cuello",

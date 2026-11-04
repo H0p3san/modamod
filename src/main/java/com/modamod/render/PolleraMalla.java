@@ -242,7 +242,9 @@ public final class PolleraMalla {
                     x *= k;
                     z *= k;
                 }
-                // Ribete de piel (2026-11-04): las 2 últimas filas se engrosan hacia afuera.
+                // Ribete de piel (2026-11-04, "un ruedo abajo, con grosor y su propia pintura"): las 3 últimas anillos se
+                // engrosan hacia afuera; el de arriba de la franja queda a la altura del anterior, así el escalón es un
+                // plano horizontal y no una rampa.
                 if (hem == com.modamod.item.Ruedo.PIEL && f >= FILAS - 2) {
                     float rr = (float) Math.hypot(x, z);
                     if (rr > 0.5f) {
@@ -266,6 +268,7 @@ public final class PolleraMalla {
                 x = xg;
                 z = zg;
                 float yy = y;
+                if (hem == com.modamod.item.Ruedo.PIEL && f == FILAS - 2) yy = cintura + (FILAS - 3) / (float) FILAS * l + 0.05f;
                 // Borde decorativo del ruedo (2026-10-05): las filas de abajo bajan según el dibujo, más cuanto más abajo.
                 if (borde != null && t > 0.8f) {
                     float w = (t - 0.8f) / 0.2f;
@@ -282,7 +285,14 @@ public final class PolleraMalla {
                 v[1] = yy;
                 v[2] = z;
                 v[3] = perfil.u[f][c] / 64f;
-                v[4] = (Float.isNaN(vDesde) ? perfil.v[f] : vDesde + (vHasta - vDesde) * t) / 64f;
+                float vv = Float.isNaN(vDesde) ? perfil.v[f] : vDesde + (vHasta - vDesde) * t;
+                if (hem == com.modamod.item.Ruedo.PIEL && Float.isNaN(vDesde)) {
+                    // La franja de piel usa la última fila de la tira de la tela (31..32), la pollera lo de arriba (20..31).
+                    float tope = perfil.vAlto * perfil.fraccion[FILAS - 3];
+                    vv = f >= FILAS - 2 ? 31f + (f - (FILAS - 2)) / 2f
+                            : 20f + (vv - 20f) * Math.min(1f, 11f / Math.max(1f, tope));
+                }
+                v[4] = vv / 64f;
             }
         }
 

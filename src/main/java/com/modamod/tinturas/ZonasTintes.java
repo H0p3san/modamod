@@ -28,8 +28,8 @@ public final class ZonasTintes {
             // Calientabrazos: igual que las medias, pero en los brazos
             {z("arriba", Enfoque.BRAZOS, 0, 1), z("abajo", Enfoque.BRAZOS, 2, 3),
                     z("entero_a", Enfoque.ENTERO, 5, 6, 7), z("entero_b", Enfoque.ENTERO, 8, 9, 10)},
-            // Pollera: 3 capas de prenda entera
-            {z("capas", Enfoque.CINTURA, 0, 1, 2)},
+            // Pollera: 3 capas de prenda entera y el ruedo de piel aparte
+            {z("capas", Enfoque.CINTURA, 0, 1, 2), z("ruedo", Enfoque.CINTURA, 3)},
             // Capa: exterior, forro, detalles
             {z("capa", Enfoque.ENTERO, 0, 1, 2)},
             // Retazo de aplique: 3 zonas de color

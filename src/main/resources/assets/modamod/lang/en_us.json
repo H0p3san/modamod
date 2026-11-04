@@ -537,6 +537,8 @@
   "modamod.patronforma.tres_rayas": "Three Stripes",
   "modamod.modelado.nombre_diseno": "Design name",
   "modamod.tinturas.nombre_diseno": "Design name",
+  "modamod.region_pintura.ruedo": "Hem",
+  "modamod.tinturas.zona.ruedo": "Hem",
   "modamod.region_pintura.punos": "Cuffs",
   "modamod.region_pintura.todo": "Whole garment",
   "modamod.region_pintura.cuello": "Collar",
