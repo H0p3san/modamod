@@ -41,6 +41,10 @@ public class TelarBlock extends MaquinaBlock {
     @Override
     protected double alturaTapaPx() { return 10.0; }
 
+    /** Debajo de la tapa se abre la pantalla aunque esté tejiendo: ahí se para el lote. */
+    @Override
+    protected boolean pantallaAbajo() { return true; }
+
     /** Lana, hilo o cuero van a su casillero si entran (del mismo tipo que lo que ya hay). */
     @Override
     protected boolean alimentar(ItemStack stack, MaquinaBlockEntity m, World world, BlockPos pos, PlayerEntity player) {

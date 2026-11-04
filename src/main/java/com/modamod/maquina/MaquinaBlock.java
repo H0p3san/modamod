@@ -145,6 +145,10 @@ public abstract class MaquinaBlock extends BlockWithEntity {
         if (world.isClient) return ActionResult.SUCCESS;
         if (!(world.getBlockEntity(pos) instanceof MaquinaBlockEntity be)) return ActionResult.PASS;
         if (usarPropio(be, world, pos, player)) return ActionResult.SUCCESS;
+        if (pantallaAbajo() && !ZonaMaquina.arriba(hit, pos, alturaTapaPx())) {
+            if (be instanceof NamedScreenHandlerFactory pantalla) player.openHandledScreen(pantalla);
+            return ActionResult.SUCCESS;
+        }
         ItemStack salida = be.getStack(be.casilleroSalida());
         if (!salida.isEmpty()) {
             player.getInventory().offerOrDrop(salida.copy());
@@ -158,6 +162,14 @@ public abstract class MaquinaBlock extends BlockWithEntity {
         }
         if (be instanceof NamedScreenHandlerFactory pantalla) player.openHandledScreen(pantalla);
         return ActionResult.SUCCESS;
+    }
+
+    /**
+     * ¿Debajo de la tapa se abre la pantalla siempre, aunque haya salida o esté trabajando? Es el Telar: su pantalla tiene
+     * el lote y el botón para pararlo, y arriba queda para retirar la prenda.
+     */
+    protected boolean pantallaAbajo() {
+        return false;
     }
 
     /** Hasta qué altura (px) llega el lateral: de ahí para arriba es la tapa, donde se carga. */
