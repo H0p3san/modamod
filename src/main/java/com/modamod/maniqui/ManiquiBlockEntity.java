@@ -57,7 +57,9 @@ public class ManiquiBlockEntity extends BlockEntity
     public static final int SLOT_CAPA = GuardarropasBlockEntity.TAMANO, SLOT_CINTO = SLOT_CAPA + 1, SLOT_COLLAR = SLOT_CAPA + 2;
     /** Máscara y barbijo (2026-10-25, "tiene que ser igual que la de maniqui y guardarropas"): también al final. */
     public static final int SLOT_MASCARA = SLOT_CAPA + 3, SLOT_BARBIJO = SLOT_CAPA + 4;
-    public static final int TAMANO = GuardarropasBlockEntity.TAMANO + 5;
+    /** Las manos (2026-11-03, "le faltan manos para escudos o herramientas o armas"): cualquier ítem; también al final. */
+    public static final int SLOT_MANO_DER = SLOT_CAPA + 5, SLOT_MANO_IZQ = SLOT_CAPA + 6;
+    public static final int TAMANO = GuardarropasBlockEntity.TAMANO + 7;
 
     public static final int BTN_GIRAR = 0;
     public static final int BTN_INTERCAMBIAR = 1;
@@ -272,6 +274,8 @@ public class ManiquiBlockEntity extends BlockEntity
     public ItemStack collar() { return items.get(SLOT_COLLAR); }
     public ItemStack mascara() { return items.get(SLOT_MASCARA); }
     public ItemStack barbijo() { return items.get(SLOT_BARBIJO); }
+    public ItemStack manoDerecha() { return items.get(SLOT_MANO_DER); }
+    public ItemStack manoIzquierda() { return items.get(SLOT_MANO_IZQ); }
 
     /** El sombrero de bruja puesto (2026-10-05), o vacío. */
     public ItemStack sombrero() { return items.get(GuardarropasBlockEntity.SLOT_SOMBRERO); }
@@ -379,6 +383,14 @@ public class ManiquiBlockEntity extends BlockEntity
             ItemStack delJugador = player.getEquippedStack(parte).copy();
             player.equipStack(parte, items.get(GuardarropasBlockEntity.ARMADURA_INICIO + i).copy());
             items.set(GuardarropasBlockEntity.ARMADURA_INICIO + i, delJugador);
+        }
+        // Las manos, como la armadura: lo que tenés en la mano principal y en la secundaria.
+        for (var mano : new Object[][]{{net.minecraft.entity.EquipmentSlot.MAINHAND, SLOT_MANO_DER}, {net.minecraft.entity.EquipmentSlot.OFFHAND, SLOT_MANO_IZQ}}) {
+            net.minecraft.entity.EquipmentSlot parte = (net.minecraft.entity.EquipmentSlot) mano[0];
+            int mio = (Integer) mano[1];
+            ItemStack delJugador = player.getEquippedStack(parte).copy();
+            player.equipStack(parte, items.get(mio).copy());
+            items.set(mio, delJugador);
         }
         markDirty();
     }
@@ -496,6 +508,7 @@ public class ManiquiBlockEntity extends BlockEntity
                 && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CUELLO;
         if (slot == SLOT_MASCARA) return stack.getItem() instanceof com.modamod.item.CaraItem c && !c.barbijo;
         if (slot == SLOT_BARBIJO) return stack.getItem() instanceof com.modamod.item.CaraItem c && c.barbijo;
+        if (slot == SLOT_MANO_DER || slot == SLOT_MANO_IZQ) return true;
         if (slot >= GuardarropasBlockEntity.TAMANO) return false;
         return GuardarropasBlockEntity.esValidoEn(slot, stack);
     }

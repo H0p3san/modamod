@@ -229,6 +229,9 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
                 if (!be.cinto().isEmpty()) com.modamod.render.AccesorioRenderer.dibujar(be.cinto(), cuerpo, matrices, vertexConsumers, luz, holgura);
                 if (!be.collar().isEmpty()) com.modamod.render.AccesorioRenderer.dibujar(be.collar(), cuerpo, matrices, vertexConsumers, luz, holgura);
             }
+            // Lo que tiene en las manos (2026-11-03): como el que lleva un jugador.
+            dibujarMano(be.manoDerecha(), cuerpo, net.minecraft.util.Arm.RIGHT, matrices, vertexConsumers, luz, be.getWorld());
+            dibujarMano(be.manoIzquierda(), cuerpo, net.minecraft.util.Arm.LEFT, matrices, vertexConsumers, luz, be.getWorld());
             // Calzado (2026-10-08): el pantalón se adapta a los borcegos (los dibuja la misma pasada de tela).
             if (!be.calzado().isEmpty()) {
                 com.modamod.render.BorcegosRenderer.pielActual = textura;   // el pie de las sandalias, con la piel de la figura
@@ -302,6 +305,24 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
     private static com.modamod.render.relieve.MapaRelieve mapaDeLaFigura;
 
     // ── pose ───────────────────────────────────────────────────────────────
+    /** Un ítem en la mano, con la misma ubicación que {@code HeldItemFeatureRenderer} le da al de un jugador. */
+    private static void dibujarMano(ItemStack stack, PlayerEntityModel<LivingEntity> cuerpo, net.minecraft.util.Arm brazo,
+                                    MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz,
+                                    @org.jetbrains.annotations.Nullable net.minecraft.world.World mundo) {
+        if (stack.isEmpty()) return;
+        boolean izq = brazo == net.minecraft.util.Arm.LEFT;
+        matrices.push();
+        cuerpo.setArmAngle(brazo, matrices);
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180f));
+        matrices.translate((izq ? -1f : 1f) / 16f, 0.125f, -0.625f);
+        net.minecraft.client.MinecraftClient.getInstance().getItemRenderer().renderItem(null, stack,
+                izq ? net.minecraft.client.render.model.json.ModelTransformationMode.THIRD_PERSON_LEFT_HAND
+                    : net.minecraft.client.render.model.json.ModelTransformationMode.THIRD_PERSON_RIGHT_HAND,
+                izq, matrices, vertexConsumers, mundo, luz, net.minecraft.client.render.OverlayTexture.DEFAULT_UV, 0);
+        matrices.pop();
+    }
+
     private static void posar(PlayerEntityModel<LivingEntity> m, ManiquiBlockEntity be) {
         float r = MathHelper.RADIANS_PER_DEGREE;
         m.head.pitch = be.angulo(0) * r;

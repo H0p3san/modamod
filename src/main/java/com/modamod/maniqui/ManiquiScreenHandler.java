@@ -24,6 +24,8 @@ public class ManiquiScreenHandler extends ScreenHandler {
     public static final int X_GRILLA = 240, Y_GRILLA = 24, PASO_X = 22, PASO_Y = 24, FILAS = 8;
     /** La armadura, en una columna al lado de la grilla. */
     public static final int X_ARMADURA = 330;
+    /** Las manos, en la misma columna, dos filas debajo de la armadura. */
+    public static final int Y_MANOS = Y_GRILLA + 5 * PASO_Y;
 
     /** x, y del lugar {@code i} de {@code slot} (nombre del slot de Trinkets), con el acomodo de {@code RopaScreenHandler#posicion}. */
     public static int[] xy(String slot, int i) {
@@ -88,6 +90,9 @@ public class ManiquiScreenHandler extends ScreenHandler {
         for (int i = 0; i < GuardarropasBlockEntity.SLOTS_ARMADURA.length; i++) {
             addSlot(slotPropio(GuardarropasBlockEntity.ARMADURA_INICIO + i, X_ARMADURA, Y_GRILLA + i * PASO_Y, null, 1));
         }
+        // Las manos (2026-11-03), debajo de la armadura dejando una fila: la derecha y la izquierda (el escudo).
+        addSlot(slotPropio(ManiquiBlockEntity.SLOT_MANO_DER, X_ARMADURA, Y_MANOS, null, 1));
+        addSlot(slotPropio(ManiquiBlockEntity.SLOT_MANO_IZQ, X_ARMADURA, Y_MANOS + PASO_Y, null, 1));
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
@@ -143,6 +148,10 @@ public class ManiquiScreenHandler extends ScreenHandler {
             // La silueta de vanilla en el vacío, como la pantalla de Ropa (2026-10-25).
             @Override
             public com.mojang.datafixers.util.Pair<net.minecraft.util.Identifier, net.minecraft.util.Identifier> getBackgroundSprite() {
+                if (index == ManiquiBlockEntity.SLOT_MANO_IZQ) {
+                    return com.mojang.datafixers.util.Pair.of(net.minecraft.screen.PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
+                            net.minecraft.screen.PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
+                }
                 if (zona < 0 || zona >= FONDO_ARMADURA.length) return null;
                 return com.mojang.datafixers.util.Pair.of(net.minecraft.screen.PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, FONDO_ARMADURA[zona]);
             }

@@ -1624,5 +1624,6 @@
   "modamod.estilado.asignar": "Z%s←%s",
   "modamod.estilado.tooltip.asignar": "Qué zona del retazo (color y trama) va a esta zona del aplique. Clic para cambiar.",
   "modamod.estilado.tenir_elegido": "Reteñir elegido",
-  "modamod.estilado.tooltip.tenir_elegido": "Vuelve a teñir el aplique elegido con el retazo del slot y estas zonas, sin gastar el retazo."
+  "modamod.estilado.tooltip.tenir_elegido": "Vuelve a teñir el aplique elegido con el retazo del slot y estas zonas, sin gastar el retazo.",
+  "modamod.maniqui.manos": "Manos"
 }

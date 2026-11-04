@@ -344,6 +344,8 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
                 y0 + ManiquiScreenHandler.Y_GRILLA - 10, tinta, false);
         c.drawText(this.textRenderer, Text.translatable("modamod.ropa.real"), x0 + ManiquiScreenHandler.X_ARMADURA - 1,
                 y0 + ManiquiScreenHandler.Y_GRILLA - 10, tinta, false);
+        c.drawText(this.textRenderer, Text.translatable("modamod.maniqui.manos"), x0 + ManiquiScreenHandler.X_ARMADURA - 1,
+                y0 + ManiquiScreenHandler.Y_MANOS - 10, tinta, false);
     }
 
     /** El ícono de slot vacío de cada lugar de ropa (los mismos de Trinkets, {@code textures/gui/slot/}). */

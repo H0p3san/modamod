@@ -1624,5 +1624,6 @@
   "modamod.estilado.asignar": "Z%s←%s",
   "modamod.estilado.tooltip.asignar": "Which swatch zone (color and pattern) goes to this appliqué zone. Click to change.",
   "modamod.estilado.tenir_elegido": "Re-dye selected",
-  "modamod.estilado.tooltip.tenir_elegido": "Re-dyes the selected appliqué with the swatch in the slot and these zones, without using it up."
+  "modamod.estilado.tooltip.tenir_elegido": "Re-dyes the selected appliqué with the swatch in the slot and these zones, without using it up.",
+  "modamod.maniqui.manos": "Hands"
 }
