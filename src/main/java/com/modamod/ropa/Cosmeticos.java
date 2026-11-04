@@ -94,9 +94,14 @@ public record Cosmeticos(List<ItemStack> piezas, int ocultar, int fila) {
         return new Cosmeticos(VACIO.piezas(), ocultar, fila);
     }
 
-    /** La fila de la armadura una más arriba ({@code -1}) o más abajo ({@code +1}), sin salirse de la grilla. */
-    public Cosmeticos moverFila(int paso) {
-        return new Cosmeticos(piezas, ocultar, Math.max(0, Math.min(FILAS, fila + paso)));
+    public Cosmeticos conFila(int nueva) {
+        return new Cosmeticos(piezas, ocultar, Math.max(0, Math.min(FILAS, nueva)));
+    }
+
+    /** La pieza de armadura que le toca a {@code stack} (armaduras, élitros, calabaza, cabezas), o -1. */
+    public static int zonaDeArmadura(ItemStack stack) {
+        net.minecraft.item.Equipment equipo = net.minecraft.item.Equipment.fromStack(stack);
+        return equipo == null ? -1 : zonaDe(equipo.getSlotType());
     }
 
     public static int zonaDe(EquipmentSlot slot) {

@@ -501,9 +501,9 @@ public final class EscenarioPantallas {
                 var w = jugador(c).getServerWorld();
                 w.setBlockState(gr[0], com.modamod.guardarropas.GuardarropasMod.GUARDARROPAS_BLOCK.getDefaultState());
                 dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp -> {
-                    var cam = PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA);
+                    var cam = PruebaRopa.lugar(comp, PruebaRopa.REMERA);
                     cam.setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA));
-                    var pan = PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.PANTALON);
+                    var pan = PruebaRopa.lugar(comp, PruebaRopa.PANTALON);
                     pan.setStack(0, new ItemStack(ModamodItems.PANTALON));
                 });
                 jugador(c).equipStack(net.minecraft.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.item.Items.IRON_HELMET));
@@ -521,7 +521,7 @@ public final class EscenarioPantallas {
         });
         r.hacer("ponerme una remera suelta y despues el outfit Gala: la remera queda como Anterior", 0, c -> enServidor(c, () -> {
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                    PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(1, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                    PruebaRopa.lugar(comp, PruebaRopa.REMERA).setStack(1, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
             mueble.apply(c).ponerOutfit(jugador(c), 0);
             return null;
         }));
@@ -549,7 +549,7 @@ public final class EscenarioPantallas {
         r.hacer("un nombre repetido recibe un numero", 0, c -> {
             enServidor(c, () -> {
                 dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                        PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                        PruebaRopa.lugar(comp, PruebaRopa.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
                 mueble.apply(c).guardarOutfit(jugador(c), "Gala");
                 return null;
             });
@@ -558,14 +558,14 @@ public final class EscenarioPantallas {
             enServidor(c, () -> { mueble.apply(c).desarmar(jugador(c), 1); mueble.apply(c).desarmar(jugador(c), 0); return null; });
             enServidor(c, () -> {
                 dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                        PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                        PruebaRopa.lugar(comp, PruebaRopa.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
                 return null;
             });
         });
         r.hacer("guardar otra vez y abrir la pantalla", 0, c -> enServidor(c, () -> {
             mueble.apply(c).guardarOutfit(jugador(c), "Salida de noche");
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                    PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                    PruebaRopa.lugar(comp, PruebaRopa.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
             jugador(c).openHandledScreen(mueble.apply(c));
             return null;
         }));
@@ -576,7 +576,7 @@ public final class EscenarioPantallas {
         java.util.function.Function<MinecraftClient, ItemStack> enMano = c -> jugador(c).getStackInHand(net.minecraft.util.Hand.MAIN_HAND);
         java.util.function.BiConsumer<MinecraftClient, ItemStack[]> vestir = (c, prendas) -> {
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp -> {
-                int[] cat = {com.modamod.guardarropas.GuardarropasBlockEntity.REMERA, com.modamod.guardarropas.GuardarropasBlockEntity.PANTALON};
+                int[] cat = {PruebaRopa.REMERA, PruebaRopa.PANTALON};
                 for (int i = 0; i < prendas.length; i++) PruebaRopa.lugar(comp, cat[i]).setStack(0, prendas[i]);
             });
         };
@@ -631,7 +631,7 @@ public final class EscenarioPantallas {
                 m.ponerOutfit(jugador(c), 0);                     // me pongo Casual: Gala (sin guardar) queda como Anterior
                 m.almacen().ultimos().remove(jugador(c).getUuid());
                 m.almacen().outfits().add(new com.modamod.guardarropas.GuardarropasBlockEntity.Outfit("Fiesta",
-                        new java.util.LinkedHashMap<>(java.util.Map.of(com.modamod.guardarropas.GuardarropasBlockEntity.clave("torso", "prenda", 0), new ItemStack(com.modamod.sublimadora.ModItems.REMERA)))));
+                        new java.util.LinkedHashMap<>(java.util.Map.of(com.modamod.guardarropas.GuardarropasBlockEntity.clave(com.modamod.ropa.ListaDeRopa.GRUPO, com.modamod.ropa.ListaDeRopa.SLOT, PruebaRopa.indice(PruebaRopa.REMERA, 0)), new ItemStack(com.modamod.sublimadora.ModItems.REMERA)))));
                 m.ponerOutfit(jugador(c), 1);
                 return null;
             });
@@ -659,8 +659,8 @@ public final class EscenarioPantallas {
                 var be = (com.modamod.maniqui.ManiquiBlockEntity) w.getBlockEntity(posManiqui[0]);
                 ItemStack top = new ItemStack(com.modamod.sublimadora.ModItems.REMERA);
                 com.modamod.item.TopCorte.setConCapucha(top, true);
-                be.setStack(com.modamod.guardarropas.GuardarropasBlockEntity.REMERA * com.modamod.guardarropas.GuardarropasBlockEntity.POR_CATEGORIA, top);
-                be.setStack(com.modamod.guardarropas.GuardarropasBlockEntity.PANTALON * com.modamod.guardarropas.GuardarropasBlockEntity.POR_CATEGORIA + 1, new ItemStack(ModamodItems.POLLERA));
+                be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0), top);
+                be.setStack(PruebaRopa.indice(PruebaRopa.PANTALON, 1), new ItemStack(ModamodItems.POLLERA));
                 return null;
             });
         });

@@ -10,7 +10,6 @@ package com.modamod.pruebas;
 
 
 
-import com.modamod.guardarropas.GuardarropasBlockEntity;
 
 
 
@@ -22,7 +21,6 @@ import com.modamod.item.Calce;
 
 
 
-import com.modamod.item.ModamodComponents;
 
 
 
@@ -448,43 +446,37 @@ public final class EscenarioSalon {
 
 
 
-        int c = GuardarropasBlockEntity.POR_CATEGORIA;
+        be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0), prenda(new ItemStack(ModItems.REMERA), calce));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.REMERA * c, prenda(new ItemStack(ModItems.REMERA), calce));
+        be.setStack(PruebaRopa.indice(PruebaRopa.PANTALON, 0), prenda(new ItemStack(pollera ? ModamodItems.POLLERA : ModamodItems.PANTALON), calce));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.PANTALON * c, prenda(new ItemStack(pollera ? ModamodItems.POLLERA : ModamodItems.PANTALON), calce));
+        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.SOCKS_SOLID), calce));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.MEDIAS * c, prenda(new ItemStack(ModamodItems.SOCKS_SOLID), calce));
+        if (pollera) be.setStack(PruebaRopa.DELANTAL, prenda(new ItemStack(ModamodItems.DELANTAL), calce));
 
 
 
 
 
-        if (pollera) be.setStack(GuardarropasBlockEntity.SLOT_DELANTAL, prenda(new ItemStack(ModamodItems.DELANTAL), calce));
+        else be.setStack(PruebaRopa.indice(PruebaRopa.CALIENTABRAZOS, 0), prenda(new ItemStack(ModamodItems.CALIENTABRAZOS), calce));
 
 
 
 
 
-        else be.setStack(GuardarropasBlockEntity.CALIENTABRAZOS * c, prenda(new ItemStack(ModamodItems.CALIENTABRAZOS), calce));
-
-
-
-
-
-        be.setStack(GuardarropasBlockEntity.SLOT_CALZADO, new ItemStack(ModamodItems.BORCEGOS));
+        be.setStack(PruebaRopa.CALZADO, new ItemStack(ModamodItems.BORCEGOS));
 
 
 
@@ -592,7 +584,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(GuardarropasBlockEntity.CHAQUETA * GuardarropasBlockEntity.POR_CATEGORIA, top);
+        be.setStack(PruebaRopa.indice(PruebaRopa.CHAQUETA, 0), top);
 
 
 
@@ -854,13 +846,7 @@ public final class EscenarioSalon {
 
 
 
-        int c = GuardarropasBlockEntity.POR_CATEGORIA;
-
-
-
-
-
-        be.setStack(GuardarropasBlockEntity.MEDIAS * c, prenda(new ItemStack(ModamodItems.SOCKS_SOLID), Calce.OVERSIZE));
+        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.SOCKS_SOLID), Calce.OVERSIZE));
 
 
 
@@ -884,7 +870,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(GuardarropasBlockEntity.CALIENTABRAZOS * c, cal);
+        be.setStack(PruebaRopa.indice(PruebaRopa.CALIENTABRAZOS, 0), cal);
 
 
 
@@ -926,12 +912,6 @@ public final class EscenarioSalon {
 
 
 
-        int c = GuardarropasBlockEntity.POR_CATEGORIA;
-
-
-
-
-
         ItemStack top = prenda(new ItemStack(ModItems.REMERA), Calce.NORMAL);
 
 
@@ -956,61 +936,61 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(GuardarropasBlockEntity.CHAQUETA * c, top);
+        be.setStack(PruebaRopa.indice(PruebaRopa.CHAQUETA, 0), top);
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.REMERA * c, prenda(new ItemStack(ModItems.REMERA), Calce.AJUSTADO));
+        be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0), prenda(new ItemStack(ModItems.REMERA), Calce.AJUSTADO));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.PANTALON * c, prenda(new ItemStack(ModamodItems.PANTALON), Calce.SUELTO));
+        be.setStack(PruebaRopa.indice(PruebaRopa.PANTALON, 0), prenda(new ItemStack(ModamodItems.PANTALON), Calce.SUELTO));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.PANTALON * c + 1, prenda(new ItemStack(ModamodItems.POLLERA), Calce.NORMAL));
+        be.setStack(PruebaRopa.indice(PruebaRopa.PANTALON, 1), prenda(new ItemStack(ModamodItems.POLLERA), Calce.NORMAL));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.MEDIAS * c, prenda(new ItemStack(ModamodItems.SOCKS_SOLID), Calce.AJUSTADO));
+        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.SOCKS_SOLID), Calce.AJUSTADO));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.CALIENTABRAZOS * c, prenda(new ItemStack(ModamodItems.CALIENTABRAZOS), Calce.NORMAL));
+        be.setStack(PruebaRopa.indice(PruebaRopa.CALIENTABRAZOS, 0), prenda(new ItemStack(ModamodItems.CALIENTABRAZOS), Calce.NORMAL));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.SLOT_DELANTAL, prenda(new ItemStack(ModamodItems.DELANTAL), Calce.NORMAL));
+        be.setStack(PruebaRopa.DELANTAL, prenda(new ItemStack(ModamodItems.DELANTAL), Calce.NORMAL));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.SLOT_SOMBRERO, new ItemStack(ModamodItems.SOMBRERO_BRUJA));
+        be.setStack(PruebaRopa.SOMBRERO, new ItemStack(ModamodItems.SOMBRERO_BRUJA));
 
 
 
 
 
-        be.setStack(GuardarropasBlockEntity.SLOT_CALZADO, new ItemStack(ModamodItems.BORCEGOS));
+        be.setStack(PruebaRopa.CALZADO, new ItemStack(ModamodItems.BORCEGOS));
 
 
 
 
 
-        be.setStack(ManiquiBlockEntity.SLOT_CAPA, prenda(new ItemStack(ModamodItems.CAPA), Calce.NORMAL));
+        be.setStack(PruebaRopa.CAPA, prenda(new ItemStack(ModamodItems.CAPA), Calce.NORMAL));
 
 
 
@@ -1028,7 +1008,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(ManiquiBlockEntity.SLOT_CINTO, cinto);
+        be.setStack(PruebaRopa.CINTO, cinto);
 
 
 
@@ -1046,7 +1026,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(ManiquiBlockEntity.SLOT_COLLAR, collar);
+        be.setStack(PruebaRopa.COLLAR, collar);
 
 
 
@@ -2922,12 +2902,6 @@ public final class EscenarioSalon {
 
 
 
-                    int k = GuardarropasBlockEntity.POR_CATEGORIA;
-
-
-
-
-
                     ItemStack[] pr = {new ItemStack(ModItems.REMERA), new ItemStack(ModamodItems.PANTALON), new ItemStack(ModamodItems.POLLERA),
 
 
@@ -2940,13 +2914,13 @@ public final class EscenarioSalon {
 
 
 
-                    int[] cat = {GuardarropasBlockEntity.REMERA, GuardarropasBlockEntity.PANTALON, GuardarropasBlockEntity.PANTALON,
+                    int[] cat = {PruebaRopa.REMERA, PruebaRopa.PANTALON, PruebaRopa.PANTALON,
 
 
 
 
 
-                            GuardarropasBlockEntity.MEDIAS, GuardarropasBlockEntity.CALIENTABRAZOS, -1};
+                            PruebaRopa.MEDIAS, PruebaRopa.CALIENTABRAZOS, -1};
 
 
 
@@ -2982,7 +2956,7 @@ public final class EscenarioSalon {
 
 
 
-                    var chaq = PruebaRopa.lugar(comp, GuardarropasBlockEntity.CHAQUETA);
+                    var chaq = PruebaRopa.lugar(comp, PruebaRopa.CHAQUETA);
 
 
 

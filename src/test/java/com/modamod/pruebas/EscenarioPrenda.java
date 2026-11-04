@@ -1,8 +1,6 @@
 package com.modamod.pruebas;
 
-import com.modamod.guardarropas.GuardarropasBlockEntity;
 import com.modamod.item.Calce;
-import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
 import com.modamod.item.PantalonItem;
 import com.modamod.render.ClothingTextureCache;
@@ -83,7 +81,7 @@ public final class EscenarioPrenda {
     }
 
     private static Function<dev.emi.trinkets.api.TrinketComponent, net.minecraft.inventory.Inventory> pantalonSlot() {
-        return comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.PANTALON);
+        return comp -> PruebaRopa.lugar(comp, PruebaRopa.PANTALON);
     }
 
     /**
@@ -99,7 +97,7 @@ public final class EscenarioPrenda {
         // Faldon: una remera con faldon de nivel 3 cuelga de la cintura (diferencia contra la remera lisa).
         ItemStack faldon = new ItemStack(ModItems.REMERA);
         com.modamod.item.TopCorte.setFaldon(faldon, 3);
-        prenda(r, "remera con faldon", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.REMERA), faldon);
+        prenda(r, "remera con faldon", comp -> PruebaRopa.lugar(comp, PruebaRopa.REMERA), faldon);
 
         // Volumen de las medias: Pegado y Oversize tienen que verse DISTINTOS (el reclamo era "no observo ninguna variacion").
         java.util.function.Function<Calce, ItemStack> medias = calce -> {
@@ -108,7 +106,7 @@ public final class EscenarioPrenda {
             return m;
         };
         java.util.function.Function<dev.emi.trinkets.api.TrinketComponent, net.minecraft.inventory.Inventory> mediasSlot =
-                comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.MEDIAS);
+                comp -> PruebaRopa.lugar(comp, PruebaRopa.MEDIAS);
         prenda(r, "medias calce pegado", mediasSlot, medias.apply(Calce.PEGADO));
         prenda(r, "medias calce oversize", mediasSlot, medias.apply(Calce.OVERSIZE));
 
@@ -174,13 +172,13 @@ public final class EscenarioPrenda {
 
         ItemStack pantalon = new ItemStack(ModamodItems.PANTALON);
         com.modamod.prenda.Corte.set(pantalon, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
-        prenda(r, "pantalon oversize", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.PANTALON), pantalon);
+        prenda(r, "pantalon oversize", comp -> PruebaRopa.lugar(comp, PruebaRopa.PANTALON), pantalon);
 
         ItemStack remera = new ItemStack(ModItems.REMERA);
         com.modamod.prenda.Corte.set(remera, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
-        prenda(r, "remera oversize", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.REMERA), remera);
+        prenda(r, "remera oversize", comp -> PruebaRopa.lugar(comp, PruebaRopa.REMERA), remera);
 
-        prenda(r, "medias", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.MEDIAS), new ItemStack(ModamodItems.SOCKS_SOLID));
+        prenda(r, "medias", comp -> PruebaRopa.lugar(comp, PruebaRopa.MEDIAS), new ItemStack(ModamodItems.SOCKS_SOLID));
         prenda(r, "borcegos", PruebaRopa::calzado, new ItemStack(ModamodItems.BORCEGOS));
 
         detalles(r);   // al final: sube al jugador al aire

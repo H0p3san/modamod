@@ -1,7 +1,5 @@
 package com.modamod.pruebas;
 
-import com.modamod.guardarropas.GuardarropasBlockEntity;
-import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
 import com.modamod.maniqui.ManiquiBlock;
 import com.modamod.maniqui.ManiquiBlockEntity;
@@ -88,7 +86,7 @@ public final class EscenarioModashow {
             for (String patron : PATRONES) {
                 BlockPos pos = new BlockPos(i * PASO, y, 0);
                 ManiquiBlockEntity be = maniqui(w, pos);
-                if (be != null) be.setStack(GuardarropasBlockEntity.REMERA * GuardarropasBlockEntity.POR_CATEGORIA,
+                if (be != null) be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0),
                         conTrim(new ItemStack(ModItems.REMERA), patron, null, 0xE8E4DC));
                 listo(w, pos);
                 cartel(w, pos.add(0, 0, -2), patron);
@@ -96,7 +94,7 @@ public final class EscenarioModashow {
             }
             BlockPos otro = new BlockPos(i * PASO, y, 0);
             ManiquiBlockEntity beOtro = maniqui(w, otro);
-            if (beOtro != null) beOtro.setStack(GuardarropasBlockEntity.REMERA * GuardarropasBlockEntity.POR_CATEGORIA,
+            if (beOtro != null) beOtro.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0),
                     conTrim(new ItemStack(ModItems.REMERA), "otromod:algo", null, 0xE8E4DC));
             listo(w, otro);
             cartel(w, otro.add(0, 0, -2), "otro mod", "(metal)");
@@ -104,7 +102,7 @@ public final class EscenarioModashow {
             for (int k = 0; k < MATERIALES.length; k++) {
                 BlockPos pos = new BlockPos(X_MATERIALES + k * PASO, y, 0);
                 ManiquiBlockEntity be = maniqui(w, pos);
-                if (be != null) be.setStack(GuardarropasBlockEntity.REMERA * GuardarropasBlockEntity.POR_CATEGORIA,
+                if (be != null) be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0),
                         conTrim(new ItemStack(ModItems.REMERA), "snout", MATERIALES[k], 0xE8E4DC));
                 listo(w, pos);
                 cartel(w, pos.add(0, 0, -2), "snout", MATERIALES[k]);
@@ -113,15 +111,14 @@ public final class EscenarioModashow {
             BlockPos pc = new BlockPos(X_COMPLETO, y, 0);
             ManiquiBlockEntity be = maniqui(w, pc);
             if (be != null) {
-                int cat = GuardarropasBlockEntity.POR_CATEGORIA;
-                be.setStack(GuardarropasBlockEntity.REMERA * cat, conTrim(new ItemStack(ModItems.REMERA), "eye", null, 0xD8D0F0));
-                be.setStack(GuardarropasBlockEntity.PANTALON * cat, conTrim(new ItemStack(ModamodItems.POLLERA), "snout", null, 0x302020));
-                be.setStack(ManiquiBlockEntity.SLOT_CAPA, conTrim(new ItemStack(ModamodItems.CAPA), "spire", "amethyst", 0x282838));
-                be.setStack(GuardarropasBlockEntity.SLOT_SOMBRERO, conTrim(new ItemStack(ModamodItems.SOMBRERO_BRUJA), "bolt", null, 0x202028));
-                be.setStack(GuardarropasBlockEntity.SLOT_CALZADO, conTrim(new ItemStack(ModamodItems.BORCEGOS), "coast", "diamond", 0x404850));
+                be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0), conTrim(new ItemStack(ModItems.REMERA), "eye", null, 0xD8D0F0));
+                be.setStack(PruebaRopa.indice(PruebaRopa.PANTALON, 0), conTrim(new ItemStack(ModamodItems.POLLERA), "snout", null, 0x302020));
+                be.setStack(PruebaRopa.CAPA, conTrim(new ItemStack(ModamodItems.CAPA), "spire", "amethyst", 0x282838));
+                be.setStack(PruebaRopa.SOMBRERO, conTrim(new ItemStack(ModamodItems.SOMBRERO_BRUJA), "bolt", null, 0x202028));
+                be.setStack(PruebaRopa.CALZADO, conTrim(new ItemStack(ModamodItems.BORCEGOS), "coast", "diamond", 0x404850));
                 ItemStack cinto = new ItemStack(ModamodItems.BANDA);
                 com.modamod.item.BandaItem.setZona(cinto, com.modamod.item.BandaZona.CINTURA);
-                be.setStack(ManiquiBlockEntity.SLOT_CINTO, conTrim(cinto, "host", "gold", 0x806020));
+                be.setStack(PruebaRopa.CINTO, conTrim(cinto, "host", "gold", 0x806020));
                 try {
                     var f = ManiquiBlockEntity.class.getDeclaredField("twirl");
                     f.setAccessible(true);

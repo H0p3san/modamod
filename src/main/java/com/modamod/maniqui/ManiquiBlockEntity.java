@@ -1,6 +1,9 @@
 package com.modamod.maniqui;
 
-import com.modamod.guardarropas.GuardarropasBlockEntity;
+import com.modamod.prenda.CategoriaDePrenda;
+import com.modamod.prenda.Prendas;
+import com.modamod.ropa.Cosmeticos;
+import com.modamod.ropa.ListaDeRopa;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -29,37 +32,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Maniquí (2026-09-30, "guarda y muestra la ropa... con 16 slots, 4 por
- * prenda"): mismo reparto de slots que el Guardarropas (4 categorías x 4
- * capas, ver {@link GuardarropasBlockEntity#categoriaDe}), pero en vez de
- * un borrador para equiparse, la ropa queda PUESTA en la figura del modelo
- * {@code mannequin} y se ve en el mundo — la dibuja {@code ManiquiRenderer}
- * con el mismo código que la ropa del jugador.
+ * Maniquí (2026-09-30): la ropa queda PUESTA en la figura del modelo {@code mannequin} y se ve en el mundo; la dibuja
+ * {@code ManiquiRenderer} con el mismo código que la ropa del jugador. Tiene los mismos lugares que la pantalla de Ropa
+ * (rediseño, tanda 3): la lista de {@link ListaDeRopa#LUGARES} con su fila de armadura (acá, la armadura del maniquí) y
+ * además las dos manos.
  *
  * <p>El plato gira si {@link #girando()} (click derecho agachado o botón de
  * la pantalla). El ángulo NO viaja por red: cada cliente lo acumula por su
  * cuenta ({@link #anguloVisible}), así que al detenerlo la figura se queda
  * donde estaba en vez de saltar al frente.
  *
- * <p>Se sincroniza al cliente ({@link #toUpdatePacket}) a diferencia del
- * Guardarropas: la ropa tiene que verse aunque nadie tenga la pantalla
- * abierta.
+ * <p>Se sincroniza al cliente ({@link #toUpdatePacket}): la ropa tiene que verse aunque nadie tenga la pantalla abierta.
  */
 public class ManiquiBlockEntity extends BlockEntity
         implements net.minecraft.inventory.SidedInventory, ExtendedScreenHandlerFactory<BlockPos>, GeoBlockEntity {
 
-    public static final int POR_CATEGORIA = GuardarropasBlockEntity.POR_CATEGORIA;
-    public static final int CATEGORIAS = GuardarropasBlockEntity.CATEGORIAS;
-    /**
-     * Slots propios del maniqui, despues de los del Guardarropas (2026-10-19, "completemos el maniqui"): la capa, el cinto y el collar
-     * (choker). Al final, asi los maniquies guardados antes siguen leyendose bien.
-     */
-    public static final int SLOT_CAPA = GuardarropasBlockEntity.TAMANO, SLOT_CINTO = SLOT_CAPA + 1, SLOT_COLLAR = SLOT_CAPA + 2;
-    /** Máscara y barbijo (2026-10-25, "tiene que ser igual que la de maniqui y guardarropas"): también al final. */
-    public static final int SLOT_MASCARA = SLOT_CAPA + 3, SLOT_BARBIJO = SLOT_CAPA + 4;
-    /** Las manos (2026-11-03, "le faltan manos para escudos o herramientas o armas"): cualquier ítem; también al final. */
-    public static final int SLOT_MANO_DER = SLOT_CAPA + 5, SLOT_MANO_IZQ = SLOT_CAPA + 6;
-    public static final int TAMANO = GuardarropasBlockEntity.TAMANO + 7;
+    /** Los lugares de la lista (0..15), la armadura (casco, pechera, pantalón, botas) y las manos. */
+    public static final int ARMADURA_INICIO = ListaDeRopa.LUGARES;
+    public static final int SLOT_MANO_DER = ARMADURA_INICIO + Cosmeticos.ZONAS.length, SLOT_MANO_IZQ = SLOT_MANO_DER + 1;
+    public static final int TAMANO = SLOT_MANO_IZQ + 1;
 
     public static final int BTN_GIRAR = 0;
     public static final int BTN_INTERCAMBIAR = 1;
@@ -94,6 +85,8 @@ public class ManiquiBlockEntity extends BlockEntity
 
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(TAMANO, ItemStack.EMPTY);
     private boolean girando = false;
+    /** La fila de la armadura en la grilla, como la de la pantalla de Ropa ({@link Cosmeticos#fila}). */
+    private int fila = Cosmeticos.FILA_DE_FABRICA;
 
     // ── pose y figura (2026-09-30) ────────────────────────────────────────
     private PoseManiqui pose = PoseManiqui.PARADO;
@@ -163,14 +156,17 @@ public class ManiquiBlockEntity extends BlockEntity
 
     public boolean twirl() { return twirl; }
 
-    /** Los Tops puestos (columnas de remera y de chaqueta). */
+    public int fila() { return fila; }
+
+    /** Lo puesto en cada lugar de la lista, de afuera hacia adentro. */
+    public List<ItemStack> lugares() {
+        return items.subList(0, ListaDeRopa.LUGARES);
+    }
+
+    /** Los Tops puestos. */
     private List<ItemStack> tops() {
         List<ItemStack> out = new ArrayList<>();
-        for (int i = 0; i < GuardarropasBlockEntity.PRENDAS; i++) {
-            int cat = i / GuardarropasBlockEntity.POR_CATEGORIA;
-            if ((cat == GuardarropasBlockEntity.REMERA || cat == GuardarropasBlockEntity.CHAQUETA)
-                    && com.modamod.prenda.Prendas.es(items.get(i), com.modamod.prenda.CategoriaDePrenda.REMERA)) out.add(items.get(i));
-        }
+        for (ItemStack s : lugares()) if (Prendas.es(s, CategoriaDePrenda.REMERA)) out.add(s);
         return out;
     }
 
@@ -239,136 +235,85 @@ public class ManiquiBlockEntity extends BlockEntity
 
     public float anguloVisible() { return anguloVisible; }
 
-    /**
-     * Las prendas puestas, sin huecos ni armadura — lo que dibuja el renderer como ropa. En el MISMO orden que las del jugador
-     * (2026-10-19, "el maniqui no estaria teniendo el mismo orden de render que el jugador"; medido con el jugador equipado:
-     * grupo de piernas — pantalon y pollera —, torso — remera, delantal, chaqueta —, medias y calentadores): el orden de las
-     * polleras, del faldon y del delantal depende de el.
-     */
+    /** La ropa de cuerpo puesta, en el orden de dibujo (como la del jugador: {@link ListaDeRopa#paraDibujar}). */
     public List<ItemStack> prendasPuestas() {
-        List<ItemStack> out = new ArrayList<>();
-        // De adentro hacia afuera, como la lista de ropa del jugador (el dibujo va en este orden).
-        int[] orden = {GuardarropasBlockEntity.MEDIAS, GuardarropasBlockEntity.CALIENTABRAZOS, GuardarropasBlockEntity.PANTALON,
-                GuardarropasBlockEntity.REMERA, -1, GuardarropasBlockEntity.CHAQUETA};
-        for (int categoria : orden) {
-            if (categoria < 0) {
-                ItemStack delantal = items.get(GuardarropasBlockEntity.SLOT_DELANTAL);
-                if (!delantal.isEmpty()) out.add(delantal);
-                continue;
-            }
-            for (int capa = 0; capa < GuardarropasBlockEntity.POR_CATEGORIA; capa++) {
-                ItemStack s = items.get(categoria * GuardarropasBlockEntity.POR_CATEGORIA + capa);
-                if (s.isEmpty()) continue;
-                // La columna de chaquetas se dibuja en la capa exterior (2026-10-07, "un solo top").
-                if (categoria == GuardarropasBlockEntity.CHAQUETA && com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
-                    s = com.modamod.item.TopCorte.comoExterior(s);
-                }
-                out.add(s);
-            }
-        }
-        if (!items.get(SLOT_CAPA).isEmpty()) out.add(items.get(SLOT_CAPA));
-        return out;
+        return ListaDeRopa.paraDibujar(lugares());
     }
 
-    public ItemStack capa() { return items.get(SLOT_CAPA); }
-    public ItemStack cinto() { return items.get(SLOT_CINTO); }
-    public ItemStack collar() { return items.get(SLOT_COLLAR); }
-    public ItemStack mascara() { return items.get(SLOT_MASCARA); }
-    public ItemStack barbijo() { return items.get(SLOT_BARBIJO); }
+    /** Cuántas de {@link #prendasPuestas} van por encima de la armadura. */
+    public int prendasSobreLaArmadura() {
+        return ListaDeRopa.prendasSobreLaArmadura(lugares(), fila);
+    }
+
+    private ItemStack primera(java.util.function.Predicate<ItemStack> cual) { return ListaDeRopa.primera(lugares(), cual); }
+
+    public ItemStack sombrero() { return primera(s -> Prendas.es(s, CategoriaDePrenda.SOMBRERO)); }
+    public ItemStack calzado() { return primera(s -> Prendas.es(s, CategoriaDePrenda.CALZADO)); }
+    public ItemStack cinto() { return banda(com.modamod.item.BandaZona.CINTURA); }
+    public ItemStack collar() { return banda(com.modamod.item.BandaZona.CUELLO); }
+    public ItemStack mascara() { return primera(s -> s.getItem() instanceof com.modamod.item.CaraItem c && !c.barbijo); }
+    public ItemStack barbijo() { return primera(s -> s.getItem() instanceof com.modamod.item.CaraItem c && c.barbijo); }
     public ItemStack manoDerecha() { return items.get(SLOT_MANO_DER); }
     public ItemStack manoIzquierda() { return items.get(SLOT_MANO_IZQ); }
 
-    /** El sombrero de bruja puesto (2026-10-05), o vacío. */
-    public ItemStack sombrero() { return items.get(GuardarropasBlockEntity.SLOT_SOMBRERO); }
-
-    /** Los borcegos puestos (2026-10-08), o vacío. */
-    public ItemStack calzado() { return items.get(GuardarropasBlockEntity.SLOT_CALZADO); }
+    private ItemStack banda(com.modamod.item.BandaZona zona) {
+        return primera(s -> Prendas.es(s, CategoriaDePrenda.BANDA) && com.modamod.item.BandaItem.zona(s) == zona);
+    }
 
     /** La pieza de armadura de ese slot del cuerpo (HEAD/CHEST/LEGS/FEET), o vacío. */
     public ItemStack armadura(net.minecraft.entity.EquipmentSlot slot) {
-        for (int i = 0; i < GuardarropasBlockEntity.SLOTS_ARMADURA.length; i++) {
-            if (GuardarropasBlockEntity.SLOTS_ARMADURA[i] == slot) return items.get(GuardarropasBlockEntity.ARMADURA_INICIO + i);
-        }
-        return ItemStack.EMPTY;
+        int z = Cosmeticos.zonaDe(slot);
+        return z < 0 ? ItemStack.EMPTY : items.get(ARMADURA_INICIO + z);
     }
 
     /**
-     * Click derecho con una prenda en la mano: la pone en la primera capa
-     * libre de su categoría. Devuelve false si no es prenda o no queda lugar.
+     * Click derecho con algo en la mano: la armadura a su pieza si está libre; la ropa al primer lugar libre de la lista
+     * (de afuera hacia adentro). Devuelve false si no entra o no queda lugar.
      */
     public boolean ponerPrenda(ItemStack stack) {
-        int categoria = GuardarropasBlockEntity.categoriaDe(stack);
-        if (categoria < 0) {
-            // Armadura (2026-09-30): a su slot, si está libre.
-            int slot = GuardarropasBlockEntity.slotArmaduraDe(stack);
-            if (slot < 0 || !items.get(slot).isEmpty()) return false;
-            setStack(slot, stack.copyWithCount(1));
+        int z = Cosmeticos.zonaDeArmadura(stack);
+        if (z >= 0 && items.get(ARMADURA_INICIO + z).isEmpty()) {
+            setStack(ARMADURA_INICIO + z, stack.copyWithCount(1));
             return true;
         }
-        for (int capa = 0; capa < POR_CATEGORIA; capa++) {
-            int slot = categoria * POR_CATEGORIA + capa;
-            if (items.get(slot).isEmpty()) {
-                setStack(slot, stack.copyWithCount(1));
+        if (!ListaDeRopa.entra(stack)) return false;
+        for (int i = 0; i < ListaDeRopa.LUGARES; i++) {
+            if (items.get(i).isEmpty()) {
+                setStack(i, stack.copyWithCount(1));
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Intercambia la ropa del maniquí con la que el jugador tiene puesta en
-     * Trinkets, capa por capa (slot N del maniquí ↔ slot N de Trinkets de
-     * esa categoría, mismo mapeo que {@code GuardarropasBlockEntity#equiparEn}).
-     * Nada se pierde: lo que estaba en cada lado pasa al otro, vacíos incluidos.
-     */
-    /**
-     * Los lugares propios del maniquí en el orden de la lista de ropa, de afuera hacia adentro (rediseño, tanda 3): así lo
-     * que pasa del maniquí al jugador queda en un orden que se dibuja bien. El maniquí todavía tiene un lugar por prenda.
-     */
-    private static int[] lugaresDeAfueraAAdentro() {
-        java.util.List<Integer> l = new java.util.ArrayList<>(java.util.List.of(GuardarropasBlockEntity.SLOT_SOMBRERO, SLOT_MASCARA,
-                SLOT_BARBIJO, SLOT_COLLAR, SLOT_CAPA, GuardarropasBlockEntity.SLOT_DELANTAL, SLOT_CINTO));
-        for (int cat : new int[]{GuardarropasBlockEntity.CHAQUETA, GuardarropasBlockEntity.REMERA, GuardarropasBlockEntity.CALIENTABRAZOS,
-                GuardarropasBlockEntity.PANTALON}) {
-            for (int capa = 0; capa < POR_CATEGORIA; capa++) l.add(cat * POR_CATEGORIA + capa);
-        }
-        l.add(GuardarropasBlockEntity.SLOT_CALZADO);
-        for (int capa = 0; capa < POR_CATEGORIA; capa++) l.add(GuardarropasBlockEntity.MEDIAS * POR_CATEGORIA + capa);
-        return l.stream().mapToInt(Integer::intValue).toArray();
+    /** ¿Se le puede poner esto con click derecho? (ropa de la lista o armadura) */
+    public static boolean sePone(ItemStack stack) {
+        return ListaDeRopa.entra(stack) || Cosmeticos.zonaDeArmadura(stack) >= 0;
     }
 
-    /** Intercambia la ropa y la armadura con las del jugador: lo del jugador va a los lugares del maniquí que lo aceptan. */
+    /**
+     * Intercambia con el jugador lugar por lugar (los mismos de la pantalla de Ropa), la fila de la armadura, la armadura
+     * real y lo que tiene en las manos. Nada se pierde: lo de cada lado pasa al otro, vacíos incluidos.
+     */
     public void intercambiarCon(PlayerEntity player) {
-        dev.emi.trinkets.api.TrinketInventory lista = com.modamod.ropa.ListaDeRopa.de(player);
+        dev.emi.trinkets.api.TrinketInventory lista = ListaDeRopa.de(player);
         if (lista != null) {
-            java.util.List<ItemStack> delJugador = new java.util.ArrayList<>();
-            for (int i = 0; i < lista.size(); i++) {
-                if (!lista.getStack(i).isEmpty()) delJugador.add(lista.getStack(i).copy());
-                lista.setStack(i, ItemStack.EMPTY);
+            for (int i = 0; i < ListaDeRopa.LUGARES && i < lista.size(); i++) {
+                ItemStack delJugador = lista.getStack(i).copy();
+                lista.setStack(i, items.get(i).copy());
+                items.set(i, delJugador);
             }
-            int destino = 0;
-            for (int mio : lugaresDeAfueraAAdentro()) {
-                ItemStack s = items.get(mio);
-                if (s.isEmpty()) continue;
-                if (destino < lista.size()) lista.setStack(destino++, s.copy());
-                else player.getInventory().offerOrDrop(s.copy());
-                items.set(mio, ItemStack.EMPTY);
-            }
-            for (ItemStack s : delJugador) {
-                int lugar = -1;
-                for (int mio : lugaresDeAfueraAAdentro()) if (items.get(mio).isEmpty() && isValid(mio, s)) { lugar = mio; break; }
-                if (lugar >= 0) items.set(lugar, s);
-                else player.getInventory().offerOrDrop(s);
-            }
+            Cosmeticos c = Cosmeticos.de(player);
+            int suya = c.fila();
+            Cosmeticos.guardar(player, c.conFila(fila));
+            fila = suya;
         }
-        // Armadura: slot por slot, vacíos incluidos (2026-09-30).
-        for (int i = 0; i < GuardarropasBlockEntity.SLOTS_ARMADURA.length; i++) {
-            net.minecraft.entity.EquipmentSlot parte = GuardarropasBlockEntity.SLOTS_ARMADURA[i];
+        for (int z = 0; z < Cosmeticos.ZONAS.length; z++) {
+            net.minecraft.entity.EquipmentSlot parte = Cosmeticos.ZONAS[z];
             ItemStack delJugador = player.getEquippedStack(parte).copy();
-            player.equipStack(parte, items.get(GuardarropasBlockEntity.ARMADURA_INICIO + i).copy());
-            items.set(GuardarropasBlockEntity.ARMADURA_INICIO + i, delJugador);
+            player.equipStack(parte, items.get(ARMADURA_INICIO + z).copy());
+            items.set(ARMADURA_INICIO + z, delJugador);
         }
-        // Las manos, como la armadura: lo que tenés en la mano principal y en la secundaria.
         for (var mano : new Object[][]{{net.minecraft.entity.EquipmentSlot.MAINHAND, SLOT_MANO_DER}, {net.minecraft.entity.EquipmentSlot.OFFHAND, SLOT_MANO_IZQ}}) {
             net.minecraft.entity.EquipmentSlot parte = (net.minecraft.entity.EquipmentSlot) mano[0];
             int mio = (Integer) mano[1];
@@ -413,6 +358,12 @@ public class ManiquiBlockEntity extends BlockEntity
         if (id == BTN_CAPUCHA) {
             boolean subir = !capuchaArriba();
             for (ItemStack t : tops()) if (com.modamod.item.TopCorte.tieneCapucha(t)) com.modamod.item.TopCorte.setCapuchaArriba(t, subir);
+            markDirty();
+            return true;
+        }
+        int nuevaFila = com.modamod.ropa.GrillaDeRopa.filaTrasBoton(fila, id);
+        if (nuevaFila >= 0) {
+            fila = nuevaFila;
             markDirty();
             return true;
         }
@@ -485,16 +436,9 @@ public class ManiquiBlockEntity extends BlockEntity
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        if (slot == SLOT_CAPA) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA);
-        if (slot == SLOT_CINTO) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
-                && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CINTURA;
-        if (slot == SLOT_COLLAR) return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
-                && com.modamod.item.BandaItem.zona(stack) == com.modamod.item.BandaZona.CUELLO;
-        if (slot == SLOT_MASCARA) return stack.getItem() instanceof com.modamod.item.CaraItem c && !c.barbijo;
-        if (slot == SLOT_BARBIJO) return stack.getItem() instanceof com.modamod.item.CaraItem c && c.barbijo;
-        if (slot == SLOT_MANO_DER || slot == SLOT_MANO_IZQ) return true;
-        if (slot >= GuardarropasBlockEntity.TAMANO) return false;
-        return GuardarropasBlockEntity.esValidoEn(slot, stack);
+        if (slot < ListaDeRopa.LUGARES) return ListaDeRopa.entra(stack);
+        if (slot < SLOT_MANO_DER) return Cosmeticos.zonaDeArmadura(stack) == slot - ARMADURA_INICIO;
+        return slot < TAMANO;
     }
 
     @Override
@@ -559,6 +503,7 @@ public class ManiquiBlockEntity extends BlockEntity
         // ya los deja vacíos del lado del cliente.
         Inventories.writeNbt(nbt, items, registries);
         nbt.putBoolean("Girando", girando);
+        nbt.putInt("Fila", fila);
         nbt.putString("Pose", pose.name());
         net.minecraft.nbt.NbtList lista = new net.minecraft.nbt.NbtList();
         for (float a : angulos) lista.add(net.minecraft.nbt.NbtFloat.of(a));
@@ -580,6 +525,7 @@ public class ManiquiBlockEntity extends BlockEntity
         items.clear();
         Inventories.readNbt(nbt, items, registries);
         girando = nbt.getBoolean("Girando");
+        fila = nbt.contains("Fila") ? nbt.getInt("Fila") : Cosmeticos.FILA_DE_FABRICA;
         pose = nbt.contains("Pose") ? PoseManiqui.porNombre(nbt.getString("Pose")) : PoseManiqui.PARADO;
         float[] base = PoseManiqui.PARADO.angulos();
         net.minecraft.nbt.NbtList lista = nbt.getList("Angulos", net.minecraft.nbt.NbtElement.FLOAT_TYPE);

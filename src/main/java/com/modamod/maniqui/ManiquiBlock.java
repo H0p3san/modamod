@@ -102,8 +102,7 @@ public class ManiquiBlock extends BlockWithEntity {
         if (!(world.getBlockEntity(pos) instanceof ManiquiBlockEntity be)) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        if (com.modamod.guardarropas.GuardarropasBlockEntity.categoriaDe(stack) < 0
-                && com.modamod.guardarropas.GuardarropasBlockEntity.slotArmaduraDe(stack) < 0) {
+        if (!ManiquiBlockEntity.sePone(stack)) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (world.isClient) return ItemActionResult.SUCCESS;

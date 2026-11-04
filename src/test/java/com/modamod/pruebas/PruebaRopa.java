@@ -1,6 +1,5 @@
 package com.modamod.pruebas;
 
-import com.modamod.guardarropas.GuardarropasBlockEntity;
 import com.modamod.ropa.ListaDeRopa;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
@@ -9,28 +8,38 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 
 /**
- * Lugares fijos de la lista de ropa para las pruebas (de afuera hacia adentro): delantal, calzado, chaqueta ×3,
- * remera ×3, calientabrazos ×3, pantalón ×3 y medias ×2. Cada categoría se ve como un inventario chico sobre su tramo.
+ * Lugares fijos de la lista de ropa para las pruebas (de afuera hacia adentro), los mismos para el jugador y el maniquí:
+ * sombrero, collar, capa, delantal, cinto, chaqueta ×2, remera ×2, calientabrazos, calzado, pantalón ×2 y medias ×2. Cada
+ * categoría de prenda se ve como un inventario chico sobre su tramo.
  */
 final class PruebaRopa {
 
     private PruebaRopa() {}
 
-    static Inventory delantal(TrinketComponent comp) { return tramo(comp, 0, 1); }
+    /** Categorías de prenda de las pruebas. */
+    static final int REMERA = 0, PANTALON = 1, MEDIAS = 2, CALIENTABRAZOS = 3, CHAQUETA = 4;
+    /** Lugares de los accesorios y de lo que va de a uno. */
+    static final int SOMBRERO = 0, COLLAR = 1, CAPA = 2, DELANTAL = 3, CINTO = 4, CALZADO = 10;
 
-    static Inventory calzado(TrinketComponent comp) { return tramo(comp, 1, 1); }
-
-    /** Una categoría de {@link GuardarropasBlockEntity} (REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, CHAQUETA). */
-    static Inventory lugar(TrinketComponent comp, int categoria) {
+    /** El lugar de la capa {@code capa} (0 = la de afuera) de esa categoría. */
+    static int indice(int categoria, int capa) {
         return switch (categoria) {
-            case GuardarropasBlockEntity.CHAQUETA -> tramo(comp, 2, 3);
-            case GuardarropasBlockEntity.REMERA -> tramo(comp, 5, 3);
-            case GuardarropasBlockEntity.CALIENTABRAZOS -> tramo(comp, 8, 3);
-            case GuardarropasBlockEntity.PANTALON -> tramo(comp, 11, 3);
-            case GuardarropasBlockEntity.MEDIAS -> tramo(comp, 14, 2);
+            case CHAQUETA -> 5;
+            case REMERA -> 7;
+            case CALIENTABRAZOS -> 9;
+            case PANTALON -> 11;
+            case MEDIAS -> 13;
             default -> throw new IllegalArgumentException("categoria " + categoria);
-        };
+        } + capa;
     }
+
+    private static int largo(int categoria) { return categoria == CALIENTABRAZOS ? 1 : 2; }
+
+    static Inventory delantal(TrinketComponent comp) { return tramo(comp, DELANTAL, 1); }
+
+    static Inventory calzado(TrinketComponent comp) { return tramo(comp, CALZADO, 1); }
+
+    static Inventory lugar(TrinketComponent comp, int categoria) { return tramo(comp, indice(categoria, 0), largo(categoria)); }
 
     /** Cuántas prendas lleva puestas en la lista. */
     static int puestas(PlayerEntity jugador) {

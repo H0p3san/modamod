@@ -1,7 +1,6 @@
 package com.modamod.pruebas;
 
 import com.modamod.item.Calce;
-import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
 import com.modamod.modelado.ModeladoBlockEntity;
 import com.modamod.modelado.ModeladoMod;

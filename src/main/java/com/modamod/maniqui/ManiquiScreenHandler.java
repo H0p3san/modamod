@@ -1,40 +1,31 @@
 package com.modamod.maniqui;
 
-import com.modamod.guardarropas.GuardarropasBlockEntity;
-import com.modamod.guardarropas.GuardarropasScreenHandler;
+import com.modamod.ropa.GrillaDeRopa;
+import com.modamod.ropa.ListaDeRopa;
 import com.modamod.screen.ModamodScreenHandlers;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.function.BooleanSupplier;
+
 /**
- * Maniquí: 16 slots (4 categorías x 4 capas) + inventario del jugador, en
- * las MISMAS posiciones que el Guardarropas — así reusa su fondo
- * ({@code guardarropas.png}) sin arte nuevo.
+ * Maniquí: la grilla de Ropa ({@link GrillaDeRopa}, la misma que la pantalla de Ropa y el Guardarropas) con la armadura
+ * del maniquí en la fila de la armadura, las dos manos al lado y el inventario del jugador.
  */
 public class ManiquiScreenHandler extends ScreenHandler {
 
-    public static final int M_MEDIO = GuardarropasScreenHandler.M_MEDIO;
     /** Ventana de 560x408 como las otras maquinas (2026-10-19, "hacela mas grande como las otras maquinas"). */
     public static final int ANCHO = 560, ALTO = 408;
-    /** Grilla de 3 columnas como la pantalla de Ropa: 8 filas (cabeza, collar y capa, 5 prendas, abajo). */
-    public static final int X_GRILLA = 240, Y_GRILLA = 24, PASO_X = 22, PASO_Y = 24, FILAS = 8;
-    /** La armadura, en una columna al lado de la grilla. */
-    public static final int X_ARMADURA = 330;
-    /** Las manos, en la misma columna, dos filas debajo de la armadura. */
-    public static final int Y_MANOS = Y_GRILLA + 5 * PASO_Y;
-
-    /** x, y del lugar {@code i} de {@code slot} (nombre del slot de Trinkets), con el acomodo de {@code RopaScreenHandler#posicion}. */
-    public static int[] xy(String slot, int i) {
-        int[] p = com.modamod.ropa.RopaScreenHandler.posicion(slot);
-        int fila = p[0] < 0 ? FILAS - 1 : p[0], celda = p[1] + i;
-        return new int[]{X_GRILLA + (celda % 3) * PASO_X, Y_GRILLA + (fila + celda / 3) * PASO_Y};
-    }
+    /** La grilla, en la columna del medio; las manos a su derecha. */
+    public static final int X_GRILLA = 200, Y_GRILLA = 30, X_MANOS = 310;
     public static final int X_INV = 172, Y_INV = 324, Y_HOTBAR = 382;
-    private static final int INV_START = ManiquiBlockEntity.TAMANO;
 
     public final ManiquiBlockEntity be;
     private final PlayerEntity jugador;
@@ -62,37 +53,15 @@ public class ManiquiScreenHandler extends ScreenHandler {
             public void set(int valor) { estado = valor; }
         });
 
-        // Slot anónimo con canInsert → isValid: Slot.canInsert no consulta
-        // Inventory.isValid por su cuenta (trampa conocida, ver CLAUDE.md).
-        // Mismo acomodo que la pantalla de Ropa (2026-10-25, "tiene que ser igual que la de maniqui y guardarropas"): cabeza,
-        // collar y capa, una fila por prenda y abajo delantal, cinto y calzado (ver RopaScreenHandler#posicion); la armadura al lado.
-        String[] categoria = new String[ManiquiBlockEntity.CATEGORIAS];
-        categoria[GuardarropasBlockEntity.REMERA] = "prenda";
-        categoria[GuardarropasBlockEntity.PANTALON] = "exterior";
-        categoria[GuardarropasBlockEntity.MEDIAS] = "pair";
-        categoria[GuardarropasBlockEntity.CALIENTABRAZOS] = "armwarmer";
-        categoria[GuardarropasBlockEntity.CHAQUETA] = "chaqueta";
-        for (int cat = 0; cat < ManiquiBlockEntity.CATEGORIAS; cat++) {
-            for (int capa = 0; capa < ManiquiBlockEntity.POR_CATEGORIA; capa++) {
-                int[] p = xy(categoria[cat], capa);
-                addSlot(slotPropio(cat * ManiquiBlockEntity.POR_CATEGORIA + capa, p[0], p[1], categoria[cat], ManiquiBlockEntity.POR_CATEGORIA));
-            }
-        }
-        Object[][] sueltos = {
-                {"sombrero", GuardarropasBlockEntity.SLOT_SOMBRERO}, {"mascara", ManiquiBlockEntity.SLOT_MASCARA},
-                {"barbijo", ManiquiBlockEntity.SLOT_BARBIJO}, {"choker", ManiquiBlockEntity.SLOT_COLLAR},
-                {"capa", ManiquiBlockEntity.SLOT_CAPA}, {"delantal", GuardarropasBlockEntity.SLOT_DELANTAL},
-                {"cinto", ManiquiBlockEntity.SLOT_CINTO}, {"calzado", GuardarropasBlockEntity.SLOT_CALZADO}};
-        for (Object[] s : sueltos) {
-            int[] p = xy((String) s[0], 0);
-            addSlot(slotPropio((Integer) s[1], p[0], p[1], (String) s[0], 1));
-        }
-        for (int i = 0; i < GuardarropasBlockEntity.SLOTS_ARMADURA.length; i++) {
-            addSlot(slotPropio(GuardarropasBlockEntity.ARMADURA_INICIO + i, X_ARMADURA, Y_GRILLA + i * PASO_Y, null, 1));
-        }
-        // Las manos (2026-11-03), debajo de la armadura dejando una fila: la derecha y la izquierda (el escudo).
-        addSlot(slotPropio(ManiquiBlockEntity.SLOT_MANO_DER, X_ARMADURA, Y_MANOS, null, 1));
-        addSlot(slotPropio(ManiquiBlockEntity.SLOT_MANO_IZQ, X_ARMADURA, Y_MANOS + PASO_Y, null, 1));
+        // Los slots del maniquí van en orden de índice (lugares, armadura, manos) antes del inventario: el shift-click los usa así.
+        GrillaDeRopa.armar(X_GRILLA, Y_GRILLA, be::fila,
+                (i, x, y, visible) -> new DeLugar(i, x, y, visible),
+                (z, x, y, visible) -> slotPropio(ManiquiBlockEntity.ARMADURA_INICIO + z, x, y, visible, GrillaDeRopa.FONDO_ARMADURA[z]),
+                this::addSlot);
+        // Las manos (2026-11-03): la derecha y la izquierda (el escudo).
+        addSlot(slotPropio(ManiquiBlockEntity.SLOT_MANO_DER, X_MANOS, Y_GRILLA, () -> true, null));
+        addSlot(slotPropio(ManiquiBlockEntity.SLOT_MANO_IZQ, X_MANOS, Y_GRILLA + GrillaDeRopa.PASO_FILA, () -> true,
+                PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT));
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
@@ -104,38 +73,30 @@ public class ManiquiScreenHandler extends ScreenHandler {
         }
     }
 
-    private static final net.minecraft.util.Identifier[] FONDO_ARMADURA = {
-            net.minecraft.screen.PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE, net.minecraft.screen.PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE,
-            net.minecraft.screen.PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE, net.minecraft.screen.PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE};
+    /** Un lugar de la lista: con el mismo hover que los de la pantalla de Ropa ({@link com.modamod.ropa.SlotDeRopa}). */
+    private final class DeLugar extends Slot implements com.modamod.ropa.SlotDeRopa {
+        private final BooleanSupplier visible;
 
-    /** El grupo de Trinkets de cada slot de ropa (para el hover). */
-    private static String grupoDe(String slot) {
-        return switch (slot) {
-            case "sombrero", "mascara", "barbijo", "choker" -> "head";
-            case "capa" -> "espalda";
-            case "exterior" -> "piernas";
-            case "pair", "calzado" -> "socks";
-            case "armwarmer" -> "arms";
-            default -> "torso";
-        };
+        DeLugar(int index, int x, int y, BooleanSupplier visible) {
+            super(be, index, x, y);
+            this.visible = visible;
+        }
+
+        @Override public String grupoDeRopa() { return ListaDeRopa.GRUPO; }
+        @Override public String slotDeRopa() { return ListaDeRopa.SLOT; }
+        @Override public int lugaresDeRopa() { return ListaDeRopa.LUGARES; }
+        @Override public boolean isEnabled() { return visible.getAsBoolean(); }
+        @Override public boolean canInsert(ItemStack stack) { return puedeTocar() && be.isValid(getIndex(), stack); }
+        @Override public boolean canTakeItems(PlayerEntity player) { return puedeTocar(); }
+        @Override public int getMaxItemCount() { return 1; }
     }
 
-    /** Un slot del maniqui que respeta el candado y las reglas de {@link ManiquiBlockEntity#isValid}; {@code ropa}: su slot de Trinkets (null = armadura). */
-    private Slot slotPropio(int index, int x, int y, @org.jetbrains.annotations.Nullable String ropa, int lugares) {
-        if (ropa != null) {
-            class DeRopa extends Slot implements com.modamod.ropa.SlotDeRopa {
-                DeRopa(int px, int py) { super(be, index, px, py); }
-                @Override public String grupoDeRopa() { return grupoDe(ropa); }
-                @Override public String slotDeRopa() { return ropa; }
-                @Override public int lugaresDeRopa() { return lugares; }
-                @Override public boolean canInsert(ItemStack stack) { return puedeTocar() && be.isValid(index, stack); }
-                @Override public boolean canTakeItems(PlayerEntity player) { return puedeTocar(); }
-                @Override public int getMaxItemCount() { return 1; }
-            }
-            return new DeRopa(x, y);
-        }
-        int zona = index - GuardarropasBlockEntity.ARMADURA_INICIO;
+    /** Un slot del maniquí (armadura o mano) que respeta el candado y {@link ManiquiBlockEntity#isValid}, con la silueta de vanilla vacío. */
+    private Slot slotPropio(int index, int x, int y, BooleanSupplier visible, @org.jetbrains.annotations.Nullable Identifier fondo) {
         return new Slot(be, index, x, y) {
+            @Override
+            public boolean isEnabled() { return visible.getAsBoolean(); }
+
             @Override
             public boolean canInsert(ItemStack stack) { return puedeTocar() && be.isValid(index, stack); }
 
@@ -145,15 +106,9 @@ public class ManiquiScreenHandler extends ScreenHandler {
             @Override
             public int getMaxItemCount() { return 1; }
 
-            // La silueta de vanilla en el vacío, como la pantalla de Ropa (2026-10-25).
             @Override
-            public com.mojang.datafixers.util.Pair<net.minecraft.util.Identifier, net.minecraft.util.Identifier> getBackgroundSprite() {
-                if (index == ManiquiBlockEntity.SLOT_MANO_IZQ) {
-                    return com.mojang.datafixers.util.Pair.of(net.minecraft.screen.PlayerScreenHandler.BLOCK_ATLAS_TEXTURE,
-                            net.minecraft.screen.PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
-                }
-                if (zona < 0 || zona >= FONDO_ARMADURA.length) return null;
-                return com.mojang.datafixers.util.Pair.of(net.minecraft.screen.PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, FONDO_ARMADURA[zona]);
+            public Pair<Identifier, Identifier> getBackgroundSprite() {
+                return fondo == null ? null : Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, fondo);
             }
         };
     }
@@ -180,9 +135,10 @@ public class ManiquiScreenHandler extends ScreenHandler {
         if (!puedeTocar()) return ItemStack.EMPTY;
         ItemStack stack = clickedSlot.getStack();
         ItemStack result = stack.copy();
-        if (slot < INV_START) {
-            if (!this.insertItem(stack, INV_START, this.slots.size(), true)) return ItemStack.EMPTY;
-        } else if (!this.insertItem(stack, 0, INV_START, false)) {
+        int inventario = slots.size() - 36;
+        if (slot < inventario) {
+            if (!this.insertItem(stack, inventario, this.slots.size(), true)) return ItemStack.EMPTY;
+        } else if (!this.insertItem(stack, 0, inventario, false)) {
             return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) clickedSlot.setStack(ItemStack.EMPTY);

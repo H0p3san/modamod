@@ -11,10 +11,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +55,8 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
         EstiloPergamino.usarTema(EstiloPergamino.Tema.PLATA);
         super.init();
         // La parte de Ropa, la misma de la pantalla de Ropa del jugador.
-        panel = new PanelDeRopa(handler, this.x, this.y, this::addDrawableChild, this::clickBoton);
+        panel = new PanelDeRopa(handler, handler::fila, com.modamod.ropa.RopaScreenHandler.X_MOD, com.modamod.ropa.RopaScreenHandler.Y_MOD,
+                true, this.x, this.y, this::addDrawableChild, this::clickBoton);
         // La derecha: nombre, "Guardar" y la lista.
         txtNombre = new TextFieldWidget(this.textRenderer, this.x + X_LISTA, this.y + 22, ANCHO_LISTA - 66, 16, Text.translatable("modamod.guardarropas.nombre"));
         txtNombre.setMaxLength(24);
@@ -154,105 +153,66 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
     protected void drawForeground(DrawContext c, int mouseX, int mouseY) {
         int tinta = EstiloPergamino.TEXTO;
         c.drawText(textRenderer, title, titleX, titleY, tinta, false);
-        PanelDeRopa.rotulos(c, textRenderer);
+        panel.rotulos(c, textRenderer);
         c.drawText(textRenderer, Text.translatable("modamod.guardarropas.lista"), X_LISTA, 8, tinta, false);
         if (handler.outfits().isEmpty()) {
             c.drawText(textRenderer, Text.translatable("modamod.guardarropas.vacio"), X_LISTA, Y_FILAS + 4, EstiloPergamino.TEXTO_APAGADO, false);
         }
     }
 
-    /**
-     * El jugador con las piezas de un outfit guardado puestas de mentira (2026-10-21): se arma un inventario con el formato viejo del
-     * borrador para reusar {@link #dibujarConOutfit} (armadura, sombrero, calzado y delantal van por sus slots; el resto, a la lista).
-     */
+    /** El jugador con las piezas de un outfit guardado puestas de mentira (2026-10-21): sus lugares de la lista y su armadura. */
     static void dibujarOutfit(DrawContext context, PlayerEntity jugador, GuardarropasBlockEntity.Outfit o,
                               int x1, int y1, int x2, int y2, float angulo, int mouseY) {
-        SimpleInventory inv = new SimpleInventory(GuardarropasBlockEntity.TAMANO);
-        // Las de la lista, de adentro hacia afuera (el lugar más alto es el más de adentro).
-        java.util.TreeMap<Integer, ItemStack> porLugar = new java.util.TreeMap<>(java.util.Comparator.reverseOrder());
+        List<ItemStack> lugares = new ArrayList<>(java.util.Collections.nCopies(com.modamod.ropa.ListaDeRopa.LUGARES, ItemStack.EMPTY));
+        ItemStack[] armadura = new ItemStack[com.modamod.ropa.Cosmeticos.ZONAS.length];
+        java.util.Arrays.fill(armadura, ItemStack.EMPTY);
         for (var e : o.piezas().entrySet()) {
             String k = e.getKey();
-            if (k.startsWith("armadura#")) inv.setStack(GuardarropasBlockEntity.ARMADURA_INICIO + Integer.parseInt(k.substring(9)), e.getValue());
-            else if (k.startsWith("cosmetico#")) continue;
-            else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) inv.setStack(GuardarropasBlockEntity.SLOT_SOMBRERO, e.getValue());
-            else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.CALZADO)) inv.setStack(GuardarropasBlockEntity.SLOT_CALZADO, e.getValue());
-            else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.DELANTAL)) inv.setStack(GuardarropasBlockEntity.SLOT_DELANTAL, e.getValue());
-            else porLugar.put(lugarDe(e.getKey()), e.getValue());
+            int i = numeroDe(k);
+            if (k.startsWith("armadura#")) {
+                if (i >= 0 && i < armadura.length) armadura[i] = e.getValue();
+            } else if (k.startsWith(com.modamod.ropa.ListaDeRopa.GRUPO + "/") && i >= 0 && i < lugares.size()) {
+                lugares.set(i, e.getValue());
+            }
         }
-        List<ItemStack> prendas = new ArrayList<>(porLugar.values());
-        dibujarConOutfit(context, jugador, inv, prendas, x1, y1, x2, y2, angulo, mouseY);
+        dibujarConOutfit(context, jugador, lugares, armadura, x1, y1, x2, y2, angulo, mouseY);
     }
 
-    /** El lugar de la lista de una clave de outfit ({@code ropa/lugar#i}). */
-    private static int lugarDe(String clave) {
+    /** El número del final de una clave de outfit ({@code ropa/lugar#i}, {@code armadura#z}), o -1. */
+    private static int numeroDe(String clave) {
         try {
             return Integer.parseInt(clave.substring(clave.lastIndexOf('#') + 1));
         } catch (NumberFormatException e) {
-            return 0;
+            return -1;
         }
     }
 
     /**
-     * El preview del jugador con las prendas Y la armadura de {@code inv}
-     * (2026-09-30, columna de armadura): la armadura se pone de mentira en
-     * el inventario del jugador SOLO del cliente, directo en la lista (sin
-     * equipStack: nada de sonidos ni eventos), y se devuelve en el mismo
-     * frame. Una pieza vacía en el outfit deja ver la que el jugador tiene
-     * puesta, igual que "Equipar" no desequipa nada.
+     * El jugador con {@code lugares} (los de la lista, de afuera hacia adentro) y {@code armadura} (casco, pechera, pantalón,
+     * botas) puestos de mentira: la armadura va en el inventario del jugador SOLO del cliente, directo en la lista (sin
+     * equipStack: nada de sonidos ni eventos), y se devuelve en el mismo frame. Una pieza vacía deja ver la que tiene puesta.
      */
-    static void dibujarConOutfit(DrawContext context, PlayerEntity jugador, net.minecraft.inventory.Inventory inv,
-                                 List<ItemStack> prendas, int x1, int y1, int x2, int y2,
-                                 float angulo, int mouseY) {
-        var armadura = jugador.getInventory().armor;
-        ItemStack[] antes = new ItemStack[armadura.size()];
-        for (int i = 0; i < antes.length; i++) antes[i] = armadura.get(i);
-        // El delantal (2026-10-11) se dibuja con el resto de la ropa.
-        ItemStack delantal = inv.getStack(GuardarropasBlockEntity.SLOT_DELANTAL);
-        if (!delantal.isEmpty()) {
-            prendas = new java.util.ArrayList<>(prendas);
-            prendas.add(delantal);
-        }
-        GarmentFeatureRenderer.previewOverride = prendas;
-        ItemStack sombrero = inv.getStack(GuardarropasBlockEntity.SLOT_SOMBRERO);
+    static void dibujarConOutfit(DrawContext context, PlayerEntity jugador, List<ItemStack> lugares, ItemStack[] armadura,
+                                 int x1, int y1, int x2, int y2, float angulo, int mouseY) {
+        var puesta = jugador.getInventory().armor;
+        ItemStack[] antes = new ItemStack[puesta.size()];
+        for (int i = 0; i < antes.length; i++) antes[i] = puesta.get(i);
+        GarmentFeatureRenderer.previewOverride = com.modamod.ropa.ListaDeRopa.paraDibujar(lugares);
+        ItemStack sombrero = com.modamod.ropa.ListaDeRopa.primera(lugares, s -> com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO));
         GarmentFeatureRenderer.sombreroOverride = sombrero.isEmpty() ? null : sombrero;
-        ItemStack calzado = inv.getStack(GuardarropasBlockEntity.SLOT_CALZADO);
+        ItemStack calzado = com.modamod.ropa.ListaDeRopa.primera(lugares, s -> com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALZADO));
         GarmentFeatureRenderer.calzadoOverride = calzado.isEmpty() ? null : calzado;
         try {
-            for (int i = 0; i < GuardarropasBlockEntity.SLOTS_ARMADURA.length; i++) {
-                ItemStack pieza = inv.getStack(GuardarropasBlockEntity.ARMADURA_INICIO + i);
-                if (!pieza.isEmpty()) armadura.set(GuardarropasBlockEntity.SLOTS_ARMADURA[i].getEntitySlotId(), pieza);
+            for (int z = 0; z < armadura.length; z++) {
+                if (!armadura[z].isEmpty()) puesta.set(com.modamod.ropa.Cosmeticos.ZONAS[z].getEntitySlotId(), armadura[z]);
             }
             PreviewJugador.dibujar(context, jugador, x1, y1, x2, y2, 35, angulo, (float) mouseY);
         } finally {
             GarmentFeatureRenderer.previewOverride = null;
             GarmentFeatureRenderer.sombreroOverride = null;
             GarmentFeatureRenderer.calzadoOverride = null;
-            for (int i = 0; i < antes.length; i++) armadura.set(i, antes[i]);
+            for (int i = 0; i < antes.length; i++) puesta.set(i, antes[i]);
         }
-    }
-
-    /** Marco del slot del delantal (2026-10-11), debajo del del calzado. */
-    static void marcoDelantal(DrawContext c, int ox, int oy) {
-        int x0 = ox + GuardarropasScreenHandler.X_ARMADURA, y0 = oy + GuardarropasScreenHandler.Y_DELANTAL;
-        c.fill(x0 - 1, y0 - 1, x0 + 17, y0 + 17, 0xFF2A180C);
-        c.fill(x0, y0, x0 + 16, y0 + 16, 0xFF5A4028);
-        c.drawTexture(Identifier.of("modamod", "textures/gui/slot/delantal.png"), x0, y0, 0, 0, 16, 16, 16, 16);
-    }
-
-    /** Marco del slot del calzado (2026-10-08), debajo del del sombrero. */
-    static void marcoCalzado(DrawContext c, int ox, int oy) {
-        int x0 = ox + GuardarropasScreenHandler.X_ARMADURA, y0 = oy + GuardarropasScreenHandler.Y_CALZADO;
-        c.fill(x0 - 1, y0 - 1, x0 + 17, y0 + 17, 0xFF2A180C);
-        c.fill(x0, y0, x0 + 16, y0 + 16, 0xFF5A4028);
-        c.drawTexture(Identifier.of("modamod", "textures/gui/slot/calzado.png"), x0, y0, 0, 0, 16, 16, 16, 16);
-    }
-
-    /** Marco del slot del sombrero (2026-10-05), dibujado por código como los de la grilla de la chaqueta. */
-    static void marcoSombrero(DrawContext c, int ox, int oy) {
-        int x0 = ox + GuardarropasScreenHandler.X_ARMADURA, y0 = oy + GuardarropasScreenHandler.Y_SOMBRERO;
-        c.fill(x0 - 1, y0 - 1, x0 + 17, y0 + 17, 0xFF2A180C);
-        c.fill(x0, y0, x0 + 16, y0 + 16, 0xFF5A4028);
-        c.drawTexture(Identifier.of("modamod", "textures/gui/slot/sombrero.png"), x0, y0, 0, 0, 16, 16, 16, 16);
     }
 
 }

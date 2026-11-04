@@ -47,7 +47,7 @@ public final class RedFrente {
         // La capa con embozo (2026-10-11, "abra un poco con la tecla de abrir el frente") también obedece a la tecla.
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CAPA)) return com.modamod.item.CapaItem.embozo(stack) >= 0;
         if (!(com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA))) return false;
-        return TopCorte.conRasgosDeChaqueta(stack) || com.modamod.ropa.ListaDeRopa.esTopDeAfuera(ref.inventory(), ref.index());
+        return TopCorte.conRasgosDeChaqueta(stack) || com.modamod.ropa.ListaDeRopa.esTopDeAfuera(com.modamod.ropa.ListaDeRopa.lugares(ref.inventory()), ref.index());
     }
 
     private static boolean abierta(ItemStack s) {

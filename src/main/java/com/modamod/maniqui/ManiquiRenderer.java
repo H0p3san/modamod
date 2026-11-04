@@ -242,7 +242,8 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
                 GarmentFeatureRenderer.mapaFigura = mapaFigura;
                 GarmentFeatureRenderer.twirlFigura = twirl;
                 try {
-                    GarmentFeatureRenderer.dibujarTela(cuerpo, slim, prendas, matrices, vertexConsumers, luz, busto);
+                    GarmentFeatureRenderer.dibujarTela(cuerpo, slim, prendas, matrices, vertexConsumers, luz, busto,
+                            GarmentFeatureRenderer.ArmaduraVisible.de(be::armadura, be.prendasSobreLaArmadura()));
                 } finally {
                     GarmentFeatureRenderer.twirlFigura = -1f;
                     GarmentFeatureRenderer.mapaFigura = null;

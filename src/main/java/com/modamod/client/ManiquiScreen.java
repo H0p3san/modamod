@@ -7,6 +7,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -23,12 +24,12 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
     private static final Identifier TEXTURE = Identifier.of("modamod", "textures/gui/container/maniqui.png");
     private static final int ANCHO = ManiquiScreenHandler.ANCHO;
     private static final int ALTO = ManiquiScreenHandler.ALTO;
-    private static final int M_MEDIO = ManiquiScreenHandler.M_MEDIO;
 
     private static final int PREVIEW_X1_LOCAL = 8, PREVIEW_Y1_LOCAL = 18, PREVIEW_X2_LOCAL = 160, PREVIEW_Y2_LOCAL = 296;
     /** Columna derecha: sliders de la pose, skin, emote y botones. */
     private static final int X_DER = 398, ANCHO_DER = 154;
     private float anguloVista = 0f;
+    private PanelDeRopa panel;
     private ButtonWidget btnVista;
     private ButtonWidget btnGirar;
 
@@ -48,6 +49,8 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
         // con el estilo del mod y los colores de sus acentos metalicos").
         EstiloPergamino.usarTema(EstiloPergamino.Tema.AZUL);
         super.init();
+        panel = new PanelDeRopa(handler, handler.be::fila, ManiquiScreenHandler.X_GRILLA, ManiquiScreenHandler.Y_GRILLA, false,
+                this.x, this.y, this::addDrawableChild, this::clickBoton);
 
         btnVista = new EstiloPergamino.BotonPergamino(this.x + PREVIEW_X1_LOCAL, this.y + 300, PREVIEW_X2_LOCAL - PREVIEW_X1_LOCAL, 16, Text.literal(""), b -> anguloVista = Math.floorMod(Math.round(anguloVista) + 90, 360));
         this.addDrawableChild(btnVista);
@@ -251,6 +254,7 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
         btnBusto.setMessage(handler.be.busto() == 0 ? Text.translatable("modamod.maniqui.busto.sin")
                 : Text.translatable("modamod.maniqui.busto", handler.be.busto(), com.modamod.body.PerfilCuerpo.BUSTO_MAXIMO));
         if (!arrastrando) for (SliderPose s : sliders) s.refrescar();
+        panel.actualizar(this.x, this.y);
         super.render(context, mouseX, mouseY, delta);
         dibujarPreview(context, mouseY);
         drawMouseoverTooltip(context, mouseX, mouseY);
@@ -266,8 +270,10 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
         // Sin permiso (2026-10-04, "alguien que no es dueño... la preview de su personaje usando el outfit"): se ve
         // el propio personaje con la ropa y la armadura del maniquí puestas, sin tocar nada.
         if (!handler.puedeTocar() && MinecraftClient.getInstance().player != null) {
-            GuardarropasScreen.dibujarConOutfit(context, MinecraftClient.getInstance().player, handler.be,
-                    handler.be.prendasPuestas(), this.x + PREVIEW_X1_LOCAL, this.y + PREVIEW_Y1_LOCAL,
+            ItemStack[] armadura = new ItemStack[com.modamod.ropa.Cosmeticos.ZONAS.length];
+            for (int z = 0; z < armadura.length; z++) armadura[z] = handler.be.armadura(com.modamod.ropa.Cosmeticos.ZONAS[z]);
+            GuardarropasScreen.dibujarConOutfit(context, MinecraftClient.getInstance().player, handler.be.lugares(),
+                    armadura, this.x + PREVIEW_X1_LOCAL, this.y + PREVIEW_Y1_LOCAL,
                     this.x + PREVIEW_X2_LOCAL, this.y + PREVIEW_Y2_LOCAL, anguloVista, mouseY);
             return;
         }
@@ -300,6 +306,9 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
     @Override
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
         EstiloPergamino.titulo(context, this.textRenderer, this.title, this.titleX, this.titleY);
+        panel.rotulos(context, this.textRenderer);
+        context.drawText(this.textRenderer, Text.translatable("modamod.maniqui.manos"), ManiquiScreenHandler.X_MANOS - 1,
+                ManiquiScreenHandler.Y_GRILLA - 10, EstiloPergamino.TEXTO, false);
         context.drawText(this.textRenderer, this.playerInventoryTitle, this.playerInventoryTitleX,
                 this.playerInventoryTitleY, EstiloPergamino.TEXTO, false);
     }
@@ -327,35 +336,15 @@ public class ManiquiScreen extends HandledScreen<ManiquiScreenHandler> {
         // La figura sobre un fondo oscuro.
         c.fill(x0 + PREVIEW_X1_LOCAL - 1, y0 + PREVIEW_Y1_LOCAL - 1, x0 + PREVIEW_X2_LOCAL + 1, y0 + PREVIEW_Y2_LOCAL + 1, 0xFF2A180C);
         c.fill(x0 + PREVIEW_X1_LOCAL, y0 + PREVIEW_Y1_LOCAL, x0 + PREVIEW_X2_LOCAL, y0 + PREVIEW_Y2_LOCAL, 0xFF4A3828);
-        // Como la pantalla de Ropa y el Guardarropas (2026-10-25, "el maniqui no tiene los iconos y tiene unos textos largos q se
-        // cruzan hacelo con el modelo de los otros dos"): marco de slot de Ropa, el ícono del slot de Trinkets en los vacíos y
-        // solo dos títulos; lo que va en cada lugar lo dice el hover.
+        // La grilla como la pantalla de Ropa y el Guardarropas: marcos, banda de la fila de la armadura y el ícono de ropa en los
+        // lugares vacíos; lo que va en cada lugar lo dice el hover.
+        panel.fondo(c, x0, y0);
         for (var slot : handler.slots) {
-            int sx = x0 + slot.x - 1, sy = y0 + slot.y - 1;
-            c.fill(sx, sy, sx + 18, sy + 18, 0xFF6B5136);
-            c.fill(sx + 1, sy + 1, sx + 17, sy + 17, 0xFFC9A877);
-            c.fill(sx + 1, sy + 1, sx + 17, sy + 2, 0xFFA58558);
-            if (slot instanceof com.modamod.ropa.SlotDeRopa ropa && !slot.hasStack()) {
-                c.drawTexture(icono(ropa.slotDeRopa()), x0 + slot.x, y0 + slot.y, 0, 0, 16, 16, 16, 16);
+            if (slot.isEnabled() && slot instanceof com.modamod.ropa.SlotDeRopa && !slot.hasStack()) {
+                c.drawTexture(ICONO_LUGAR, x0 + slot.x, y0 + slot.y, 0, 0, 16, 16, 16, 16);
             }
         }
-        int tinta = EstiloPergamino.TEXTO;
-        c.drawText(this.textRenderer, Text.translatable("modamod.ropa.prendas"), x0 + ManiquiScreenHandler.X_GRILLA - 1,
-                y0 + ManiquiScreenHandler.Y_GRILLA - 10, tinta, false);
-        c.drawText(this.textRenderer, Text.translatable("modamod.ropa.real"), x0 + ManiquiScreenHandler.X_ARMADURA - 1,
-                y0 + ManiquiScreenHandler.Y_GRILLA - 10, tinta, false);
-        c.drawText(this.textRenderer, Text.translatable("modamod.maniqui.manos"), x0 + ManiquiScreenHandler.X_ARMADURA - 1,
-                y0 + ManiquiScreenHandler.Y_MANOS - 10, tinta, false);
     }
 
-    /** El ícono de slot vacío de cada lugar de ropa (los mismos de Trinkets, {@code textures/gui/slot/}). */
-    private static Identifier icono(String slot) {
-        String n = switch (slot) {
-            case "prenda" -> "remera";
-            case "exterior" -> "pantalon";
-            case "pair" -> "socks";
-            default -> slot;
-        };
-        return Identifier.of("modamod", "textures/gui/slot/" + n + ".png");
-    }
+    private static final Identifier ICONO_LUGAR = Identifier.of("modamod", "textures/gui/slot/remera.png");
 }

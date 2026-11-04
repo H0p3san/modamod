@@ -29,7 +29,8 @@ public class RopaScreen extends HandledScreen<RopaScreenHandler> {
     @Override
     protected void init() {
         super.init();
-        panel = new PanelDeRopa(handler, this.x, this.y, this::addDrawableChild, this::clic);
+        panel = new PanelDeRopa(handler, handler::fila, com.modamod.ropa.RopaScreenHandler.X_MOD, com.modamod.ropa.RopaScreenHandler.Y_MOD,
+                true, this.x, this.y, this::addDrawableChild, this::clic);
         addDrawableChild(ButtonWidget.builder(Text.translatable("modamod.ropa.inventario"), b -> {
             close();
             client.setScreen(new InventoryScreen(client.player));
@@ -68,7 +69,7 @@ public class RopaScreen extends HandledScreen<RopaScreenHandler> {
     @Override
     protected void drawForeground(DrawContext c, int mouseX, int mouseY) {
         c.drawText(textRenderer, title, titleX, titleY, EstiloPergamino.TEXTO, false);
-        PanelDeRopa.rotulos(c, textRenderer);
+        panel.rotulos(c, textRenderer);
     }
 
     @Override

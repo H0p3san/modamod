@@ -243,12 +243,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         calzado = calzadoDe(entidad);
         // La armadura que se ve infla capa, embozo y capucha (2026-10-28, "que la capa embozo y capucha se inflen mas
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
-        armaduraPecho = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.CHEST);
-        armaduraCasco = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.HEAD);
-        armaduraPiernas = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.LEGS);
-        armaduraPies = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.FEET);
-        profundidadArmadura = previewOverride != null ? Integer.MAX_VALUE
-                : prendas.size() - com.modamod.ropa.ListaDeRopa.prendasSobreLaArmadura(entidad);
+        usarArmadura(previewOverride != null ? ArmaduraVisible.NINGUNA
+                : ArmaduraVisible.de(slot -> piezaVisible(entidad, slot), com.modamod.ropa.ListaDeRopa.prendasSobreLaArmadura(entidad)),
+                prendas.size());
         // Tela blanda de los apliques (2026-10-04): la inercia de esta entidad, o la de la vista previa.
         if (previewOverride != null) {
             FisicaApliques.preparar(FisicaApliques.CLAVE_VISTA_PREVIA, null, tickDelta, FisicaApliques.modoVistaPrevia);
@@ -1002,15 +999,36 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static final int FILA_CINTURON = 9, FILA_BOTAS = 7;
 
     /**
-     * Cuánto sale del cuerpo la armadura que SE VE en {@code slot}: la de los cosméticos si la cambia u oculta, si no
-     * la puesta. Solo armaduras ({@code ArmorItem}): la élitra y lo demás no inflan.
+     * La armadura que se ve en un dibujo: lo que infla cada pieza (px; solo las armaduras, {@code ArmorItem}: la élitra y lo
+     * demás no inflan) y cuántas de las prendas de dibujo, las últimas, van por encima de ella (la fila de la armadura).
      */
-    static float armadura(@Nullable LivingEntity entidad, net.minecraft.entity.EquipmentSlot slot) {
-        if (entidad == null) return 0f;
-        ItemStack s = entidad instanceof net.minecraft.entity.player.PlayerEntity j
-                ? com.modamod.ropa.Cosmeticos.visual(j, slot) : null;
-        if (s == null) s = entidad.getEquippedStack(slot);
-        return s.getItem() instanceof net.minecraft.item.ArmorItem ? ApliqueRenderer.dilatacionDeSlot(slot) : 0f;
+    public record ArmaduraVisible(float casco, float pecho, float piernas, float pies, int prendasEncima) {
+        public static final ArmaduraVisible NINGUNA = new ArmaduraVisible(0f, 0f, 0f, 0f, 0);
+
+        public static ArmaduraVisible de(java.util.function.Function<net.minecraft.entity.EquipmentSlot, ItemStack> pieza, int prendasEncima) {
+            return new ArmaduraVisible(infla(pieza, net.minecraft.entity.EquipmentSlot.HEAD), infla(pieza, net.minecraft.entity.EquipmentSlot.CHEST),
+                    infla(pieza, net.minecraft.entity.EquipmentSlot.LEGS), infla(pieza, net.minecraft.entity.EquipmentSlot.FEET), prendasEncima);
+        }
+
+        private static float infla(java.util.function.Function<net.minecraft.entity.EquipmentSlot, ItemStack> pieza,
+                                   net.minecraft.entity.EquipmentSlot slot) {
+            return pieza.apply(slot).getItem() instanceof net.minecraft.item.ArmorItem ? ApliqueRenderer.dilatacionDeSlot(slot) : 0f;
+        }
+    }
+
+    private static void usarArmadura(ArmaduraVisible a, int prendas) {
+        armaduraCasco = a.casco();
+        armaduraPecho = a.pecho();
+        armaduraPiernas = a.piernas();
+        armaduraPies = a.pies();
+        profundidadArmadura = a.prendasEncima() > 0 ? prendas - a.prendasEncima() : Integer.MAX_VALUE;
+    }
+
+    /** La pieza que SE VE en {@code slot}: la cosmética o nada si la cambia u oculta, si no la puesta. */
+    private static ItemStack piezaVisible(@Nullable LivingEntity entidad, net.minecraft.entity.EquipmentSlot slot) {
+        if (entidad == null) return ItemStack.EMPTY;
+        ItemStack s = entidad instanceof net.minecraft.entity.player.PlayerEntity j ? com.modamod.ropa.Cosmeticos.visual(j, slot) : null;
+        return s != null ? s : entidad.getEquippedStack(slot);
     }
 
     static float separacionCapa(List<ItemStack> prendas, boolean conCapuchaCaida) {
@@ -1997,21 +2015,15 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * pollera que {@link #render}; las medias con volumen también (sin inflar
      * la pierna de la figura).
      */
-    public static void dibujarTela(BipedEntityModel<?> biped, boolean slim, List<ItemStack> prendas,
-                                   MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz) {
-        dibujarTela(biped, slim, prendas, matrices, vertexConsumers, luz, null);
-    }
-
-    /** Con el busto de la figura (2026-10-02, maniquí "agregale la opcion de ponerle tetas"), o null. */
+    /**
+     * Con el busto de la figura (2026-10-02, maniquí "agregale la opcion de ponerle tetas"), o null, y su armadura: la
+     * capucha y lo de las filas de arriba de la armadura pasan por fuera de ella, como en el jugador.
+     */
     public static void dibujarTela(BipedEntityModel<?> biped, boolean slim, List<ItemStack> prendas,
                                    MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz,
-                                   @Nullable com.modamod.render.relieve.BustoRender.Busto busto) {
+                                   @Nullable com.modamod.render.relieve.BustoRender.Busto busto, ArmaduraVisible armadura) {
         com.modamod.render.relieve.BustoRender.actual = busto;
-        armaduraPecho = 0f;   // el maniquí no lleva armadura
-        armaduraCasco = 0f;
-        armaduraPiernas = 0f;
-        armaduraPies = 0f;
-        profundidadArmadura = Integer.MAX_VALUE;
+        usarArmadura(armadura, prendas.size());
         calzado = calzadoDeTela;
         calzadoDeTela = null;
         try {
@@ -2058,19 +2070,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** Mapa de relieve del cuerpo de la figura del maniqui mientras se dibuja su tela, o null (tela plana). */
     public static com.modamod.render.relieve.MapaRelieve mapaFigura = null;
 
+    /** La ropa de cuerpo puesta, en el orden de dibujo (de adentro hacia afuera; ver {@link com.modamod.ropa.ListaDeRopa#paraDibujar}). */
     public static List<ItemStack> equipadas(LivingEntity entidad) {
-        // La lista de ropa, de adentro hacia afuera (rediseño, tanda 3). Un Top con otro Top más adentro se dibuja en la capa
-        // exterior, como chaqueta.
-        List<ItemStack> out = new ArrayList<>();
         var lugares = com.modamod.ropa.ListaDeRopa.de(entidad);
-        if (lugares == null) return out;
-        for (int i = lugares.size() - 1; i >= 0; i--) {
-            ItemStack stack = lugares.getStack(i);
-            if (!com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) continue;
-            if (com.modamod.ropa.ListaDeRopa.esTopDeAfuera(lugares, i)) stack = com.modamod.item.TopCorte.comoExterior(stack);
-            out.add(stack);
-        }
-        return out;
+        return lugares == null ? new ArrayList<>() : com.modamod.ropa.ListaDeRopa.paraDibujar(com.modamod.ropa.ListaDeRopa.lugares(lugares));
     }
 
     /**
