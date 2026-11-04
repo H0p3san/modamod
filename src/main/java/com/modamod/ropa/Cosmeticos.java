@@ -20,16 +20,17 @@ import java.util.List;
 /**
  * Armadura cosmética (2026-10-05, "para no tener que instalar el cosmetic armor directamente meter aqui esa
  * funcionalidad... lo visual en el mod de ropa y los stats de la gui normal"): por cada pieza (casco, pechera,
- * pantalón, botas) un ítem que SOLO se ve (los stats siguen saliendo de la armadura real) y dos interruptores:
- * <b>ver cosmético</b> y <b>ocultar</b> ("si ver cosmético no tiene nada cuenta como ocultar"). Vive como dato
+ * pantalón, botas) un ítem que SOLO se ve (los stats siguen saliendo de la armadura real), puesto en la fila de la
+ * armadura de la lista de ropa, y un interruptor <b>ocultar</b> que esconde la real (2026-11-04, "las que esten aqui
+ * seran cosmeticas y si se pone hide se esconde la real"). Vive como dato
  * adjunto al jugador, sincronizado a todos los que lo ven, y persiste con él (también al morir).
  *
  * <p>El render lo lee con {@link #visual}: {@code LivingEntity#getEquippedStack} devuelve esto MIENTRAS se dibuja
  * esa entidad, así lo ven también las armaduras y capas de otros mods.
  */
-public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver, int fila) {
+public record Cosmeticos(List<ItemStack> piezas, int ocultar, int fila) {
 
-    /** Las piezas en el orden de los slots y de los bits de {@link #ocultar} / {@link #ver}. */
+    /** Las piezas en el orden de los slots y de los bits de {@link #ocultar}. */
     public static final EquipmentSlot[] ZONAS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     /**
@@ -38,20 +39,18 @@ public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver, int fila)
      */
     public static final int FILAS = 4, FILA_DE_FABRICA = 1;
 
-    public static final Cosmeticos VACIO = new Cosmeticos(List.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY), 0, 0,
+    public static final Cosmeticos VACIO = new Cosmeticos(List.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY), 0,
             FILA_DE_FABRICA);
 
     public static final Codec<Cosmeticos> CODEC = RecordCodecBuilder.create(i -> i.group(
             ItemStack.OPTIONAL_CODEC.listOf().fieldOf("piezas").forGetter(Cosmeticos::piezas),
             Codec.INT.optionalFieldOf("ocultar", 0).forGetter(Cosmeticos::ocultar),
-            Codec.INT.optionalFieldOf("ver", 0).forGetter(Cosmeticos::ver),
             Codec.intRange(0, FILAS).optionalFieldOf("fila", FILA_DE_FABRICA).forGetter(Cosmeticos::fila)
     ).apply(i, Cosmeticos::new));
 
     public static final PacketCodec<RegistryByteBuf, Cosmeticos> PACKET_CODEC = PacketCodec.tuple(
             ItemStack.OPTIONAL_LIST_PACKET_CODEC, Cosmeticos::piezas,
             PacketCodecs.VAR_INT, Cosmeticos::ocultar,
-            PacketCodecs.VAR_INT, Cosmeticos::ver,
             PacketCodecs.VAR_INT, Cosmeticos::fila,
             Cosmeticos::new);
 
@@ -80,26 +79,24 @@ public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver, int fila)
 
     public boolean oculta(int zona) { return (ocultar >> zona & 1) != 0; }
 
-    public boolean veCosmetico(int zona) { return (ver >> zona & 1) != 0; }
-
     public Cosmeticos conPieza(int zona, ItemStack stack) {
         List<ItemStack> nuevas = new ArrayList<>(piezas);
         while (nuevas.size() < ZONAS.length) nuevas.add(ItemStack.EMPTY);
         nuevas.set(zona, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
-        return new Cosmeticos(List.copyOf(nuevas), ocultar, ver, fila);
+        return new Cosmeticos(List.copyOf(nuevas), ocultar, fila);
     }
 
     public Cosmeticos alternarOcultar(int zona) {
-        return new Cosmeticos(piezas, ocultar ^ (1 << zona), ver, fila);
+        return new Cosmeticos(piezas, ocultar ^ (1 << zona), fila);
     }
 
-    public Cosmeticos alternarVer(int zona) {
-        return new Cosmeticos(piezas, ocultar, ver ^ (1 << zona), fila);
+    public Cosmeticos sinPiezas() {
+        return new Cosmeticos(VACIO.piezas(), ocultar, fila);
     }
 
     /** La fila de la armadura una más arriba ({@code -1}) o más abajo ({@code +1}), sin salirse de la grilla. */
     public Cosmeticos moverFila(int paso) {
-        return new Cosmeticos(piezas, ocultar, ver, Math.max(0, Math.min(FILAS, fila + paso)));
+        return new Cosmeticos(piezas, ocultar, Math.max(0, Math.min(FILAS, fila + paso)));
     }
 
     public static int zonaDe(EquipmentSlot slot) {
@@ -108,16 +105,15 @@ public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver, int fila)
     }
 
     /**
-     * Lo que se DIBUJA en esa pieza, o {@code null} si no cambia nada (se ve la armadura real): oculta → nada;
-     * ver cosmético → el cosmético (vacío = nada).
+     * Lo que se DIBUJA en esa pieza, o {@code null} si no cambia nada (se ve la armadura real): el cosmético si hay;
+     * si no, oculta → nada.
      */
     @Nullable
     public static ItemStack visual(PlayerEntity jugador, EquipmentSlot slot) {
         int z = zonaDe(slot);
         if (z < 0) return null;
         Cosmeticos c = de(jugador);
-        if (c.oculta(z)) return ItemStack.EMPTY;
-        if (c.veCosmetico(z)) return c.pieza(z);
-        return null;
+        if (!c.pieza(z).isEmpty()) return c.pieza(z);
+        return c.oculta(z) ? ItemStack.EMPTY : null;
     }
 }

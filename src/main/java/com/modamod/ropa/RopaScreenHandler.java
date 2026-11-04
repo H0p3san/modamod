@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * Pantalla de Ropa (2026-10-05, "limpiar la gui de tanto ruido... un boton de ropa que te lleve a una gui
  * especifica con los slots de ropa"): los slots de Trinkets del mod, los 4 de armadura real, los 4 cosméticos y el
- * inventario. Los botones de ver cosmético / ocultar son {@code onButtonClick}: 0..3 ver, 4..7 ocultar.
+ * inventario. Los botones de ocultar la armadura real son {@code onButtonClick} 0..3.
  */
 public class RopaScreenHandler extends ScreenHandler {
 
@@ -177,12 +177,8 @@ public class RopaScreenHandler extends ScreenHandler {
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
         Cosmeticos c = Cosmeticos.de(player);
-        if (id >= 0 && id < 4) {
-            Cosmeticos.guardar(player, c.alternarVer(id));
-            return true;
-        }
-        if (id >= 4 && id < 8) {
-            Cosmeticos.guardar(player, c.alternarOcultar(id - 4));
+        if (id >= 0 && id < Cosmeticos.ZONAS.length) {
+            Cosmeticos.guardar(player, c.alternarOcultar(id));
             return true;
         }
         if (id == BTN_FILA_ARRIBA || id == BTN_FILA_ABAJO) {

@@ -46,7 +46,7 @@ public class CosmeticosInventario implements Inventory {
 
     @Override
     public void clear() {
-        Cosmeticos.guardar(jugador, new Cosmeticos(Cosmeticos.VACIO.piezas(), Cosmeticos.de(jugador).ocultar(), Cosmeticos.de(jugador).ver(), Cosmeticos.de(jugador).fila()));
+        Cosmeticos.guardar(jugador, Cosmeticos.de(jugador).sinPiezas());
     }
 
     @Override

@@ -16,13 +16,13 @@ import java.util.function.IntConsumer;
 
 /**
  * La parte de Ropa de una pantalla (la de Ropa del jugador y la del Guardarropas): la grilla de la lista con la fila de la
- * armadura cosmética, sus flechas, la armadura real y los interruptores de ver cosmético y ocultar por pieza. Los slots los
+ * armadura cosmética, sus flechas, la armadura real y el interruptor de ocultarla por pieza. Los slots los
  * pone {@link RopaScreenHandler}; acá van los botones y el dibujo, en coordenadas de la pantalla.
  */
 final class PanelDeRopa {
 
     private final RopaScreenHandler handler;
-    private final ButtonWidget[] ver = new ButtonWidget[4], ocultar = new ButtonWidget[4];
+    private final ButtonWidget[] ocultar = new ButtonWidget[4];
     private final ButtonWidget arriba, abajo;
 
     /** Crea los botones con {@code agregar} (el addDrawableChild de la pantalla); {@code clic} manda el id del botón. */
@@ -31,9 +31,7 @@ final class PanelDeRopa {
         for (int z = 0; z < 4; z++) {
             int id = z;
             int by = y + RopaScreenHandler.Y_ARMADURA + z * RopaScreenHandler.PASO_ARMADURA - 1;
-            ver[z] = new EstiloPergamino.BotonPergamino(x + 202, by, 38, 18, Text.empty(), b -> clic.accept(id));
-            ocultar[z] = new EstiloPergamino.BotonPergamino(x + 242, by, 38, 18, Text.empty(), b -> clic.accept(4 + id));
-            agregar.accept(ver[z]);
+            ocultar[z] = new EstiloPergamino.BotonPergamino(x + 202, by, 60, 18, Text.empty(), b -> clic.accept(id));
             agregar.accept(ocultar[z]);
         }
         arriba = new EstiloPergamino.BotonPergamino(x + RopaScreenHandler.X_FLECHAS, y, 12, 9, Text.literal("▲"),
@@ -57,7 +55,6 @@ final class PanelDeRopa {
         var jugador = MinecraftClient.getInstance().player;
         Cosmeticos cosm = jugador != null ? Cosmeticos.de(jugador) : Cosmeticos.VACIO;
         for (int z = 0; z < 4; z++) {
-            ver[z].setMessage(etiqueta("modamod.ropa.ver", cosm.veCosmetico(z)));
             ocultar[z].setMessage(etiqueta("modamod.ropa.ocultar", cosm.oculta(z)));
         }
     }
