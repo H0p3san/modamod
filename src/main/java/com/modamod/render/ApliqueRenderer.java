@@ -70,10 +70,44 @@ public final class ApliqueRenderer {
     /** Los apliques de todas las prendas de {@code prendas} (los de caja; pollera y capa van en su malla). */
     public static void dibujar(List<ItemStack> prendas, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz) {
-        for (ItemStack prenda : prendas) {
-            dibujar(prenda, Math.max(0f, Calce.dilatacionEfectiva(prenda)), biped, matrices, vertexConsumers, luz);
+        for (int i = 0; i < prendas.size(); i++) {
+            ItemStack prenda = prendas.get(i);
+            float dil = Math.max(0f, Calce.dilatacionEfectiva(prenda));
+            espacioSobre = espacioBajoLaDeArriba(prendas, i, dil);
+            try {
+                dibujar(prenda, dil, biped, matrices, vertexConsumers, luz);
+            } finally {
+                espacioSobre = Float.MAX_VALUE;
+            }
         }
     }
+
+    /**
+     * Cuántos px de grosor tienen los apliques del torso de {@code prendas[i]} antes de asomar por la tela de la prenda de
+     * arriba (2026-11-04, "la corbata queda flotando a través del saco"): lo que separa las dos telas, descontado el pelito
+     * con que se apoya el aplique. {@link Float#MAX_VALUE} si ninguna prenda de arriba lo cubre (o la de arriba está abierta
+     * del todo y deja ver lo de abajo): ahí el aplique conserva todo su volumen.
+     */
+    private static float espacioBajoLaDeArriba(List<ItemStack> prendas, int i, float dil) {
+        float tela = Float.MAX_VALUE;
+        for (int j = i + 1; j < prendas.size(); j++) {
+            ItemStack arriba = prendas.get(j);
+            if (!com.modamod.prenda.Prendas.es(arriba, com.modamod.prenda.CategoriaDePrenda.REMERA)) continue;
+            if (com.modamod.item.TopCorte.frente(arriba) == com.modamod.item.ChaquetaFrente.ABIERTA) continue;
+            float d = Math.max(0f, Calce.dilatacionEfectiva(arriba));
+            if (d > dil) tela = Math.min(tela, d);
+        }
+        return tela == Float.MAX_VALUE ? tela : Math.max(0.05f, tela - dil - 0.02f - 0.05f);
+    }
+
+    /** Grosor máximo (px) de los apliques del torso que se están dibujando, o {@link Float#MAX_VALUE} (ver {@link #espacioBajoLaDeArriba}). */
+    private static float espacioSobre = Float.MAX_VALUE;
+    /**
+     * El borde de la apertura de la prenda que se está dibujando, fila por fila (px del centro al borde de la tela, 4 filas por px),
+     * o null si su frente está cerrado: los apliques del frente se corren con la tela (2026-11-04, "los botones quedan flotando").
+     */
+    private static float[] bordeApertura;
+    private static final int FILAS_POR_PX = 4;
 
     /**
      * Los apliques de caja de un ítem con {@code dil} de inflado: las prendas
@@ -97,9 +131,15 @@ public final class ApliqueRenderer {
         // El marco del cuerpo (antes de la pose de cada parte): a él pertenecen los desplazamientos de la tela blanda.
         Matrix3f marco = new Matrix3f(matrices.peek().getNormalMatrix());
         if (apliques != null) {
-            for (int i = 0; i < apliques.size(); i++) {
-                Aplique a = apliques.get(i);
-                if (a.superficie() == Aplique.Superficie.CAJA) dibujarUno(a, i, apliques, dil, biped, matrices, vertexConsumers, luz, marco);
+            bordeApertura = com.modamod.prenda.Prendas.es(item, com.modamod.prenda.CategoriaDePrenda.REMERA)
+                    && com.modamod.item.TopCorte.frente(item).abre() ? CuelloYCapucha.bordeDelEscote(item) : null;
+            try {
+                for (int i = 0; i < apliques.size(); i++) {
+                    Aplique a = apliques.get(i);
+                    if (a.superficie() == Aplique.Superficie.CAJA) dibujarUno(a, i, apliques, dil, biped, matrices, vertexConsumers, luz, marco);
+                }
+            } finally {
+                bordeApertura = null;
             }
         }
         // Correas libres (2026-10-05): comparten el marco y la tela blanda de los apliques.
@@ -168,7 +208,7 @@ public final class ApliqueRenderer {
         if (parte == biped.head ? !CabezaCaras.visible(biped) : !parte.visible) return;
 
         Vector3f n = new Vector3f(a.cara().getOffsetX(), a.cara().getOffsetY(), a.cara().getOffsetZ());
-        float px = a.x(), giro = a.giro();
+        float px = xConLaApertura(a), giro = a.giro();
         matrices.push();
         parte.rotate(matrices);
         // Sobre la superficie de la tela: el punto del click (en la caja sin
@@ -202,9 +242,34 @@ public final class ApliqueRenderer {
         // También a las normales (es una rotación): la luz del ítem y la tela blanda leen este marco.
         matrices.peek().getNormalMatrix().mul(orient.get3x3(new Matrix3f()));
         matrices.scale(a.escala(), a.escala(), a.escala());
+        float grosor = grosorMaximo(a);
+        if (grosor < 1f) matrices.scale(1f, 1f, grosor);
 
         dibujarEnMarco(a, idx, todos, matrices, vertexConsumers, luz, marco);
         matrices.pop();
+    }
+
+    /** La x del aplique con la apertura del frente: cada mitad de la tela se corre hacia afuera lo que abre su fila (el centro va a la derecha). */
+    private static float xConLaApertura(Aplique a) {
+        float[] borde = bordeApertura;
+        if (borde == null || borde.length == 0 || a.parte() != Parte.TORSO || a.cara() != net.minecraft.util.math.Direction.NORTH) return a.x();
+        int fila = Math.max(0, Math.min(borde.length - 1, (int) (a.y() * FILAS_POR_PX)));
+        float corrida = a.x() + (a.x() >= 0 ? borde[fila] : -borde[fila]);
+        return Math.max(-4f, Math.min(4f, corrida));
+    }
+
+    /**
+     * Cuánto del grosor de un aplique del torso entra bajo la tela de la prenda de arriba, de 0 a 1 (1 = entra entero): se aplasta hacia
+     * afuera para que quede adentro de la tela y se vea solo por donde esta deja ver (el escote, la apertura).
+     */
+    private static float grosorMaximo(Aplique a) {
+        if (espacioSobre == Float.MAX_VALUE || a.parte() != Parte.TORSO || a.objeto() != null || a.modelo() == null) return 1f;
+        BakedGeoModel modelo = GeckoLibCache.getBakedModels().get(a.modelo().geo());
+        if (modelo == null) return 1f;
+        float[][] caja = limitesGeo(modelo);
+        Colocacion c = a.colocacion();
+        float saliente = (Math.max(-caja[0][2], caja[1][2]) * 16f * Math.abs(c.sz()) + c.offsetNormal() + Math.max(0f, c.dz())) * a.escala();
+        return saliente <= 0.001f ? 1f : Math.max(0.05f, Math.min(1f, espacioSobre / saliente));
     }
 
     /**

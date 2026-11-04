@@ -304,7 +304,7 @@ public final class CuelloYCapucha {
         return null;
     }
 
-    private static float[] bordeDelEscote(ItemStack ropa) {
+    static float[] bordeDelEscote(ItemStack ropa) {
         Identifier tela = null;
         int filasTorso = 0;
         for (com.modamod.render.Pieza p : PiezasDePrenda.de(ropa, null)) {
