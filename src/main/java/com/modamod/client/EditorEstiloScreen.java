@@ -698,8 +698,8 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         }
         btnCrearMolde.visible = true;
         btnCrearMolde.active = hay;
+        // El nombre se puede escribir siempre; el botón Crear molde pide un aplique elegido (antes el campo quedaba trabado).
         txtNombreMolde.visible = true;
-        txtNombreMolde.setEditable(hay);
         btnPaginaColocacion.active = paginaPanel != 0;
         btnPaginaMovimiento.active = paginaPanel != 1;
         btnPaginaMoldes.visible = true;
