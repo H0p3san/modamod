@@ -23,7 +23,7 @@ public final class PrendaLore {
         MODELADORA("modeladora", Formatting.GOLD),
         TINTES("tinturas", Formatting.GREEN),
         SUBLIMADORA("sublimadora", Formatting.YELLOW),
-        ESTILADO("mesa_estilado", Formatting.LIGHT_PURPLE);
+        ESTILISTA("estilista", Formatting.LIGHT_PURPLE);
 
         final String bloque;
         final Formatting color;

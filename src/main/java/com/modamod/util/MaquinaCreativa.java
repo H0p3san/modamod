@@ -16,8 +16,8 @@ import java.util.Set;
  * Máquinas creativas (2026-10-01, "saquemos los debug de instantaneo y gratis
  * y directamente hagamos 3 maquinas alternativas que tengan velocidad de
  * espera 0 y requisitos de materiales 0 y tengan adentro todos los patrones de
- * cada maquina, distinguibles de alguna manera de las maquinas normales" + la
- * Mesa de estilado): misma clase de bloque y de block entity que la normal,
+ * cada maquina, distinguibles de alguna manera de las maquinas normales"):
+ * misma clase de bloque y de block entity que la normal,
  * otro bloque registrado. Acá se anota cuáles son, y las máquinas preguntan
  * con {@link #es} para no esperar, no gastar insumos y venir cargadas al
  * colocarlas. Se ven con la textura recoloreada ({@link #textura}, de

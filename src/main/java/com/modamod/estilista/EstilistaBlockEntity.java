@@ -1,11 +1,10 @@
 package com.modamod.estilista;
 
 import com.modamod.maquina.MaquinaBlockEntity;
-import com.modamod.estilado.EstiladoBlockEntity;
+import com.modamod.estilista.EditorEstilo;
 import com.modamod.util.InventarioUtil;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -27,7 +26,6 @@ import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.animation.AnimationController;
-import software.bernie.geckolib.animation.PlayState;
 import software.bernie.geckolib.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -99,15 +97,14 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
      * El editor (2026-10-05, etapa 3: "no quiero perder el tamaño del visualizador"): una Mesa de estilado interna, fuera
      * del mundo, cuya prenda es la MUESTRA del diseño. La pantalla y los clicks de la vista 3D son los de la Mesa.
      */
-    private final EstiladoBlockEntity editor;
+    private final EditorEstilo editor;
 
     public EstilistaBlockEntity(BlockPos pos, BlockState state) {
         super(EstilistaMod.ESTILISTA_BLOCK_ENTITY, pos, state);
-        editor = new EstiladoBlockEntity(pos, com.modamod.estilado.EstiladoMod.ESTILADO_BLOCK.getDefaultState());
-        editor.anfitrionar(this);
+        editor = new EditorEstilo(this);
     }
 
-    public EstiladoBlockEntity editor() { return editor; }
+    public EditorEstilo editor() { return editor; }
 
     // ── Las tres bolsas (2026-10-12, "bolsa de apliques, bolsa de retazos y bolsa de moldes"): referencias que no se
     // gastan (el que se gasta es el hilo). Elegir una entrada pone una copia en el casillero interno del editor, que
@@ -155,7 +152,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
 
     /** El "+" del panel: gasta un diseño en blanco y da un ítem con lo que lleva la muestra. */
     public boolean crearDisenoItem(PlayerEntity jugador, String nombre) {
-        ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
         if (world == null || m.isEmpty() || !llevaDiseno(m)) {
             jugador.sendMessage(Text.translatable("modamod.estilista.muestra_vacia"), true);
             return false;
@@ -185,7 +182,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         if (c == null) return false;
         ItemStack d = ItemStack.fromNbtOrEmpty(world.getRegistryManager(), c.getCompound("Diseno"));
         if (d.isEmpty()) return false;
-        ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
         if (m.isEmpty() || m.getItem() != d.getItem()) {
             ItemStack entrada = items.get(SLOT_PRENDA);
             if (!entrada.isEmpty() && entrada.getItem() != d.getItem()) {
@@ -193,7 +190,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
                 return false;
             }
             m = new ItemStack(d.getItem());
-            editor.setStack(EstiladoBlockEntity.SLOT_PRENDA, m);
+            editor.setStack(EditorEstilo.SLOT_PRENDA, m);
         }
         copiarDiseno(d, m);
         editor.markDirty();
@@ -233,7 +230,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
     public boolean cambiarPestana(int antes, int ahora) {
         if (antes < 0 || antes > 2 || ahora < 0 || ahora > 2 || antes == ahora) return false;
         pestanaActual = ahora;
-        int[] slots = {EstiladoBlockEntity.SLOT_MOLDE, EstiladoBlockEntity.SLOT_RETAZO, EstiladoBlockEntity.SLOT_MATERIAL};
+        int[] slots = {EditorEstilo.SLOT_MOLDE, EditorEstilo.SLOT_RETAZO, EditorEstilo.SLOT_MATERIAL};
         for (int k = 0; k < 3; k++) memoriaPestana[antes][k] = editor.getStack(slots[k]).copy();
         for (int k = 0; k < 3; k++) editor.setStack(slots[k], memoriaPestana[ahora][k].copy());
         markDirty();
@@ -277,11 +274,11 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
     public boolean elegirDeBolsa(int tipo, int indice) {
         if (tipo < 0 || tipo > 2) return false;
         // Un objeto olvidado en su casillero gana sobre el molde (2026-10-14, "ignora el aplique y pone tridentes").
-        if (tipo == BOLSA_APLIQUES) editor.setStack(EstiladoBlockEntity.SLOT_OBJETO, ItemStack.EMPTY);
+        if (tipo == BOLSA_APLIQUES) editor.setStack(EditorEstilo.SLOT_OBJETO, ItemStack.EMPTY);
         if (bloqueado(tipo == BOLSA_RETAZOS ? 1 : 0)) return false;
         java.util.List<ItemStack> l = lista(tipo);
         if (indice < 0 || indice >= l.size()) return false;
-        editor.setStack(tipo == BOLSA_RETAZOS ? EstiladoBlockEntity.SLOT_RETAZO : EstiladoBlockEntity.SLOT_MOLDE, l.get(indice).copyWithCount(1));
+        editor.setStack(tipo == BOLSA_RETAZOS ? EditorEstilo.SLOT_RETAZO : EditorEstilo.SLOT_MOLDE, l.get(indice).copyWithCount(1));
         return true;
     }
 
@@ -289,7 +286,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
     public boolean elegirTrim(net.minecraft.util.Identifier id) {
         ItemStack s = new ItemStack(net.minecraft.registry.Registries.ITEM.get(id));
         if (s.isEmpty() || editor.patronDeTrim(s) == null || bloqueado(0)) return false;
-        editor.setStack(EstiladoBlockEntity.SLOT_MOLDE, s);
+        editor.setStack(EditorEstilo.SLOT_MOLDE, s);
         return true;
     }
 
@@ -297,7 +294,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
     public boolean elegirMaterial(net.minecraft.util.Identifier id) {
         ItemStack s = new ItemStack(net.minecraft.registry.Registries.ITEM.get(id));
         if (s.isEmpty() || editor.materialDe(s) == null || bloqueado(2)) return false;
-        editor.setStack(EstiladoBlockEntity.SLOT_MATERIAL, s);
+        editor.setStack(EditorEstilo.SLOT_MATERIAL, s);
         return true;
     }
 
@@ -325,11 +322,6 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         if (cambio) sincronizar();
     }
 
-    @Override
-    public void setWorld(World world) {
-        super.setWorld(world);
-        editor.setWorld(world);
-    }
 
     /** Lo llama el editor cuando cambia algo: se guarda y se manda al cliente con el resto de la máquina. */
     public void sincronizarEditor() {
@@ -392,7 +384,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
     /** El tipo de prenda al que se refieren los diseños: el de la entrada o, si no hay, el de la muestra del editor. */
     @Nullable
     public net.minecraft.item.Item tipoDeReferencia() {
-        ItemStack ref = !items.get(SLOT_PRENDA).isEmpty() ? items.get(SLOT_PRENDA) : editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack ref = !items.get(SLOT_PRENDA).isEmpty() ? items.get(SLOT_PRENDA) : editor.getStack(EditorEstilo.SLOT_PRENDA);
         return ref.isEmpty() ? null : ref.getItem();
     }
 
@@ -417,7 +409,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
      * lo que lleva la muestra pasa a ser el último de su tipo (si no lleva nada, se olvida).
      */
     private void autoGuardar() {
-        ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
         net.minecraft.item.Item tipo = m.isEmpty() ? null : m.getItem();
         boolean cambioTipo = tipo != muestraAnterior;
         muestraAnterior = tipo;
@@ -448,7 +440,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
 
     /** Guarda lo que lleva la muestra del editor con ese nombre (el mismo nombre en el mismo tipo lo reemplaza). */
     public boolean guardarNombrado(PlayerEntity jugador, String nombre) {
-        ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
         if (m.isEmpty() || !llevaDiseno(m)) {
             jugador.sendMessage(Text.translatable("modamod.estilista.muestra_vacia"), true);
             return false;
@@ -492,10 +484,10 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         int i = indiceNombrado(k);
         if (i < 0) return false;
         ItemStack d = disenos.get(i);
-        ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
         if (m.isEmpty()) {
             m = new ItemStack(d.getItem());
-            editor.setStack(EstiladoBlockEntity.SLOT_PRENDA, m);
+            editor.setStack(EditorEstilo.SLOT_PRENDA, m);
         }
         copiarDiseno(d, m);
         editor.markDirty();
@@ -745,7 +737,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
      * queda ahí para seguir editándola; la de la entrada sale por la derecha como terminada.
      */
     private boolean fijar(PlayerEntity jugador) {
-        ItemStack delEditor = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack delEditor = editor.getStack(EditorEstilo.SLOT_PRENDA);
         boolean usaEditor = !delEditor.isEmpty();
         ItemStack muestra = usaEditor ? delEditor : items.get(SLOT_PRENDA);
         if (muestra.isEmpty()) return false;
@@ -852,7 +844,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
                 disenos.set(i, ItemStack.EMPTY);
                 alguno = true;
             }
-            ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+            ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
             if (!m.isEmpty()) {
                 for (net.minecraft.component.ComponentType<?> t : COMPONENTES_DE_DISENO) m.remove(t);
                 editor.markDirty();
@@ -863,11 +855,11 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         }
         if (id == BTN_BORRAR) {
             // El tipo de la prenda de la entrada o, si no hay, el de la muestra del editor.
-            ItemStack ref = !items.get(SLOT_PRENDA).isEmpty() ? items.get(SLOT_PRENDA) : editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+            ItemStack ref = !items.get(SLOT_PRENDA).isEmpty() ? items.get(SLOT_PRENDA) : editor.getStack(EditorEstilo.SLOT_PRENDA);
             for (int i = 0; i < MAX_DISENOS; i++) {
                 if (!ref.isEmpty() && !disenos.get(i).isEmpty() && disenos.get(i).getItem() == ref.getItem() && !esNombrado(disenos.get(i))) {
                     disenos.set(i, ItemStack.EMPTY);
-                    ItemStack m = editor.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+                    ItemStack m = editor.getStack(EditorEstilo.SLOT_PRENDA);
                     if (!m.isEmpty() && m.getItem() == ref.getItem()) {
                         for (net.minecraft.component.ComponentType<?> t : COMPONENTES_DE_DISENO) m.remove(t);
                         editor.markDirty();
@@ -1042,7 +1034,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         if (ultimo != null) copiarDiseno(ultimo, m);
         autoguardando = true;
         try {
-            editor.setStack(EstiladoBlockEntity.SLOT_PRENDA, m);
+            editor.setStack(EditorEstilo.SLOT_PRENDA, m);
             muestraAnterior = m.getItem();
         } finally {
             autoguardando = false;
@@ -1062,7 +1054,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
                     && com.modamod.aplique.ObjetoAplique.admite(stack);
         }
         return slot == SLOT_PRENDA && items.get(SLOT_PRENDA).isEmpty() && estado == Estado.REPOSO
-                && EstiladoBlockEntity.admite(stack);
+                && EditorEstilo.admite(stack);
     }
 
     @Override
@@ -1114,7 +1106,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         NbtCompound d = new NbtCompound();
         Inventories.writeNbt(d, disenos, registries);
         nbt.put("disenos", d);
-        nbt.put("editor", editor.createNbt(registries));
+        nbt.put("editor", editor.guardar(registries));
         nbt.putBoolean("creativa_cargada", creativaCargada);
         nbt.putInt("pestana_actual", pestanaActual);
         net.minecraft.nbt.NbtList ld = new net.minecraft.nbt.NbtList();
@@ -1146,7 +1138,7 @@ public class EstilistaBlockEntity extends MaquinaBlockEntity implements SidedInv
         cuero = Math.min(TOPE_CONTADOR, nbt.getInt("cuero"));
         disenos.clear();
         if (nbt.contains("disenos")) Inventories.readNbt(nbt.getCompound("disenos"), disenos, registries);
-        if (nbt.contains("editor")) editor.read(nbt.getCompound("editor"), registries);
+        if (nbt.contains("editor")) editor.cargar(nbt.getCompound("editor"), registries);
         creativaCargada = nbt.getBoolean("creativa_cargada");
         pestanaActual = Math.max(0, Math.min(2, nbt.getInt("pestana_actual")));
         disenosItem.clear();

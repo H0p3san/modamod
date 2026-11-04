@@ -70,7 +70,7 @@ public class RetazoApliqueItem extends Item {
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
         com.modamod.item.PrendaLore.moldeEn(tooltip, "retazo", new com.modamod.item.PrendaLore.Maquina[]{
-                com.modamod.item.PrendaLore.Maquina.TINTES, com.modamod.item.PrendaLore.Maquina.ESTILADO});
+                com.modamod.item.PrendaLore.Maquina.TINTES, com.modamod.item.PrendaLore.Maquina.ESTILISTA});
         List<Integer> c = colores(stack);
         for (int i = 0; i < 3; i++) tooltip.add(linea(i, c.get(i)));
         if (!capas(stack).isEmpty()) com.modamod.prenda.PrendaItem.lineasDePintura(stack, tooltip);

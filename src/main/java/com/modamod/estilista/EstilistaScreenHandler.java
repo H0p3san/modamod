@@ -1,7 +1,7 @@
 package com.modamod.estilista;
 
-import com.modamod.estilado.EstiladoBlockEntity;
-import com.modamod.estilado.EstiladoScreenHandler;
+import com.modamod.estilista.EditorEstilo;
+import com.modamod.estilista.EditorEstiloScreenHandler;
 import com.modamod.screen.ModamodScreenHandlers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
  * estilado —su editor interno, con la prenda de muestra— y a la derecha el panel de la máquina: entrada, Aplicar y
  * salida; Fijar y Borrar el diseño; los contadores de hilo y cuero; y el almacén de plantillas, retazos y objetos.
  */
-public class EstilistaScreenHandler extends EstiladoScreenHandler {
+public class EstilistaScreenHandler extends EditorEstiloScreenHandler {
 
     // Ventana de 560x408 (2026-10-12, plan de GUIs): cabecera Entrada → Aplicar → Salida a la derecha del inventario, el
     // almacén en la columna derecha (bajo las pestañas del editor) y los contadores de hilo y cuero abajo.
@@ -32,7 +32,7 @@ public class EstilistaScreenHandler extends EstiladoScreenHandler {
     }
 
     /** Dónde empiezan los slots de la máquina (después de los del editor y del inventario del jugador). */
-    private static final int BASE = EstiladoBlockEntity.TAMANO, INV_FIN = BASE + 36;
+    private static final int BASE = EditorEstilo.TAMANO, INV_FIN = BASE + 36;
 
     /** Casillero de objeto de la Estilista creativa. */
     public static final int X_OBJETO = 583, Y_OBJETO = 310;   // en grande, abajo del panel de la creativa (2026-10-14)
@@ -56,17 +56,17 @@ public class EstilistaScreenHandler extends EstiladoScreenHandler {
         super(ModamodScreenHandlers.ESTILISTA, syncId, inv, host.editor());
         this.host = host;
         // El slot de prenda del editor ya no se usa (2026-10-08): la muestra es la prenda de la entrada.
-        Slot muestra = new Slot(host.editor(), EstiladoBlockEntity.SLOT_PRENDA, -10000, -10000) {
+        Slot muestra = new Slot(host.editor(), EditorEstilo.SLOT_PRENDA, -10000, -10000) {
             @Override public boolean canInsert(ItemStack stack) { return false; }
             @Override public boolean canTakeItems(PlayerEntity player) { return false; }
             @Override public boolean isEnabled() { return false; }
         };
-        muestra.id = EstiladoBlockEntity.SLOT_PRENDA;
-        slots.set(EstiladoBlockEntity.SLOT_PRENDA, muestra);
+        muestra.id = EditorEstilo.SLOT_PRENDA;
+        slots.set(EditorEstilo.SLOT_PRENDA, muestra);
         // Los casilleros del editor (molde, retazo, objeto y material) tampoco se ven (2026-10-12, "confunde que esten arriba
         // esos cuatro slots todo el tiempo"): se eligen desde las bolsas y las listas de cada pestaña.
-        for (int indice : new int[] { EstiladoBlockEntity.SLOT_MOLDE, EstiladoBlockEntity.SLOT_RETAZO,
-                EstiladoBlockEntity.SLOT_MATERIAL }) {
+        for (int indice : new int[] { EditorEstilo.SLOT_MOLDE, EditorEstilo.SLOT_RETAZO,
+                EditorEstilo.SLOT_MATERIAL }) {
             Slot oculto = new Slot(host.editor(), indice, -10000, -10000) {
                 @Override public boolean canInsert(ItemStack stack) { return false; }
                 @Override public boolean canTakeItems(PlayerEntity player) { return false; }
@@ -77,13 +77,13 @@ public class EstilistaScreenHandler extends EstiladoScreenHandler {
         }
         // Solo la Estilista creativa tiene casillero de objeto (2026-10-14, "no puedo cargar items para hacer apliques
         // custom"): el aplique que se pone pasa a ser ese ítem. Va sobre el inventario, a la izquierda de la cabecera.
-        Slot objeto = new Slot(host.editor(), EstiladoBlockEntity.SLOT_OBJETO, X_OBJETO, Y_OBJETO) {
-            @Override public boolean canInsert(ItemStack stack) { return host.editor().isValid(EstiladoBlockEntity.SLOT_OBJETO, stack); }
+        Slot objeto = new Slot(host.editor(), EditorEstilo.SLOT_OBJETO, X_OBJETO, Y_OBJETO) {
+            @Override public boolean canInsert(ItemStack stack) { return host.editor().isValid(EditorEstilo.SLOT_OBJETO, stack); }
             @Override public int getMaxItemCount() { return 1; }
             @Override public boolean isEnabled() { return host.editor().creativa(); }
         };
-        objeto.id = EstiladoBlockEntity.SLOT_OBJETO;
-        slots.set(EstiladoBlockEntity.SLOT_OBJETO, objeto);
+        objeto.id = EditorEstilo.SLOT_OBJETO;
+        slots.set(EditorEstilo.SLOT_OBJETO, objeto);
         addSlot(new Slot(host, EstilistaBlockEntity.SLOT_PRENDA, X_ENTRADA, Y_IO) {
             @Override public boolean canInsert(ItemStack stack) { return host.isValid(EstilistaBlockEntity.SLOT_PRENDA, stack); }
             @Override public int getMaxItemCount() { return 1; }
@@ -167,7 +167,7 @@ public class EstilistaScreenHandler extends EstiladoScreenHandler {
         if (s == null || !s.hasStack() || !s.canTakeItems(player)) return ItemStack.EMPTY;
         ItemStack stack = s.getStack();
         ItemStack copia = stack.copy();
-        if (index < EstiladoBlockEntity.SLOT_BIBLIOTECA || index == EstiladoBlockEntity.SLOT_MATERIAL) {
+        if (index < EditorEstilo.SLOT_BIBLIOTECA || index == EditorEstilo.SLOT_MATERIAL) {
             // Del editor: al almacén (si es algo que se guarda) y si no al inventario.
             if (!insertItem(stack, INV_FIN + 2, SLOT_DEPOSITO, false) && !insertItem(stack, BASE, INV_FIN, true)) return ItemStack.EMPTY;
         } else if (index < BASE || index >= INV_FIN) {

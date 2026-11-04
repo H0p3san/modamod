@@ -25,7 +25,7 @@ public class MoldeCorreaItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        PrendaLore.molde(tooltip, "correa", PrendaLore.Maquina.ESTILADO, "todas");
+        PrendaLore.molde(tooltip, "correa", PrendaLore.Maquina.ESTILISTA, "todas");
         tooltip.add(Text.translatable("modamod.correa.molde.ayuda").formatted(Formatting.DARK_GRAY));
     }
 }

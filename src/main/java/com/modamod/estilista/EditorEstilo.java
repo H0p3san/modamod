@@ -1,4 +1,4 @@
-package com.modamod.estilado;
+package com.modamod.estilista;
 
 import com.modamod.aplique.Aplique;
 import com.modamod.aplique.Colocacion;
@@ -10,18 +10,11 @@ import com.modamod.aplique.RetazoApliqueItem;
 import com.modamod.garment.Parte;
 import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,28 +24,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mesa de estilado (2026-10-01, "que uno pueda poner cualquier prenda y
- * agregarles modelos 3d anclados en la geometria de la prenda"): tres slots —
- * la PRENDA, el MOLDE de aplique (forma, no se gasta) y el RETAZO (colores, se
- * gasta uno por aplique). En la pantalla se hace click sobre la prenda en la
- * vista 3D y ahí queda el aplique ({@link #poner}); los puestos se eligen de
- * una lista para girarlos, agrandarlos o quitarlos (el retazo vuelve).
- *
- * <p>Se sincroniza al cliente: la vista previa dibuja la prenda del slot con
- * sus apliques al toque.
+ * El editor de la Estilista (antes la Mesa de estilado, 2026-11-03: la Estilista quedó sola): la prenda de muestra con sus
+ * apliques, el molde de aplique o de textura, el retazo y el material del acabado. En la pantalla se hace click sobre la
+ * prenda en la vista 3D y ahí queda el aplique ({@link #poner}); los puestos se eligen de una lista para girarlos,
+ * agrandarlos o quitarlos. No gasta nada: el costo real (hilo y cuero) se paga al aplicar el diseño a cada prenda. Vive
+ * dentro de la Estilista, que lo guarda y lo sincroniza con su propio block entity.
  */
-public class EstiladoBlockEntity extends BlockEntity
-        implements GeoBlockEntity, Inventory, ExtendedScreenHandlerFactory<BlockPos>,
-        com.modamod.util.MaquinaCreativa.Cargable {
+public class EditorEstilo implements Inventory {
 
     /** SLOT_OBJETO (2026-10-04, apliques de objeto): cualquier ítem; si hay uno, el aplique que se pone es ese objeto. */
     public static final int SLOT_PRENDA = 0, SLOT_MOLDE = 1, SLOT_RETAZO = 2, SLOT_OBJETO = 3;
@@ -114,42 +97,38 @@ public class EstiladoBlockEntity extends BlockEntity
      */
     public static final int BTN_ASIGNAR_BASE = 60, BTN_TENIR_ELEGIDO = 63;
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final DefaultedList<ItemStack> items = DefaultedList.ofSize(TAMANO, ItemStack.EMPTY);
     /** Qué aplique de la prenda editan los botones (-1 = ninguno). */
     private int seleccionado = -1;
     /** La zona del retazo que lleva cada zona del aplique (de fábrica, la misma). */
     private final int[] asignacion = {0, 1, 2};
 
-    public EstiladoBlockEntity(BlockPos pos, BlockState state) {
-        super(EstiladoMod.ESTILADO_BLOCK_ENTITY, pos, state);
-    }
 
     /**
      * La Estilista automática (2026-10-05, etapa 3: "no quiero perder el tamaño del visualizador") usa una Mesa interna
      * como editor de la prenda de muestra: no está en el mundo, vive dentro de la máquina y la pantalla es la misma.
      * Edita gratis (el costo real —hilo y cuero— se paga al aplicar el diseño a cada prenda).
      */
-    @Nullable
-    private com.modamod.estilista.EstilistaBlockEntity anfitrion;
+    private final EstilistaBlockEntity anfitrion;
 
-    public void anfitrionar(com.modamod.estilista.EstilistaBlockEntity host) { this.anfitrion = host; }
-
-    /** ¿Es una Mesa/editor creativo? (la de la Estilista creativa también). */
-    public boolean creativa() {
-        return com.modamod.util.MaquinaCreativa.es(anfitrion != null ? anfitrion : this);
+    public EditorEstilo(EstilistaBlockEntity anfitrion) {
+        this.anfitrion = anfitrion;
     }
 
-    /** ¿Edita sin gastar ni devolver insumos? */
-    public boolean gratis() { return anfitrion != null || creativa(); }
+    /** Dónde está la Estilista: los paquetes de la pantalla la buscan por acá. */
+    public BlockPos getPos() {
+        return anfitrion.getPos();
+    }
 
-    /** La Mesa que atiende ese punto: la del bloque o, si ahí hay una Estilista, su editor interno. */
+    /** ¿Es el editor de una Estilista creativa? */
+    public boolean creativa() {
+        return com.modamod.util.MaquinaCreativa.es(anfitrion);
+    }
+
+    /** El editor de la Estilista que está en ese punto, o null. */
     @Nullable
-    public static EstiladoBlockEntity en(net.minecraft.world.World mundo, BlockPos pos) {
-        BlockEntity be = mundo.getBlockEntity(pos);
-        if (be instanceof EstiladoBlockEntity e) return e;
-        if (be instanceof com.modamod.estilista.EstilistaBlockEntity h) return h.editor();
-        return null;
+    public static EditorEstilo en(net.minecraft.world.World mundo, BlockPos pos) {
+        return mundo.getBlockEntity(pos) instanceof EstilistaBlockEntity h ? h.editor() : null;
     }
 
     public int seleccionado() { return seleccionado; }
@@ -192,14 +171,13 @@ public class EstiladoBlockEntity extends BlockEntity
     public boolean poner(Parte parte, float x, float y, float z, Direction cara, Aplique.Superficie superficie, int padre) {
         ItemStack prenda = items.get(SLOT_PRENDA), molde = items.get(SLOT_MOLDE), retazo = items.get(SLOT_RETAZO);
         ItemStack objeto = items.get(SLOT_OBJETO);
-        // Mesa creativa (2026-10-01): el retazo no hace falta ni se gasta (sin retazo, sale blanco).
-        boolean gratis = gratis();
+        // El editor no gasta nada (el costo real, hilo y cuero, se paga al aplicar el diseño): sin retazo, sale blanco.
         // Con un objeto en su slot (2026-10-04), el aplique es ese objeto y el molde no cuenta; la muestra de
         // color en el slot del retazo lo tiñe (opcional).
         // El editor de la Estilista no tiene casillero de objeto (2026-10-14, "la autoestiladora solo aplica tridentes": un
         // objeto que quedó en ese casillero escondido volvía tridente todo aplique que se ponía).
-        if (anfitrion != null && !creativa() && !objeto.isEmpty()) { items.set(SLOT_OBJETO, ItemStack.EMPTY); objeto = ItemStack.EMPTY; }
-        boolean esObjeto = !objeto.isEmpty() && gratis;       // el slot de objeto es solo de la Mesa creativa
+        if (!creativa() && !objeto.isEmpty()) { items.set(SLOT_OBJETO, ItemStack.EMPTY); objeto = ItemStack.EMPTY; }
+        boolean esObjeto = !objeto.isEmpty();       // el casillero de objeto es solo de la Estilista creativa
         // Un molde personalizado (2026-10-04): trae el modelo u objeto y su colocación; no se gasta nada de él.
         Aplique plantilla = !esObjeto && molde.getItem() instanceof com.modamod.aplique.MoldeApliquePersonalizadoItem
                 ? com.modamod.aplique.MoldeApliquePersonalizadoItem.plantilla(molde) : null;
@@ -207,9 +185,8 @@ public class EstiladoBlockEntity extends BlockEntity
             if (prenda.isEmpty() || !ObjetoAplique.admite(objeto)) return false;
         } else if (plantilla != null) {
             // Un objeto del molde se tiñe con la muestra (opcional); un modelo del mod pide su retazo.
-            if (prenda.isEmpty() || (plantilla.objeto() == null && !(com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)) && !gratis)) return false;
-        } else if (prenda.isEmpty() || !(molde.getItem() instanceof MoldeApliqueItem)
-                || (!(com.modamod.prenda.Prendas.es(retazo, com.modamod.prenda.CategoriaDePrenda.APLIQUE)) && !gratis)) {
+            if (prenda.isEmpty()) return false;
+        } else if (prenda.isEmpty() || !(molde.getItem() instanceof MoldeApliqueItem)) {
             return false;
         }
         if (!admite(prenda) || !Float.isFinite(x) || !Float.isFinite(y) || !Float.isFinite(z)) return false;
@@ -268,10 +245,6 @@ public class EstiladoBlockEntity extends BlockEntity
             ItemStack muestra = retazo.getItem() instanceof com.modamod.item.MuestraColorItem ? retazo : ItemStack.EMPTY;
             actuales.add(new Aplique(ModeloAplique.OBJETO, parte, x, y, z, cara, 0f, 1f, RetazoApliqueItem.BLANCO, superficie,
                     BLANDURA_INICIAL, ObjetoAplique.de(objeto, muestra).paraPoner(muestra)));
-            if (!gratis) {
-                objeto.decrement(1);
-                if (!muestra.isEmpty()) muestra.decrement(1);
-            }
         } else if (plantilla != null) {
             ItemStack muestra = plantilla.objeto() != null && retazo.getItem() instanceof com.modamod.item.MuestraColorItem
                     ? retazo : ItemStack.EMPTY;
@@ -285,14 +258,11 @@ public class EstiladoBlockEntity extends BlockEntity
                 nuevo = nuevo.conTela(tela.getFirst(), tela.getSecond());
             }
             actuales.add(nuevo);
-            // Un objeto de molde no gasta nada (ni el objeto ni la muestra de color); un modelo del mod gasta su retazo.
-            if (!gratis && plantilla.objeto() == null) retazo.decrement(1);
         } else {
             MoldeApliqueItem m = (MoldeApliqueItem) molde.getItem();
             var tela = RetazoApliqueItem.tela(retazo, asignacion);
             actuales.add(new Aplique(m.modelo, parte, x, y, z, cara, 0f, 1f, tela.getFirst(), superficie, BLANDURA_INICIAL)
                     .conFila(m.fila).conTela(tela.getFirst(), tela.getSecond()));
-            if (!gratis) retazo.decrement(1);
         }
         if (superficie == Aplique.Superficie.APLIQUE) {
             actuales.set(actuales.size() - 1, actuales.get(actuales.size() - 1).conPadre(padre));
@@ -319,7 +289,6 @@ public class EstiladoBlockEntity extends BlockEntity
         for (int i = 0; i < actuales.size(); i++) {
             Aplique a = actuales.get(i);
             if (sale[i]) {
-                devolver(jugador, a);
                 nuevoIndice[i] = -1;
             } else {
                 nuevoIndice[i] = quedan.size();
@@ -333,20 +302,6 @@ public class EstiladoBlockEntity extends BlockEntity
         }
         seleccionado = Math.min(seleccionado, quedan.size() - 1);
         guardarApliques(quedan);
-    }
-
-    /** Le devuelve al jugador lo que gastó ese aplique (retazo, o objeto y muestra), como antes. */
-    private void devolver(PlayerEntity jugador, Aplique a) {
-        if (a.objeto() != null) {
-            // Vuelve el objeto y la muestra, tal cual. Si el aplique se puso en la Mesa creativa o salió de un molde
-            // (marcado "de molde") no se gastó nada: no se devuelve nada, si no se duplicarían.
-            if (!gratis() && !a.objeto().deMolde()) {
-                jugador.getInventory().offerOrDrop(a.objeto().item().copy());
-                if (!a.objeto().muestra().isEmpty()) jugador.getInventory().offerOrDrop(a.objeto().muestra().copy());
-            }
-        } else if (anfitrion == null) {                // el editor de la Estilista no gasta retazos: no hay nada que devolver
-            jugador.getInventory().offerOrDrop(RetazoApliqueItem.de(a));
-        }
     }
 
     /**
@@ -624,9 +579,7 @@ public class EstiladoBlockEntity extends BlockEntity
     /** El registro de patrones de trim: el del mundo, o el del anfitrión si esta es el editor de la Estilista. */
     @org.jetbrains.annotations.Nullable
     private net.minecraft.registry.RegistryWrapper.WrapperLookup registros() {
-        if (world != null) return world.getRegistryManager();
-        if (anfitrion != null && anfitrion.getWorld() != null) return anfitrion.getWorld().getRegistryManager();
-        return null;
+        return anfitrion.getWorld() != null ? anfitrion.getWorld().getRegistryManager() : null;
     }
 
     /** El id del patrón de trim de este molde de vanilla (ej. {@code minecraft:snout}), o null si no es uno. */
@@ -654,7 +607,7 @@ public class EstiladoBlockEntity extends BlockEntity
      * el mismo botón de la textura. Con el molde de trim en el slot, lo pone (y el molde se gasta: no se duplica) o,
      * si la prenda ya lleva ese patrón, lo quita. El material del slot de material (opcional, "dale opcional") le da la
      * paleta y también se gasta; sin material, la paleta de fábrica del patrón. Sin molde pero con material y un
-     * acabado puesto, el botón cambia solo el material. {@code gratis()} no gasta nada.
+     * acabado puesto, el botón cambia solo el material. El editor no gasta nada.
      *
      * @param patron el patrón del molde del slot, o null si no hay molde de trim
      */
@@ -668,7 +621,6 @@ public class EstiladoBlockEntity extends BlockEntity
             // Solo cambiar el material de un acabado que ya está.
             if (patronActual == null || mat == null || mat.equals(matActual)) return false;
             com.modamod.prenda.Acabado.ponerTrim(prenda, patronActual, mat);
-            if (!gratis()) items.get(SLOT_MATERIAL).decrement(1);
             markDirty();
             return true;
         }
@@ -678,8 +630,6 @@ public class EstiladoBlockEntity extends BlockEntity
         } else {
             // Con un patrón nuevo y sin material, la paleta de fábrica; si no, el material del slot o el que ya tenía.
             com.modamod.prenda.Acabado.ponerTrim(prenda, patron, mat != null ? mat : cambiaPatron ? null : matActual);
-            if (cambiaPatron && !gratis()) items.get(SLOT_MOLDE).decrement(1);
-            if (mat != null && (cambiaPatron || !mat.equals(matActual)) && !gratis()) items.get(SLOT_MATERIAL).decrement(1);
         }
         markDirty();
         return true;
@@ -724,22 +674,12 @@ public class EstiladoBlockEntity extends BlockEntity
         return true;
     }
 
-    /** La mesa creativa viene con el primer molde puesto (los demás, con el botón). */
-    @Override
+    /** El editor creativo viene con el primer molde puesto (los demás, con el botón). */
     public void cargarCreativa() {
         if (items.get(SLOT_MOLDE).isEmpty() && !moldes().isEmpty()) {
             items.set(SLOT_MOLDE, new ItemStack(moldes().get(0)));
             markDirty();
         }
-    }
-
-    // ── GeckoLib ──────────────────────────────────────────────────────────
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {}
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
     }
 
     // ── Inventory ─────────────────────────────────────────────────────────
@@ -830,61 +770,28 @@ public class EstiladoBlockEntity extends BlockEntity
 
     @Override
     public void markDirty() {
-        super.markDirty();
-        if (anfitrion != null) { anfitrion.sincronizarEditor(); return; }
-        if (world != null && !world.isClient) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
+        anfitrion.sincronizarEditor();
     }
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        if (anfitrion != null) return anfitrion.canPlayerUse(player);
-        return world != null && world.getBlockEntity(pos) == this
-                && player.squaredDistanceTo(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 64.0;
+        return anfitrion.canPlayerUse(player);
     }
 
-    // ── pantalla ──────────────────────────────────────────────────────────
-    @Override
-    public Text getDisplayName() {
-        return getCachedState().getBlock().getName();
-    }
-
-    @Override
-    @Nullable
-    public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new EstiladoScreenHandler(syncId, playerInventory, this);
-    }
-
-    @Override
-    public BlockPos getScreenOpeningData(ServerPlayerEntity player) {
-        return pos;
-    }
-
-    // ── persistencia y sincronización ─────────────────────────────────────
-    @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        super.writeNbt(nbt, registries);
+    // ── persistencia: la guarda la Estilista dentro de su propio NBT ──────
+    public NbtCompound guardar(RegistryWrapper.WrapperLookup registries) {
+        NbtCompound nbt = new NbtCompound();
         Inventories.writeNbt(nbt, items, registries);
         nbt.putInt("Seleccionado", seleccionado);
         nbt.putIntArray("Asignacion", asignacion);
+        return nbt;
     }
 
-    @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
-        super.readNbt(nbt, registries);
+    public void cargar(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         items.clear();
         Inventories.readNbt(nbt, items, registries);
         seleccionado = nbt.contains("Seleccionado") ? nbt.getInt("Seleccionado") : -1;
         int[] asig = nbt.getIntArray("Asignacion");
         for (int z = 0; z < 3; z++) asignacion[z] = z < asig.length && asig[z] >= 0 && asig[z] < 3 ? asig[z] : z;
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
-        return createNbt(registries);
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
     }
 }

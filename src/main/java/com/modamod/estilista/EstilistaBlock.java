@@ -1,6 +1,6 @@
 package com.modamod.estilista;
 
-import com.modamod.estilado.EstiladoBlockEntity;
+import com.modamod.estilista.EditorEstilo;
 import com.modamod.maquina.MaquinaBlock;
 import com.modamod.maquina.MaquinaBlockEntity;
 import com.mojang.serialization.MapCodec;
@@ -52,7 +52,7 @@ public class EstilistaBlock extends MaquinaBlock {
             world.playSound(null, pos, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER.value(), SoundCategory.BLOCKS, 0.8f, 1.2f);
             return true;
         }
-        if (!EstiladoBlockEntity.admite(stack) || !be.isValid(EstilistaBlockEntity.SLOT_PRENDA, stack)) return false;
+        if (!EditorEstilo.admite(stack) || !be.isValid(EstilistaBlockEntity.SLOT_PRENDA, stack)) return false;
         be.setStack(EstilistaBlockEntity.SLOT_PRENDA, stack.copyWithCount(1));
         if (!player.isCreative()) stack.decrement(1);
         world.playSound(null, pos, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC.value(), SoundCategory.BLOCKS, 0.8f, 1.0f);

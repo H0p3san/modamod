@@ -18,7 +18,7 @@ import net.minecraft.text.Text;
  * abajo los contadores de hilo y cuero (se cargan soltando el ítem encima, con shift-click o con la mano en el bloque).
  * A la izquierda del inventario, el diseño: el último por prenda y los guardados con nombre.
  */
-public class EstilistaScreen extends EstiladoScreen {
+public class EstilistaScreen extends EditorEstiloScreen {
 
     private static final int FILA = 13, FILAS_VISIBLES = 3;
     private net.minecraft.client.gui.widget.TextFieldWidget txtNombre;
@@ -95,7 +95,7 @@ public class EstilistaScreen extends EstiladoScreen {
 
     private java.util.List<Fila> filas() {
         int B = com.modamod.estilista.EditorBolsaPayload.ELEGIR;
-        int molde = com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE, retazo = com.modamod.estilado.EstiladoBlockEntity.SLOT_RETAZO;
+        int molde = com.modamod.estilista.EditorEstilo.SLOT_MOLDE, retazo = com.modamod.estilista.EditorEstilo.SLOT_RETAZO;
         return switch (pestana) {
             case 0 -> java.util.List.of(
                     new Fila("apliques", B, EstilistaBlockEntity.BOLSA_APLIQUES, molde, () -> delaBolsa(EstilistaBlockEntity.BOLSA_APLIQUES, x -> true)),
@@ -109,7 +109,7 @@ public class EstilistaScreen extends EstiladoScreen {
                             () -> delaBolsa(EstilistaBlockEntity.BOLSA_MOLDES, x -> x.getItem() instanceof com.modamod.item.MoldeTexturaItem)),
                     new Fila("trims", com.modamod.estilista.EditorBolsaPayload.TRIM, -1, molde, () -> posibles(true)),
                     new Fila("materiales", com.modamod.estilista.EditorBolsaPayload.MATERIAL, -1,
-                            com.modamod.estilado.EstiladoBlockEntity.SLOT_MATERIAL, () -> posibles(false)));
+                            com.modamod.estilista.EditorEstilo.SLOT_MATERIAL, () -> posibles(false)));
             default -> java.util.List.of();
         };
     }
@@ -145,8 +145,8 @@ public class EstilistaScreen extends EstiladoScreen {
         DisposicionEstilista.R er = disp.get("elegidos");
         if (er == null) return;
         int[] slots = modoDisp == DisposicionEstilista.Modo.ACABADO
-                ? new int[] { com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE, com.modamod.estilado.EstiladoBlockEntity.SLOT_MATERIAL }
-                : new int[] { com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE, com.modamod.estilado.EstiladoBlockEntity.SLOT_RETAZO };
+                ? new int[] { com.modamod.estilista.EditorEstilo.SLOT_MOLDE, com.modamod.estilista.EditorEstilo.SLOT_MATERIAL }
+                : new int[] { com.modamod.estilista.EditorEstilo.SLOT_MOLDE, com.modamod.estilista.EditorEstilo.SLOT_RETAZO };
         for (int k = 0; k < slots.length; k++) {
             int ix = this.x + er.x() + 1 + k * 112, iy = this.y + er.y();
             ItemStack s = ed.getStack(slots[k]);
@@ -157,7 +157,7 @@ public class EstilistaScreen extends EstiladoScreen {
             c.drawText(textRenderer, textRenderer.trimToWidth(nombre, 70), ix + 22, iy + 5, EstiloPergamino.TEXTO, false);
             // Chincheta: fija lo elegido (no se cambia al clickear otro de la lista).
             int cx = ix + 96, cy = iy + 5;
-            boolean fijo = pestana <= 2 && yo.host.fijado(pestana, slots[k] == com.modamod.estilado.EstiladoBlockEntity.SLOT_MOLDE ? 0 : slots[k] == com.modamod.estilado.EstiladoBlockEntity.SLOT_RETAZO ? 1 : 2);
+            boolean fijo = pestana <= 2 && yo.host.fijado(pestana, slots[k] == com.modamod.estilista.EditorEstilo.SLOT_MOLDE ? 0 : slots[k] == com.modamod.estilista.EditorEstilo.SLOT_RETAZO ? 1 : 2);
             TinturasScreen.dibujarChinchetaLila(c, cx - 2, cy - 2, fijo);
         }
     }
@@ -417,7 +417,7 @@ public class EstilistaScreen extends EstiladoScreen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         yo.verBolsas = pestana == 3 || pestana == 4;
         yo.verInsumos = pestana == 3;
-        ItemStack muestra = yo.host.editor().getStack(com.modamod.estilado.EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack muestra = yo.host.editor().getStack(com.modamod.estilista.EditorEstilo.SLOT_PRENDA);
         btnCategoria.setMessage(muestra.isEmpty() ? Text.literal("-") : Text.literal(textRenderer.trimToWidth(muestra.getName().getString(), 70)));
         btnCatAtras.active = btnCatAdelante.active = yo.host.getStack(EstilistaBlockEntity.SLOT_PRENDA).isEmpty();
         // Zonas de cámara ligadas a la categoría (2026-10-13, "que esten ligadas a las categorias"): hasta 3 junto al selector.
@@ -486,7 +486,7 @@ public class EstilistaScreen extends EstiladoScreen {
         }
         // Qué diseño hay para la prenda de la entrada (o, si no hay, para la muestra del editor).
         ItemStack ref = be.getStack(EstilistaBlockEntity.SLOT_PRENDA);
-        if (ref.isEmpty()) ref = be.editor().getStack(com.modamod.estilado.EstiladoBlockEntity.SLOT_PRENDA);
+        if (ref.isEmpty()) ref = be.editor().getStack(com.modamod.estilista.EditorEstilo.SLOT_PRENDA);
         Text info;
         if (ref.isEmpty()) {
             info = Text.translatable("modamod.estilista.info_vacia", be.cuantosDisenos());

@@ -1,9 +1,9 @@
 package com.modamod.client;
 
 import com.modamod.aplique.Aplique;
-import com.modamod.estilado.EstiladoBlockEntity;
-import com.modamod.estilado.EstiladoScreenHandler;
-import com.modamod.estilado.PonerApliquePayload;
+import com.modamod.estilista.EditorEstilo;
+import com.modamod.estilista.EditorEstiloScreenHandler;
+import com.modamod.estilista.PonerApliquePayload;
 import com.modamod.garment.Parte;
 import com.modamod.render.ApliqueRenderer;
 import com.modamod.render.GarmentFeatureRenderer;
@@ -44,7 +44,7 @@ import java.util.Map;
  * tela de cada pieza de la prenda (inflada por su calce, solo las filas con
  * tela). Gana el punto más cercano a la cámara (el z de pantalla más grande).
  */
-public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
+public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler> {
 
     private static final Identifier TEXTURE = Identifier.of("modamod", "textures/gui/container/estilado.png");
     // Ventana de 560x408 (2026-10-12, plan de GUIs): visor 8,24 304x278 y columna de controles en x 318.
@@ -52,7 +52,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private static final int PX1 = 8, PY1 = 24, PX2 = 312, PY2 = 302;
     /** Alto del panel de ajustes de la Mesa creativa (afuera de la ventana, a la derecha). */
     private static final int ALTO_PANEL = 350;   // con el casillero de objeto abajo (2026-10-14)
-    private static final int X_DER = EstiladoScreenHandler.X_DERECHA;
+    private static final int X_DER = EditorEstiloScreenHandler.X_DERECHA;
 
     private float anguloVista = 0f;
     /** Inclinación de la vista (grados, 2026-10-04): + = se ve más desde arriba, − desde abajo. */
@@ -125,14 +125,14 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private ButtonWidget btnTenirElegido;
 
 
-    public EstiladoScreen(EstiladoScreenHandler handler, PlayerInventory inventory, Text title) {
+    public EditorEstiloScreen(EditorEstiloScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.backgroundWidth = ANCHO;
         this.backgroundHeight = ALTO;
         this.titleX = PX1;
         this.titleY = 9;
-        this.playerInventoryTitleX = EstiladoScreenHandler.X_INVENTARIO;
-        this.playerInventoryTitleY = EstiladoScreenHandler.Y_INVENTARIO - 10;
+        this.playerInventoryTitleX = EditorEstiloScreenHandler.X_INVENTARIO;
+        this.playerInventoryTitleY = EditorEstiloScreenHandler.Y_INVENTARIO - 10;
     }
 
     private ButtonWidget boton(int x, int y, int w, Text texto, String tooltip, Runnable accion) {
@@ -237,7 +237,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
 
     /** ¿El accesorio de la prenda tiene dos pies que se pintan por separado (los borcegos)? */
     private boolean conPares() {
-        ItemStack p = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack p = handler.be.getStack(EditorEstilo.SLOT_PRENDA);
         return p.getItem() instanceof com.modamod.item.ZonasTenibles zt && zt.tienePares();
     }
 
@@ -286,40 +286,40 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         EstiloPergamino.usarTema(EstiloPergamino.Tema.LILA);
         super.init();
         for (int i = 0; i < btnApliques.length; i++) {
-            int id = EstiladoBlockEntity.BTN_SELECCIONAR_BASE + i;
+            int id = EditorEstilo.BTN_SELECCIONAR_BASE + i;
             btnApliques[i] = boton(X_DER + Math.round(i * 13.5f), 66, 13, Text.literal(Integer.toString(i + 1)),
                     "modamod.estilado.tooltip.aplique", () -> clickBoton(id));
             grupoAplique.add(btnApliques[i]);
         }
-        btnGiroAtras = boton(X_DER, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.giro", () -> clickBoton(EstiladoBlockEntity.BTN_GIRO_ATRAS));
+        btnGiroAtras = boton(X_DER, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.giro", () -> clickBoton(EditorEstilo.BTN_GIRO_ATRAS));
         grupoAplique.add(btnGiroAtras);
-        btnGiro = boton(X_DER + 15, 88, 64, Text.empty(), "modamod.estilado.tooltip.giro", () -> clickBoton(EstiladoBlockEntity.BTN_GIRO));
+        btnGiro = boton(X_DER + 15, 88, 64, Text.empty(), "modamod.estilado.tooltip.giro", () -> clickBoton(EditorEstilo.BTN_GIRO));
         grupoAplique.add(btnGiro);
-        btnGiroAdelante = boton(X_DER + 80, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.giro", () -> clickBoton(EstiladoBlockEntity.BTN_GIRO));
+        btnGiroAdelante = boton(X_DER + 80, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.giro", () -> clickBoton(EditorEstilo.BTN_GIRO));
         grupoAplique.add(btnGiroAdelante);
-        btnEscalaAtras = boton(X_DER, 108, 14, Text.literal("<"), "modamod.estilado.tooltip.escala", () -> clickBoton(EstiladoBlockEntity.BTN_ESCALA_ATRAS));
+        btnEscalaAtras = boton(X_DER, 108, 14, Text.literal("<"), "modamod.estilado.tooltip.escala", () -> clickBoton(EditorEstilo.BTN_ESCALA_ATRAS));
         grupoAplique.add(btnEscalaAtras);
-        btnEscala = boton(X_DER + 15, 108, 64, Text.empty(), "modamod.estilado.tooltip.escala", () -> clickBoton(EstiladoBlockEntity.BTN_ESCALA));
+        btnEscala = boton(X_DER + 15, 108, 64, Text.empty(), "modamod.estilado.tooltip.escala", () -> clickBoton(EditorEstilo.BTN_ESCALA));
         grupoAplique.add(btnEscala);
-        btnEscalaAdelante = boton(X_DER + 80, 108, 14, Text.literal(">"), "modamod.estilado.tooltip.escala", () -> clickBoton(EstiladoBlockEntity.BTN_ESCALA));
+        btnEscalaAdelante = boton(X_DER + 80, 108, 14, Text.literal(">"), "modamod.estilado.tooltip.escala", () -> clickBoton(EditorEstilo.BTN_ESCALA));
         grupoAplique.add(btnEscalaAdelante);
-        btnFilaAtras = boton(X_DER + 166, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.fila", () -> clickBoton(EstiladoBlockEntity.BTN_FILA_MENOS));
-        btnFila = boton(X_DER + 181, 88, 36, Text.empty(), "modamod.estilado.tooltip.fila", () -> clickBoton(EstiladoBlockEntity.BTN_FILA_MAS));
-        btnFilaAdelante = boton(X_DER + 218, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.fila", () -> clickBoton(EstiladoBlockEntity.BTN_FILA_MAS));
-        btnSepAtras = boton(X_DER + 166, 108, 14, Text.literal("<"), "modamod.estilado.tooltip.separacion", () -> clickBoton(EstiladoBlockEntity.BTN_SEPARACION_MENOS));
-        btnSep = boton(X_DER + 181, 108, 36, Text.empty(), "modamod.estilado.tooltip.separacion", () -> clickBoton(EstiladoBlockEntity.BTN_SEPARACION_MAS));
-        btnSepAdelante = boton(X_DER + 218, 108, 14, Text.literal(">"), "modamod.estilado.tooltip.separacion", () -> clickBoton(EstiladoBlockEntity.BTN_SEPARACION_MAS));
+        btnFilaAtras = boton(X_DER + 166, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.fila", () -> clickBoton(EditorEstilo.BTN_FILA_MENOS));
+        btnFila = boton(X_DER + 181, 88, 36, Text.empty(), "modamod.estilado.tooltip.fila", () -> clickBoton(EditorEstilo.BTN_FILA_MAS));
+        btnFilaAdelante = boton(X_DER + 218, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.fila", () -> clickBoton(EditorEstilo.BTN_FILA_MAS));
+        btnSepAtras = boton(X_DER + 166, 108, 14, Text.literal("<"), "modamod.estilado.tooltip.separacion", () -> clickBoton(EditorEstilo.BTN_SEPARACION_MENOS));
+        btnSep = boton(X_DER + 181, 108, 36, Text.empty(), "modamod.estilado.tooltip.separacion", () -> clickBoton(EditorEstilo.BTN_SEPARACION_MAS));
+        btnSepAdelante = boton(X_DER + 218, 108, 14, Text.literal(">"), "modamod.estilado.tooltip.separacion", () -> clickBoton(EditorEstilo.BTN_SEPARACION_MAS));
         for (ButtonWidget b : new ButtonWidget[] { btnFilaAtras, btnFila, btnFilaAdelante, btnSepAtras, btnSep, btnSepAdelante }) grupoAplique.add(b);
         btnQuitar = boton(X_DER + 98, 88, 64, Text.translatable("modamod.estilado.quitar"),
-                "modamod.estilado.tooltip.quitar", () -> clickBoton(EstiladoBlockEntity.BTN_QUITAR));
+                "modamod.estilado.tooltip.quitar", () -> clickBoton(EditorEstilo.BTN_QUITAR));
         grupoAplique.add(btnQuitar);
         for (int z = 0; z < 3; z++) {
-            final int id = EstiladoBlockEntity.BTN_ASIGNAR_BASE + z;
+            final int id = EditorEstilo.BTN_ASIGNAR_BASE + z;
             btnAsignar[z] = boton(X_DER + z * 48, 172, 46, Text.empty(), "modamod.estilado.tooltip.asignar", () -> clickBoton(id));
             grupoAplique.add(btnAsignar[z]);
         }
         btnTenirElegido = boton(X_DER + 146, 172, 86, Text.translatable("modamod.estilado.tenir_elegido"),
-                "modamod.estilado.tooltip.tenir_elegido", () -> clickBoton(EstiladoBlockEntity.BTN_TENIR_ELEGIDO));
+                "modamod.estilado.tooltip.tenir_elegido", () -> clickBoton(EditorEstilo.BTN_TENIR_ELEGIDO));
         grupoAplique.add(btnTenirElegido);
         if (!conBolsas()) {
         btnVistaIzq = boton(X_DER + 98, 108, 31, Text.literal("⟲"), "modamod.estilado.tooltip.vista",
@@ -329,7 +329,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         }
         // Textura de tela (2026-10-01, relieve): con un Molde de textura en el slot del molde.
         btnTextura = boton(X_DER, 66, 162, Text.empty(), "modamod.estilado.tooltip.textura",
-                () -> clickBoton(EstiladoBlockEntity.BTN_TEXTURA));
+                () -> clickBoton(EditorEstilo.BTN_TEXTURA));
         // Pestañas (2026-10-06): abajo de los controles, arriba del título del inventario.
         int nPest = conBolsas() ? 5 : 3, wPest = conBolsas() ? 46 : 54;
         for (int i = 0; i < nPest; i++) {
@@ -360,11 +360,11 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         }
         btnCorreaModo = boton(X_DER, 88, 80, Text.empty(), "modamod.correa.tooltip.modo", () -> {
             correaModo = correaModo.siguiente();
-            if (correaSel >= 0) clickBoton(EstiladoBlockEntity.BTN_CORREA_MODO_BASE + correaSel * 4 + correaModo.ordinal());
+            if (correaSel >= 0) clickBoton(EditorEstilo.BTN_CORREA_MODO_BASE + correaSel * 4 + correaModo.ordinal());
         });
         btnCorreaAncho = boton(X_DER + 82, 88, 80, Text.empty(), "modamod.correa.tooltip.ancho", () -> {
             correaAncho = correaAncho % 4 + 1;
-            if (correaSel >= 0) clickBoton(EstiladoBlockEntity.BTN_CORREA_ANCHO_BASE + correaSel * 4 + (correaAncho - 1));
+            if (correaSel >= 0) clickBoton(EditorEstilo.BTN_CORREA_ANCHO_BASE + correaSel * 4 + (correaAncho - 1));
         });
         btnCorreaLargoMenos = boton(X_DER, 128, 14, Text.literal("−"), "modamod.correa.tooltip.largo", () -> cambiarLargo(-1));
         btnCorreaLargo = boton(X_DER + 15, 128, 64, Text.empty(), "modamod.correa.tooltip.largo", () -> cambiarLargo(1));
@@ -373,15 +373,15 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
             if (correaInicio != null) {
                 correaInicio = null;
             } else if (correaSel >= 0) {
-                clickBoton(EstiladoBlockEntity.BTN_CORREA_QUITAR_BASE + correaSel);
+                clickBoton(EditorEstilo.BTN_CORREA_QUITAR_BASE + correaSel);
                 correaSel = -1;
             } else {
-                clickBoton(EstiladoBlockEntity.BTN_CORREA_QUITAR);
+                clickBoton(EditorEstilo.BTN_CORREA_QUITAR);
             }
         });
         btnCorreaColor = boton(X_DER + 82, 110, 80, Text.translatable("modamod.correa.boton.recolorear"),
                 "modamod.correa.tooltip.recolorear", () -> {
-                    if (correaSel >= 0) clickBoton(EstiladoBlockEntity.BTN_CORREA_COLOREAR_BASE + correaSel);
+                    if (correaSel >= 0) clickBoton(EditorEstilo.BTN_CORREA_COLOREAR_BASE + correaSel);
                 });
         // Sacudir (2026-10-04, "boton de sacudir... alternar mover el muñeco"): prende y apaga el vaivén.
         btnSacudir = boton(X_DER + 98, 132, 64, Text.empty(), "modamod.estilado.tooltip.sacudir",
@@ -394,9 +394,9 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         boolean enPanel = conBolsas() && handler.be.creativa();
         if (enPanel) { bx0 = ANCHO + 4 + panelExtra() + 54; by = 301; bpaso = 20; }
         btnObjModo = boton(bx0, by, enPanel ? 100 : conBolsas() ? 53 : 58, Text.empty(), "modamod.estilado.tooltip.obj_modo",
-                () -> clickBoton(EstiladoBlockEntity.BTN_OBJ_MODO));
+                () -> clickBoton(EditorEstilo.BTN_OBJ_MODO));
         btnObjVariante = boton(bx0 + (enPanel ? 0 : bpaso), enPanel ? by + bpaso : by, enPanel ? 100 : conBolsas() ? 53 : 58, Text.empty(), "modamod.estilado.tooltip.obj_variante",
-                () -> clickBoton(EstiladoBlockEntity.BTN_OBJ_VARIANTE));
+                () -> clickBoton(EditorEstilo.BTN_OBJ_VARIANTE));
         btnEspejo = conBolsas() ? boton(X_DER, 132, 96, Text.empty(), "modamod.estilado.tooltip.espejo", () -> espejarPie = !espejarPie)
                 : boton(bx0 + bpaso * 2, by, 72, Text.empty(), "modamod.estilado.tooltip.espejo", () -> espejarPie = !espejarPie);
         // Tira de enfoques abajo del visor (2026-10-12): acerca la cámara a la parte del cuerpo para poner apliques cómodo.
@@ -420,7 +420,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         }
         // Mesa creativa (2026-10-01): elegir cualquier molde sin tenerlo.
         ButtonWidget moldeCreativo = boton(X_DER + 110, 48, 52, Text.translatable("modamod.estilado.siguiente_molde"),
-                "modamod.estilado.tooltip.siguiente_molde", () -> clickBoton(EstiladoBlockEntity.BTN_SIGUIENTE_MOLDE));
+                "modamod.estilado.tooltip.siguiente_molde", () -> clickBoton(EditorEstilo.BTN_SIGUIENTE_MOLDE));
         moldeCreativo.visible = handler.be.creativa() && !conBolsas();
         crearPanel();
     }
@@ -489,7 +489,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         Aplique nuevo = cambio.apply(a);
         int sel = handler.be.seleccionado();
         handler.be.ajustar(sel, nuevo.colocacion(), nuevo.oscilacion(), nuevo.blandura());
-        ClientPlayNetworking.send(new com.modamod.estilado.AjustarApliquePayload(handler.be.getPos(), sel,
+        ClientPlayNetworking.send(new com.modamod.estilista.AjustarApliquePayload(handler.be.getPos(), sel,
                 nuevo.colocacion(), nuevo.oscilacion(), nuevo.blandura()));
     }
 
@@ -610,10 +610,10 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
             int fila = i;
             btnBiblioDar[i] = botonPanel(6, 28 + i * 15, 126, Text.empty(), "modamod.estilado.tooltip.biblioteca_dar",
                     () -> this.client.interactionManager.clickButton(this.handler.syncId,
-                            EstiladoBlockEntity.BTN_BIBLIO_DAR_BASE + paginaBiblio * FILAS_BIBLIO + fila));
+                            EditorEstilo.BTN_BIBLIO_DAR_BASE + paginaBiblio * FILAS_BIBLIO + fila));
             btnBiblioBorrar[i] = botonPanel(134, 28 + i * 15, 20, Text.literal("x"), "modamod.estilado.tooltip.biblioteca_borrar",
                     () -> this.client.interactionManager.clickButton(this.handler.syncId,
-                            EstiladoBlockEntity.BTN_BIBLIO_BORRAR_BASE + paginaBiblio * FILAS_BIBLIO + fila));
+                            EditorEstilo.BTN_BIBLIO_BORRAR_BASE + paginaBiblio * FILAS_BIBLIO + fila));
         }
         btnBiblioAnt = botonPanel(6, 232, 34, Text.literal("<"), null, () -> paginaBiblio = 0);
         btnBiblioSig = botonPanel(44, 232, 34, Text.literal(">"), null, () -> paginaBiblio = 1);
@@ -664,7 +664,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         this.addDrawableChild(sliderNormal);
         btnCrearMolde = botonPanel(82, 268, 72, Text.translatable("modamod.estilado.panel.crear_molde"),
                 "modamod.estilado.tooltip.crear_molde", () -> {
-                    ClientPlayNetworking.send(new com.modamod.estilado.CrearMoldePayload(handler.be.getPos(), txtNombreMolde.getText()));
+                    ClientPlayNetworking.send(new com.modamod.estilista.CrearMoldePayload(handler.be.getPos(), txtNombreMolde.getText()));
                     txtNombreMolde.setText("");
                 });
         txtNombreMolde = new net.minecraft.client.gui.widget.TextFieldWidget(this.textRenderer, panelX + 6, this.y + 248, PW - 12, 14,
@@ -710,7 +710,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         btnBiblioAnt.active = paginaBiblio != 0;
         btnBiblioSig.active = paginaBiblio != 1;
         for (int i = 0; i < FILAS_BIBLIO; i++) {
-            ItemStack molde = handler.be.getStack(EstiladoBlockEntity.SLOT_BIBLIOTECA + paginaBiblio * FILAS_BIBLIO + i);
+            ItemStack molde = handler.be.getStack(EditorEstilo.SLOT_BIBLIOTECA + paginaBiblio * FILAS_BIBLIO + i);
             boolean hayMolde = biblio && !molde.isEmpty();
             btnBiblioDar[i].visible = btnBiblioBorrar[i].visible = hayMolde;
             if (hayMolde) btnBiblioDar[i].setMessage(molde.getName());
@@ -746,7 +746,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         c.fill(x0 + 2, y0 + 2, x0 + PW - 2, y0 + ALTO_PANEL - 2, 0xFF5C4F6E);
         var fuente = MinecraftClient.getInstance().textRenderer;
         if (paginaPanel == 2) {
-            if (handler.be.getStack(EstiladoBlockEntity.SLOT_BIBLIOTECA).isEmpty()) {
+            if (handler.be.getStack(EditorEstilo.SLOT_BIBLIOTECA).isEmpty()) {
                 c.drawTextWrapped(fuente, Text.translatable("modamod.estilado.panel.biblioteca_vacia"), x0 + 8, y0 + 32,
                         PW - 16, EstiloPergamino.TEXTO_CLARO);
             }
@@ -780,7 +780,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private void dibujarVista(DrawContext context) {
         PlayerEntity jugador = MinecraftClient.getInstance().player;
         if (jugador == null) return;
-        ItemStack prenda = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack prenda = handler.be.getStack(EditorEstilo.SLOT_PRENDA);
         int x1 = this.x + PX1 + 2, y1 = this.y + PY1 + 2, x2 = this.x + PX2 - 2, y2 = this.y + PY2 - 2;
         Map<Parte, Matrix4f> captura = new EnumMap<>(Parte.class);
         Map<String, com.modamod.render.MallaCapturada> capturaMallas = new java.util.HashMap<>();
@@ -864,7 +864,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
      * la superficie más cercana a quien mira (por donde sale el rayo, como en {@link #tocarApliques}).
      */
     private int zonaDelSombrero(double mx, double my) {
-        ItemStack prenda = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack prenda = handler.be.getStack(EditorEstilo.SLOT_PRENDA);
         if (!(prenda.getItem() instanceof com.modamod.item.ZonasTenibles zt)) return -1;
         int mejor = -1;
         float mejorT = -Float.MAX_VALUE;
@@ -1005,7 +1005,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     @Nullable
     /** Clave de traducción del nombre de la zona {@code i} del accesorio que hay en la mesa (sombrero, banda o borcegos). */
     private String claveDeZona(int i) {
-        ItemStack prenda = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack prenda = handler.be.getStack(EditorEstilo.SLOT_PRENDA);
         return prenda.getItem() instanceof com.modamod.item.ZonasTenibles zt ? zt.claveZona(prenda, i) : "modamod.sombrero.zona." + (i + 1);
     }
 
@@ -1057,7 +1057,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
 
     @Nullable
     private Toque tocarPrenda(double mx, double my) {
-        ItemStack prenda = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack prenda = handler.be.getStack(EditorEstilo.SLOT_PRENDA);
         PlayerEntity jugador = MinecraftClient.getInstance().player;
         if (prenda.isEmpty() || jugador == null || poses.isEmpty()) return null;
         if (prenda.getItem() instanceof com.modamod.item.ZonasTenibles) return tocarSombrero(mx, my, prenda);
@@ -1192,14 +1192,14 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     private void cambiarLargo(int dir) {
         int min = (int) com.modamod.correa.Correa.LARGO_MIN, max = (int) com.modamod.correa.Correa.LARGO_MAX, paso = (int) com.modamod.correa.Correa.LARGO_PASO;
         correaLargo = Math.max(min, Math.min(max, correaLargo + dir * paso));
-        if (correaSel >= 0) clickBoton(EstiladoBlockEntity.BTN_CORREA_LARGO_BASE + correaSel * 16 + (correaLargo / paso - 1));
+        if (correaSel >= 0) clickBoton(EditorEstilo.BTN_CORREA_LARGO_BASE + correaSel * 16 + (correaLargo / paso - 1));
     }
 
     /** Un click de correa (2026-10-05): el 1.º fija el inicio y el 2.º manda la correa al servidor (la anclada, solo uno). */
     private void clickCorrea(double mx, double my) {
-        EstiladoBlockEntity be = handler.be;
+        EditorEstilo be = handler.be;
         Toque t = tocarPrenda(mx, my);
-        if (!(be.getStack(EstiladoBlockEntity.SLOT_MOLDE).getItem() instanceof com.modamod.correa.MoldeCorreaItem)) {
+        if (!(be.getStack(EditorEstilo.SLOT_MOLDE).getItem() instanceof com.modamod.correa.MoldeCorreaItem)) {
             aviso = Text.translatable("modamod.correa.aviso.molde");
         } else if (be.correas().size() >= com.modamod.correa.Correa.MAXIMO_POR_PRENDA) {
             aviso = Text.translatable("modamod.correa.aviso.lleno");
@@ -1208,7 +1208,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         } else if (!correaModo.dosPuntos()) {
             // Anclada: un solo click y cuelga hacia abajo.
             aviso = null;
-            ClientPlayNetworking.send(new com.modamod.estilado.PonerCorreaPayload(be.getPos(), t.parte().ordinal(),
+            ClientPlayNetworking.send(new com.modamod.estilista.PonerCorreaPayload(be.getPos(), t.parte().ordinal(),
                     new float[] {t.x(), t.y(), t.z()}, t.cara().ordinal(), new float[] {t.x(), t.y(), t.z()}, t.cara().ordinal(),
                     correaModo.ordinal(), correaAncho, t.superficie().ordinal(), correaLargo));
             enviarCorreaEspejo(t, t);
@@ -1220,7 +1220,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
             aviso = Text.translatable("modamod.correa.aviso.parte");
         } else {
             aviso = null;
-            ClientPlayNetworking.send(new com.modamod.estilado.PonerCorreaPayload(be.getPos(), t.parte().ordinal(),
+            ClientPlayNetworking.send(new com.modamod.estilista.PonerCorreaPayload(be.getPos(), t.parte().ordinal(),
                     new float[] {correaInicio.x(), correaInicio.y(), correaInicio.z()}, correaInicio.cara().ordinal(),
                     new float[] {t.x(), t.y(), t.z()}, t.cara().ordinal(), correaModo.ordinal(), correaAncho,
                     t.superficie().ordinal(), correaLargo));
@@ -1231,12 +1231,12 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
 
     /** Con borcegos y "Espejar", la misma correa en el otro pie (2026-10-11). */
     private void enviarCorreaEspejo(Toque a, Toque b) {
-        EstiladoBlockEntity be = handler.be;
+        EditorEstilo be = handler.be;
         if (!espejarPie || a.superficie() != Aplique.Superficie.CAJA
                 || be.correas().size() + 1 >= com.modamod.correa.Correa.MAXIMO_POR_PRENDA) return;
         Toque ea = espejoDe(a), eb = espejoDe(b);
         if (sobreSiMismo(a, ea) && sobreSiMismo(b, eb)) return;   // una correa justo en el centro
-        ClientPlayNetworking.send(new com.modamod.estilado.PonerCorreaPayload(be.getPos(), ea.parte().ordinal(),
+        ClientPlayNetworking.send(new com.modamod.estilista.PonerCorreaPayload(be.getPos(), ea.parte().ordinal(),
                 new float[] {ea.x(), ea.y(), ea.z()}, ea.cara().ordinal(), new float[] {eb.x(), eb.y(), eb.z()}, eb.cara().ordinal(),
                 correaModo.ordinal(), correaAncho, eb.superficie().ordinal(), correaLargo));
     }
@@ -1270,14 +1270,14 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
             }
             if (button == 0) {
                 Toque t = tocar(mx, my);
-                EstiladoBlockEntity be = handler.be;
-                boolean objeto = !be.getStack(EstiladoBlockEntity.SLOT_OBJETO).isEmpty();
-                if (be.getStack(EstiladoBlockEntity.SLOT_PRENDA).isEmpty()) aviso = Text.translatable("modamod.estilado.aviso.prenda");
-                else if (!objeto && be.getStack(EstiladoBlockEntity.SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem)
+                EditorEstilo be = handler.be;
+                boolean objeto = !be.getStack(EditorEstilo.SLOT_OBJETO).isEmpty();
+                if (be.getStack(EditorEstilo.SLOT_PRENDA).isEmpty()) aviso = Text.translatable("modamod.estilado.aviso.prenda");
+                else if (!objeto && be.getStack(EditorEstilo.SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem)
                     aviso = Text.translatable("modamod.estilado.aviso.textura");
-                else if (!objeto && be.getStack(EstiladoBlockEntity.SLOT_MOLDE).isEmpty()) aviso = Text.translatable("modamod.estilado.aviso.molde");
-                else if (!objeto && !(com.modamod.prenda.Prendas.es(be.getStack(EstiladoBlockEntity.SLOT_RETAZO), com.modamod.prenda.CategoriaDePrenda.APLIQUE))
-                        && !(plantillaDeObjeto(be.getStack(EstiladoBlockEntity.SLOT_MOLDE)))
+                else if (!objeto && be.getStack(EditorEstilo.SLOT_MOLDE).isEmpty()) aviso = Text.translatable("modamod.estilado.aviso.molde");
+                else if (!objeto && !(com.modamod.prenda.Prendas.es(be.getStack(EditorEstilo.SLOT_RETAZO), com.modamod.prenda.CategoriaDePrenda.APLIQUE))
+                        && !(plantillaDeObjeto(be.getStack(EditorEstilo.SLOT_MOLDE)))
                         && !be.creativa()) aviso = Text.translatable("modamod.estilado.aviso.retazo");
                 else if (be.apliques().size() >= Aplique.MAXIMO_POR_PRENDA) aviso = Text.translatable("modamod.estilado.aviso.lleno");
                 else if (t == null) aviso = Text.translatable("modamod.estilado.aviso.fuera");
@@ -1339,7 +1339,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
     // ── dibujo ─────────────────────────────────────────────────────────────
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        EstiladoBlockEntity be = handler.be;
+        EditorEstilo be = handler.be;
         List<Aplique> apliques = be.apliques();
         int sel = be.seleccionado();
         for (int i = 0; i < btnApliques.length; i++) {
@@ -1348,7 +1348,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         }
         boolean hay = sel >= 0 && sel < apliques.size();
         // Sombrero de bruja en la prenda (2026-10-05): colorear o poner apliques.
-        ItemStack enPrenda = be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack enPrenda = be.getStack(EditorEstilo.SLOT_PRENDA);
         boolean sombrero = enPrenda.getItem() instanceof com.modamod.item.ZonasTenibles;
         // Correas libres: en toda prenda y wearable puesto.
         boolean admiteCorrea = !enPrenda.isEmpty();
@@ -1389,9 +1389,9 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         btnCorreaQuitar.active = correaInicio != null || !be.correas().isEmpty();
         for (ButtonWidget b : grupoAplique) b.visible = pestana == 0;
         // Zona del aplique ← zona del retazo, con el color que le va a tocar.
-        boolean conRetazo = com.modamod.prenda.Prendas.es(be.getStack(EstiladoBlockEntity.SLOT_RETAZO),
+        boolean conRetazo = com.modamod.prenda.Prendas.es(be.getStack(EditorEstilo.SLOT_RETAZO),
                 com.modamod.prenda.CategoriaDePrenda.APLIQUE);
-        java.util.List<Integer> delRetazo = conRetazo ? com.modamod.aplique.RetazoApliqueItem.colores(be.getStack(EstiladoBlockEntity.SLOT_RETAZO)) : null;
+        java.util.List<Integer> delRetazo = conRetazo ? com.modamod.aplique.RetazoApliqueItem.colores(be.getStack(EditorEstilo.SLOT_RETAZO)) : null;
         for (int z = 0; z < 3; z++) {
             int desde = be.asignacion(z);
             int rgb = delRetazo == null ? 0x808080 : delRetazo.get(desde);
@@ -1430,29 +1430,29 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         btnEscala.setMessage(Text.translatable("modamod.estilado.escala",
                 hay ? Math.round(apliques.get(sel).escala() * 100) : 100));
 
-        ItemStack prendaPuesta = be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack prendaPuesta = be.getStack(EditorEstilo.SLOT_PRENDA);
         com.modamod.item.TexturaTela actual = com.modamod.prenda.Acabado.textura(prendaPuesta);
-        net.minecraft.util.Identifier trim = be.patronDeTrim(be.getStack(EstiladoBlockEntity.SLOT_MOLDE));
+        net.minecraft.util.Identifier trim = be.patronDeTrim(be.getStack(EditorEstilo.SLOT_MOLDE));
         if (trim != null) {
             // Molde de trim de vanilla: acabado animado de toda la prenda (2026-10-06).
-            net.minecraft.util.Identifier matSlot = be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL));
+            net.minecraft.util.Identifier matSlot = be.materialDe(be.getStack(EditorEstilo.SLOT_MATERIAL));
             boolean ya = trim.equals(com.modamod.prenda.Acabado.trim(prendaPuesta))
                     && (matSlot == null || matSlot.equals(com.modamod.prenda.Acabado.material(prendaPuesta)));
-            btnTextura.active = !prendaPuesta.isEmpty() && EstiladoBlockEntity.admiteAcabado(prendaPuesta);
+            btnTextura.active = !prendaPuesta.isEmpty() && EditorEstilo.admiteAcabado(prendaPuesta);
             btnTextura.setMessage(Text.translatable(ya ? "modamod.estilado.acabado.quitar" : "modamod.estilado.acabado.poner",
                     Text.translatable("modamod.efecto." + com.modamod.render.EfectoTrim.tipoDe(trim).name().toLowerCase())));
-        } else if (be.getStack(EstiladoBlockEntity.SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem mt
+        } else if (be.getStack(EditorEstilo.SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem mt
                 && !prendaPuesta.isEmpty()) {
             btnTextura.active = true;
             btnTextura.setMessage(Text.translatable(actual == mt.textura ? "modamod.estilado.textura.quitar"
                     : "modamod.estilado.textura.poner", Text.translatable(mt.textura.traduccion())));
-        } else if (be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL)) != null
+        } else if (be.materialDe(be.getStack(EditorEstilo.SLOT_MATERIAL)) != null
                 && com.modamod.prenda.Acabado.trim(prendaPuesta) != null
-                && !be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL))
+                && !be.materialDe(be.getStack(EditorEstilo.SLOT_MATERIAL))
                         .equals(com.modamod.prenda.Acabado.material(prendaPuesta))) {
             // Sin molde pero con material: solo cambia el material del acabado que ya está.
             btnTextura.active = true;
-            net.minecraft.util.Identifier m = be.materialDe(be.getStack(EstiladoBlockEntity.SLOT_MATERIAL));
+            net.minecraft.util.Identifier m = be.materialDe(be.getStack(EditorEstilo.SLOT_MATERIAL));
             btnTextura.setMessage(Text.translatable("modamod.estilado.acabado.material",
                     Text.translatable("trim_material." + m.getNamespace() + "." + m.getPath())));
         } else {
@@ -1497,7 +1497,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
                 this.playerInventoryTitleY, EstiloPergamino.TEXTO, false);
         context.getMatrices().push();
         context.getMatrices().translate(0, dyEstilista(), 0);
-        int y = EstiladoScreenHandler.Y_SLOTS - 10;
+        int y = EditorEstiloScreenHandler.Y_SLOTS - 10;
         if (!conBolsas()) {
         context.drawText(this.textRenderer, Text.translatable("modamod.estilado.slot.prenda"), X_DER - 1, y, EstiloPergamino.TEXTO, false);
         context.drawText(this.textRenderer, Text.translatable("modamod.estilado.slot.molde"), X_DER + 25, y + 30, EstiloPergamino.TEXTO, false);
@@ -1507,7 +1507,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         }
         context.drawText(this.textRenderer, Text.translatable("modamod.estilado.slot.material"), X_DER + 103, y, EstiloPergamino.TEXTO, false);
         }
-        ItemStack enPrendaF = handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA);
+        ItemStack enPrendaF = handler.be.getStack(EditorEstilo.SLOT_PRENDA);
         if (pestana == 2 && !enPrendaF.isEmpty() && !(enPrendaF.getItem() instanceof com.modamod.item.ZonasTenibles)) {
             // Qué lleva la prenda y cómo se pone (2026-10-06).
             net.minecraft.util.Identifier t = com.modamod.prenda.Acabado.trim(enPrendaF);
@@ -1529,7 +1529,7 @@ public class EstiladoScreen extends HandledScreen<EstiladoScreenHandler> {
         Text ayuda = aviso != null ? aviso
                 : modoCorrea ? Text.translatable(!correaModo.dosPuntos() ? "modamod.correa.ayuda.anclada"
                         : correaInicio == null ? "modamod.correa.ayuda.inicio" : "modamod.correa.ayuda.fin")
-                : pestana == 2 && handler.be.getStack(EstiladoBlockEntity.SLOT_PRENDA).getItem() instanceof com.modamod.item.ZonasTenibles
+                : pestana == 2 && handler.be.getStack(EditorEstilo.SLOT_PRENDA).getItem() instanceof com.modamod.item.ZonasTenibles
                         ? Text.translatable("modamod.estilado.ayuda_accesorio")
                 : pestana == 2 ? Text.translatable("modamod.estilado.ayuda_acabado")
                 : Text.translatable("modamod.estilado.ayuda");

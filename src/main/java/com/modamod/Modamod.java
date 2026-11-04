@@ -56,7 +56,6 @@ public class Modamod implements ModInitializer {
         com.modamod.guardarropas.GuardarropasMod.register();
         com.modamod.maniqui.ManiquiMod.register();
         com.modamod.cinta.CintaMod.register();
-        com.modamod.estilado.EstiladoMod.register();
         registrarPestanaCreativa();
     }
 
@@ -88,7 +87,6 @@ public class Modamod implements ModInitializer {
             entries.add(com.modamod.guardarropas.GuardarropasMod.GUARDARROPAS_BLOCK_ITEM);
             entries.add(com.modamod.item.ModamodItems.MALETIN);
             entries.add(com.modamod.maniqui.ManiquiMod.MANIQUI_BLOCK_ITEM);
-            // Mesa de estilado jubilada (2026-10-08): la Estilista automática la reemplaza; sigue registrada.
             entries.add(com.modamod.cinta.CintaMod.CINTA_ITEM);
             entries.add(com.modamod.cinta.CintaMod.EMPALME_ITEM);
             entries.add(com.modamod.cinta.CintaMod.TUBO_ITEM);

@@ -53,21 +53,14 @@ public class ModamodClient implements ClientModInitializer {
         HandledScreens.register(ModamodScreenHandlers.MANIQUI, ManiquiScreen::new);
         HandledScreens.register(ModamodScreenHandlers.ROPA, RopaScreen::new);
         HandledScreens.<com.modamod.telar.TelarScreenHandler, TelarScreen>register(ModamodScreenHandlers.TELAR, TelarScreen::new);
-        HandledScreens.<com.modamod.estilado.EstiladoScreenHandler, EstilistaScreen>register(ModamodScreenHandlers.ESTILISTA,
+        HandledScreens.<com.modamod.estilista.EditorEstiloScreenHandler, EstilistaScreen>register(ModamodScreenHandlers.ESTILISTA,
                 (h, inv, titulo) -> new EstilistaScreen((com.modamod.estilista.EstilistaScreenHandler) h, inv, titulo));
-        HandledScreens.register(ModamodScreenHandlers.ESTILADO, EstiladoScreen::new);
 
-        // Los 3 bloques del zip "Bloque de sublimadora Minecraft" (2026-09-30):
-        // Guardarropas y Mesa de estilado con el GeoModel genérico; el
-        // Maniquí con su renderer propio (dibuja además la ropa puesta).
+        // Guardarropas con el GeoModel genérico; el Maniquí con su renderer propio (dibuja además la ropa puesta).
         net.minecraft.client.render.block.entity.BlockEntityRendererFactories.register(
                 com.modamod.guardarropas.GuardarropasMod.GUARDARROPAS_BLOCK_ENTITY,
                 ctx -> new software.bernie.geckolib.renderer.GeoBlockRenderer<>(
                         new com.modamod.bloque.ModeloGeo<com.modamod.guardarropas.GuardarropasBlockEntity>("wardrobe")));
-        net.minecraft.client.render.block.entity.BlockEntityRendererFactories.register(
-                com.modamod.estilado.EstiladoMod.ESTILADO_BLOCK_ENTITY,
-                ctx -> new software.bernie.geckolib.renderer.GeoBlockRenderer<>(
-                        new com.modamod.bloque.ModeloGeo<com.modamod.estilado.EstiladoBlockEntity>("styling_table")));
         net.minecraft.client.render.block.entity.BlockEntityRendererFactories.register(
                 com.modamod.maniqui.ManiquiMod.MANIQUI_BLOCK_ENTITY,
                 com.modamod.maniqui.ManiquiRenderer::new);

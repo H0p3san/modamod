@@ -1,4 +1,4 @@
-package com.modamod.estilado;
+package com.modamod.estilista;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;

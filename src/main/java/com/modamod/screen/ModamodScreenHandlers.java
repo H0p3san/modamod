@@ -68,15 +68,6 @@ public final class ModamodScreenHandlers {
                     (syncId, inv, pos) -> com.modamod.maniqui.ManiquiScreenHandler.deCliente(syncId, inv, pos),
                     net.minecraft.util.math.BlockPos.PACKET_CODEC));
 
-    /** Mesa de estilado (2026-10-01): la prenda con sus apliques viaja en el block entity real. */
-    public static final net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType<
-            com.modamod.estilado.EstiladoScreenHandler, net.minecraft.util.math.BlockPos> ESTILADO = Registry.register(
-            Registries.SCREEN_HANDLER,
-            Identifier.of("modamod", "estilado"),
-            new net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType<>(
-                    (syncId, inv, pos) -> com.modamod.estilado.EstiladoScreenHandler.deCliente(syncId, inv, pos),
-                    net.minecraft.util.math.BlockPos.PACKET_CODEC));
-
     public static void init() {
         // fuerza class-loading
     }

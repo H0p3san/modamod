@@ -11,7 +11,7 @@ import java.util.Map;
  * así dos controles no pueden quedar en el mismo lugar. Es Java puro (sin Minecraft): {@link #autoverificar()} recorre
  * cada pestaña y cada combinación de estado y falla si algo se pisa o se sale de la columna; se corre con
  * {@code java -cp build/classes/java/main com.modamod.client.DisposicionEstilista} sin abrir el juego, y la pantalla la
- * vuelve a chequear en vivo con widgets reales ({@code EstiladoScreen.verificarSolapes}).
+ * vuelve a chequear en vivo con widgets reales ({@code EditorEstiloScreen.verificarSolapes}).
  */
 public final class DisposicionEstilista {
     private DisposicionEstilista() {}

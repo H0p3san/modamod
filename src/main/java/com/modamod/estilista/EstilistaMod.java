@@ -71,6 +71,72 @@ public final class EstilistaMod {
                         }
                     }
                 }));
+
+        // El editor de la prenda de muestra (antes la Mesa de estilado): apliques, correas, ajustes y moldes con nombre.
+        ComandoMoldes.init();
+        // Click en la vista 3D (2026-10-01).
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S()
+                .register(PonerApliquePayload.ID, PonerApliquePayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(PonerApliquePayload.ID,
+                (payload, context) -> context.server().execute(() -> {
+                    var partes = com.modamod.garment.Parte.values();
+                    var caras = net.minecraft.util.math.Direction.values();
+                    var superficies = com.modamod.aplique.Aplique.Superficie.values();
+                    if (payload.parte() < 0 || payload.parte() >= partes.length
+                            || payload.cara() < 0 || payload.cara() >= caras.length
+                            || payload.superficie() < 0 || payload.superficie() >= superficies.length) return;
+                    if (EditorEstilo.en(context.player().getWorld(), payload.pos()) instanceof EditorEstilo be
+                            && be.canPlayerUse(context.player())) {
+                        be.poner(partes[payload.parte()], payload.x(), payload.y(), payload.z(), caras[payload.cara()],
+                                superficies[payload.superficie()], payload.padre());
+                    }
+                }));
+
+        // Correas libres (2026-10-05): dos clicks, la valida el servidor.
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S()
+                .register(PonerCorreaPayload.ID, PonerCorreaPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(PonerCorreaPayload.ID,
+                (payload, context) -> context.server().execute(() -> {
+                    var partes = com.modamod.garment.Parte.values();
+                    var caras = net.minecraft.util.math.Direction.values();
+                    var modos = com.modamod.correa.ModoCorrea.values();
+                    if (payload.parte() < 0 || payload.parte() >= partes.length
+                            || payload.caraDesde() < 0 || payload.caraDesde() >= caras.length
+                            || payload.caraHasta() < 0 || payload.caraHasta() >= caras.length
+                            || payload.modo() < 0 || payload.modo() >= modos.length
+                            || payload.superficie() < 0 || payload.superficie() >= com.modamod.correa.Correa.Superficie.values().length) return;
+                    if (EditorEstilo.en(context.player().getWorld(), payload.pos()) instanceof EditorEstilo be
+                            && be.canPlayerUse(context.player())) {
+                        float[] d = payload.desde(), h = payload.hasta();
+                        be.ponerCorrea(partes[payload.parte()],
+                                new com.modamod.correa.Correa.Punto(d[0], d[1], d[2], caras[payload.caraDesde()]),
+                                new com.modamod.correa.Correa.Punto(h[0], h[1], h[2], caras[payload.caraHasta()]),
+                                modos[payload.modo()], payload.ancho(),
+                                com.modamod.correa.Correa.Superficie.values()[payload.superficie()], payload.largo());
+                    }
+                }));
+
+        // Panel lateral: colocación, oscilación y blandura (2026-10-04).
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S()
+                .register(AjustarApliquePayload.ID, AjustarApliquePayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(AjustarApliquePayload.ID,
+                (payload, context) -> context.server().execute(() -> {
+                    if (EditorEstilo.en(context.player().getWorld(), payload.pos()) instanceof EditorEstilo be
+                            && be.canPlayerUse(context.player())) {
+                        be.ajustar(payload.indice(), payload.colocacion(), payload.oscilacion(), payload.blandura());
+                    }
+                }));
+
+        // Crear molde con nombre (2026-10-04).
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S()
+                .register(CrearMoldePayload.ID, CrearMoldePayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(CrearMoldePayload.ID,
+                (payload, context) -> context.server().execute(() -> {
+                    if (EditorEstilo.en(context.player().getWorld(), payload.pos()) instanceof EditorEstilo be
+                            && be.canPlayerUse(context.player())) {
+                        be.crearMolde(context.player(), payload.nombre());
+                    }
+                }));
     }
 
     public static final DisenoEstiloItem DISENO_ESTILO = new DisenoEstiloItem(new net.minecraft.item.Item.Settings().maxCount(1));

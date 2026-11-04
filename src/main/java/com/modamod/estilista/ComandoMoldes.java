@@ -1,4 +1,4 @@
-package com.modamod.estilado;
+package com.modamod.estilista;
 
 import com.modamod.aplique.Aplique;
 import com.modamod.aplique.MoldeApliquePersonalizadoItem;

@@ -56,7 +56,7 @@ public class MuestraColorItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        PrendaLore.moldeEn(tooltip, "muestra", new PrendaLore.Maquina[]{PrendaLore.Maquina.TINTES, PrendaLore.Maquina.ESTILADO});
+        PrendaLore.moldeEn(tooltip, "muestra", new PrendaLore.Maquina[]{PrendaLore.Maquina.TINTES, PrendaLore.Maquina.ESTILISTA});
         int[] m = mezcla(stack);
         if (m == null) {
             tooltip.add(Text.translatable("modamod.muestra.vacia").formatted(Formatting.GRAY));

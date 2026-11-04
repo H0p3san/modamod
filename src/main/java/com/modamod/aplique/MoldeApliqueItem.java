@@ -33,7 +33,7 @@ public class MoldeApliqueItem extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        PrendaLore.molde(tooltip, "aplique", PrendaLore.Maquina.ESTILADO, "todas");
+        PrendaLore.molde(tooltip, "aplique", PrendaLore.Maquina.ESTILISTA, "todas");
         tooltip.add(Text.translatable("modamod.aplique.molde.tooltip").formatted(Formatting.GRAY));
     }
 }
