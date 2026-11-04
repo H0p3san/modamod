@@ -168,7 +168,8 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
     static void dibujarOutfit(DrawContext context, PlayerEntity jugador, GuardarropasBlockEntity.Outfit o,
                               int x1, int y1, int x2, int y2, float angulo, int mouseY) {
         SimpleInventory inv = new SimpleInventory(GuardarropasBlockEntity.TAMANO);
-        List<ItemStack> prendas = new ArrayList<>();
+        // Las de la lista, de adentro hacia afuera (el lugar más alto es el más de adentro).
+        java.util.TreeMap<Integer, ItemStack> porLugar = new java.util.TreeMap<>(java.util.Comparator.reverseOrder());
         for (var e : o.piezas().entrySet()) {
             String k = e.getKey();
             if (k.startsWith("armadura#")) inv.setStack(GuardarropasBlockEntity.ARMADURA_INICIO + Integer.parseInt(k.substring(9)), e.getValue());
@@ -176,9 +177,19 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
             else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) inv.setStack(GuardarropasBlockEntity.SLOT_SOMBRERO, e.getValue());
             else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.CALZADO)) inv.setStack(GuardarropasBlockEntity.SLOT_CALZADO, e.getValue());
             else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.DELANTAL)) inv.setStack(GuardarropasBlockEntity.SLOT_DELANTAL, e.getValue());
-            else prendas.add(e.getValue());
+            else porLugar.put(lugarDe(e.getKey()), e.getValue());
         }
+        List<ItemStack> prendas = new ArrayList<>(porLugar.values());
         dibujarConOutfit(context, jugador, inv, prendas, x1, y1, x2, y2, angulo, mouseY);
+    }
+
+    /** El lugar de la lista de una clave de outfit ({@code ropa/lugar#i}). */
+    private static int lugarDe(String clave) {
+        try {
+            return Integer.parseInt(clave.substring(clave.lastIndexOf('#') + 1));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
     }
 
     /**

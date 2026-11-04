@@ -713,8 +713,7 @@ public class ModeladoScreen extends HandledScreen<ModeladoScreenHandler> {
         boolean hayEntrada = !this.handler.be.getStack(ModeladoBlockEntity.PRENDA).isEmpty();
         List<ItemStack> prendas = hayEntrada ? new ArrayList<>() : new ArrayList<>(GarmentFeatureRenderer.equipadas(jugador));
         if (!enConstruccion.isEmpty() && !esAccesorio) {
-            prendas.removeIf(s -> s.getItem().getClass() == enConstruccion.getItem().getClass());
-            prendas.add(enConstruccion);
+            prendas = GarmentFeatureRenderer.conVista(prendas, enConstruccion);
         }
 
         ModeladoBlockEntity.Categoria cat = this.handler.be.categoria();

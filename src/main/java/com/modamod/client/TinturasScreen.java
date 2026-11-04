@@ -573,8 +573,7 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
         // Máscara y barbijo (2026-10-24): los dibuja CaraRenderer, no son ropa de cuerpo.
         boolean esCara = prenda.getItem() instanceof com.modamod.item.CaraItem;
         if (!prenda.isEmpty() && !esSombrero && !esCara) {
-            prendas.removeIf(s -> s.getItem().getClass() == prenda.getItem().getClass());
-            prendas.add(prenda);
+            prendas = GarmentFeatureRenderer.conVista(prendas, prenda);
         }
 
         TinturasBlockEntity.Categoria cat = handler.be.categoria();

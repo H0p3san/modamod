@@ -44,8 +44,11 @@ import java.util.Map;
  * <h2>El orden</h2>
  * <ol>
  *   <li>el CUERPO BASE, una sola vez por parte del cuerpo, dilatado 0.30;</li>
- *   <li>las piezas de esa parte ordenadas por {@link Capa}, todas a 0.32.</li>
+ *   <li>las piezas de esa parte en el orden de la lista de ropa ({@link com.modamod.ropa.ListaDeRopa}), de adentro
+ *       hacia afuera: cada una se infla por fuera de lo que ya hay en las filas que comparten (la holgura), sea de la
+ *       categoría que sea.</li>
  * </ol>
+ * La fila de la armadura cosmética parte la lista: lo de las filas de arriba se infla por fuera de la armadura que se ve.
  * Donde una prenda tiene tela es opaca y gana; donde no, se ve la capa de
  * abajo o el cuerpo. De yapa esto arregla el midriff: una musculosa deja ver
  * la panza sin que la prenda tenga que rellenarla ella misma.
@@ -175,6 +178,45 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static boolean MAPAS_EN_USO = false, REUSA_MAPAS = false;
     private static final Map<Parte, List<Pieza>> MAPA_POR_PARTE = new EnumMap<>(Parte.class);
     private static final Map<Pieza, ItemStack> MAPA_ORIGEN = new java.util.IdentityHashMap<>();
+    private static final Map<Pieza, Integer> MAPA_PROFUNDIDAD = new java.util.IdentityHashMap<>();
+
+    /**
+     * Las piezas de {@code prendas} (de adentro hacia afuera) agrupadas por parte, en ese orden; las de una misma prenda,
+     * por su {@link Pieza#capa}. Anota de qué prenda sale cada una y su profundidad (su lugar en {@code prendas}).
+     */
+    private static void agrupar(List<ItemStack> prendas, @Nullable LivingEntity entidad, Map<Parte, List<Pieza>> porParte,
+                                Map<Pieza, ItemStack> origen, Map<Pieza, Integer> profundidad) {
+        porParte.clear();
+        origen.clear();
+        profundidad.clear();
+        for (int k = 0; k < prendas.size(); k++) {
+            ItemStack stack = prendas.get(k);
+            List<Pieza> propias = new ArrayList<>(PiezasDePrenda.de(stack, entidad));
+            propias.sort(Comparator.comparingInt(Pieza::capa));
+            for (Pieza pieza : propias) {
+                porParte.computeIfAbsent(pieza.parte(), x -> new ArrayList<>()).add(pieza);
+                origen.put(pieza, stack);
+                profundidad.put(pieza, k);
+            }
+        }
+    }
+
+    /**
+     * La vista previa de una máquina: lo puesto con {@code vista} en el lugar de la prenda de su clase (la más de adentro,
+     * si hay varias; las otras se sacan), o encima de todo si no lleva ninguna.
+     */
+    public static List<ItemStack> conVista(List<ItemStack> puestas, ItemStack vista) {
+        List<ItemStack> out = new ArrayList<>(puestas);
+        int donde = out.size();
+        for (int i = out.size() - 1; i >= 0; i--) {
+            if (out.get(i).getItem().getClass() == vista.getItem().getClass()) {
+                out.remove(i);
+                donde = i;
+            }
+        }
+        out.add(Math.min(donde, out.size()), vista);
+        return out;
+    }
 
     public void render0(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz,
                        T entidad, float limbAngle, float limbDistance, float tickDelta,
@@ -203,6 +245,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
         armaduraPecho = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.CHEST);
         armaduraCasco = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.HEAD);
+        armaduraPiernas = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.LEGS);
+        armaduraPies = previewOverride != null ? 0f : armadura(entidad, net.minecraft.entity.EquipmentSlot.FEET);
+        profundidadArmadura = previewOverride != null ? Integer.MAX_VALUE
+                : prendas.size() - com.modamod.ropa.ListaDeRopa.prendasSobreLaArmadura(entidad);
         // Tela blanda de los apliques (2026-10-04): la inercia de esta entidad, o la de la vista previa.
         if (previewOverride != null) {
             FisicaApliques.preparar(FisicaApliques.CLAVE_VISTA_PREVIA, null, tickDelta, FisicaApliques.modoVistaPrevia);
@@ -253,16 +299,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         Map<Parte, List<Pieza>> porParte = reusar ? MAPA_POR_PARTE : new EnumMap<>(Parte.class);
         // De qué prenda sale cada pieza: el relieve mira su calce, su textura y su archivo de extrusión.
         Map<Pieza, ItemStack> origen = reusar ? MAPA_ORIGEN : new java.util.IdentityHashMap<>();
-        if (reusar) {
-            porParte.clear();
-            origen.clear();
-        }
-        for (ItemStack stack : prendas) {
-            for (Pieza pieza : PiezasDePrenda.de(stack, entidad)) {
-                porParte.computeIfAbsent(pieza.parte(), k -> new ArrayList<>()).add(pieza);
-                origen.put(pieza, stack);
-            }
-        }
+        Map<Pieza, Integer> profundidad = reusar ? MAPA_PROFUNDIDAD : new java.util.IdentityHashMap<>();
+        agrupar(prendas, entidad, porParte, origen, profundidad);
         // La capa no gobierna ninguna parte: se dibuja antes del corte de abajo.
         dibujarCapa(prendas, entidad, biped, matrices, vertexConsumers, luz, tickDelta, false);
         if (conCuerpo.isEmpty() && porParte.isEmpty()) {
@@ -295,7 +333,6 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             ModelPart delJugador = CuerpoGeometria.delJugador(biped, parte);
             if (!delJugador.visible) continue;
 
-            if (piezas != null) piezas.sort(Comparator.comparingInt(Pieza::capa));
             // Medias con volumen: solo si son la tela de más arriba de esa pierna (si hay un
             // pantalón encima, el volumen asomaría a través de él).
             Pieza conVolumen = null;
@@ -338,7 +375,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             com.modamod.render.relieve.RelieveRender.actual = null;
             if (piezas == null) continue;
             dibujarPiezas(parte, slim, piezas, conVolumen, delJugador, matrices, vertexConsumers, luz,
-                    llevaCuerpo ? mapaCuerpo : com.modamod.render.relieve.MapaRelieve.PLANO, origen);
+                    llevaCuerpo ? mapaCuerpo : com.modamod.render.relieve.MapaRelieve.PLANO, origen, profundidad);
         }
 
         // Cuello de polera, capucha y cordones del hoodie (2026-09-30).
@@ -954,7 +991,23 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     }
 
     /** Lo que infla la pechera y el casco que se ven en la entidad que se está dibujando (px; 0 sin armadura). */
-    static float armaduraPecho, armaduraCasco;
+    static float armaduraPecho, armaduraCasco, armaduraPiernas, armaduraPies;
+
+    /** Desde qué profundidad las prendas van por encima de la armadura (la fila de la armadura); MAX_VALUE: ninguna. */
+    private static int profundidadArmadura = Integer.MAX_VALUE;
+
+    /** Lo que sale del cuerpo la armadura que se ve en la fila {@code f} (0..11) de {@code parte}, o 0. */
+    private static float armaduraEn(Parte parte, int f) {
+        return switch (parte) {
+            case CABEZA -> armaduraCasco;
+            case BRAZO_DER, BRAZO_IZQ -> armaduraPecho;
+            case TORSO -> Math.max(armaduraPecho, f >= FILA_CINTURON ? armaduraPiernas : 0f);
+            case PIERNA_DER, PIERNA_IZQ -> Math.max(armaduraPiernas, f >= FILA_BOTAS ? armaduraPies : 0f);
+        };
+    }
+
+    /** Desde qué fila del torso llega el pantalón de la armadura y desde cuál de la pierna, las botas. */
+    private static final int FILA_CINTURON = 9, FILA_BOTAS = 7;
 
     /**
      * Cuánto sale del cuerpo la armadura que SE VE en {@code slot}: la de los cosméticos si la cambia u oculta, si no
@@ -1110,9 +1163,18 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** La pollera del dibujo en curso (la tela de encima pasa por fuera), o null. */
     private static final List<ItemStack> polleras = new java.util.ArrayList<>();
 
+    /** La profundidad de la pollera más de adentro, o −1: lo de más afuera se abre por fuera de ella. */
+    private static int profundidadPollera = -1;
+
     private static void anotarPollera(List<ItemStack> prendas) {
         polleras.clear();
-        for (ItemStack s : prendas) if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)) polleras.add(s);
+        profundidadPollera = -1;
+        for (int k = 0; k < prendas.size(); k++) {
+            ItemStack s = prendas.get(k);
+            if (!com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)) continue;
+            if (polleras.isEmpty()) profundidadPollera = k;
+            polleras.add(s);
+        }
     }
 
     /** Cuánto sale la pollera puesta del torso a la altura {@code y}, o −1 (ver {@link PolleraMalla#holguraEn}). */
@@ -1161,7 +1223,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static void dibujarPiezas(Parte parte, boolean slim, List<Pieza> piezas, @Nullable Pieza conVolumen,
                                       ModelPart delModelo, MatrixStack matrices,
                                       VertexConsumerProvider vcpBase, int luz,
-                                      com.modamod.render.relieve.MapaRelieve debajo, Map<Pieza, ItemStack> origen) {
+                                      com.modamod.render.relieve.MapaRelieve debajo, Map<Pieza, ItemStack> origen,
+                                      Map<Pieza, Integer> profundidad) {
         // Relieve (2026-10-01): cada tela envuelve a lo de abajo (el cuerpo o
         // la pieza anterior) según su calce, y suma arrugas, textura y extrusión.
         com.modamod.render.relieve.MapaRelieve previo = debajo;
@@ -1184,6 +1247,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             indice++;
             // Acabado con trim (2026-10-06): la tela de esta prenda se dibuja además con su efecto animado.
             VertexConsumerProvider vertexConsumers = EfectoTrim.envolver(origen.get(pieza), vcpBase);
+            int prof = profundidad.getOrDefault(pieza, 0);
+            // Lo de más afuera que la pollera se abre por fuera de ella; lo de las filas de arriba de la armadura, por fuera de ella.
+            boolean sobrePollera = parte == Parte.TORSO && profundidadPollera >= 0 && prof > profundidadPollera;
+            boolean sobreArmadura = prof >= profundidadArmadura;
             int desde = Math.max(0, Math.min(12, pieza.filaDesde()));
             int hasta = Math.max(desde, Math.min(12, pieza.filaHasta()));
             // Calzado (2026-10-08, "quiero las dos opciones"): el pantalón con la botamanga por dentro se corta donde
@@ -1280,10 +1347,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                         d = Math.max(d, com.modamod.render.BorcegosRenderer.T + 0.12F);
                     }
                     if (exterior[f] != Float.NEGATIVE_INFINITY) d = Math.max(d, exterior[f] + SEPARACION_CAPAS);
+                    if (sobreArmadura && armaduraEn(parte, f) > 0f) d = Math.max(d, armaduraEn(parte, f) + SEPARACION_CAPAS);
                     // Lo que va encima de la pollera (el hoodie) se abre por fuera de
                     // ella (2026-10-02, "el hoodie se abre por fuera"): la cintura de
                     // la pollera atravesaba el ruedo; el elástico tampoco la aprieta.
-                    if (parte == Parte.TORSO && pieza.capa() > Capa.POLLERA) {
+                    if (sobrePollera) {
                         float h = holguraPollera(f + 1);
                         if (h >= 0F) d = Math.max(d, h + 0.15F);
                     }
@@ -1295,7 +1363,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             for (int k = 0; k < colgado; k++) {
                 int f = hasta + k;
                 if (exterior[f] != Float.NEGATIVE_INFINITY) dilColgado = Math.max(dilColgado, exterior[f] + SEPARACION_CAPAS);
-                if (parte == Parte.TORSO && pieza.capa() > Capa.POLLERA) {
+                if (sobreArmadura && f < 12 && armaduraEn(parte, f) > 0f) dilColgado = Math.max(dilColgado, armaduraEn(parte, f) + SEPARACION_CAPAS);
+                if (sobrePollera) {
                     float h = holguraPollera(f + 1);
                     if (h >= 0F) dilColgado = Math.max(dilColgado, h + 0.15F);
                 }
@@ -1328,7 +1397,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 dibujarModelPart(mallaOversize, CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices,
                         vertexConsumers, luz);
             } else if (((uniforme && colgado == 0) || parte == Parte.CABEZA) && !costadoInterno) {
-                dibujar(CuerpoGeometria.Superficie.TELA, parte, slim, pieza.textura(), base,
+                // La cabeza va de una pieza: con la holgura (o el casco) de su fila más inflada.
+                float entera = base;
+                if (parte == Parte.CABEZA) for (int f = desde; f < hasta; f++) entera = Math.max(entera, fila[f]);
+                dibujar(CuerpoGeometria.Superficie.TELA, parte, slim, pieza.textura(), entera,
                         delModelo, matrices, vertexConsumers, luz);
             } else {
                 dibujarModelPart(suave
@@ -1912,16 +1984,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         List<ItemStack> prendas = equipadas(jugador);
         if (prendas.isEmpty()) return;
 
-        List<Pieza> piezas = new ArrayList<>();
-        for (ItemStack stack : prendas) {
-            for (Pieza pieza : PiezasDePrenda.de(stack, jugador)) {
-                if (pieza.parte() == parte) piezas.add(pieza);
-            }
-        }
-        if (piezas.isEmpty()) return;
+        Map<Parte, List<Pieza>> porParte = new EnumMap<>(Parte.class);
+        agrupar(prendas, jugador, porParte, new java.util.IdentityHashMap<>(), new java.util.IdentityHashMap<>());
+        List<Pieza> piezas = porParte.get(parte);
+        if (piezas == null) return;
 
         boolean slim = esSlim(jugador);
-        piezas.sort(Comparator.comparingInt(Pieza::capa));
         for (Pieza pieza : piezas) {
             dibujar(CuerpoGeometria.Superficie.TELA, parte, slim, pieza.textura(), pieza.dilatacion(),
                     brazoDelJugador, matrices, vertexConsumers, luz);
@@ -1933,7 +2001,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * bípedo ya posado que no es de ninguna entidad — para el Maniquí
      * (2026-09-30, "guarda y muestra la ropa... 16 slots, 4 por prenda"):
      * la figura del modelo {@code mannequin} hace de cuerpo, así que acá no
-     * hay piel que reconstruir. Mismo orden por {@link Capa} y misma
+     * hay piel que reconstruir. Mismo orden (el de {@code prendas}) y misma
      * pollera que {@link #render}; las medias con volumen también (sin inflar
      * la pierna de la figura).
      */
@@ -1949,6 +2017,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         com.modamod.render.relieve.BustoRender.actual = busto;
         armaduraPecho = 0f;   // el maniquí no lleva armadura
         armaduraCasco = 0f;
+        armaduraPiernas = 0f;
+        armaduraPies = 0f;
+        profundidadArmadura = Integer.MAX_VALUE;
         calzado = calzadoDeTela;
         calzadoDeTela = null;
         try {
@@ -1967,26 +2038,19 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         dibujarCapa(prendas, null, biped, matrices, vertexConsumers, luz, 0f, false);
         Map<Parte, List<Pieza>> porParte = new EnumMap<>(Parte.class);
         Map<Pieza, ItemStack> origen = new java.util.IdentityHashMap<>();
-        for (ItemStack stack : prendas) {
-            // Ningún proveedor de PiezasDelMod mira la entidad hoy — solo
-            // la reciben por si el aspecto llegara a depender de ella.
-            for (Pieza pieza : PiezasDePrenda.de(stack, null)) {
-                porParte.computeIfAbsent(pieza.parte(), k -> new ArrayList<>()).add(pieza);
-                origen.put(pieza, stack);
-            }
-        }
+        Map<Pieza, Integer> profundidad = new java.util.IdentityHashMap<>();
+        agrupar(prendas, null, porParte, origen, profundidad);
         for (Map.Entry<Parte, List<Pieza>> entrada : porParte.entrySet()) {
             Parte parte = entrada.getKey();
             List<Pieza> piezas = entrada.getValue();
             ModelPart delModelo = CuerpoGeometria.delJugador(biped, parte);
-            piezas.sort(Comparator.comparingInt(Pieza::capa));
             // Medias con volumen también en la figura (2026-10-22, el Maniquí no mostraba el volumen de las medias), con la misma regla
             // que el jugador: solo si son la tela de más arriba de esa pierna. La figura no se infla por dentro: la tela es un tubo cerrado.
             Pieza conVolumen = (parte == Parte.PIERNA_DER || parte == Parte.PIERNA_IZQ) && piezas.get(piezas.size() - 1).volumenPierna()
                     ? piezas.get(piezas.size() - 1) : null;
             // Con el relieve de la figura (2026-10-19, "tela con relieve como el jugador"): el mismo mapa con el que se dibuja su cuerpo.
             dibujarPiezas(parte, slim, piezas, conVolumen, delModelo, matrices, vertexConsumers, luz,
-                    mapaFigura != null ? mapaFigura : com.modamod.render.relieve.MapaRelieve.PLANO, origen);
+                    mapaFigura != null ? mapaFigura : com.modamod.render.relieve.MapaRelieve.PLANO, origen, profundidad);
         }
         CuelloYCapucha.dibujar(prendas, biped, matrices, vertexConsumers, luz);
         ApliqueRenderer.dibujar(prendas, biped, matrices, vertexConsumers, luz);

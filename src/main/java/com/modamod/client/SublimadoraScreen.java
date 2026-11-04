@@ -263,8 +263,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         // Gorra, banda y calzado no son ropa del cuerpo: los dibuja AccesorioRenderer, desde el override (2026-11-03).
         boolean esAccesorio = com.modamod.render.AccesorioRenderer.es(vista);
         if (!vista.isEmpty() && !esCara && !esAccesorio) {
-            prendas.removeIf(s -> s.getItem().getClass() == vista.getItem().getClass());
-            prendas.add(vista);
+            prendas = GarmentFeatureRenderer.conVista(prendas, vista);
         }
         long ahora = net.minecraft.util.Util.getMeasuringTimeMs();
         float dt = ultimoCuadroMs < 0 ? 1000f : Math.min(200f, ahora - ultimoCuadroMs);

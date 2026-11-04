@@ -247,8 +247,9 @@ public class ManiquiBlockEntity extends BlockEntity
      */
     public List<ItemStack> prendasPuestas() {
         List<ItemStack> out = new ArrayList<>();
-        int[] orden = {GuardarropasBlockEntity.PANTALON, GuardarropasBlockEntity.REMERA, -1, GuardarropasBlockEntity.CHAQUETA,
-                GuardarropasBlockEntity.MEDIAS, GuardarropasBlockEntity.CALIENTABRAZOS};
+        // De adentro hacia afuera, como la lista de ropa del jugador (el dibujo va en este orden).
+        int[] orden = {GuardarropasBlockEntity.MEDIAS, GuardarropasBlockEntity.CALIENTABRAZOS, GuardarropasBlockEntity.PANTALON,
+                GuardarropasBlockEntity.REMERA, -1, GuardarropasBlockEntity.CHAQUETA};
         for (int categoria : orden) {
             if (categoria < 0) {
                 ItemStack delantal = items.get(GuardarropasBlockEntity.SLOT_DELANTAL);

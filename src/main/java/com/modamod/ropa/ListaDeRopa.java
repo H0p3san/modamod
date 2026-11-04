@@ -47,6 +47,18 @@ public final class ListaDeRopa {
         return fila >= filaArmadura ? fila + 1 : fila;
     }
 
+    /**
+     * Cuántas prendas de cuerpo van por encima de la armadura: las de los lugares de las filas de arriba de la fila de la
+     * armadura ({@link Cosmeticos#fila}). Son las últimas de la lista de dibujo, que va de adentro hacia afuera.
+     */
+    public static int prendasSobreLaArmadura(LivingEntity entidad) {
+        TrinketInventory l = de(entidad);
+        if (l == null || !(entidad instanceof net.minecraft.entity.player.PlayerEntity jugador)) return 0;
+        int hasta = Math.min(l.size(), Cosmeticos.de(jugador).fila() * COLUMNAS), n = 0;
+        for (int i = 0; i < hasta; i++) if (Prendas.esRopaDeCuerpo(l.getStack(i))) n++;
+        return n;
+    }
+
     /** Lo que tiene puesto en ese lugar, o vacío. */
     public static ItemStack en(LivingEntity entidad, int indice) {
         TrinketInventory l = de(entidad);
