@@ -466,7 +466,12 @@ public final class CuerpoGeometria {
 
     /** Igual, con la holgura de cada fila (ribete de piel de la media: las filas del borde más gruesas). */
     public static ModelPart telaConVolumenDePierna(Parte parte, float[] dilFila, boolean conPunta) {
-        String key = parte.clave() + "|" + java.util.Arrays.toString(dilFila) + (conPunta ? "" : "|sinpunta");
+        return telaConVolumenDePierna(parte, dilFila, conPunta, 0, 12);
+    }
+
+    /** Con las filas que tienen tela: los escalones solo se cierran entre ellas. */
+    public static ModelPart telaConVolumenDePierna(Parte parte, float[] dilFila, boolean conPunta, int desde, int hasta) {
+        String key = parte.clave() + "|" + java.util.Arrays.toString(dilFila) + (conPunta ? "" : "|sinpunta") + "|" + desde + "-" + hasta;
         ModelPart cacheada = RAICES_TELA_VOLUMEN.get(key);
         if (cacheada != null) return cacheada;
 
@@ -488,10 +493,37 @@ public final class CuerpoGeometria {
                     dil, 0F, dil,
                     false, texW, texW, caras));
         }
+        float[] exV = new float[12], oxV = new float[12], dzV = new float[12];
+        for (int f = 0; f < 12; f++) { exV[f] = dzV[f] = dilFila[f] * S; }
+        cerrarEscalones(cuboides, dilFila, desde, hasta, uvX, uvY, -2 * S, 0, -2 * S, 4 * S, 4 * S, exV, oxV, dzV, texW);
         cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
         ModelPart resultado = new ModelPart(cuboides, java.util.Map.of());
         RAICES_TELA_VOLUMEN.put(key, resultado);
         return resultado;
+    }
+
+    /**
+     * La ley del escalonado (2026-11-04, "debería haber alguna ley en todas las prendas sobre completar el escalonado"): donde
+     * dos filas vecinas de una prenda de cajas tienen distinta holgura, la más grande deja un pedazo de su borde a la vista
+     * (el escalón); sin una cara que lo cierre se ve a través. Se cierra con una cara horizontal sin alto, del tamaño de la fila
+     * más grande: hacia arriba si la de abajo es la más grande, hacia abajo si es la de arriba. Solo entre filas con tela
+     * ({@code desde ≤ fila < hasta}); el UV es el de la tapa de la parte, que lleva el mismo color de la prenda.
+     *
+     * @param ex  holgura en x de cada fila (px de textura), {@code ox} su corrimiento en x, {@code dz} la holgura en z
+     */
+    private static void cerrarEscalones(java.util.List<ModelPart.Cuboid> out, float[] dilFila, int desde, int hasta,
+                                        int uvX, int uvY, float originX, float originY, float originZ, float sizeX, float sizeZ,
+                                        float[] ex, float[] ox, float[] dz, float texW) {
+        final int S = Superficie.TELA.escala;
+        for (int f = Math.max(0, desde); f + 1 < Math.min(12, hasta); f++) {
+            float d = dilFila[f + 1] - dilFila[f];
+            if (Math.abs(d) < 0.05F) continue;
+            int grande = d > 0 ? f + 1 : f;
+            // Direction.DOWN = la cara de arriba, UP = la de abajo (nombres invertidos, ver telaPorFilas).
+            net.minecraft.util.math.Direction cara = d > 0 ? net.minecraft.util.math.Direction.DOWN : net.minecraft.util.math.Direction.UP;
+            out.add(new ModelPart.Cuboid(uvX, uvY, originX + ox[grande], originY + (f + 1) * S, originZ, sizeX, 0F, sizeZ,
+                    ex[grande], 0F, dz[grande], false, texW, texW, java.util.EnumSet.of(cara)));
+        }
     }
 
     /** Cuánto sobresale (px) la punta de tela de la de la piel en y, para que sus caras de arriba nunca coincidan. */
@@ -769,8 +801,14 @@ public final class CuerpoGeometria {
     /** {@code tapaMano}: un guante (calientabrazos que llega a la mano) cierra también la tapa de abajo del brazo. */
     public static ModelPart telaPorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
                                          float dilColgado, float interno, boolean tapaMano) {
+        return telaPorFilas(parte, slim, dilFila, hasta, colgado, dilColgado, interno, tapaMano, 0);
+    }
+
+    /** {@code desde}: primera fila con tela; los escalones solo se cierran entre filas con tela. */
+    public static ModelPart telaPorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
+                                         float dilColgado, float interno, boolean tapaMano, int desde) {
         String key = parte.clave() + "|" + slim + "|" + java.util.Arrays.toString(dilFila) + "|" + hasta
-                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano;
+                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano + "|" + desde;
         ModelPart cacheada = RAICES_TELA_POR_FILAS.get(key);
         if (cacheada != null) return cacheada;
         // Cada combinación de calces/largos/capas es una entrada: tope para
@@ -800,6 +838,16 @@ public final class CuerpoGeometria {
                     ex, 0F, dil,
                     false, texW, texW, costados));
         }
+
+        float[] exF = new float[12], oxF = new float[12], dzF = new float[12];
+        for (int f = 0; f < 12; f++) {
+            float[] c = costadosX(parte, dilFila[f], interno);
+            exF[f] = (c[0] + c[1]) / 2F * S;
+            oxF[f] = (c[1] - c[0]) / 2F * S;
+            dzF[f] = dilFila[f] * S;
+        }
+        cerrarEscalones(cuboides, dilFila, desde, hasta, t.uvX(), t.uvY(), t.originX(), t.originY(), t.originZ(), t.sizeX(), t.sizeZ(),
+                exF, oxF, dzF, texW);
 
         // Tapa de arriba (Direction.DOWN = arriba, nombres invertidos) a -dil,
         // como la caja entera, más la tira que cierra el costado hasta la fila 0.

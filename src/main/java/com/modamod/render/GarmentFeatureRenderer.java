@@ -1358,7 +1358,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                         ? CuerpoGeometria.telaFruncidaVolumen(parte, base, desde, hasta, pieza.fruncido(), pieza.fruncidoSup(),
                                 conPuntaDeMedia(pieza, parte)) : null;
                 dibujarModelPart(fruncida != null ? fruncida
-                                : CuerpoGeometria.telaConVolumenDePierna(parte, filasDeMedia(pieza, base, desde, hasta), conPuntaDeMedia(pieza, parte)),
+                                : CuerpoGeometria.telaConVolumenDePierna(parte, filasDeMedia(pieza, base, desde, hasta), conPuntaDeMedia(pieza, parte), desde, hasta),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
                 for (int f = desde; f < hasta; f++) exterior[f] = Math.max(exterior[f], base);
                 continue;
@@ -1485,7 +1485,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                 ? CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
                                         costadoInterno ? interno : -1F)
                                 : CuerpoGeometria.telaPorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F, pieza.capa() == Capa.MANGA_INTERIOR && esBrazo),
+                                        costadoInterno ? interno : -1F, pieza.capa() == Capa.MANGA_INTERIOR && esBrazo, desde),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
             }
             // Los escalones hacia adentro (el puño o el ruedo elástico aprietan de golpe): el borde de la fila de arriba

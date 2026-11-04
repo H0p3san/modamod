@@ -952,6 +952,7 @@ public final class ClothingTextureCache {
      */
     public static void perforarRed(NativeImage img, com.modamod.item.PatronRed tipo,
                                     com.modamod.garment.Parte parte, int filaDesde, int filaHasta) {
+        if (tipo == null || tipo == com.modamod.item.PatronRed.LISA) return;   // sin trama: nada que perforar (celda 0 dividía por cero)
         // LayoutSkin.base(parte,false) sin escalar todavía, para leer el
         // alto REAL del cuboide (12 filas siempre, pero mejor no
         // hardcodearlo) — filaDesde/filaHasta en ese extremo natural NO es
