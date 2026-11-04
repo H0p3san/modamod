@@ -145,7 +145,7 @@ public abstract class MaquinaBlock extends BlockWithEntity {
         if (world.isClient) return ActionResult.SUCCESS;
         if (!(world.getBlockEntity(pos) instanceof MaquinaBlockEntity be)) return ActionResult.PASS;
         if (usarPropio(be, world, pos, player)) return ActionResult.SUCCESS;
-        if (pantallaAbajo() && !ZonaMaquina.arriba(hit, pos, alturaTapaPx())) {
+        if (pantallaAbajo() && !ZonaMaquina.arriba(hit, pos, alturaTapaPx()) && !be.trabajando()) {
             if (be instanceof NamedScreenHandlerFactory pantalla) player.openHandledScreen(pantalla);
             return ActionResult.SUCCESS;
         }
@@ -165,8 +165,8 @@ public abstract class MaquinaBlock extends BlockWithEntity {
     }
 
     /**
-     * ¿Debajo de la tapa se abre la pantalla siempre, aunque haya salida o esté trabajando? Es el Telar: su pantalla tiene
-     * el lote y el botón para pararlo, y arriba queda para retirar la prenda.
+     * ¿Debajo de la tapa se abre la pantalla aunque haya una prenda lista? (trabajando, igual castiga). Es el Telar: entre
+     * prenda y prenda de un lote siempre tiene la salida llena, y su pantalla es donde se para; arriba se retira.
      */
     protected boolean pantallaAbajo() {
         return false;

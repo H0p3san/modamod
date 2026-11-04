@@ -41,7 +41,7 @@ public class TelarBlock extends MaquinaBlock {
     @Override
     protected double alturaTapaPx() { return 10.0; }
 
-    /** Debajo de la tapa se abre la pantalla aunque esté tejiendo: ahí se para el lote. */
+    /** Debajo de la tapa se abre la pantalla aunque haya una prenda lista (tejiendo, no): ahí se para el lote. */
     @Override
     protected boolean pantallaAbajo() { return true; }
 
