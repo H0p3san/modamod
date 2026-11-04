@@ -309,9 +309,9 @@ public class ManiquiBlockEntity extends BlockEntity
             fila = suya;
         }
         for (int z = 0; z < Cosmeticos.ZONAS.length; z++) {
-            net.minecraft.entity.EquipmentSlot parte = Cosmeticos.ZONAS[z];
-            ItemStack delJugador = player.getEquippedStack(parte).copy();
-            player.equipStack(parte, items.get(ARMADURA_INICIO + z).copy());
+            Cosmeticos c = Cosmeticos.de(player);
+            ItemStack delJugador = c.pieza(z).copy();
+            Cosmeticos.guardar(player, c.conPieza(z, items.get(ARMADURA_INICIO + z).copy()));
             items.set(ARMADURA_INICIO + z, delJugador);
         }
         for (var mano : new Object[][]{{net.minecraft.entity.EquipmentSlot.MAINHAND, SLOT_MANO_DER}, {net.minecraft.entity.EquipmentSlot.OFFHAND, SLOT_MANO_IZQ}}) {
