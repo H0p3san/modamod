@@ -1348,6 +1348,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     }
                     // Ruedo en campana (2026-10-07): las últimas 3 filas se abren hacia afuera, 0,6 px más cada una.
                     if (pieza.campana() && hasta - desde > 3 && f >= hasta - 3) d += 0.6F * (f - (hasta - 3) + 1);
+                    // Ribete de piel (2026-11-04): las 2 últimas filas del borde de abajo (o las 2 primeras del de arriba) más gruesas.
+                    if (pieza.piel() && hasta - desde > 2 && f >= hasta - 2) d += 0.5F;
+                    if (pieza.pielSup() && hasta - desde > 2 && f < desde + 2) d += 0.5F;
                     // La banda elástica aprieta: 40 % de la holgura, nunca por
                     // dentro del cuerpo (0.05 de aire).
                     if (pieza.elastico() && f == hasta - 1) d = Math.max(0.05F, base * 0.4F);

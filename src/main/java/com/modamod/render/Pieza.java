@@ -55,6 +55,10 @@ public record Pieza(Parte parte, int capa, Identifier textura, float dilatacion,
     /** El borde libre se abre en campana. */
     public boolean campana() { return ruedo == com.modamod.item.Ruedo.CAMPANA; }
 
+    /** El borde libre lleva un ribete de piel (más grueso). */
+    public boolean piel() { return ruedo == com.modamod.item.Ruedo.PIEL; }
+    public boolean pielSup() { return ruedoSup == com.modamod.item.Ruedo.PIEL; }
+
     /** La tela se frunce (acordeón) cerca del borde de abajo / de arriba. */
     public boolean fruncido() { return ruedo == com.modamod.item.Ruedo.FRUNCIDO; }
     public boolean fruncidoSup() { return ruedoSup == com.modamod.item.Ruedo.FRUNCIDO; }

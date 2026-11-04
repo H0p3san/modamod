@@ -34,7 +34,13 @@ public enum Ruedo implements StringIdentifiable {
      * molde"): las filas de ese borde alternan hacia afuera y hacia adentro, como un acordeón. Solo medias y calientabrazos.
      * Al final: viaja por red por ordinal.
      */
-    FRUNCIDO("fruncido");
+    FRUNCIDO("fruncido"),
+    /**
+     * Ribete de piel (2026-11-04, "ribete de piel en el borde del gorro, de la chaqueta y de las botas"): las dos últimas filas del
+     * borde se engrosan hacia afuera como un ribete de peluche; el color sale de la zona de Tintes del borde. Al final: viaja por red
+     * por ordinal. Vale en el torso, los puños, las botamangas y los bordes de medias y calientabrazos, no en la pollera ni el delantal.
+     */
+    PIEL("piel");
 
     public final String clave;
 

@@ -231,6 +231,10 @@ public final class ModeladoMod {
     public static final MoldeRuedoItem MOLDE_RUEDO_FRUNCIDO = new MoldeRuedoItem(new Item.Settings().maxCount(1),
             com.modamod.item.Ruedo.FRUNCIDO);
 
+    /** Ribete de piel en el borde de abajo del torso, los puños, las botamangas y los bordes de medias y calientabrazos (2026-11-04). */
+    public static final MoldeRuedoItem MOLDE_RUEDO_PIEL = new MoldeRuedoItem(new Item.Settings().maxCount(1),
+            com.modamod.item.Ruedo.PIEL);
+
     // ── moldes de la banda (2026-10-05, "correas y cintos") ──
     public static final MoldeBandaItem MOLDE_BANDA_ZONA_CINTURA = new MoldeBandaItem(new Item.Settings().maxCount(1),
             MoldeBandaItem.Tipo.ZONA_CINTURA);
@@ -511,6 +515,7 @@ public final class ModeladoMod {
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_ruedo_festoneado"), MOLDE_RUEDO_FESTONEADO);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_ruedo_pico"), MOLDE_RUEDO_PICO);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_ruedo_fruncido"), MOLDE_RUEDO_FRUNCIDO);
+        Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_ruedo_piel"), MOLDE_RUEDO_PIEL);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_chaqueta_frente_abierta"), MOLDE_CHAQUETA_FRENTE_ABIERTA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_chaqueta_solapa_pico"), MOLDE_CHAQUETA_SOLAPA_PICO);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_chaqueta_solapa_redonda"), MOLDE_CHAQUETA_SOLAPA_REDONDA);
