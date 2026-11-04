@@ -525,7 +525,7 @@ public final class EstampaTextures {
                 base.getWidth(), base.getHeight(), false);
         salida.copyFrom(base);
         if (color != RemeraItem.BLANCO) tenir(salida, color);
-        if (!capas.isEmpty()) aplicarPatron(salida, base, capas);
+        if (!capas.isEmpty()) aplicarPatron(salida, base, capas, variante.largo().filas);
 
         if (!estampar(salida, deLaRemera(variante), null, frente, espalda, mascaras)) {
             salida.close();
@@ -703,7 +703,7 @@ public final class EstampaTextures {
      * cae a la prenda tenida lisa, igual que cualquier patrón del mod.
      */
     private static void aplicarPatron(NativeImage tela, NativeImage cruda,
-                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas) {
+                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas, int filasTorso) {
         for (com.modamod.region.RegionResolver.CapaPatron capa : capas) {
             // Sin molde = capa lisa (2026-09-27, cuadradito de Tinturas):
             // máscara null, cubre toda su región.
@@ -716,7 +716,7 @@ public final class EstampaTextures {
             // null (TODO) no recorta nada.
             java.util.List<com.modamod.render.CajaSkin.Rect> region = capa.region() == com.modamod.region.RegionPintura.TODO
                     ? null : capa.region().rects(com.modamod.tinturas.TinturasBlockEntity.Categoria.REMERA,
-                            com.modamod.render.CuerpoGeometria.ESCALA_TELA);
+                            com.modamod.render.CuerpoGeometria.ESCALA_TELA, filasTorso, null);
             // Capas en orden: cada una pinta ENCIMA de la anterior donde su
             // máscara sea opaca — a pedido, "orden y cambio de color".
             // Mismo criterio de cobertura (región + máscara + invertido) y de

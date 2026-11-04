@@ -144,6 +144,35 @@ public enum RegionPintura implements StringIdentifiable {
         };
     }
 
+    /** El lado de las regiones de pierna/brazo con lado (SUP/INF/LADO _IZQ/_DER). */
+    private Lado ladoPropio() {
+        return name().endsWith("_IZQ") ? Lado.IZQUIERDA : Lado.DERECHA;
+    }
+
+    /**
+     * Filas [desde,hasta) de las 12 de esa {@link Parte} que ocupa esta región, ajustadas al largo de la prenda
+     * (2026-11-04, "el area se adapte al largo"): el borde de abajo es el borde de verdad de la prenda, no las filas 10-12, y
+     * superior/inferior son las mitades de lo que queda con tela.
+     *
+     * @param torso     filas de torso con tela (12 si no se sabe)
+     * @param visibles  filas [desde,hasta) con tela de una pierna/brazo según el lado, o null
+     */
+    private int[] filas(int torso, java.util.function.Function<Lado, int[]> visibles) {
+        switch (this) {
+            case BORDE_INFERIOR -> { return new int[]{Math.max(0, torso - FILAS_BORDE), torso}; }
+            case PECHO -> { return new int[]{0, Math.max(0, torso - FILAS_BORDE)}; }
+            case SUP_IZQ, SUP_DER, INF_IZQ, INF_DER -> {
+                int[] v = visibles == null ? null : visibles.apply(ladoPropio());
+                if (v != null && v[1] > v[0]) {
+                    int medio = v[0] + (v[1] - v[0]) / 2;
+                    return this == SUP_IZQ || this == SUP_DER ? new int[]{v[0], medio} : new int[]{medio, v[1]};
+                }
+            }
+            default -> { }
+        }
+        return filas();
+    }
+
     /** Filas [desde,hasta) de las 12 de esa {@link Parte} que ocupa esta región. */
     private int[] filas() {
         return switch (this) {
@@ -170,6 +199,11 @@ public enum RegionPintura implements StringIdentifiable {
      * caras (der+frente+izq+atrás juntas) a las filas que les tocan.
      */
     public List<CajaSkin.Rect> rects(Categoria cat, int escala) {
+        return rects(cat, escala, 12, null);
+    }
+
+    /** Como {@link #rects(Categoria, int)}, con las regiones adaptadas al largo de la prenda (ver {@link #filas(int, java.util.function.Function)}). */
+    public List<CajaSkin.Rect> rects(Categoria cat, int escala, int torso, java.util.function.Function<Lado, int[]> visibles) {
         // Capa: en px de la textura de 64 (cuboide 10x16x1 en uv 0,0 y
         // detalles 12x8x2 en uv 24,0). Exterior = cara del frente + la tapa
         // de arriba y el canto derecho; forro = cara de atrás + tapa de abajo
@@ -221,15 +255,16 @@ public enum RegionPintura implements StringIdentifiable {
             rects.add(new CajaSkin.Rect(atras.x0(), atras.y0(), atras.x1(), atras.y0() + FILAS_ESCOTE * escala));
             return rects;
         }
-        rects.add(banda(caja, filas(), escala));
+        int[] filas = filas(torso, visibles);
+        rects.add(banda(caja, filas, escala));
         // Tapas (2026-09-28, "la parte de arriba de la remera no se esta
         // pintando"): la de arriba del torso va con el Pecho (los hombros de
         // verdad son la tapa de cada brazo, que ya es de la Manga); la de
         // abajo con el Borde inferior. En pierna/brazo, la de abajo (planta,
         // puño) va con Inferior y la de arriba con Superior.
         switch (this) {
-            case PECHO, SUP_IZQ, SUP_DER -> rects.add(caja.arriba());
-            case BORDE_INFERIOR, INF_IZQ, INF_DER -> rects.add(caja.abajo());
+            case PECHO, SUP_IZQ, SUP_DER -> { if (filas[0] == 0) rects.add(caja.arriba()); }
+            case BORDE_INFERIOR, INF_IZQ, INF_DER -> { if (filas[1] >= 12) rects.add(caja.abajo()); }
             default -> { }
         }
         if (this == CINTURA) {

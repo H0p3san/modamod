@@ -98,6 +98,17 @@ public final class PiezasDelMod {
      * no hay ningún patrón, o si esa prenda no tiene caja mapeada
      * todavía (cae a lisa, no rompe nada).
      */
+    /** Las filas con tela de cada lado de la prenda, para que las regiones de Tintes sigan el largo (null si no aplica). */
+    private static java.util.function.Function<Lado, int[]> visiblesDe(
+            com.modamod.tinturas.TinturasBlockEntity.Categoria categoria, ItemStack stack) {
+        return switch (categoria) {
+            case MEDIAS -> l -> com.modamod.item.MediasLargo.filasVisibles(stack, l);
+            case PANTALON -> l -> PantalonItem.filasVisibles(stack, l);
+            case CALIENTABRAZOS -> l -> CalientabrazosItem.filasVisibles(stack, l);
+            default -> null;
+        };
+    }
+
     private static List<ClothingTextureCache.CapaMascara> capasDePatron(
             String prenda, com.modamod.tinturas.TinturasBlockEntity.Categoria categoria, ItemStack stack, Lado lado) {
         List<RegionResolver.CapaPatron> capas = RegionResolver.capas(stack);
@@ -112,7 +123,7 @@ public final class PiezasDelMod {
             if (!capa.lisa() && mascara == null) continue;
             // Región (2026-09-27, "pintar por región"): null (TODO) no recorta nada.
             java.util.List<CajaSkin.Rect> region = capa.region() == com.modamod.region.RegionPintura.TODO
-                    ? null : capa.region().rects(categoria, CuerpoGeometria.ESCALA_TELA);
+                    ? null : capa.region().rects(categoria, CuerpoGeometria.ESCALA_TELA, 12, visiblesDe(categoria, stack));
             resultado.add(ClothingTextureCache.CapaMascara.de(capa, mascara, region));
         }
         return resultado;
