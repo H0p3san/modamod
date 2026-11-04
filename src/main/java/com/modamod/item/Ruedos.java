@@ -58,8 +58,8 @@ public final class Ruedos {
         // El fruncido (2026-10-17) solo vale en los bordes de arriba y de abajo de medias y calientabrazos.
         if (r == Ruedo.FRUNCIDO && zona != ZonaRuedo.SUP_IZQ && zona != ZonaRuedo.SUP_DER
                 && zona != ZonaRuedo.INF_IZQ && zona != ZonaRuedo.INF_DER) return false;
-        // El ribete de piel no vale en la pollera ni el delantal (su malla no lo dibuja).
-        if (r == Ruedo.PIEL && (zona == ZonaRuedo.POLLERA || zona == ZonaRuedo.DELANTAL)) return false;
+        // El ribete de piel no vale en el delantal (su malla no lo dibuja).
+        if (r == Ruedo.PIEL && zona == ZonaRuedo.DELANTAL) return false;
         boolean extremo = r.ordinal() <= Ruedo.CAMPANA.ordinal() || r.volado() != null || r.borde() != null || r == Ruedo.PIEL;
         return switch (zona) {
             case TORSO -> es(prenda, CategoriaDePrenda.REMERA) && r.valeEnTela();

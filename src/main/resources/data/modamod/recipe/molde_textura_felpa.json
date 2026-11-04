@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:trama_en_blanco"
+    },
+    {
+      "item": "minecraft:white_wool"
+    },
+    {
+      "item": "minecraft:white_wool"
+    },
+    {
+      "item": "minecraft:white_wool"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_textura_felpa",
+    "count": 1
+  }
+}

@@ -127,7 +127,7 @@ public class EstilistaScreen extends EditorEstiloScreen {
         if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.BANDA)) {
             return com.modamod.item.BandaItem.zona(s) == com.modamod.item.BandaZona.CUELLO ? java.util.List.of(CAB, TOR, TODO) : java.util.List.of(CIN, TODO);
         }
-        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) return java.util.List.of(CAB, TODO);
+        if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.SOMBRERO) || com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CARA)) return java.util.List.of(CAB, TODO);
         if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALZADO)) return java.util.List.of(PIS, PIE, TODO);
         if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CALIENTABRAZOS)) return java.util.List.of(BRA, TODO);
         if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.MALETIN)) return java.util.List.of(CIN, TODO);

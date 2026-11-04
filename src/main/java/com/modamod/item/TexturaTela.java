@@ -14,7 +14,9 @@ public enum TexturaTela implements StringIdentifiable {
     /** Pliegues finos verticales, como una tela fruncida o arruchada. */
     FRUNCIDO("fruncido"),
     /** Almohadones en rombo, como una campera inflada. */
-    ACOLCHADO("acolchado");
+    ACOLCHADO("acolchado"),
+    /** Felpa (2026-11-04, "la textura de felpa"): mechones cortos y desparejos, como pelo o peluche. */
+    FELPA("felpa");
 
     public static final com.mojang.serialization.Codec<TexturaTela> CODEC = StringIdentifiable.createCodec(TexturaTela::values);
 

@@ -20,7 +20,8 @@ public final class AccesorioRenderer {
 
     public static boolean es(ItemStack stack) {
         return com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)
-                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN);
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO) || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)
+                || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CARA);
     }
 
     /** {@code dil}: lo que sale del cuerpo la ropa de abajo (solo lo usa el cinto). */
@@ -30,6 +31,7 @@ public final class AccesorioRenderer {
         else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)) BandaRenderer.dibujar(stack, biped, matrices, vertexConsumers, luz, dil);
         else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)) BorcegosRenderer.dibujar(stack, biped, matrices, vertexConsumers, luz);
         else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)) MaletinRenderer.dibujar(stack, biped, matrices, vertexConsumers, luz);
+        else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CARA)) CaraRenderer.dibujar(stack, biped, matrices, vertexConsumers, luz);
     }
 
     /** Las cajas del accesorio en el marco de {@code parte} (solo los borcegos tienen una forma por pie). */
@@ -42,6 +44,7 @@ public final class AccesorioRenderer {
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.BANDA)) return BandaRenderer.cajas(stack);
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)) return BorcegosRenderer.cajas(stack);
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MALETIN)) return MaletinRenderer.cajas();
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CARA)) return CaraRenderer.cajas(stack);
         return SombreroRenderer.cajas(stack);
     }
 }

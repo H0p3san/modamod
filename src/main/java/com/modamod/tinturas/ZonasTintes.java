@@ -47,8 +47,7 @@ public final class ZonasTintes {
             // Banner (2026-10-24): 3 capas de banner entero; el visor muestra el banner solo
             {z("banner", Enfoque.ENTERO, 0, 1, 2)},
             // Máscara y barbijo (2026-10-24): 3 capas de prenda entera, el visor en la cabeza
-            {z("mascara", Enfoque.CABEZA, 0, 1, 2)},
-            {z("barbijo", Enfoque.CABEZA, 0, 1, 2)},
+            {z("cara", Enfoque.CABEZA, 0, 1, 2)},
     };
 
     public static Zona[] de(Categoria cat) { return ZONAS[cat.ordinal()]; }

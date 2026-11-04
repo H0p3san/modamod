@@ -128,6 +128,7 @@ public class Modamod implements ModInitializer {
             entries.add(ModamodItems.MOLDE_APLIQUE_PARCHE_ESTRELLA);
             entries.add(ModamodItems.MOLDE_APLIQUE_PARCHE_RAYO);
             entries.add(ModamodItems.MOLDE_TEXTURA_FRUNCIDO);
+            entries.add(ModamodItems.MOLDE_TEXTURA_FELPA);
             entries.add(ModamodItems.MOLDE_TEXTURA_ACOLCHADO);
             entries.add(ModamodItems.ESTROGENOS);
             entries.add(ModamodItems.TESTOSTERONA);

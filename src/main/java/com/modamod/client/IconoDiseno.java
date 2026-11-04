@@ -57,8 +57,7 @@ public final class IconoDiseno {
             case "CALZADO" -> "borcegos";
             case "DELANTAL" -> "delantal";
             case "MALETIN" -> "maletin";
-            case "MASCARA" -> "antifaz";
-            case "BARBIJO" -> "barbijo";
+            case "CARA" -> "antifaz";
             default -> "";
         };
         return n.isEmpty() ? ItemStack.EMPTY : porId("modamod:" + n);

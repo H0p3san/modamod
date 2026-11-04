@@ -439,8 +439,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         BANDA(com.modamod.prenda.CategoriaDePrenda.BANDA),
         MALETIN(com.modamod.prenda.CategoriaDePrenda.MALETIN),
         BANNER(com.modamod.prenda.CategoriaDePrenda.BANNER),
-        MASCARA(com.modamod.prenda.CategoriaDePrenda.MASCARA),
-        BARBIJO(com.modamod.prenda.CategoriaDePrenda.BARBIJO);
+        CARA(com.modamod.prenda.CategoriaDePrenda.CARA);
 
         /** La categoría única de prenda que esta máquina muestra con este lugar. */
         public final com.modamod.prenda.CategoriaDePrenda prenda;
@@ -497,7 +496,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
             return i < CASILLAS_APLIQUE ? com.modamod.region.RegionPintura.values()[com.modamod.region.RegionPintura.ZONA_1.ordinal() + i] : null;
         }
         // Banner (2026-10-24): como la pollera, 3 cuadraditos de banner entero que se apilan.
-        if (cat == Categoria.BANNER || cat == Categoria.MASCARA || cat == Categoria.BARBIJO) {
+        if (cat == Categoria.BANNER || cat == Categoria.CARA) {
             return i < CASILLAS_POLLERA ? com.modamod.region.RegionPintura.TODO : null;   // y máscara y barbijo (2026-10-24)
         }
         // Las zonas de un accesorio de cajas: ZONA_1.. en orden (el calzado trae las del pie izquierdo a partir de la 4.ª).
@@ -1786,7 +1785,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
     private void pintar(ItemStack stack, Categoria cat, boolean borrador) {
         // El banner (2026-10-24): solo las capas; su color base es el del banner y lo dibuja BannerHD. Máscara y barbijo
         // igual, sobre blanco (CaraRenderer).
-        if (cat == Categoria.BANNER || cat == Categoria.MASCARA || cat == Categoria.BARBIJO) {
+        if (cat == Categoria.BANNER || cat == Categoria.CARA) {
             List<RegionResolver.CapaPatron> capas = capasDe(cat, borrador);
             if (capas.isEmpty()) stack.remove(com.modamod.item.ModamodComponents.CAPAS_TINTE);
             else stack.set(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.copyOf(capas));
@@ -1954,8 +1953,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
             case BANDA -> com.modamod.item.ModamodItems.BANDA;
             case MALETIN -> com.modamod.item.ModamodItems.MALETIN;
             case BANNER -> net.minecraft.item.Items.WHITE_BANNER;
-            case MASCARA -> com.modamod.item.ModamodItems.ANTIFAZ;
-            case BARBIJO -> com.modamod.item.ModamodItems.BARBIJO;
+            case CARA -> com.modamod.item.ModamodItems.ANTIFAZ;
         };
     }
 

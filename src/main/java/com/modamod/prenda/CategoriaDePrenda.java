@@ -21,8 +21,8 @@ public enum CategoriaDePrenda implements StringIdentifiable {
     SOMBRERO("sombrero"),
     BANDA("banda"),
     CALZADO("calzado"),
-    MASCARA("mascara"),
-    BARBIJO("barbijo"),
+    /** Máscaras y barbijo (2026-11-04: una sola categoría, con apliques). */
+    CARA("cara"),
     /** El retazo de aplique: no se viste, pero Tintes lo pinta por zonas. */
     APLIQUE("aplique"),
     /** El maletín: no se viste, pero Tintes lo pinta por zonas. */

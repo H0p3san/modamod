@@ -242,6 +242,15 @@ public final class PolleraMalla {
                     x *= k;
                     z *= k;
                 }
+                // Ribete de piel (2026-11-04): las 2 últimas filas se engrosan hacia afuera.
+                if (hem == com.modamod.item.Ruedo.PIEL && f >= FILAS - 2) {
+                    float rr = (float) Math.hypot(x, z);
+                    if (rr > 0.5f) {
+                        float k = (rr + 0.6f) / rr;
+                        x *= k;
+                        z *= k;
+                    }
+                }
                 // Faldón sobre una pollera (2026-10-11, "el faldon tiene que colisionar con la pollera"): esta fila se aleja
                 // del eje lo que haga falta para pasar por fuera de la pollera que lleva debajo.
                 if (extraPorFila != null && extraPorFila[f] > 0.01f) {

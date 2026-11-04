@@ -154,6 +154,8 @@ public final class ModamodItems {
             new MoldeTexturaItem(TexturaTela.FRUNCIDO, new Item.Settings().maxCount(1)));
     public static final MoldeTexturaItem MOLDE_TEXTURA_ACOLCHADO = register("molde_textura_acolchado",
             new MoldeTexturaItem(TexturaTela.ACOLCHADO, new Item.Settings().maxCount(1)));
+    public static final MoldeTexturaItem MOLDE_TEXTURA_FELPA = register("molde_textura_felpa",
+            new MoldeTexturaItem(TexturaTela.FELPA, new Item.Settings().maxCount(1)));
     public static final MuestraColorItem TINTE_MEZCLA = register("tinte_mezcla",
             new MuestraColorItem(new Item.Settings().maxCount(16)));
     public static final CalientabrazosItem CALIENTABRAZOS = register("calientabrazos",

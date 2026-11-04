@@ -39,15 +39,23 @@ public final class CaraRenderer {
             puestas.removeIf(s -> ((CaraItem) s.getItem()).barbijo == o.barbijo);
             puestas.add(override);
         }
-        for (ItemStack s : puestas) dibujarUna(s, biped.head, matrices, vcp, luz);
+        for (ItemStack s : puestas) dibujarUna(s, biped, matrices, vcp, luz);
     }
 
     /** Una máscara o un barbijo sobre la cabeza de {@code biped} (el Maniquí, 2026-10-25). */
     public static void dibujar(ItemStack stack, BipedEntityModel<?> biped, MatrixStack matrices, VertexConsumerProvider vcp, int luz) {
-        if (biped.head.visible && stack.getItem() instanceof CaraItem) dibujarUna(stack, biped.head, matrices, vcp, luz);
+        if (biped.head.visible && stack.getItem() instanceof CaraItem) dibujarUna(stack, biped, matrices, vcp, luz);
     }
 
-    private static void dibujarUna(ItemStack stack, ModelPart cabeza, MatrixStack matrices, VertexConsumerProvider vcp, int luz) {
+    /** La caja que abarca el modelo de la máscara o el barbijo, para apuntarle apliques en la Mesa de estilado (2026-11-04). */
+    public static List<SombreroRenderer.Caja> cajas(ItemStack stack) {
+        if (!(stack.getItem() instanceof CaraItem item)) return List.of();
+        float[][] l = CapuchaArchivo.limites("cara/" + item.modelo);
+        return l == null ? List.of() : List.of(new SombreroRenderer.Caja(0, l[0], l[1]));
+    }
+
+    private static void dibujarUna(ItemStack stack, BipedEntityModel<?> biped, MatrixStack matrices, VertexConsumerProvider vcp, int luz) {
+        ModelPart cabeza = biped.head;
         CaraItem item = (CaraItem) stack.getItem();
         Identifier tela = ZonaTextura.plana(BLANCO,
                 stack.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.of()), false);
@@ -55,5 +63,7 @@ public final class CaraRenderer {
         Identifier foto = com.modamod.sublimadora.BannerHD.foto(com.modamod.sublimadora.BannerHD.Forma.CARA,
                 com.modamod.sublimadora.Estampas.frente(stack));
         if (foto != null) CapuchaArchivo.cara(item.modelo, foto, cabeza, matrices, vcp, luz);
+        // Apliques (2026-11-04): sobre la cabeza, a ras del modelo.
+        ApliqueRenderer.dibujar(stack, 0f, biped, matrices, vcp, luz);
     }
 }

@@ -56,6 +56,15 @@ final class CapuchaArchivo {
         });
     }
 
+    /** La caja {mín, máx} (px, marco de la cabeza) que abarca un modelo de {@code assets/modamod/<ruta>.json}, o null si no se pudo leer. */
+    static float[][] limites(String ruta) {
+        float[][][] caras = caras(ruta);
+        if (caras.length == 0) return null;
+        float[] mn = {1e9F, 1e9F, 1e9F}, mx = {-1e9F, -1e9F, -1e9F};
+        for (float[][] cara : caras) for (float[] v : cara) for (int k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], v[k]); mx[k] = Math.max(mx[k], v[k]); }
+        return new float[][]{mn, mx};
+    }
+
     /** Puesta, en el marco de la cabeza. {@code d} = holgura del top (se agranda desde el centro de la cabeza). */
     static void puesta(SombreroEstilo estilo, Identifier tela, float d, ModelPart cabeza, MatrixStack matrices,
                        VertexConsumerProvider vcp, int luz) {

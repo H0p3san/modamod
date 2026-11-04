@@ -935,7 +935,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
                 ItemStack puesto = par.getRight();
-                if (AccesorioRenderer.es(puesto)) AccesorioRenderer.dibujar(puesto, biped, matrices, vertexConsumers, luz, dil);
+                // La máscara y el barbijo los dibuja CaraRenderer (con sus apliques).
+                if (AccesorioRenderer.es(puesto) && !(puesto.getItem() instanceof com.modamod.item.CaraItem)) AccesorioRenderer.dibujar(puesto, biped, matrices, vertexConsumers, luz, dil);
             }
         });
     }

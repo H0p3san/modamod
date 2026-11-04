@@ -44,9 +44,9 @@ public final class Prendas {
         registrar(ModamodItems.BANDA, new DefinicionDePrenda(CategoriaDePrenda.BANDA, FormaDeDibujo.ACCESORIO));
         registrar(ModamodItems.BORCEGOS, new DefinicionDePrenda(CategoriaDePrenda.CALZADO, FormaDeDibujo.ACCESORIO));
         for (Item cara : List.of(ModamodItems.ANTIFAZ, ModamodItems.MEDIA_MASCARA, ModamodItems.MASCARA_COMPLETA)) {
-            registrar(cara, new DefinicionDePrenda(CategoriaDePrenda.MASCARA, FormaDeDibujo.ACCESORIO));
+            registrar(cara, new DefinicionDePrenda(CategoriaDePrenda.CARA, FormaDeDibujo.ACCESORIO));
         }
-        registrar(ModamodItems.BARBIJO, new DefinicionDePrenda(CategoriaDePrenda.BARBIJO, FormaDeDibujo.ACCESORIO));
+        registrar(ModamodItems.BARBIJO, new DefinicionDePrenda(CategoriaDePrenda.CARA, FormaDeDibujo.ACCESORIO));
         // Lo que no se viste pero las máquinas trabajan.
         registrar(ModamodItems.RETAZO_APLIQUE, new DefinicionDePrenda(CategoriaDePrenda.APLIQUE, FormaDeDibujo.NINGUNA));
         registrar(ModamodItems.MALETIN, new DefinicionDePrenda(CategoriaDePrenda.MALETIN, FormaDeDibujo.NINGUNA));

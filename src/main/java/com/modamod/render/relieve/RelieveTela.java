@@ -104,6 +104,11 @@ public final class RelieveTela {
                 float s = (float) Math.sin((x + 0.15f * Math.sin(y * 1.3f)) * Math.PI * 2);
                 yield 0.22f * (0.5f + 0.5f * s);
             }
+            case FELPA -> {
+                // Mechones: ruido de celdas de 0,6 px, suavizado con una segunda capa más fina.
+                float a = ruido(x / 0.6f, y / 0.6f), b = ruido(x / 0.3f + 7.3f, y / 0.3f + 2.1f);
+                yield 0.3f * (0.65f * a + 0.35f * b);
+            }
             case ACOLCHADO -> {
                 // Rombos de 3 px: costura en las diagonales, almohadón en el medio.
                 float celda = 3f;
@@ -124,6 +129,13 @@ public final class RelieveTela {
         int px = img.getColor(x, y);
         if (((px >>> 24) & 0xFF) == 0) return 0f;
         return (px & 0xFF) / 255f * EXTRUSION_MAXIMA;
+    }
+
+    /** Valor pseudoaleatorio fijo de 0 a 1 por celda entera (el mismo mechón siempre en el mismo lugar). */
+    private static float ruido(float x, float y) {
+        int h = (int) Math.floor(x) * 374761393 + (int) Math.floor(y) * 668265263;
+        h = (h ^ (h >>> 13)) * 1274126177;
+        return ((h ^ (h >>> 16)) & 0xFFFF) / 65535f;
     }
 
     private static float frac(float v) {
