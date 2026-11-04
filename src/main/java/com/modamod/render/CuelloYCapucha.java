@@ -67,11 +67,13 @@ public final class CuelloYCapucha {
      * de media cabeza), y sobre una cabeza de CARAS crece un 10 % desde ahí.
      */
     private static void escalarCapucha(MatrixStack matrices, BipedEntityModel<?> biped) {
-        if (GarmentFeatureRenderer.armaduraCasco > 0F) return;
-        CabezaCaras.escalar(matrices, biped, SIN_CASCO * (CabezaCaras.puesta(biped) ? CAPUCHA_CARAS : 1F));
+        if (GarmentFeatureRenderer.armaduraCasco > 0F) CabezaCaras.escalar(matrices, biped, HOLGURA);
+        else CabezaCaras.escalar(matrices, biped, HOLGURA * SIN_CASCO * (CabezaCaras.puesta(biped) ? CAPUCHA_CARAS : 1F));
     }
 
     private static final float SIN_CASCO = 4F / 5F;
+    /** Un pelo de aire sobre el casco (2026-11-04, "un pelin mas grandecitas"). */
+    private static final float HOLGURA = 1.06F;
 
     /** Dibuja cuello de polera, capucha y cordones de lo que haya en {@code prendas}. */
     public static void dibujar(List<ItemStack> prendas, BipedEntityModel<?> biped, MatrixStack matrices,
