@@ -320,63 +320,46 @@ public class ManiquiBlockEntity extends BlockEntity
      * esa categoría, mismo mapeo que {@code GuardarropasBlockEntity#equiparEn}).
      * Nada se pierde: lo que estaba en cada lado pasa al otro, vacíos incluidos.
      */
-    private void intercambiarTrinket(PlayerEntity player, String grupo, String slot, int mio) {
-        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(componente -> {
-            var g = componente.getInventory().get(grupo);
-            var inv = g == null ? null : g.get(slot);
-            if (inv == null || inv.size() < 1) return;
-            ItemStack delJugador = inv.getStack(0).copy();
-            inv.setStack(0, items.get(mio).copy());
-            items.set(mio, delJugador);
-        });
+    /**
+     * Los lugares propios del maniquí en el orden de la lista de ropa, de afuera hacia adentro (rediseño, tanda 3): así lo
+     * que pasa del maniquí al jugador queda en un orden que se dibuja bien. El maniquí todavía tiene un lugar por prenda.
+     */
+    private static int[] lugaresDeAfueraAAdentro() {
+        java.util.List<Integer> l = new java.util.ArrayList<>(java.util.List.of(GuardarropasBlockEntity.SLOT_SOMBRERO, SLOT_MASCARA,
+                SLOT_BARBIJO, SLOT_COLLAR, SLOT_CAPA, GuardarropasBlockEntity.SLOT_DELANTAL, SLOT_CINTO));
+        for (int cat : new int[]{GuardarropasBlockEntity.CHAQUETA, GuardarropasBlockEntity.REMERA, GuardarropasBlockEntity.CALIENTABRAZOS,
+                GuardarropasBlockEntity.PANTALON}) {
+            for (int capa = 0; capa < POR_CATEGORIA; capa++) l.add(cat * POR_CATEGORIA + capa);
+        }
+        l.add(GuardarropasBlockEntity.SLOT_CALZADO);
+        for (int capa = 0; capa < POR_CATEGORIA; capa++) l.add(GuardarropasBlockEntity.MEDIAS * POR_CATEGORIA + capa);
+        return l.stream().mapToInt(Integer::intValue).toArray();
     }
 
+    /** Intercambia la ropa y la armadura con las del jugador: lo del jugador va a los lugares del maniquí que lo aceptan. */
     public void intercambiarCon(PlayerEntity player) {
-        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(componente -> {
-            for (int categoria = 0; categoria < CATEGORIAS; categoria++) {
-                dev.emi.trinkets.api.TrinketInventory inv =
-                        GuardarropasBlockEntity.inventarioTrinkets(componente, categoria);
-                if (inv == null) continue;
-                int capas = Math.min(inv.size(), POR_CATEGORIA);
-                for (int capa = 0; capa < capas; capa++) {
-                    int slot = categoria * POR_CATEGORIA + capa;
-                    ItemStack delJugador = inv.getStack(capa).copy();
-                    ItemStack delManiqui = items.get(slot).copy();
-                    inv.setStack(capa, delManiqui);
-                    items.set(slot, delJugador);
-                }
+        dev.emi.trinkets.api.TrinketInventory lista = com.modamod.ropa.ListaDeRopa.de(player);
+        if (lista != null) {
+            java.util.List<ItemStack> delJugador = new java.util.ArrayList<>();
+            for (int i = 0; i < lista.size(); i++) {
+                if (!lista.getStack(i).isEmpty()) delJugador.add(lista.getStack(i).copy());
+                lista.setStack(i, ItemStack.EMPTY);
             }
-        });
-        // Sombrero (2026-10-05): también intercambia con el slot head/sombrero de Trinkets.
-        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(componente -> {
-            var inv = GuardarropasBlockEntity.inventarioSombrero(componente);
-            if (inv == null || inv.size() < 1) return;
-            ItemStack delJugador = inv.getStack(0).copy();
-            inv.setStack(0, items.get(GuardarropasBlockEntity.SLOT_SOMBRERO).copy());
-            items.set(GuardarropasBlockEntity.SLOT_SOMBRERO, delJugador);
-        });
-        // Calzado (2026-10-08): también intercambia con el slot socks/calzado de Trinkets.
-        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(componente -> {
-            var inv = GuardarropasBlockEntity.inventarioCalzado(componente);
-            if (inv == null || inv.size() < 1) return;
-            ItemStack delJugador = inv.getStack(0).copy();
-            inv.setStack(0, items.get(GuardarropasBlockEntity.SLOT_CALZADO).copy());
-            items.set(GuardarropasBlockEntity.SLOT_CALZADO, delJugador);
-        });
-        // Delantal (2026-10-11): también intercambia con el slot torso/delantal de Trinkets.
-        dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(player).ifPresent(componente -> {
-            var inv = GuardarropasBlockEntity.inventarioDelantal(componente);
-            if (inv == null || inv.size() < 1) return;
-            ItemStack delJugador = inv.getStack(0).copy();
-            inv.setStack(0, items.get(GuardarropasBlockEntity.SLOT_DELANTAL).copy());
-            items.set(GuardarropasBlockEntity.SLOT_DELANTAL, delJugador);
-        });
-        // Capa, cinto y collar (2026-10-19): sus slots de Trinkets (espalda/capa y el de cada zona de la banda).
-        intercambiarTrinket(player, "espalda", "capa", SLOT_CAPA);
-        intercambiarTrinket(player, com.modamod.item.BandaZona.CINTURA.grupo, com.modamod.item.BandaZona.CINTURA.slot, SLOT_CINTO);
-        intercambiarTrinket(player, com.modamod.item.BandaZona.CUELLO.grupo, com.modamod.item.BandaZona.CUELLO.slot, SLOT_COLLAR);
-        intercambiarTrinket(player, "head", "mascara", SLOT_MASCARA);
-        intercambiarTrinket(player, "head", "barbijo", SLOT_BARBIJO);
+            int destino = 0;
+            for (int mio : lugaresDeAfueraAAdentro()) {
+                ItemStack s = items.get(mio);
+                if (s.isEmpty()) continue;
+                if (destino < lista.size()) lista.setStack(destino++, s.copy());
+                else player.getInventory().offerOrDrop(s.copy());
+                items.set(mio, ItemStack.EMPTY);
+            }
+            for (ItemStack s : delJugador) {
+                int lugar = -1;
+                for (int mio : lugaresDeAfueraAAdentro()) if (items.get(mio).isEmpty() && isValid(mio, s)) { lugar = mio; break; }
+                if (lugar >= 0) items.set(lugar, s);
+                else player.getInventory().offerOrDrop(s);
+            }
+        }
         // Armadura: slot por slot, vacíos incluidos (2026-09-30).
         for (int i = 0; i < GuardarropasBlockEntity.SLOTS_ARMADURA.length; i++) {
             net.minecraft.entity.EquipmentSlot parte = GuardarropasBlockEntity.SLOTS_ARMADURA[i];

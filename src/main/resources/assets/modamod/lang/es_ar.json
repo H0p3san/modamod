@@ -1625,5 +1625,8 @@
   "modamod.estilado.tooltip.asignar": "Qué zona del retazo (color y trama) va a esta zona del aplique. Clic para cambiar.",
   "modamod.estilado.tenir_elegido": "Reteñir elegido",
   "modamod.estilado.tooltip.tenir_elegido": "Vuelve a teñir el aplique elegido con el retazo del slot y estas zonas, sin gastar el retazo.",
-  "modamod.maniqui.manos": "Manos"
+  "modamod.maniqui.manos": "Manos",
+  "modamod.ropa.fila_armadura": "Fila de la armadura: lo de arriba de esta fila se dibuja encima de la armadura; lo de abajo, debajo.",
+  "trinkets.slot.ropa.lugar": "Ropa",
+  "modamod.slot.ropa.lugar": "Cualquier prenda o accesorio del mod. El orden es el de dibujo: arriba a la izquierda va encima de todo y abajo a la derecha, pegado al cuerpo. Capucha: %s"
 }

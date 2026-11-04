@@ -3,9 +3,7 @@ package com.modamod.client;
 import com.modamod.guardarropas.GuardarropasBlockEntity;
 import com.modamod.guardarropas.GuardarropasScreenHandler;
 import com.modamod.render.GarmentFeatureRenderer;
-import com.modamod.ropa.Cosmeticos;
 import com.modamod.ropa.RopaScreenHandler;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -15,9 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -45,7 +41,7 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
     private final ButtonWidget[] btnNombre = new ButtonWidget[com.modamod.guardarropas.Outfits.MAXIMO];
     private final ButtonWidget[] btnPoner = new ButtonWidget[com.modamod.guardarropas.Outfits.MAXIMO];
     private final ButtonWidget[] btnBorrar = new ButtonWidget[com.modamod.guardarropas.Outfits.MAXIMO];
-    private final ButtonWidget[] ver = new ButtonWidget[4], ocultar = new ButtonWidget[4];
+    private PanelDeRopa panel;
 
     public GuardarropasScreen(GuardarropasScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -60,13 +56,8 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
     protected void init() {
         EstiloPergamino.usarTema(EstiloPergamino.Tema.PLATA);
         super.init();
-        // Los interruptores de la armadura cosmética, igual que en la pantalla de Ropa.
-        for (int z = 0; z < 4; z++) {
-            int id = z;
-            int y = this.y + RopaScreenHandler.Y_ARMADURA + z * RopaScreenHandler.PASO_ARMADURA - 1;
-            ver[z] = addDrawableChild(new EstiloPergamino.BotonPergamino(this.x + 196, y, 40, 18, Text.empty(), b -> clickBoton(id)));
-            ocultar[z] = addDrawableChild(new EstiloPergamino.BotonPergamino(this.x + 238, y, 40, 18, Text.empty(), b -> clickBoton(4 + id)));
-        }
+        // La parte de Ropa, la misma de la pantalla de Ropa del jugador.
+        panel = new PanelDeRopa(handler, this.x, this.y, this::addDrawableChild, this::clickBoton);
         // La derecha: nombre, "Guardar" y la lista.
         txtNombre = new TextFieldWidget(this.textRenderer, this.x + X_LISTA, this.y + 22, ANCHO_LISTA - 66, 16, Text.translatable("modamod.guardarropas.nombre"));
         txtNombre.setMaxLength(24);
@@ -133,15 +124,7 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
         btnCandado.active = com.modamod.util.Candado.puedeAlternar(handler.estado());
         btnCandado.setMessage(Text.translatable(com.modamod.util.Candado.cerrado(handler.estado())
                 ? "modamod.candado.cerrado" : "modamod.candado.abierto"));
-        Cosmeticos cosm = client != null && client.player != null ? Cosmeticos.de(client.player) : Cosmeticos.VACIO;
-        for (int z = 0; z < 4; z++) {
-            ver[z].setMessage(etiqueta("modamod.ropa.ver", cosm.veCosmetico(z)));
-            ocultar[z].setMessage(etiqueta("modamod.ropa.ocultar", cosm.oculta(z)));
-        }
-    }
-
-    private static Text etiqueta(String clave, boolean activo) {
-        return Text.literal(activo ? "[x] " : "[ ] ").append(Text.translatable(clave)).formatted(activo ? Formatting.GREEN : Formatting.GRAY);
+        panel.actualizar(this.x, this.y);
     }
 
     @Override
@@ -164,26 +147,14 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
                 InventoryScreen.drawEntity(c, x + 7, y + 21, x + 69, y + 125, 40, 0.0625F, mouseX, mouseY, client.player);
             }
         }
-        for (Slot s : handler.slots) {
-            if (!s.isEnabled()) continue;
-            int sx = x + s.x - 1, sy = y + s.y - 1;
-            c.fill(sx, sy, sx + 18, sy + 18, 0xFF6B5136);
-            c.fill(sx + 1, sy + 1, sx + 17, sy + 17, 0xFFC9A877);
-            c.fill(sx + 1, sy + 1, sx + 17, sy + 2, 0xFFA58558);
-        }
-        for (int z = 0; z < 4; z++) {
-            int sy = y + RopaScreenHandler.Y_ARMADURA + z * RopaScreenHandler.PASO_ARMADURA + 8;
-            c.fill(x + RopaScreenHandler.X_REAL + 17, sy, x + RopaScreenHandler.X_COSM - 1, sy + 1, 0xFF6B5136);
-        }
+        panel.fondo(c, x, y);
     }
 
     @Override
     protected void drawForeground(DrawContext c, int mouseX, int mouseY) {
         int tinta = EstiloPergamino.TEXTO;
         c.drawText(textRenderer, title, titleX, titleY, tinta, false);
-        c.drawText(textRenderer, Text.translatable("modamod.ropa.prendas"), RopaScreenHandler.X_MOD - 1, 16, tinta, false);
-        c.drawText(textRenderer, Text.translatable("modamod.ropa.real"), RopaScreenHandler.X_REAL, 16, tinta, false);
-        c.drawText(textRenderer, Text.translatable("modamod.ropa.cosmetico"), RopaScreenHandler.X_COSM - 4, 16, tinta, false);
+        PanelDeRopa.rotulos(c, textRenderer);
         c.drawText(textRenderer, Text.translatable("modamod.guardarropas.lista"), X_LISTA, 8, tinta, false);
         if (handler.outfits().isEmpty()) {
             c.drawText(textRenderer, Text.translatable("modamod.guardarropas.vacio"), X_LISTA, Y_FILAS + 4, EstiloPergamino.TEXTO_APAGADO, false);
@@ -202,9 +173,9 @@ public class GuardarropasScreen extends HandledScreen<GuardarropasScreenHandler>
             String k = e.getKey();
             if (k.startsWith("armadura#")) inv.setStack(GuardarropasBlockEntity.ARMADURA_INICIO + Integer.parseInt(k.substring(9)), e.getValue());
             else if (k.startsWith("cosmetico#")) continue;
-            else if (k.startsWith("head/sombrero")) inv.setStack(GuardarropasBlockEntity.SLOT_SOMBRERO, e.getValue());
-            else if (k.startsWith("socks/calzado")) inv.setStack(GuardarropasBlockEntity.SLOT_CALZADO, e.getValue());
-            else if (k.startsWith("torso/delantal")) inv.setStack(GuardarropasBlockEntity.SLOT_DELANTAL, e.getValue());
+            else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.SOMBRERO)) inv.setStack(GuardarropasBlockEntity.SLOT_SOMBRERO, e.getValue());
+            else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.CALZADO)) inv.setStack(GuardarropasBlockEntity.SLOT_CALZADO, e.getValue());
+            else if (com.modamod.prenda.Prendas.es(e.getValue(), com.modamod.prenda.CategoriaDePrenda.DELANTAL)) inv.setStack(GuardarropasBlockEntity.SLOT_DELANTAL, e.getValue());
             else prendas.add(e.getValue());
         }
         dibujarConOutfit(context, jugador, inv, prendas, x1, y1, x2, y2, angulo, mouseY);

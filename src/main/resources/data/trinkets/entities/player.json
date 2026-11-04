@@ -3,18 +3,6 @@
     "player"
   ],
   "slots": [
-    "arms/armwarmer",
-    "piernas/exterior",
-    "socks/pair",
-    "torso/prenda",
-    "espalda/capa",
-    "torso/chaqueta",
-    "head/sombrero",
-    "torso/cinto",
-    "head/choker",
-    "socks/calzado",
-    "torso/delantal",
-    "head/mascara",
-    "head/barbijo"
+    "ropa/lugar"
   ]
 }

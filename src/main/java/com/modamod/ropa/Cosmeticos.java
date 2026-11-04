@@ -27,23 +27,32 @@ import java.util.List;
  * <p>El render lo lee con {@link #visual}: {@code LivingEntity#getEquippedStack} devuelve esto MIENTRAS se dibuja
  * esa entidad, así lo ven también las armaduras y capas de otros mods.
  */
-public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver) {
+public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver, int fila) {
 
     /** Las piezas en el orden de los slots y de los bits de {@link #ocultar} / {@link #ver}. */
     public static final EquipmentSlot[] ZONAS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
-    public static final Cosmeticos VACIO = new Cosmeticos(List.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY), 0, 0);
+    /**
+     * Dónde va la fila de la armadura en la grilla de Ropa (rediseño, tanda 3): 0 = arriba de todo (la armadura encima de
+     * toda la ropa) hasta {@link #FILAS} = abajo de todo. Lo de las filas de arriba se dibuja encima de la armadura.
+     */
+    public static final int FILAS = 4, FILA_DE_FABRICA = 1;
+
+    public static final Cosmeticos VACIO = new Cosmeticos(List.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY), 0, 0,
+            FILA_DE_FABRICA);
 
     public static final Codec<Cosmeticos> CODEC = RecordCodecBuilder.create(i -> i.group(
             ItemStack.OPTIONAL_CODEC.listOf().fieldOf("piezas").forGetter(Cosmeticos::piezas),
             Codec.INT.optionalFieldOf("ocultar", 0).forGetter(Cosmeticos::ocultar),
-            Codec.INT.optionalFieldOf("ver", 0).forGetter(Cosmeticos::ver)
+            Codec.INT.optionalFieldOf("ver", 0).forGetter(Cosmeticos::ver),
+            Codec.intRange(0, FILAS).optionalFieldOf("fila", FILA_DE_FABRICA).forGetter(Cosmeticos::fila)
     ).apply(i, Cosmeticos::new));
 
     public static final PacketCodec<RegistryByteBuf, Cosmeticos> PACKET_CODEC = PacketCodec.tuple(
             ItemStack.OPTIONAL_LIST_PACKET_CODEC, Cosmeticos::piezas,
             PacketCodecs.VAR_INT, Cosmeticos::ocultar,
             PacketCodecs.VAR_INT, Cosmeticos::ver,
+            PacketCodecs.VAR_INT, Cosmeticos::fila,
             Cosmeticos::new);
 
     public static final AttachmentType<Cosmeticos> TIPO = AttachmentRegistry.create(
@@ -77,15 +86,20 @@ public record Cosmeticos(List<ItemStack> piezas, int ocultar, int ver) {
         List<ItemStack> nuevas = new ArrayList<>(piezas);
         while (nuevas.size() < ZONAS.length) nuevas.add(ItemStack.EMPTY);
         nuevas.set(zona, stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1));
-        return new Cosmeticos(List.copyOf(nuevas), ocultar, ver);
+        return new Cosmeticos(List.copyOf(nuevas), ocultar, ver, fila);
     }
 
     public Cosmeticos alternarOcultar(int zona) {
-        return new Cosmeticos(piezas, ocultar ^ (1 << zona), ver);
+        return new Cosmeticos(piezas, ocultar ^ (1 << zona), ver, fila);
     }
 
     public Cosmeticos alternarVer(int zona) {
-        return new Cosmeticos(piezas, ocultar, ver ^ (1 << zona));
+        return new Cosmeticos(piezas, ocultar, ver ^ (1 << zona), fila);
+    }
+
+    /** La fila de la armadura una más arriba ({@code -1}) o más abajo ({@code +1}), sin salirse de la grilla. */
+    public Cosmeticos moverFila(int paso) {
+        return new Cosmeticos(piezas, ocultar, ver, Math.max(0, Math.min(FILAS, fila + paso)));
     }
 
     public static int zonaDe(EquipmentSlot slot) {

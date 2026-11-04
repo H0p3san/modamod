@@ -25,13 +25,10 @@ import java.util.Map;
 public class RopaScreenHandler extends ScreenHandler {
 
     /** Los slots de Trinkets que son del mod (grupo, slot): los mismos se esconden del inventario de siempre. */
-    public static final String[][] SLOTS_DEL_MOD = {
-            {"head", "sombrero"}, {"head", "mascara"}, {"head", "barbijo"}, {"head", "choker"}, {"espalda", "capa"},
-            {"torso", "chaqueta"}, {"torso", "prenda"}, {"arms", "armwarmer"}, {"piernas", "exterior"}, {"socks", "pair"},
-            {"torso", "delantal"}, {"torso", "cinto"}, {"socks", "calzado"},
-    };
+    public static final String[][] SLOTS_DEL_MOD = {{ListaDeRopa.GRUPO, ListaDeRopa.SLOT}};
 
     /**
+     * El acomodo por nombre de slot del Maniquí (que todavía tiene un lugar fijo por prenda; hasta la parte 3c del rediseño).
      * Dónde va cada slot (2026-10-25, "tienen que estar todos en la pantalla de ropa del personaje y tiene que ser igual que
      * la de maniqui y guardarropas"): {fila, columna} en la grilla de 3 (las prendas de varios lugares siguen de a 3 desde
      * ahí); fila -1 = la fila de abajo del muñeco. El Maniquí usa el mismo acomodo.
@@ -69,13 +66,18 @@ public class RopaScreenHandler extends ScreenHandler {
     }
 
     /** Medidas de la pantalla (px). */
-    // Alto +20 (2026-10-25): una fila más para máscara y barbijo; el inventario baja.
     public static final int ANCHO = 284, ALTO = 258;
-    public static final int X_MOD = 74, Y_MOD = 26, PASO_FILA = 20;
-    /** La fila de abajo del muñeco (delantal, cinto y calzado: van solos, no entran en las filas de a 3). */
+    /**
+     * La grilla de ropa (rediseño, tanda 3): 4 columnas, las 4 filas de la lista y la fila de la armadura cosmética, que se
+     * mueve con las flechas de su izquierda ({@code X_FLECHAS}). La armadura real va en su columna, a la derecha.
+     */
+    public static final int X_MOD = 88, Y_MOD = 26, PASO_FILA = 20, PASO_COLUMNA = 22, X_FLECHAS = 74;
+    /** La fila de abajo del muñeco del Maniquí (su acomodo viejo). */
     public static final int X_ABAJO = 8, Y_ABAJO = 130;
-    public static final int X_REAL = 150, X_COSM = 172, Y_ARMADURA = 26, PASO_ARMADURA = 22;
+    public static final int X_REAL = 182, Y_ARMADURA = 26, PASO_ARMADURA = 22;
     public static final int X_INV = 61, Y_INV = 172;
+    /** Botones: 0..3 ver cosmético, 4..7 ocultar, y la fila de la armadura una más arriba o más abajo. */
+    public static final int BTN_FILA_ARRIBA = 8, BTN_FILA_ABAJO = 9;
 
     private static final Identifier[] FONDO_ARMADURA = {
             PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE,
@@ -98,19 +100,22 @@ public class RopaScreenHandler extends ScreenHandler {
         super(tipo, syncId);
         this.jugador = inv.player;
 
+        // La lista de ropa: cada lugar tiene dos posibles filas en pantalla (la suya, o una más abajo si la fila de la
+        // armadura queda arriba de él) y se ve en la que toca según la fila guardada; los slots no se pueden mover.
         var comp = TrinketsApi.getTrinketComponent(jugador);
-        if (comp.isPresent()) {
-            Map<String, SlotGroup> grupos = TrinketsApi.getPlayerSlots(jugador);
-            for (String[] s : SLOTS_DEL_MOD) {
-                Map<String, TrinketInventory> delGrupo = comp.get().getInventory().get(s[0]);
-                TrinketInventory ti = delGrupo == null ? null : delGrupo.get(s[1]);
-                SlotGroup grupo = grupos.get(s[0]);
-                if (ti == null || grupo == null) continue;
-                // Acomodo fijo por slot (ver posicion): cabeza, collar y capa, una fila por prenda y abajo del muñeco
-                // delantal, cinto y calzado.
-                for (int i = 0; i < ti.size(); i++) {
-                    int[] p = xy(s[1], i);
-                    addSlot(new SurvivalTrinketSlot(ti, i, p[0] + dx, p[1] + dy, grupo, ti.getSlotType(), i, true));
+        TrinketInventory lista = ListaDeRopa.de(jugador);
+        SlotGroup grupo = TrinketsApi.getPlayerSlots(jugador).get(ListaDeRopa.GRUPO);
+        if (comp.isPresent() && lista != null && grupo != null) {
+            for (int i = 0; i < lista.size(); i++) {
+                for (int bajada = 0; bajada < 2; bajada++) {
+                    int lugar = i, corrida = bajada;
+                    int x = X_MOD + (i % ListaDeRopa.COLUMNAS) * PASO_COLUMNA, y = Y_MOD + (i / ListaDeRopa.COLUMNAS + bajada) * PASO_FILA;
+                    addSlot(new SurvivalTrinketSlot(lista, i, x + dx, y + dy, grupo, lista.getSlotType(), i, true) {
+                        @Override
+                        public boolean isEnabled() {
+                            return super.isEnabled() && ListaDeRopa.filaEnPantalla(lugar, fila()) == lugar / ListaDeRopa.COLUMNAS + corrida;
+                        }
+                    });
                 }
             }
         }
@@ -140,20 +145,26 @@ public class RopaScreenHandler extends ScreenHandler {
         }
         hastaArmadura = slots.size();
 
+        // La armadura cosmética: una fila de la grilla, en cualquiera de las cinco alturas (se ve la de la fila guardada).
         CosmeticosInventario cosm = new CosmeticosInventario(jugador);
-        for (int z = 0; z < 4; z++) {
-            int zona = z;
-            addSlot(new Slot(cosm, z, X_COSM + dx, Y_ARMADURA + z * PASO_ARMADURA + dy) {
-                @Override public int getMaxItemCount() { return 1; }
+        for (int fila = 0; fila <= Cosmeticos.FILAS; fila++) {
+            for (int z = 0; z < 4; z++) {
+                int zona = z, estaFila = fila;
+                addSlot(new Slot(cosm, z, X_MOD + z * PASO_COLUMNA + dx, Y_MOD + fila * PASO_FILA + dy) {
+                    @Override public int getMaxItemCount() { return 1; }
 
-                @Override
-                public boolean canInsert(ItemStack stack) { return cosm.isValid(zona, stack); }
+                    @Override
+                    public boolean canInsert(ItemStack stack) { return cosm.isValid(zona, stack); }
 
-                @Override
-                public Pair<Identifier, Identifier> getBackgroundSprite() {
-                    return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, FONDO_ARMADURA[zona]);
-                }
-            });
+                    @Override
+                    public boolean isEnabled() { return fila() == estaFila; }
+
+                    @Override
+                    public Pair<Identifier, Identifier> getBackgroundSprite() {
+                        return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, FONDO_ARMADURA[zona]);
+                    }
+                });
+            }
         }
 
         inicioInventario = slots.size();
@@ -174,6 +185,10 @@ public class RopaScreenHandler extends ScreenHandler {
             Cosmeticos.guardar(player, c.alternarOcultar(id - 4));
             return true;
         }
+        if (id == BTN_FILA_ARRIBA || id == BTN_FILA_ABAJO) {
+            Cosmeticos.guardar(player, c.moverFila(id == BTN_FILA_ARRIBA ? -1 : 1));
+            return true;
+        }
         return false;
     }
 
@@ -191,6 +206,11 @@ public class RopaScreenHandler extends ScreenHandler {
         if (stack.isEmpty()) s.setStack(ItemStack.EMPTY);
         else s.markDirty();
         return copia;
+    }
+
+    /** La fila de la armadura cosmética de quien tiene abierta la pantalla. */
+    public int fila() {
+        return Cosmeticos.de(jugador).fila();
     }
 
     @Override

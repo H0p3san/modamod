@@ -1625,5 +1625,8 @@
   "modamod.estilado.tooltip.asignar": "Which swatch zone (color and pattern) goes to this appliqué zone. Click to change.",
   "modamod.estilado.tenir_elegido": "Re-dye selected",
   "modamod.estilado.tooltip.tenir_elegido": "Re-dyes the selected appliqué with the swatch in the slot and these zones, without using it up.",
-  "modamod.maniqui.manos": "Hands"
+  "modamod.maniqui.manos": "Hands",
+  "modamod.ropa.fila_armadura": "Armor row: what is above this row is drawn over the armor; what is below, under it.",
+  "trinkets.slot.ropa.lugar": "Clothing",
+  "modamod.slot.ropa.lugar": "Any garment or accessory of the mod. The order is the draw order: top left goes over everything and bottom right, against the body. Hood: %s"
 }

@@ -1,8 +1,6 @@
 package com.modamod.item;
 
 import com.modamod.garment.Parte;
-import dev.emi.trinkets.api.SlotReference;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -60,13 +58,6 @@ public class BandaItem extends com.modamod.prenda.PrendaItem implements ZonasTen
 
 
 
-    /** Solo entra en el slot de su zona. */
-    @Override
-    public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        var tipo = slot.inventory().getSlotType();
-        BandaZona z = zona(stack);
-        return tipo.getGroup().equals(z.grupo) && tipo.getName().equals(z.slot) && super.canEquip(stack, slot, entity);
-    }
 
 
 

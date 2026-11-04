@@ -1,0 +1,6 @@
+{
+  "_comment": "Los 16 lugares de ropa: aceptan cualquier prenda o accesorio del mod.",
+  "icon": "modamod:gui/slot/remera",
+  "order": 0,
+  "amount": 16
+}

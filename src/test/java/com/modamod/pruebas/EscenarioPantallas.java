@@ -490,13 +490,7 @@ public final class EscenarioPantallas {
         java.util.function.Function<MinecraftClient, com.modamod.guardarropas.GuardarropasBlockEntity> mueble =
                 c -> (com.modamod.guardarropas.GuardarropasBlockEntity) jugador(c).getServerWorld().getBlockEntity(gr[0]);   // sin enServidor: no se anida
         java.util.function.Function<MinecraftClient, Integer> puestas = c -> enServidor(c, () -> {
-            int[] n = {0};
-            dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp -> {
-                for (int cat = 0; cat < com.modamod.guardarropas.GuardarropasBlockEntity.CATEGORIAS; cat++) {
-                    var inv = com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, cat);
-                    for (int i = 0; inv != null && i < inv.size(); i++) if (!inv.getStack(i).isEmpty()) n[0]++;
-                }
-            });
+            int[] n = {PruebaRopa.puestas(jugador(c))};
             for (var es : com.modamod.ropa.Cosmeticos.ZONAS) if (!jugador(c).getEquippedStack(es).isEmpty()) n[0]++;
             return n[0];
         });
@@ -507,9 +501,9 @@ public final class EscenarioPantallas {
                 var w = jugador(c).getServerWorld();
                 w.setBlockState(gr[0], com.modamod.guardarropas.GuardarropasMod.GUARDARROPAS_BLOCK.getDefaultState());
                 dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp -> {
-                    var cam = com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA);
+                    var cam = PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA);
                     cam.setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA));
-                    var pan = com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, com.modamod.guardarropas.GuardarropasBlockEntity.PANTALON);
+                    var pan = PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.PANTALON);
                     pan.setStack(0, new ItemStack(ModamodItems.PANTALON));
                 });
                 jugador(c).equipStack(net.minecraft.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.item.Items.IRON_HELMET));
@@ -527,7 +521,7 @@ public final class EscenarioPantallas {
         });
         r.hacer("ponerme una remera suelta y despues el outfit Gala: la remera queda como Anterior", 0, c -> enServidor(c, () -> {
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                    com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(1, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                    PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(1, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
             mueble.apply(c).ponerOutfit(jugador(c), 0);
             return null;
         }));
@@ -555,7 +549,7 @@ public final class EscenarioPantallas {
         r.hacer("un nombre repetido recibe un numero", 0, c -> {
             enServidor(c, () -> {
                 dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                        com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                        PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
                 mueble.apply(c).guardarOutfit(jugador(c), "Gala");
                 return null;
             });
@@ -564,14 +558,14 @@ public final class EscenarioPantallas {
             enServidor(c, () -> { mueble.apply(c).desarmar(jugador(c), 1); mueble.apply(c).desarmar(jugador(c), 0); return null; });
             enServidor(c, () -> {
                 dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                        com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                        PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
                 return null;
             });
         });
         r.hacer("guardar otra vez y abrir la pantalla", 0, c -> enServidor(c, () -> {
             mueble.apply(c).guardarOutfit(jugador(c), "Salida de noche");
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp ->
-                    com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
+                    PruebaRopa.lugar(comp, com.modamod.guardarropas.GuardarropasBlockEntity.REMERA).setStack(0, new ItemStack(com.modamod.sublimadora.ModItems.REMERA)));
             jugador(c).openHandledScreen(mueble.apply(c));
             return null;
         }));
@@ -583,7 +577,7 @@ public final class EscenarioPantallas {
         java.util.function.BiConsumer<MinecraftClient, ItemStack[]> vestir = (c, prendas) -> {
             dev.emi.trinkets.api.TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp -> {
                 int[] cat = {com.modamod.guardarropas.GuardarropasBlockEntity.REMERA, com.modamod.guardarropas.GuardarropasBlockEntity.PANTALON};
-                for (int i = 0; i < prendas.length; i++) com.modamod.guardarropas.GuardarropasBlockEntity.inventarioTrinkets(comp, cat[i]).setStack(0, prendas[i]);
+                for (int i = 0; i < prendas.length; i++) PruebaRopa.lugar(comp, cat[i]).setStack(0, prendas[i]);
             });
         };
         r.hacer("cerrar la pantalla, vaciar el Guardarropas y guardar Gala y Casual en el MUEBLE", 0, c -> {

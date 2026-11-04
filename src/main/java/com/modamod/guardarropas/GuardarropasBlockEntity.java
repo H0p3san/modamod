@@ -1,17 +1,12 @@
 package com.modamod.guardarropas;
 
-import com.modamod.item.CalientabrazosItem;
 import com.modamod.item.ModamodItems;
-import com.modamod.item.PantalonItem;
-import com.modamod.item.PolleraItem;
-import com.modamod.sublimadora.RemeraItem;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -99,27 +94,6 @@ public class GuardarropasBlockEntity extends BlockEntity
     public static final int SLOT_DELANTAL = SLOT_CALZADO + 1;
 
     public static final int TAMANO = SLOT_DELANTAL + 1;
-
-    /** El inventario de Trinkets del delantal del jugador, o null si no existe. */
-    @Nullable
-    public static dev.emi.trinkets.api.TrinketInventory inventarioDelantal(dev.emi.trinkets.api.TrinketComponent componente) {
-        var grupo = componente.getInventory().get("torso");
-        return grupo == null ? null : grupo.get("delantal");
-    }
-
-    /** El inventario de Trinkets del calzado del jugador, o null si no existe. */
-    @Nullable
-    public static dev.emi.trinkets.api.TrinketInventory inventarioCalzado(dev.emi.trinkets.api.TrinketComponent componente) {
-        var grupo = componente.getInventory().get("socks");
-        return grupo == null ? null : grupo.get("calzado");
-    }
-
-    /** El inventario de Trinkets del sombrero del jugador, o null si no existe. */
-    @Nullable
-    public static dev.emi.trinkets.api.TrinketInventory inventarioSombrero(dev.emi.trinkets.api.TrinketComponent componente) {
-        var grupo = componente.getInventory().get("head");
-        return grupo == null ? null : grupo.get("sombrero");
-    }
 
     /**
      * ¿Entra {@code stack} en el slot {@code slot}? Prendas por categoría,
@@ -306,20 +280,6 @@ public class GuardarropasBlockEntity extends BlockEntity
         if (world != null && !world.isClient) world.updateListeners(pos, getCachedState(), getCachedState(), 3);
     }
 
-    /** La clave del outfit de una posición del borrador de antes ({@code TAMANO} slots), para migrar lo guardado. */
-    private static String claveVieja(int slot) {
-        if (slot == SLOT_SOMBRERO) return clave("head", "sombrero", 0);
-        if (slot == SLOT_CALZADO) return clave("socks", "calzado", 0);
-        if (slot == SLOT_DELANTAL) return clave("torso", "delantal", 0);
-        if (slot >= ARMADURA_INICIO) {
-            int i = slot - ARMADURA_INICIO;
-            int z = com.modamod.ropa.Cosmeticos.zonaDe(SLOTS_ARMADURA[i]);
-            return "armadura#" + z;
-        }
-        int cat = slot / POR_CATEGORIA;
-        return clave(GRUPO[cat], NOMBRE_SLOT[cat], slot % POR_CATEGORIA);
-    }
-
     private final com.modamod.util.Candado candado = new com.modamod.util.Candado();
 
     public com.modamod.util.Candado candado() { return candado; }
@@ -340,18 +300,6 @@ public class GuardarropasBlockEntity extends BlockEntity
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, net.minecraft.util.math.Direction dir) { return false; }
-
-    /** Grupo/slot de Trinkets de cada categoría, en el orden de REMERA..CALIENTABRAZOS — compartido con el Maniquí. */
-    public static final String[] GRUPO = {"torso", "piernas", "socks", "arms", "torso"};
-    public static final String[] NOMBRE_SLOT = {"prenda", "exterior", "pair", "armwarmer", "chaqueta"};
-
-    /** El inventario de Trinkets de una categoría del jugador, o null si ese slot no existe (datapack sin cargar). */
-    @Nullable
-    public static dev.emi.trinkets.api.TrinketInventory inventarioTrinkets(dev.emi.trinkets.api.TrinketComponent componente,
-                                                                             int categoria) {
-        var grupoDeSlots = componente.getInventory().get(GRUPO[categoria]);
-        return grupoDeSlots == null ? null : grupoDeSlots.get(NOMBRE_SLOT[categoria]);
-    }
 
     @Override public int size() { return TAMANO; }
 
@@ -465,38 +413,16 @@ public class GuardarropasBlockEntity extends BlockEntity
         ultimosPendientes.clear();
         NbtList ult = nbt.getList("Ultimos", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < ult.size(); i++) ultimosPendientes.put(ult.getCompound(i).getUuid("U"), ult.getCompound(i).getString("N"));
-        if (nbt.contains("OutfitsV2")) {
-            NbtList lista = nbt.getList("OutfitsV2", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
-            for (int i = 0; i < lista.size(); i++) {
-                NbtCompound oc = lista.getCompound(i);
-                var piezas = new java.util.LinkedHashMap<String, ItemStack>();
-                NbtList pl = oc.getList("Piezas", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
-                for (int j = 0; j < pl.size(); j++) {
-                    ItemStack st = ItemStack.fromNbtOrEmpty(registries, pl.getCompound(j).getCompound("Item"));
-                    if (!st.isEmpty()) piezas.put(pl.getCompound(j).getString("K"), st);
-                }
-                pendientes.add(new Outfit(oc.getString("Nombre"), piezas));
+        NbtList lista = nbt.getList("OutfitsV2", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
+        for (int i = 0; i < lista.size(); i++) {
+            NbtCompound oc = lista.getCompound(i);
+            var piezas = new java.util.LinkedHashMap<String, ItemStack>();
+            NbtList pl = oc.getList("Piezas", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
+            for (int j = 0; j < pl.size(); j++) {
+                ItemStack st = ItemStack.fromNbtOrEmpty(registries, pl.getCompound(j).getCompound("Item"));
+                if (!st.isEmpty()) piezas.put(pl.getCompound(j).getString("K"), st);
             }
-        } else {
-            // Migración (2026-10-21): la grilla de borrador y los outfits sin nombre de antes pasan a outfits con nombre.
-            java.util.function.Function<List<ItemStack>, java.util.LinkedHashMap<String, ItemStack>> convertir = viejas -> {
-                var piezas = new java.util.LinkedHashMap<String, ItemStack>();
-                for (int k = 0; k < viejas.size() && k < TAMANO; k++) if (!viejas.get(k).isEmpty()) piezas.put(claveVieja(k), viejas.get(k));
-                return piezas;
-            };
-            var borrador = convertir.apply(items);
-            if (!borrador.isEmpty()) pendientes.add(new Outfit("Borrador", borrador));
-            if (nbt.contains("Outfits")) {
-                NbtList viejos = nbt.getList("Outfits", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
-                for (int i = 0; i < viejos.size() && pendientes.size() < OUTFITS_MAXIMO; i++) {
-                    List<ItemStack> prendas = new ArrayList<>(TAMANO);
-                    NbtList pn = viejos.getCompound(i).getList("Prendas", net.minecraft.nbt.NbtElement.COMPOUND_TYPE);
-                    for (int j = 0; j < TAMANO; j++) prendas.add(j < pn.size() ? ItemStack.fromNbtOrEmpty(registries, pn.getCompound(j)) : ItemStack.EMPTY);
-                    var piezas = convertir.apply(prendas);
-                    if (!piezas.isEmpty()) pendientes.add(new Outfit("Outfit " + (i + 1), piezas));
-                }
-            }
-            items.clear();
+            pendientes.add(new Outfit(oc.getString("Nombre"), piezas));
         }
         candado.leer(nbt);
     }

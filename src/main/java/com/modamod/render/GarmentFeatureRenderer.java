@@ -2003,19 +2003,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     public static com.modamod.render.relieve.MapaRelieve mapaFigura = null;
 
     public static List<ItemStack> equipadas(LivingEntity entidad) {
+        // La lista de ropa, de adentro hacia afuera (rediseño, tanda 3). Un Top con otro Top más adentro se dibuja en la capa
+        // exterior, como chaqueta.
         List<ItemStack> out = new ArrayList<>();
-        TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
-            for (var par : c.getAllEquipped()) {
-                ItemStack stack = par.getRight();
-                if (!com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) continue;
-                // Un Top en el slot de chaqueta se dibuja en la capa exterior (2026-10-07, "un solo top").
-                if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)
-                        && "chaqueta".equals(par.getLeft().inventory().getSlotType().getName())) {
-                    stack = com.modamod.item.TopCorte.comoExterior(stack);
-                }
-                out.add(stack);
-            }
-        });
+        var lugares = com.modamod.ropa.ListaDeRopa.de(entidad);
+        if (lugares == null) return out;
+        for (int i = lugares.size() - 1; i >= 0; i--) {
+            ItemStack stack = lugares.getStack(i);
+            if (!com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) continue;
+            if (com.modamod.ropa.ListaDeRopa.esTopDeAfuera(lugares, i)) stack = com.modamod.item.TopCorte.comoExterior(stack);
+            out.add(stack);
+        }
         return out;
     }
 

@@ -2964,7 +2964,7 @@ public final class EscenarioSalon {
 
 
 
-                        var inv = cat[i] < 0 ? GuardarropasBlockEntity.inventarioDelantal(comp) : GuardarropasBlockEntity.inventarioTrinkets(comp, cat[i]);
+                        var inv = cat[i] < 0 ? PruebaRopa.delantal(comp) : PruebaRopa.lugar(comp, cat[i]);
 
 
 
@@ -2982,7 +2982,7 @@ public final class EscenarioSalon {
 
 
 
-                    var chaq = GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.CHAQUETA);
+                    var chaq = PruebaRopa.lugar(comp, GuardarropasBlockEntity.CHAQUETA);
 
 
 

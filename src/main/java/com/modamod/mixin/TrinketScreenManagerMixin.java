@@ -26,7 +26,6 @@ public abstract class TrinketScreenManagerMixin {
     }
 
     private static boolean soloDelMod(String grupo) {
-        return grupo.equals("torso") || grupo.equals("piernas") || grupo.equals("arms") || grupo.equals("socks")
-                || grupo.equals("espalda");
+        return grupo.equals(com.modamod.ropa.ListaDeRopa.GRUPO);
     }
 }

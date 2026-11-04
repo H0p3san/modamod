@@ -1,0 +1,4 @@
+{
+  "_comment": "La ropa del mod (rediseño, tanda 3): un solo grupo con una lista de 16 lugares. Cada prenda dice qué parte del cuerpo dibuja; el orden de la lista es el orden de dibujo (el primero, arriba a la izquierda en la pantalla de Ropa, es lo de más afuera). Se ve en la pantalla de Ropa, no en el inventario.",
+  "order": 10
+}

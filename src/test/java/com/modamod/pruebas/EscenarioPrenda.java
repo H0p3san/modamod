@@ -7,7 +7,6 @@ import com.modamod.item.ModamodItems;
 import com.modamod.item.PantalonItem;
 import com.modamod.render.ClothingTextureCache;
 import com.modamod.sublimadora.ModItems;
-import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.Perspective;
@@ -58,17 +57,17 @@ public final class EscenarioPrenda {
         return distintos / (double) a.length;
     }
 
-    private static void equipar(MinecraftClient c, Function<dev.emi.trinkets.api.TrinketComponent, TrinketInventory> inventario, ItemStack stack) {
+    private static void equipar(MinecraftClient c, Function<dev.emi.trinkets.api.TrinketComponent, net.minecraft.inventory.Inventory> inventario, ItemStack stack) {
         enServidor(c, () -> {
             TrinketsApi.getTrinketComponent(jugador(c)).ifPresent(comp -> inventario.apply(comp).setStack(0, stack));
             return null;
         });
     }
 
-    private static Corrida prenda(Corrida r, String nombre, Function<dev.emi.trinkets.api.TrinketComponent, TrinketInventory> inventario, ItemStack stack) {
+    private static Corrida prenda(Corrida r, String nombre, Function<dev.emi.trinkets.api.TrinketComponent, net.minecraft.inventory.Inventory> inventario, ItemStack stack) {
         r.hacer("equipar " + nombre, 0, c -> equipar(c, inventario, stack));
         r.paso("el cliente recibio " + nombre, c -> TrinketsApi.getTrinketComponent(c.player)
-                .map(comp -> { TrinketInventory inv = inventario.apply(comp); return inv != null && inv.getStack(0).getItem() == stack.getItem(); }).orElse(false));
+                .map(comp -> { net.minecraft.inventory.Inventory inv = inventario.apply(comp); return inv != null && inv.getStack(0).getItem() == stack.getItem(); }).orElse(false));
         // Al equipar la primera prenda el mod abre la eleccion de cuerpo: se descarta como el jugador con "Ahora no".
         r.dejarPasar(10);
         r.hacer("cerrar eleccion de cuerpo si se abrio", 0, c -> { if (c.currentScreen != null) c.setScreen(null); });
@@ -83,8 +82,8 @@ public final class EscenarioPrenda {
         return r.captura("prenda-" + nombre.replace(' ', '-'));
     }
 
-    private static Function<dev.emi.trinkets.api.TrinketComponent, TrinketInventory> pantalonSlot() {
-        return comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.PANTALON);
+    private static Function<dev.emi.trinkets.api.TrinketComponent, net.minecraft.inventory.Inventory> pantalonSlot() {
+        return comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.PANTALON);
     }
 
     /**
@@ -100,7 +99,7 @@ public final class EscenarioPrenda {
         // Faldon: una remera con faldon de nivel 3 cuelga de la cintura (diferencia contra la remera lisa).
         ItemStack faldon = new ItemStack(ModItems.REMERA);
         com.modamod.item.TopCorte.setFaldon(faldon, 3);
-        prenda(r, "remera con faldon", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.REMERA), faldon);
+        prenda(r, "remera con faldon", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.REMERA), faldon);
 
         // Volumen de las medias: Pegado y Oversize tienen que verse DISTINTOS (el reclamo era "no observo ninguna variacion").
         java.util.function.Function<Calce, ItemStack> medias = calce -> {
@@ -108,15 +107,15 @@ public final class EscenarioPrenda {
             com.modamod.prenda.Corte.set(m, com.modamod.prenda.Ejes.CALCE, calce);
             return m;
         };
-        java.util.function.Function<dev.emi.trinkets.api.TrinketComponent, TrinketInventory> mediasSlot =
-                comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.MEDIAS);
+        java.util.function.Function<dev.emi.trinkets.api.TrinketComponent, net.minecraft.inventory.Inventory> mediasSlot =
+                comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.MEDIAS);
         prenda(r, "medias calce pegado", mediasSlot, medias.apply(Calce.PEGADO));
         prenda(r, "medias calce oversize", mediasSlot, medias.apply(Calce.OVERSIZE));
 
         // Medias con sandalias: calzado sin capellada ni cubo de punta; el pie lo dibuja la piel con la tela de la media.
         ItemStack sandalias = new ItemStack(ModamodItems.BORCEGOS);
         com.modamod.item.BorcegosItem.setCana(sandalias, com.modamod.item.BorcegoCana.NINGUNA, com.modamod.region.Lado.AMBAS);
-        prenda(r, "sandalias con medias", GuardarropasBlockEntity::inventarioCalzado, sandalias);
+        prenda(r, "sandalias con medias", PruebaRopa::calzado, sandalias);
 
         // Tapa de abajo de la cintura (el pantalon pinta su propia tapa): se mira desde abajo, con el jugador volando.
         r.hacer("subir al jugador y mirar hacia arriba", 0, c -> {
@@ -175,14 +174,14 @@ public final class EscenarioPrenda {
 
         ItemStack pantalon = new ItemStack(ModamodItems.PANTALON);
         com.modamod.prenda.Corte.set(pantalon, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
-        prenda(r, "pantalon oversize", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.PANTALON), pantalon);
+        prenda(r, "pantalon oversize", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.PANTALON), pantalon);
 
         ItemStack remera = new ItemStack(ModItems.REMERA);
         com.modamod.prenda.Corte.set(remera, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
-        prenda(r, "remera oversize", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.REMERA), remera);
+        prenda(r, "remera oversize", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.REMERA), remera);
 
-        prenda(r, "medias", comp -> GuardarropasBlockEntity.inventarioTrinkets(comp, GuardarropasBlockEntity.MEDIAS), new ItemStack(ModamodItems.SOCKS_SOLID));
-        prenda(r, "borcegos", GuardarropasBlockEntity::inventarioCalzado, new ItemStack(ModamodItems.BORCEGOS));
+        prenda(r, "medias", comp -> PruebaRopa.lugar(comp, GuardarropasBlockEntity.MEDIAS), new ItemStack(ModamodItems.SOCKS_SOLID));
+        prenda(r, "borcegos", PruebaRopa::calzado, new ItemStack(ModamodItems.BORCEGOS));
 
         detalles(r);   // al final: sube al jugador al aire
         return r;

@@ -3,21 +3,16 @@ package com.modamod.item;
 import net.minecraft.util.StringIdentifiable;
 
 /**
- * Dónde se lleva una banda (2026-10-05, "correas y cintos"): cintura (cinto) o cuello (choker). Cada una va en su
- * slot de Trinkets ({@code torso/cinto}, {@code head/choker}). Por ordinal: nuevos al final.
+ * Dónde se lleva una banda (2026-10-05, "correas y cintos"): cintura (cinto) o cuello (choker). Por ordinal: nuevos al final.
  */
 public enum BandaZona implements StringIdentifiable {
-    CINTURA("cintura", "torso", "cinto"),
-    CUELLO("cuello", "head", "choker");
+    CINTURA("cintura"),
+    CUELLO("cuello");
 
     public final String clave;
-    /** Grupo y slot de Trinkets. */
-    public final String grupo, slot;
 
-    BandaZona(String clave, String grupo, String slot) {
+    BandaZona(String clave) {
         this.clave = clave;
-        this.grupo = grupo;
-        this.slot = slot;
     }
 
     @Override
