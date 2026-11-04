@@ -28,19 +28,6 @@ public final class ModamodComponents {
                     .packetCodec(PacketCodecs.codec(com.modamod.region.RegionResolver.CapaPatron.CODEC.listOf()))
                     .build());
 
-    /**
-     * Varios ejes de forma combinados de la Mesa de Modelado (las fijadas y los
-     * diseños de corte; el viejo Molde de corte se sacó el 2026-10-25). Ver
-     * {@link com.modamod.modelado.ComboCorte}.
-     */
-    public static final ComponentType<com.modamod.modelado.ComboCorte> COMBO_CORTE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of("modamod", "combo_corte"),
-            ComponentType.<com.modamod.modelado.ComboCorte>builder()
-                    .codec(com.modamod.modelado.ComboCorte.CODEC)
-                    .packetCodec(com.modamod.modelado.ComboCorte.PACKET_CODEC)
-                    .build());
-
     /** Marca de la copia que se dibuja en la capa exterior (el Top llevado en el slot de chaqueta); no se guarda en la prenda. */
     public static final ComponentType<Boolean> CAPA_EXTERIOR = Registry.register(
             Registries.DATA_COMPONENT_TYPE, Identifier.of("modamod", "capa_exterior"),

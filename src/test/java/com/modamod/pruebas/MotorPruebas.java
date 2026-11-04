@@ -186,6 +186,37 @@ public final class MotorPruebas {
             inf.ok("corte", "ida y vuelta por NBT, ejes desconocidos se saltan");
         } catch (Throwable t) { inf.fallo("corte", t.toString()); }
 
+        // Molde (rediseño, tanda 2c): lo que fija la Modeladora es un Corte parcial con lado e ícono. Vuelve igual por NBT,
+        // un nivel fuera de rango es "ninguno", y cada eje que un molde puede poner sabe su fábrica y en qué prendas vale
+        // (el otro lado hereda las dos cosas).
+        try {
+            var ops = net.minecraft.nbt.NbtOps.INSTANCE;
+            var ejes = com.modamod.prenda.Ejes.class;
+            var m = com.modamod.modelado.Molde.ruedo(com.modamod.item.ZonaRuedo.BOTA_IZQ, com.modamod.item.Ruedo.RECTO, true)
+                    .conLado(com.modamod.region.Lado.DERECHA).conIcono(net.minecraft.util.Identifier.of("modamod", "molde_prueba"));
+            var nbt = com.modamod.modelado.Molde.CODEC.encodeStart(ops, m).getOrThrow();
+            Informe.verificar(com.modamod.modelado.Molde.CODEC.parse(ops, nbt).getOrThrow().equals(m), "el molde no vuelve igual: " + nbt);
+            Informe.verificar(com.modamod.modelado.Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, -1).corte()
+                    .valor(com.modamod.prenda.Ejes.CAPA_EMBOZO) == com.modamod.prenda.EjeDeCorte.SIN_NIVEL, "el nivel -1 no es ninguno");
+            java.util.Set<Object> otros = new java.util.HashSet<>();
+            java.util.List<com.modamod.prenda.EjeDeCorte<?>> todos = new java.util.ArrayList<>();
+            for (var f : ejes.getFields()) {
+                if (!(f.get(null) instanceof com.modamod.prenda.EjeDeCorte<?> e)) continue;
+                todos.add(e);
+                if (e.otroLado() != null) otros.add(e.otroLado());
+            }
+            var sueltos = java.util.Set.of("ruedos", "orientacion", "frente_ahora", "capucha_arriba");
+            for (var e : todos) {
+                if (sueltos.contains(e.nombre())) continue;
+                Informe.verificar(e.deFabrica() != null, "el eje " + e + " no sabe su valor de fábrica");
+                Informe.verificar(e.valeEn(com.modamod.prenda.CategoriaDePrenda.REMERA) || java.util.Arrays.stream(com.modamod.prenda.CategoriaDePrenda.values()).anyMatch(e::valeEn),
+                        "el eje " + e + " no vale en ninguna prenda");
+                if (e.otroLado() != null) Informe.verificar(java.util.Objects.equals(e.otroLado().deFabrica(), e.deFabrica()),
+                        "el otro lado de " + e + " no tiene la misma fábrica");
+            }
+            inf.ok("moldes", todos.size() + " ejes con fábrica y prendas; ida y vuelta por NBT");
+        } catch (Throwable t) { inf.fallo("moldes", t.toString()); }
+
         Path dir = Path.of("").toAbsolutePath().resolve("pruebas");
         Files.createDirectories(dir);
         inf.escribir(dir);

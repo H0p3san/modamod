@@ -1,6 +1,6 @@
 package com.modamod.client;
 
-import com.modamod.modelado.ComboCorte;
+import com.modamod.modelado.Molde;
 import com.modamod.modelado.ModeladoBlockEntity;
 import com.modamod.modelado.ModeladoScreenHandler;
 import com.modamod.modelado.ZonasModelado;
@@ -280,8 +280,8 @@ public class ModeladoScreen extends HandledScreen<ModeladoScreenHandler> {
     private net.minecraft.util.Identifier moldeFijado(int i) {
         ModeladoBlockEntity be = this.handler.be;
         int p = be.categoria().ordinal() * ModeladoBlockEntity.PINES_POR_CATEGORIA + i;
-        ComboCorte combo = be.pinFijado(p) ? be.pinCombo(p) : null;
-        return combo == null ? null : combo.iconoOrigen().orElse(null);
+        Molde combo = be.pinFijado(p) ? be.pinCombo(p) : null;
+        return combo == null ? null : combo.icono().orElse(null);
     }
 
     /** Celda de la grilla (índice absoluto en la lista de candidatos) bajo el mouse, o -1. */
@@ -473,44 +473,28 @@ public class ModeladoScreen extends HandledScreen<ModeladoScreenHandler> {
             btnPines[i].visible = usable;
             btnPines[i].active = !prendida && (conMolde || fijado);
             btnPines[i].actualizar(fijado);
-            ComboCorte combo = be.pinCombo(p);
+            Molde combo = be.pinCombo(p);
             btnPines[i].setTooltip(Tooltip.of(fijado && combo != null
                     ? Text.translatable("modamod.modelado.tooltip.chincheta_quitar", descripcion(combo))
                     : Text.translatable("modamod.modelado.tooltip.chincheta")));
         }
     }
 
-    /** El ítem que produjo esta fijada (ver {@code ComboCorte#iconoOrigen}). */
-    private static ItemStack iconoDe(ComboCorte combo) {
-        return combo.iconoOrigen()
+    /** El ítem que produjo esta fijada (ver {@code Molde#icono}). */
+    private static ItemStack iconoDe(Molde combo) {
+        return combo.icono()
                 .map(net.minecraft.registry.Registries.ITEM::get)
                 .filter(item -> item != null)
                 .map(ItemStack::new)
                 .orElse(ItemStack.EMPTY);
     }
 
-    private static Text descripcion(ComboCorte combo) {
+    /** Los ejes que pone el molde ("eje: valor") y el lado, si no es para los dos. */
+    private static Text descripcion(Molde molde) {
         StringBuilder sb = new StringBuilder();
-        combo.remeraLargo().ifPresent(v -> sb.append("Remera largo: ").append(v.clave).append(' '));
-        combo.remeraManga().ifPresent(v -> sb.append("Remera manga: ").append(v.clave).append(' '));
-        combo.remeraCuello().ifPresent(v -> sb.append("Remera cuello: ").append(v.clave).append(' '));
-        combo.pantalonTiro().ifPresent(v -> sb.append("Tiro: ").append(v.clave).append(' '));
-        combo.pantalonLargoSuperior().ifPresent(v -> sb.append("Pantalón sup: ").append(v.clave).append(' '));
-        combo.pantalonLargoInferior().ifPresent(v -> sb.append("Pantalón inf: ").append(v.clave).append(' '));
-        combo.mediasLargoSuperior().ifPresent(v -> sb.append("Medias sup: ").append(v.clave).append(' '));
-        combo.mediasLargoInferior().ifPresent(v -> sb.append("Medias inf: ").append(v.clave).append(' '));
-        combo.calientabrazosCoberturaSuperior().ifPresent(v -> sb.append("Calient. sup: ").append(v.clave).append(' '));
-        combo.calientabrazosCoberturaInferior().ifPresent(v -> sb.append("Calient. inf: ").append(v.clave).append(' '));
-        combo.calce().ifPresent(v -> sb.append("Calce: ").append(v.clave).append(' '));
-        combo.pollera().ifPresent(p -> {
-            p.largo().ifPresent(v -> sb.append("Pollera largo: ").append(v.clave).append(' '));
-            p.forma().ifPresent(v -> sb.append("Pollera forma: ").append(v.clave).append(' '));
-            p.capaLargo().ifPresent(v -> sb.append("Capa largo: ").append(v.asString()).append(' '));
-            p.capaRuedo().ifPresent(v -> sb.append("Capa ruedo: ").append(v.asString()).append(' '));
-            p.capaCapucha().ifPresent(v -> sb.append(v ? "Con capucha " : "Sin capucha "));
-            p.capaCuello().ifPresent(v -> sb.append(v ? "Cuello alto " : "Sin cuello "));
-        });
-        if (combo.lado() != com.modamod.region.Lado.AMBAS) sb.append('(').append(combo.lado().clave()).append(')');
+        molde.corte().valores().forEach((eje, valor) -> sb.append(eje.nombre()).append(": ")
+                .append(valor instanceof net.minecraft.util.StringIdentifiable si ? si.asString() : String.valueOf(valor)).append(' '));
+        if (molde.lado() != com.modamod.region.Lado.AMBAS) sb.append('(').append(molde.lado().clave()).append(')');
         return Text.literal(sb.toString().trim());
     }
 
@@ -777,7 +761,7 @@ public class ModeladoScreen extends HandledScreen<ModeladoScreenHandler> {
             if (ZonasModelado.zonaDe(cat, i) != this.handler.zonaActiva) continue;
             int p = cat.ordinal() * ModeladoBlockEntity.PINES_POR_CATEGORIA + i;
             if (!be.pinFijado(p) || !be.getStack(ModeladoBlockEntity.pinSlot(p)).isEmpty()) continue;
-            ComboCorte combo = be.pinCombo(p);
+            Molde combo = be.pinCombo(p);
             if (combo == null) continue;
             ItemStack icono = iconoDe(combo);
             if (icono.isEmpty()) continue;

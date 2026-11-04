@@ -20,8 +20,8 @@ import java.util.Map;
 
 /**
  * La forma de una prenda: todos sus ejes de corte en un solo componente ({@link Tipo#COMPONENTE}). Lo ausente vale lo de
- * fábrica, que decide quien lee (cada prenda conoce los suyos). Un molde de la Modeladora puede ser el mismo
- * {@code Corte} con solo algunos ejes puestos: aplicarlo es copiarlos encima ({@link #conEncima}).
+ * fábrica, que decide quien lee (cada prenda conoce los suyos). Un molde de la Modeladora es el mismo {@code Corte} con
+ * solo algunos ejes puestos ({@code modelado.Molde}): aplicarlo es escribirlos encima con {@link #escribir}.
  */
 public record Corte(Map<EjeDeCorte<?>, Object> valores) {
     private static final Logger LOG = LogUtils.getLogger();
@@ -61,13 +61,6 @@ public record Corte(Map<EjeDeCorte<?>, Object> valores) {
         return new Corte(m);
     }
 
-    /** Este corte con los ejes de {@code encima} reemplazando a los propios. */
-    public Corte conEncima(Corte encima) {
-        Map<EjeDeCorte<?>, Object> m = new HashMap<>(valores);
-        m.putAll(encima.valores);
-        return new Corte(m);
-    }
-
     public boolean vacio() {
         return valores.isEmpty();
     }
@@ -98,6 +91,12 @@ public record Corte(Map<EjeDeCorte<?>, Object> valores) {
 
     public static void remove(ItemStack stack, EjeDeCorte<?> eje) {
         set(stack, eje, null);
+    }
+
+    /** Escribe {@code valor}: el de fábrica borra el eje. También vuelve a fábrica el eje que este reinicia. */
+    public static <T> void escribir(ItemStack stack, EjeDeCorte<T> eje, T valor) {
+        set(stack, eje, java.util.Objects.equals(valor, eje.deFabrica()) ? null : valor);
+        if (eje.reinicia() != null) remove(stack, eje.reinicia());
     }
 
     // --- Codec ---

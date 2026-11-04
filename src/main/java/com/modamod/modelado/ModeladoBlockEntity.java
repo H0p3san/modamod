@@ -418,7 +418,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * entre en el slot {@link #PRENDA}, cada una recibe la config de SU
      * categoría automáticamente sin tocar nada más.
      */
-    private final Map<Categoria, List<ComboCorte>> fijadasPorCategoria = new EnumMap<>(Categoria.class);
+    private final Map<Categoria, List<Molde>> fijadasPorCategoria = new EnumMap<>(Categoria.class);
     {
         for (Categoria c : Categoria.values()) fijadasPorCategoria.put(c, new ArrayList<>());
     }
@@ -440,9 +440,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * "Ultimo" (2026-10-12, tanda 3, "Ultimo, 3 disenos con nombre y un +"): las fijadas con las que se corto la ultima
      * prenda de cada categoria, guardadas solas al empezar a modelar. Es lo que se recarga con el boton.
      */
-    private final Map<Categoria, List<ComboCorte>> ultimoPorCategoria = new EnumMap<>(Categoria.class);
-    public boolean hayUltimo() { List<ComboCorte> l = ultimoPorCategoria.get(categoria); return l != null && !l.isEmpty(); }
-    public record DisenoGuardado(String nombre, List<ComboCorte> combos) {}
+    private final Map<Categoria, List<Molde>> ultimoPorCategoria = new EnumMap<>(Categoria.class);
+    public boolean hayUltimo() { List<Molde> l = ultimoPorCategoria.get(categoria); return l != null && !l.isEmpty(); }
+    public record DisenoGuardado(String nombre, List<Molde> combos) {}
     private final Map<Categoria, List<DisenoGuardado>> disenosPorCategoria = new EnumMap<>(Categoria.class);
     {
         for (Categoria c : Categoria.values()) disenosPorCategoria.put(c, new ArrayList<>());
@@ -683,7 +683,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     public void guiCerrada() { guiAbiertas = Math.max(0, guiAbiertas - 1); }
 
     private boolean hayFijadas() {
-        for (List<ComboCorte> l : fijadasPorCategoria.values()) if (!l.isEmpty()) return true;
+        for (List<Molde> l : fijadasPorCategoria.values()) if (!l.isEmpty()) return true;
         return false;
     }
 
@@ -747,7 +747,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     public ItemStack salidaVisible() { return items.get(SALIDA); }
     public int progreso() { return progreso; }
     /** Las fijadas de la categoría ACTUAL — ver {@link #fijadasPorCategoria}. */
-    public List<ComboCorte> fijadas() { return fijadasPorCategoria.get(categoria); }
+    public List<Molde> fijadas() { return fijadasPorCategoria.get(categoria); }
     public Variante.Largo remeraLargo() { return remeraLargo; }
     public Variante.Manga remeraManga() { return remeraManga; }
     public Variante.Cuello remeraCuello() { return remeraCuello; }
@@ -851,9 +851,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                     if (!cambio) return false;
                 } else if (id >= BTN_DESFIJAR_BASE && id < BTN_PIN_BASE) {
                     int idx = id - BTN_DESFIJAR_BASE;
-                    List<ComboCorte> lista = fijadasPorCategoria.get(categoria);
+                    List<Molde> lista = fijadasPorCategoria.get(categoria);
                     if (idx < 0 || idx >= lista.size()) return false;
-                    ComboCorte quitada = lista.remove(idx);
+                    Molde quitada = lista.remove(idx);
                     soltarPinDeFijada(categoria, quitada);
                     cambio = true;
                 } else {
@@ -879,13 +879,13 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * distintos, gana el que está más abajo en la lista de fijadas.
      */
     private void reaplicarLados() {
-        List<ComboCorte> lista = fijadasPorCategoria.get(categoria);
+        List<Molde> lista = fijadasPorCategoria.get(categoria);
         for (int i = 0; i < PINES_POR_CATEGORIA; i++) {
             int idx = categoria.ordinal() * PINES_POR_CATEGORIA + i;
-            ComboCorte viejo = pinCombo[idx];
-            if (viejo == null || viejo.iconoOrigen().isEmpty()) continue;
-            Item item = net.minecraft.registry.Registries.ITEM.get(viejo.iconoOrigen().get());
-            ComboCorte nuevo = comboDePin(categoria, i, new ItemStack(item), ladoDePin(categoria, i));
+            Molde viejo = pinCombo[idx];
+            if (viejo == null || viejo.icono().isEmpty()) continue;
+            Item item = net.minecraft.registry.Registries.ITEM.get(viejo.icono().get());
+            Molde nuevo = comboDePin(categoria, i, new ItemStack(item), ladoDePin(categoria, i));
             if (nuevo == null) continue;
             int pos = lista.indexOf(viejo);
             if (pos >= 0) lista.set(pos, nuevo);
@@ -901,7 +901,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
 
     /**
      * Junta el borrador de la categoría actual (según qué molde hay en su
-     * slot Activo dedicado) en un ComboCorte y lo agrega a la lista fijada.
+     * slot Activo dedicado) en un Molde y lo agrega a la lista fijada.
      * Un solo botón FIJAR para las 4 categorías: cuál molde vale para cuál
      * eje ya no lo decide el TIPO de ítem en ambigüedad (antes MOLDE_MANGA
      * servía a la vez para remera y calientabrazos) sino en QUÉ slot
@@ -915,90 +915,90 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         // A pedido (2026-09-16): la GUI (ModeladoScreen) muestra el ícono
         // del molde que produjo cada fijada en vez de un código de texto
         // — se guarda ACÁ, una sola vez, y se le pega a cualquier combo
-        // que salga de este método (ver ComboCorte#iconoOrigen).
+        // que salga de este método (ver Molde#iconoOrigen).
         Identifier icono = net.minecraft.registry.Registries.ITEM.getId(activo.getItem());
         // Calce: transversal a las 4 categorías, sin anclaje ni lado — se
         // resuelve ACÁ, antes del switch por categoría, en vez de
         // duplicarlo en las 4 ramas.
         if (activo.getItem() instanceof MoldeCalceItem m) {
-            return agregarFijada(ComboCorte.calce(m.valor).conIcono(icono));
+            return agregarFijada(Molde.de(com.modamod.prenda.Ejes.CALCE, m.valor).conIcono(icono));
         }
         // Red: mismo criterio que calce — transversal, antes del switch por categoría.
         if (activo.getItem() instanceof MoldeRedItem m) {
-            return agregarFijada(ComboCorte.red(m.valor).conIcono(icono));
+            return agregarFijada(Molde.de(com.modamod.prenda.Ejes.RED, m.valor).conIcono(icono));
         }
-        ComboCorte combo = switch (categoria) {
+        Molde combo = switch (categoria) {
             case REMERA -> {
                 // Cada eje es una fijada INDEPENDIENTE (largo/manga/cuello
-                // por separado) — ver PrendaModelado#aplicar: cada una
+                // por separado) — ver Molde#aplicar: cada una
                 // parchea solo su eje sobre el Variante actual, no pisa a
                 // las demás.
-                if (activo.getItem() instanceof MoldeRangoItem m) yield ComboCorte.remeraManga(mangaRemeraDeRango(m.rango));
-                if (activo.getItem() instanceof MoldeCuelloItem m) yield ComboCorte.remeraCuello(m.valor);
-                ComboCorte chaqueta = comboDeMoldeChaqueta(activo.getItem());
-                yield chaqueta == null ? ComboCorte.VACIO : chaqueta;
+                if (activo.getItem() instanceof MoldeRangoItem m) yield Molde.de(com.modamod.prenda.Ejes.REMERA_MANGA, mangaRemeraDeRango(m.rango));
+                if (activo.getItem() instanceof MoldeCuelloItem m) yield Molde.de(com.modamod.prenda.Ejes.REMERA_CUELLO, m.valor);
+                Molde chaqueta = comboDeMoldeChaqueta(activo.getItem());
+                yield chaqueta == null ? Molde.VACIO : chaqueta;
             }
             case PANTALON -> {
                 // Solo el corte INFERIOR (2026-09-23, "pantalones se fija
                 // solo el corte inferior") — el pantalón perdió el anclaje
                 // Superior, ya no mira "anclaje" para decidir a cuál de
                 // los dos escribir.
-                if (activo.getItem() instanceof MoldeRangoItem m) yield ComboCorte.pantalonSuperior(pantalonDeRango(m.rango), ladoBorrador);
-                yield ComboCorte.VACIO;
+                if (activo.getItem() instanceof MoldeRangoItem m) yield Molde.de(com.modamod.prenda.Ejes.PANTALON_SUPERIOR, pantalonDeRango(m.rango)).conLado(ladoBorrador);
+                yield Molde.VACIO;
             }
             case MEDIAS -> {
-                if (!(activo.getItem() instanceof MoldeRangoItem m)) yield ComboCorte.VACIO;
+                if (!(activo.getItem() instanceof MoldeRangoItem m)) yield Molde.VACIO;
                 yield anclaje == Anclaje.SUPERIOR
-                        ? ComboCorte.mediasSuperior(mediasDeRango(m.rango), ladoBorrador)
-                        : ComboCorte.mediasInferior(mediasInicioDeRango(m.rango), ladoBorrador);
+                        ? Molde.de(com.modamod.prenda.Ejes.MEDIAS_SUPERIOR, mediasDeRango(m.rango)).conLado(ladoBorrador)
+                        : Molde.de(com.modamod.prenda.Ejes.MEDIAS_INFERIOR, mediasInicioDeRango(m.rango)).conLado(ladoBorrador);
             }
             case CALIENTABRAZOS -> {
                 Variante.Manga fin = activo.getItem() instanceof MoldeRangoItem m ? mangaCalientabrazosDeRango(m.rango) : calientabrazosCobertura;
                 Variante.Manga inicio = activo.getItem() instanceof MoldeRangoItem m ? mangaCalientabrazosInicioDeRango(m.rango) : calientabrazosCobertura;
                 yield anclaje == Anclaje.SUPERIOR
-                        ? ComboCorte.calientabrazosSuperior(fin, ladoBorrador)
-                        : ComboCorte.calientabrazosInferior(inicio, ladoBorrador);
+                        ? Molde.de(com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR, fin).conLado(ladoBorrador)
+                        : Molde.de(com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR, inicio).conLado(ladoBorrador);
             }
             case POLLERA -> {
                 if (activo.getItem() instanceof MoldeRangoItem m)
-                    yield ComboCorte.polleraLargo(com.modamod.item.PolleraLargo.valueOf(m.rango.name()));
-                if (activo.getItem() instanceof MoldePolleraItem m) yield ComboCorte.polleraForma(m.valor);
-                if (activo.getItem() instanceof MoldeVoladoItem m) yield ComboCorte.voladoRuedo(m.valor);
-                if (activo.getItem() instanceof MoldeRuedoItem m) yield ComboCorte.ruedo(com.modamod.item.ZonaRuedo.POLLERA, m.valor, false);
-                yield ComboCorte.VACIO;
+                    yield Molde.de(com.modamod.prenda.Ejes.POLLERA_LARGO, com.modamod.item.PolleraLargo.valueOf(m.rango.name()));
+                if (activo.getItem() instanceof MoldePolleraItem m) yield Molde.de(com.modamod.prenda.Ejes.POLLERA_FORMA, m.valor);
+                if (activo.getItem() instanceof MoldeVoladoItem m) yield Molde.de(com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO, m.valor);
+                if (activo.getItem() instanceof MoldeRuedoItem m) yield Molde.ruedo(com.modamod.item.ZonaRuedo.POLLERA, m.valor, false);
+                yield Molde.VACIO;
             }
             case CAPA -> {
-                ComboCorte c = comboDeMoldeCapa(activo.getItem());
-                yield c == null ? ComboCorte.VACIO : c;
+                Molde c = comboDeMoldeCapa(activo.getItem());
+                yield c == null ? Molde.VACIO : c;
             }
             case SOMBRERO -> {
-                ComboCorte c = comboDeMoldeSombrero(activo.getItem());
-                yield c == null ? ComboCorte.VACIO : c;
+                Molde c = comboDeMoldeSombrero(activo.getItem());
+                yield c == null ? Molde.VACIO : c;
             }
             case BANDA -> {
-                ComboCorte c = comboDeMoldeBanda(activo.getItem());
-                yield c == null ? ComboCorte.VACIO : c;
+                Molde c = comboDeMoldeBanda(activo.getItem());
+                yield c == null ? Molde.VACIO : c;
             }
             case CALZADO -> {
-                ComboCorte c = comboDeMoldeBorcego(activo.getItem(), Lado.AMBAS);
-                yield c == null ? ComboCorte.VACIO : c;
+                Molde c = comboDeMoldeBorcego(activo.getItem(), Lado.AMBAS);
+                yield c == null ? Molde.VACIO : c;
             }
             case DELANTAL -> {
-                if (activo.getItem() instanceof MoldeFormaDelantalItem m) yield ComboCorte.delantalForma(m.valor);
-                if (activo.getItem() instanceof MoldeVoladoItem m) yield ComboCorte.delantalVolado(m.valor);
-                if (activo.getItem() instanceof MoldeRuedoItem m) yield ComboCorte.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, m.valor, false);
-                yield ComboCorte.VACIO;
+                if (activo.getItem() instanceof MoldeFormaDelantalItem m) yield Molde.de(com.modamod.prenda.Ejes.DELANTAL_FORMA, m.valor);
+                if (activo.getItem() instanceof MoldeVoladoItem m) yield Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO, m.valor);
+                if (activo.getItem() instanceof MoldeRuedoItem m) yield Molde.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, m.valor, false);
+                yield Molde.VACIO;
             }
         };
         return agregarFijada(combo.conIcono(icono));
     }
 
-    private boolean agregarFijada(ComboCorte combo) {
-        if (combo.estaVacio()) {
+    private boolean agregarFijada(Molde combo) {
+        if (combo.vacio()) {
             LOG.info("agregarFijada(): RECHAZADA, combo vacio");
             return false;
         }
-        List<ComboCorte> lista = fijadasPorCategoria.get(categoria);
+        List<Molde> lista = fijadasPorCategoria.get(categoria);
         if (lista.size() >= 12) {
             LOG.info("agregarFijada(): RECHAZADA, lista llena (12) categoria={} combo={}", categoria, combo);
             return false;
@@ -1009,7 +1009,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     }
 
     // ── pines del esquema visual de remera (2026-09-24) ──────────────────
-    // Un pin por eje, cada uno arma su ComboCorte y lo fija DIRECTO al
+    // Un pin por eje, cada uno arma su Molde y lo fija DIRECTO al
     // soltar el molde — sin pasar por Activo+Fijar (a diferencia del resto
     // de las categorías, que siguen con ese flujo). Solo tienen efecto con
     // REMERA activa: si el jugador cambió de pestaña sin cerrar la GUI y
@@ -1022,7 +1022,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * {@code lado}: el lado que aplica un pin de lado (con simetría activa
      * se pasa AMBAS sin importar en cuál de los dos se soltó).
      */
-    private static ComboCorte comboDePin(Categoria cat, int i, ItemStack molde, Lado lado) {
+    private static Molde comboDePin(Categoria cat, int i, ItemStack molde, Lado lado) {
         Rol rol = ROLES[cat.ordinal()][i];
         Item item = molde.getItem();
         // Cada casillero acepta SOLO su tipo de molde (2026-10-12, "ruedo y rango y cuello y solapas estan mezclados, no
@@ -1035,46 +1035,45 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 case MOLDE -> comboEnBlanco(rol, lado, cat);
                 case TRAMA -> switch (rol) {
                     case MAT1, MAT2, MAT3, PERS_IZQ1, PERS_IZQ2, PERS_IZQ3, PERS_DER1, PERS_DER2, PERS_DER3 ->
-                            ComboCorte.red(com.modamod.item.PatronRed.LISA);
+                            Molde.de(com.modamod.prenda.Ejes.RED, com.modamod.item.PatronRed.LISA);
                     default -> null;
                 };
                 default -> null;
             };
         }
-        ComboCorte c = null;
+        Molde c = null;
         switch (rol) {
             case CUELLO -> {
-                if (item instanceof MoldeCuelloItem m) c = ComboCorte.remeraCuello(m.valor);
+                if (item instanceof MoldeCuelloItem m) c = Molde.de(com.modamod.prenda.Ejes.REMERA_CUELLO, m.valor);
             }
             case MAT1, MAT2, MAT3 -> {
                 // Medias de red/calado (2026-09-25): un solo eje, cualquiera
                 // de los 3 pines la acepta. Los patrones son capas apiladas.
-                if (item instanceof MoldeRedItem m) c = ComboCorte.red(m.valor);
+                if (item instanceof MoldeRedItem m) c = Molde.de(com.modamod.prenda.Ejes.RED, m.valor);
             }
             case PERS_IZQ1, PERS_IZQ2, PERS_IZQ3, PERS_DER1, PERS_DER2, PERS_DER3 -> {
-                if (item instanceof MoldeRedItem m) c = ComboCorte.red(m.valor);
+                if (item instanceof MoldeRedItem m) c = Molde.de(com.modamod.prenda.Ejes.RED, m.valor);
             }
             case MANGA_IZQ, MANGA_DER -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.remeraManga(mangaRemeraDeRango(m.rango), lado);
+                if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.REMERA_MANGA, mangaRemeraDeRango(m.rango)).conLado(lado);
             }
             case CALCE -> {
-                if (item instanceof MoldeCalceItem m) c = ComboCorte.calce(m.valor);
+                if (item instanceof MoldeCalceItem m) c = Molde.de(com.modamod.prenda.Ejes.CALCE, m.valor);
             }
             case TORSO -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.remeraLargo(largoDeNivel(m.rango));
+                if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.REMERA_LARGO, largoDeNivel(m.rango));
             }
             case TIRO -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.tiro(tiroDeNivel(m.rango));
+                if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.TIRO, tiroDeNivel(m.rango));
             }
             case RUEDO_TORSO -> {
-                if (item instanceof MoldeRuedoItem m && m.valor.valeEnTela()) c = ComboCorte.ruedo(com.modamod.item.ZonaRuedo.TORSO, m.valor, false);
+                if (item instanceof MoldeRuedoItem m && m.valor.valeEnTela()) c = Molde.ruedo(com.modamod.item.ZonaRuedo.TORSO, m.valor, false);
             }
             case RUEDO_PUNO_IZQ, RUEDO_PUNO_DER -> {
                 // El lado sale de ladoDePin (cruzado y con la simetría ya aplicada): AMBAS = los dos puños.
                 com.modamod.item.Ruedo r = ruedoDeMolde(item);
                 if (r != null) {
-                    c = ComboCorte.ruedo(lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.PUNO_DER : com.modamod.item.ZonaRuedo.PUNO_IZQ,
-                            r, lado == Lado.AMBAS);
+                    c = Molde.ruedo(lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.PUNO_DER : com.modamod.item.ZonaRuedo.PUNO_IZQ, r, lado == Lado.AMBAS);
                 }
             }
             case RUEDO_BOTA_IZQ, RUEDO_BOTA_DER, RUEDO_SUP_IZQ, RUEDO_SUP_DER, RUEDO_INF_IZQ, RUEDO_INF_DER -> {
@@ -1082,39 +1081,39 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 com.modamod.item.Ruedo r = ruedoDeMolde(item);
                 if (r != null) {
                     com.modamod.item.ZonaRuedo z = zonaDeRol(rol, lado == Lado.DERECHA);
-                    c = ComboCorte.ruedo(z, r, lado == Lado.AMBAS);
+                    c = Molde.ruedo(z, r, lado == Lado.AMBAS);
                 }
             }
             case RUEDO_POLLERA -> {
-                if (item instanceof MoldeRuedoItem m && !m.valor.esDeCapa()) c = ComboCorte.ruedo(com.modamod.item.ZonaRuedo.POLLERA, m.valor, false);
+                if (item instanceof MoldeRuedoItem m && !m.valor.esDeCapa()) c = Molde.ruedo(com.modamod.item.ZonaRuedo.POLLERA, m.valor, false);
             }
             case VOLADO_INFERIOR -> {
-                if (item instanceof MoldeVoladoItem m) c = ComboCorte.voladoRuedo(m.valor);
+                if (item instanceof MoldeVoladoItem m) c = Molde.de(com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO, m.valor);
             }
             case VOLADO_TOTAL -> {
-                if (item instanceof MoldeVoladoItem m) c = ComboCorte.voladoTodo(m.valor);
+                if (item instanceof MoldeVoladoItem m) c = Molde.de(com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO, m.valor);
             }
             case FORMA_POLLERA -> {
-                if (item instanceof MoldePolleraItem m) c = ComboCorte.polleraForma(m.valor);
+                if (item instanceof MoldePolleraItem m) c = Molde.de(com.modamod.prenda.Ejes.POLLERA_FORMA, m.valor);
             }
             case CINTURA_POLLERA -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.polleraCintura(m.rango.nivel());
+                if (item instanceof MoldeRangoItem m) c = Molde.nivel(com.modamod.prenda.Ejes.POLLERA_CINTURA, m.rango.nivel());
             }
             case FALDON_TOP -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.faldon(m.rango.nivel());
+                if (item instanceof MoldeRangoItem m) c = Molde.nivel(com.modamod.prenda.Ejes.FALDON, m.rango.nivel());
             }
             case LARGO_POLLERA -> {
                 // Los 6 rangos del pantalón, 1 a 1 (2026-09-29, "Los 6 rangos del pantalón").
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.polleraLargo(com.modamod.item.PolleraLargo.valueOf(m.rango.name()));
+                if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.POLLERA_LARGO, com.modamod.item.PolleraLargo.valueOf(m.rango.name()));
             }
             case LARGO_CAPA -> {
                 // Los 6 rangos, 1 a 1 (2026-09-29, "Los 6 rangos").
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.capaLargo(com.modamod.item.CapaLargo.valueOf(m.rango.name()));
+                if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.CAPA_LARGO, com.modamod.item.CapaLargo.valueOf(m.rango.name()));
             }
             case RUEDO_CAPA -> {
                 // Los remates de la capa son moldes de ruedo (2026-10-12): redondeado y cola.
                 if (item instanceof MoldeRuedoItem m && m.valor.esDeCapa()) {
-                    c = ComboCorte.capaRuedo(m.valor == com.modamod.item.Ruedo.COLA
+                    c = Molde.de(com.modamod.prenda.Ejes.CAPA_RUEDO, m.valor == com.modamod.item.Ruedo.COLA
                             ? com.modamod.item.CapaRuedo.COLA : com.modamod.item.CapaRuedo.REDONDEADO);
                 }
             }
@@ -1125,24 +1124,24 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 if (item instanceof MoldeCapaItem m && m.tipo.esCuello()) c = comboDeMoldeCapa(item);
             }
             case EMBOZO_CAPA -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.capaEmbozo(m.rango.nivel());
-                else if (item instanceof MoldeCapaItem m && m.tipo.esEmbozo()) c = ComboCorte.capaEmbozo(-1);
+                if (item instanceof MoldeRangoItem m) c = Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, m.rango.nivel());
+                else if (item instanceof MoldeCapaItem m && m.tipo.esEmbozo()) c = Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, -1);
             }
             case BORDE_EMBOZO_CAPA -> {
-                if (item instanceof MoldeCapaItem m && m.tipo.esBordeEmbozo()) c = ComboCorte.capaBordeEmbozo(m.tipo == MoldeCapaItem.Tipo.BORDE_EMBOZO);
+                if (item instanceof MoldeCapaItem m && m.tipo.esBordeEmbozo()) c = Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, m.tipo == MoldeCapaItem.Tipo.BORDE_EMBOZO);
             }
             case COBERTURA_DELANTAL -> {
-                if (item instanceof MoldeCoberturaDelantalItem m) c = ComboCorte.delantalCobertura(m.valor);
+                if (item instanceof MoldeCoberturaDelantalItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_COBERTURA, m.valor);
             }
             case FRENTE_CHAQUETA -> {
                 if (item instanceof MoldeChaquetaItem m && m.tipo.esFrente()) c = comboDeMoldeChaqueta(item);
             }
             case CAPUCHA_CHAQUETA -> {
                 // Un solo molde de capucha para remera y capa (2026-10-12, "el molde de capucha no es uno solo...").
-                if (item instanceof MoldeCapaItem m && m.tipo == MoldeCapaItem.Tipo.CON_CAPUCHA) c = ComboCorte.chaquetaCapucha(true);
+                if (item instanceof MoldeCapaItem m && m.tipo == MoldeCapaItem.Tipo.CON_CAPUCHA) c = Molde.de(com.modamod.prenda.Ejes.CON_CAPUCHA, true);
                 // Capucha de malla o de cajas (2026-10-23): la pone con ese estilo.
                 else if (item instanceof MoldeCapaItem m && m.tipo.esEstiloCapucha())
-                    c = ComboCorte.chaquetaCapuchaEstilo(m.tipo == MoldeCapaItem.Tipo.CAPUCHA_CAJAS);
+                    c = Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (m.tipo == MoldeCapaItem.Tipo.CAPUCHA_CAJAS) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
             }
             case SOLAPA_CHAQUETA -> {
                 if (item instanceof MoldeChaquetaItem m && m.tipo.esSolapa()) c = comboDeMoldeChaqueta(item);
@@ -1176,37 +1175,37 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             }
             case ESTILO_CALZADO -> {
                 // El mismo molde de cuboides que el sombrero.
-                if (item instanceof MoldeSombreroItem m && m.tipo.esEstilo()) c = ComboCorte.borcegoEstilo(true);
+                if (item instanceof MoldeSombreroItem m && m.tipo.esEstilo()) c = Molde.de(com.modamod.prenda.Ejes.BORCEGO_ESTILO, (true) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
             }
             case FORMA_DELANTAL -> {
-                if (item instanceof MoldeFormaDelantalItem m) c = ComboCorte.delantalForma(m.valor);
+                if (item instanceof MoldeFormaDelantalItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_FORMA, m.valor);
             }
             case LARGO_DELANTAL -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.delantalLargo(m.rango.nivel());
+                if (item instanceof MoldeRangoItem m) c = Molde.nivel(com.modamod.prenda.Ejes.DELANTAL_LARGO, m.rango.nivel());
             }
             case INICIO_DELANTAL -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.delantalInicio(m.rango.nivel());
+                if (item instanceof MoldeRangoItem m) c = Molde.nivel(com.modamod.prenda.Ejes.DELANTAL_INICIO, m.rango.nivel());
             }
             case ESQUINAS_DELANTAL -> {
                 // Las esquinas de abajo del delantal: el molde de ruedo redondeado (el recto es el blanco).
                 if (item instanceof MoldeRuedoItem m && m.valor == com.modamod.item.Ruedo.REDONDEADO) {
-                    c = ComboCorte.delantalEsquinas(com.modamod.item.CapaRuedo.REDONDEADO);
+                    c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_ESQUINAS, com.modamod.item.CapaRuedo.REDONDEADO);
                 }
             }
             case TIRANTES_DELANTAL -> {
-                if (item instanceof MoldeTirantesDelantalItem m) c = ComboCorte.delantalTirantes(m.valor);
+                if (item instanceof MoldeTirantesDelantalItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_TIRANTES, m.valor);
             }
             case VOLADO_DELANTAL -> {
-                if (item instanceof MoldeVoladoItem m) c = ComboCorte.delantalVolado(m.valor);
+                if (item instanceof MoldeVoladoItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO, m.valor);
             }
             case VOLADO_LATERAL_DELANTAL -> {
-                if (item instanceof MoldeVoladoItem m) c = ComboCorte.delantalLateral(m.valor);
+                if (item instanceof MoldeVoladoItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO_LATERAL, m.valor);
             }
             case VOLADO_SUPERIOR_DELANTAL -> {
-                if (item instanceof MoldeVoladoItem m) c = ComboCorte.delantalSuperior(m.valor);
+                if (item instanceof MoldeVoladoItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO_SUPERIOR, m.valor);
             }
             case RUEDO_DELANTAL -> {
-                if (item instanceof MoldeRuedoItem m && !m.valor.esDeCapa()) c = ComboCorte.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, m.valor, false);
+                if (item instanceof MoldeRuedoItem m && !m.valor.esDeCapa()) c = Molde.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, m.valor, false);
             }
             case ALA_SOMBRERO -> {
                 if (item instanceof MoldeSombreroItem m && m.tipo.esAla()) c = comboDeMoldeSombrero(item);
@@ -1227,7 +1226,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 if (item instanceof MoldeSombreroItem m && m.tipo.esBanda()) c = comboDeMoldeSombrero(item);
             }
             case BOTA_IZQ, BOTA_DER -> {
-                if (item instanceof MoldeRangoItem m) c = ComboCorte.pantalonSuperior(pantalonDeRango(m.rango), lado);
+                if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.PANTALON_SUPERIOR, pantalonDeRango(m.rango)).conLado(lado);
             }
             case SUP_IZQ, SUP_DER, INF_IZQ, INF_DER -> {
                 // El pin de ARRIBA del esquema dice dónde EMPIEZA la tela (guarda el anclaje INFERIOR: 12 − altura);
@@ -1237,12 +1236,12 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 boolean sup = rol == Rol.INF_IZQ || rol == Rol.INF_DER;
                 if (cat == Categoria.MEDIAS) {
                     if (item instanceof MoldeRangoItem m) {
-                        c = sup ? ComboCorte.mediasSuperior(mediasDeRango(m.rango), lado)
-                                : ComboCorte.mediasInferior(mediasInicioDeRango(m.rango), lado);
+                        c = sup ? Molde.de(com.modamod.prenda.Ejes.MEDIAS_SUPERIOR, mediasDeRango(m.rango)).conLado(lado)
+                                : Molde.de(com.modamod.prenda.Ejes.MEDIAS_INFERIOR, mediasInicioDeRango(m.rango)).conLado(lado);
                     }
                 } else if (cat == Categoria.CALIENTABRAZOS && item instanceof MoldeRangoItem m) {
-                    c = sup ? ComboCorte.calientabrazosSuperior(mangaCalientabrazosDeRango(m.rango), lado)
-                            : ComboCorte.calientabrazosInferior(mangaCalientabrazosInicioDeRango(m.rango), lado);
+                    c = sup ? Molde.de(com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR, mangaCalientabrazosDeRango(m.rango)).conLado(lado)
+                            : Molde.de(com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR, mangaCalientabrazosInicioDeRango(m.rango)).conLado(lado);
                 }
             }
             default -> { }
@@ -1273,60 +1272,60 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
 
     /** El corte de un {@link MoldeChaquetaItem} (frente, capucha o solapa), o null. */
     @Nullable
-    private static ComboCorte comboDeMoldeChaqueta(Item item) {
+    private static Molde comboDeMoldeChaqueta(Item item) {
         if (!(item instanceof MoldeChaquetaItem m)) return null;
-        if (m.tipo.esFrente()) return ComboCorte.chaquetaFrente(m.tipo.frente);
-        if (m.tipo.esCapucha()) return ComboCorte.chaquetaCapucha(m.tipo.capucha);
-        return ComboCorte.chaquetaSolapa(m.tipo.solapa);
+        if (m.tipo.esFrente()) return Molde.de(com.modamod.prenda.Ejes.FRENTE, m.tipo.frente);
+        if (m.tipo.esCapucha()) return Molde.de(com.modamod.prenda.Ejes.CON_CAPUCHA, m.tipo.capucha);
+        return Molde.de(com.modamod.prenda.Ejes.SOLAPA, m.tipo.solapa);
     }
 
     /** El corte de un {@link MoldeBorcegoItem} (caña, suela o botamanga), o null. */
     @Nullable
-    private static ComboCorte comboDeMoldeBorcego(Item item, Lado lado) {
+    private static Molde comboDeMoldeBorcego(Item item, Lado lado) {
         if (!(item instanceof MoldeBorcegoItem m)) return null;
-        if (m.tipo.esCana()) return ComboCorte.borcegoCana(m.tipo.cana, lado);
-        if (m.tipo.esSuela()) return ComboCorte.borcegoSuela(m.tipo.suela, lado);
-        if (m.tipo.esPunta()) return ComboCorte.borcegoPunta(m.tipo.punta, lado);
-        if (m.tipo.esCierre()) return ComboCorte.borcegoCierre(m.tipo.cierre, lado);
-        if (m.tipo.esDetalle()) return ComboCorte.borcegoDetalle(m.tipo.detalle, lado);
-        return ComboCorte.borcegoBotamanga(m.tipo.botamanga, lado);
+        if (m.tipo.esCana()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_CANA, m.tipo.cana).conLado(lado);
+        if (m.tipo.esSuela()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_SUELA, m.tipo.suela).conLado(lado);
+        if (m.tipo.esPunta()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_PUNTA, m.tipo.punta).conLado(lado);
+        if (m.tipo.esCierre()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_CIERRE, m.tipo.cierre).conLado(lado);
+        if (m.tipo.esDetalle()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_DETALLE, m.tipo.detalle).conLado(lado);
+        return Molde.de(com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA, m.tipo.botamanga).conLado(lado);
     }
 
     /** El corte de un {@link MoldeBandaItem} (zona, ancho o herraje), o null. */
     @Nullable
-    private static ComboCorte comboDeMoldeBanda(Item item) {
+    private static Molde comboDeMoldeBanda(Item item) {
         if (!(item instanceof MoldeBandaItem m)) return null;
-        if (m.tipo.esZona()) return ComboCorte.bandaZona(m.tipo.zona);
-        if (m.tipo.esAncho()) return ComboCorte.bandaAncho(m.tipo.ancho);
-        return ComboCorte.bandaHerraje(m.tipo.herraje);
+        if (m.tipo.esZona()) return Molde.de(com.modamod.prenda.Ejes.BANDA_ZONA, m.tipo.zona);
+        if (m.tipo.esAncho()) return Molde.de(com.modamod.prenda.Ejes.BANDA_ANCHO, m.tipo.ancho);
+        return Molde.de(com.modamod.prenda.Ejes.BANDA_HERRAJE, m.tipo.herraje);
     }
 
     /** El corte de un {@link MoldeSombreroItem} (ala o punta), o null. */
     @Nullable
-    private static ComboCorte comboDeMoldeSombrero(Item item) {
+    private static Molde comboDeMoldeSombrero(Item item) {
         if (!(item instanceof MoldeSombreroItem m)) return null;
-        return m.tipo.esAla() ? ComboCorte.sombreroAla(m.tipo.ala) : m.tipo.esPlanta() ? ComboCorte.sombreroPlanta(true)
-                : m.tipo.esEstilo() ? ComboCorte.sombreroEstilo(true) : m.tipo.esGrosor() ? ComboCorte.sombreroGrosor(true)
-                : m.tipo.esBanda() ? ComboCorte.sombreroBanda(true) : ComboCorte.sombreroPunta(m.tipo.punta);
+        return m.tipo.esAla() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ALA, m.tipo.ala) : m.tipo.esPlanta() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, (true) ? com.modamod.item.SombreroPlanta.CUADRADA : com.modamod.item.SombreroPlanta.REDONDA)
+                : m.tipo.esEstilo() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, (true) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA) : m.tipo.esGrosor() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, (true) ? com.modamod.item.SombreroGrosor.GRUESA : com.modamod.item.SombreroGrosor.FINA)
+                : m.tipo.esBanda() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, true) : Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PUNTA, m.tipo.punta);
     }
 
     /** El corte de un {@link MoldeCapaItem} (o del molde de rango, como largo de capa), o null. */
     @Nullable
-    private static ComboCorte comboDeMoldeCapa(Item item) {
+    private static Molde comboDeMoldeCapa(Item item) {
         if (item instanceof MoldeRangoItem m) {
-            return ComboCorte.capaLargo(com.modamod.item.CapaLargo.valueOf(m.rango.name()));
+            return Molde.de(com.modamod.prenda.Ejes.CAPA_LARGO, com.modamod.item.CapaLargo.valueOf(m.rango.name()));
         }
         if (!(item instanceof MoldeCapaItem m)) return null;
         return switch (m.tipo) {
-            case CON_CAPUCHA -> ComboCorte.capaCapucha(true);
-            case SIN_CAPUCHA -> ComboCorte.capaCapucha(false);
-            case CUELLO_ALTO -> ComboCorte.capaCuello(true);
-            case SIN_CUELLO -> ComboCorte.capaCuello(false);
-            case EMBOZO_NINGUNO -> ComboCorte.capaEmbozo(-1);
-            case BORDE_EMBOZO -> ComboCorte.capaBordeEmbozo(true);
-            case BORDE_NINGUNO -> ComboCorte.capaBordeEmbozo(false);
-            case CAPUCHA_MALLA -> ComboCorte.capaCapuchaEstilo(false);
-            case CAPUCHA_CAJAS -> ComboCorte.capaCapuchaEstilo(true);
+            case CON_CAPUCHA -> Molde.de(com.modamod.prenda.Ejes.CAPA_CAPUCHA, true);
+            case SIN_CAPUCHA -> Molde.de(com.modamod.prenda.Ejes.CAPA_CAPUCHA, false);
+            case CUELLO_ALTO -> Molde.de(com.modamod.prenda.Ejes.CAPA_CUELLO, true);
+            case SIN_CUELLO -> Molde.de(com.modamod.prenda.Ejes.CAPA_CUELLO, false);
+            case EMBOZO_NINGUNO -> Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, -1);
+            case BORDE_EMBOZO -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, true);
+            case BORDE_NINGUNO -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, false);
+            case CAPUCHA_MALLA -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (false) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+            case CAPUCHA_CAJAS -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (true) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
         };
     }
 
@@ -1336,70 +1335,70 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * pollera y capa, volados, faldón, cintura): ahí el blanco no entra.
      */
     @Nullable
-    private static ComboCorte comboEnBlanco(Rol rol, Lado lado, Categoria cat) {
+    private static Molde comboEnBlanco(Rol rol, Lado lado, Categoria cat) {
         return switch (rol) {
-            case CUELLO -> ComboCorte.remeraCuello(Variante.Cuello.CERRADO);
-            case MANGA_IZQ, MANGA_DER -> ComboCorte.remeraManga(Variante.Manga.SIN, lado);
-            case CALCE -> ComboCorte.calce(com.modamod.item.Calce.NORMAL);
-            case TORSO -> ComboCorte.remeraLargo(Variante.Largo.NORMAL);
-            case FRENTE_CHAQUETA -> ComboCorte.chaquetaFrente(com.modamod.item.ChaquetaFrente.CERRADA);
-            case CAPUCHA_CHAQUETA -> ComboCorte.chaquetaCapucha(false);
-            case SOLAPA_CHAQUETA -> ComboCorte.chaquetaSolapa(com.modamod.item.ChaquetaSolapa.NINGUNA);
-            case RUEDO_TORSO -> ComboCorte.ruedo(com.modamod.item.ZonaRuedo.TORSO, com.modamod.item.Ruedo.RECTO, false);
+            case CUELLO -> Molde.de(com.modamod.prenda.Ejes.REMERA_CUELLO, Variante.Cuello.CERRADO);
+            case MANGA_IZQ, MANGA_DER -> Molde.de(com.modamod.prenda.Ejes.REMERA_MANGA, Variante.Manga.SIN).conLado(lado);
+            case CALCE -> Molde.de(com.modamod.prenda.Ejes.CALCE, com.modamod.item.Calce.NORMAL);
+            case TORSO -> Molde.de(com.modamod.prenda.Ejes.REMERA_LARGO, Variante.Largo.NORMAL);
+            case FRENTE_CHAQUETA -> Molde.de(com.modamod.prenda.Ejes.FRENTE, com.modamod.item.ChaquetaFrente.CERRADA);
+            case CAPUCHA_CHAQUETA -> Molde.de(com.modamod.prenda.Ejes.CON_CAPUCHA, false);
+            case SOLAPA_CHAQUETA -> Molde.de(com.modamod.prenda.Ejes.SOLAPA, com.modamod.item.ChaquetaSolapa.NINGUNA);
+            case RUEDO_TORSO -> Molde.ruedo(com.modamod.item.ZonaRuedo.TORSO, com.modamod.item.Ruedo.RECTO, false);
             case RUEDO_PUNO_IZQ, RUEDO_PUNO_DER, RUEDO_BOTA_IZQ, RUEDO_BOTA_DER, RUEDO_SUP_IZQ, RUEDO_SUP_DER,
                  RUEDO_INF_IZQ, RUEDO_INF_DER ->
-                    ComboCorte.ruedo(zonaDeRol(rol, lado == Lado.DERECHA), com.modamod.item.Ruedo.RECTO, lado == Lado.AMBAS);
-            case RUEDO_POLLERA -> ComboCorte.ruedo(com.modamod.item.ZonaRuedo.POLLERA, com.modamod.item.Ruedo.RECTO, false);
-            case RUEDO_DELANTAL -> ComboCorte.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, com.modamod.item.Ruedo.RECTO, false);
-            case FORMA_POLLERA -> ComboCorte.polleraForma(com.modamod.item.PolleraForma.CAMPANA);
-            case RUEDO_CAPA -> ComboCorte.capaRuedo(com.modamod.item.CapaRuedo.RECTO);
-            case CAPUCHA_CAPA -> ComboCorte.capaCapucha(false);
-            case CUELLO_CAPA -> ComboCorte.capaCuello(false);
-            case EMBOZO_CAPA -> ComboCorte.capaEmbozo(-1);
-            case BORDE_EMBOZO_CAPA -> ComboCorte.capaBordeEmbozo(false);
-            case ZONA_BANDA -> ComboCorte.bandaZona(com.modamod.item.BandaZona.CINTURA);
-            case ANCHO_BANDA -> ComboCorte.bandaAncho(com.modamod.item.BandaAncho.MEDIO);
-            case HERRAJE_BANDA -> ComboCorte.bandaHerraje(com.modamod.item.BandaHerraje.NINGUNO);
-            case CANA_BORCEGO_IZQ, CANA_BORCEGO_DER -> ComboCorte.borcegoCana(com.modamod.item.BorcegoCana.MEDIA, lado);
-            case SUELA_BORCEGO_IZQ, SUELA_BORCEGO_DER -> ComboCorte.borcegoSuela(com.modamod.item.BorcegoSuela.CHATA, lado);
+                    Molde.ruedo(zonaDeRol(rol, lado == Lado.DERECHA), com.modamod.item.Ruedo.RECTO, lado == Lado.AMBAS);
+            case RUEDO_POLLERA -> Molde.ruedo(com.modamod.item.ZonaRuedo.POLLERA, com.modamod.item.Ruedo.RECTO, false);
+            case RUEDO_DELANTAL -> Molde.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, com.modamod.item.Ruedo.RECTO, false);
+            case FORMA_POLLERA -> Molde.de(com.modamod.prenda.Ejes.POLLERA_FORMA, com.modamod.item.PolleraForma.CAMPANA);
+            case RUEDO_CAPA -> Molde.de(com.modamod.prenda.Ejes.CAPA_RUEDO, com.modamod.item.CapaRuedo.RECTO);
+            case CAPUCHA_CAPA -> Molde.de(com.modamod.prenda.Ejes.CAPA_CAPUCHA, false);
+            case CUELLO_CAPA -> Molde.de(com.modamod.prenda.Ejes.CAPA_CUELLO, false);
+            case EMBOZO_CAPA -> Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, -1);
+            case BORDE_EMBOZO_CAPA -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, false);
+            case ZONA_BANDA -> Molde.de(com.modamod.prenda.Ejes.BANDA_ZONA, com.modamod.item.BandaZona.CINTURA);
+            case ANCHO_BANDA -> Molde.de(com.modamod.prenda.Ejes.BANDA_ANCHO, com.modamod.item.BandaAncho.MEDIO);
+            case HERRAJE_BANDA -> Molde.de(com.modamod.prenda.Ejes.BANDA_HERRAJE, com.modamod.item.BandaHerraje.NINGUNO);
+            case CANA_BORCEGO_IZQ, CANA_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_CANA, com.modamod.item.BorcegoCana.MEDIA).conLado(lado);
+            case SUELA_BORCEGO_IZQ, SUELA_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_SUELA, com.modamod.item.BorcegoSuela.CHATA).conLado(lado);
             case BOTAMANGA_BORCEGO_IZQ, BOTAMANGA_BORCEGO_DER ->
-                    ComboCorte.borcegoBotamanga(com.modamod.item.BorcegoBotamanga.ADENTRO, lado);
-            case PUNTA_BORCEGO_IZQ, PUNTA_BORCEGO_DER -> ComboCorte.borcegoPunta(com.modamod.item.CalzadoPunta.CUERO, lado);
-            case CIERRE_BORCEGO_IZQ, CIERRE_BORCEGO_DER -> ComboCorte.borcegoCierre(com.modamod.item.CalzadoCierre.CORDONES, lado);
-            case DETALLE_BORCEGO_IZQ, DETALLE_BORCEGO_DER -> ComboCorte.borcegoDetalle(com.modamod.item.CalzadoDetalle.NINGUNO, lado);
-            case ESTILO_CALZADO -> ComboCorte.borcegoEstilo(false);
-            case FORMA_DELANTAL -> ComboCorte.delantalForma(com.modamod.item.DelantalForma.RECTO);
-            case LARGO_DELANTAL -> ComboCorte.delantalLargo(com.modamod.item.DelantalItem.LARGO_DE_FABRICA);
-            case INICIO_DELANTAL -> ComboCorte.delantalInicio(com.modamod.item.DelantalItem.INICIO_DE_FABRICA);
-            case ESQUINAS_DELANTAL -> ComboCorte.delantalEsquinas(com.modamod.item.CapaRuedo.RECTO);
-            case TIRANTES_DELANTAL -> ComboCorte.delantalTirantes(com.modamod.item.DelantalTirantes.SIN);
-            case COBERTURA_DELANTAL -> ComboCorte.delantalCobertura(com.modamod.item.DelantalCobertura.ENVOLVENTE);
-            case ALA_SOMBRERO -> ComboCorte.sombreroAla(com.modamod.item.SombreroAla.VISERA_CURVA);   // de fábrica: gorra
-            case PUNTA_SOMBRERO -> ComboCorte.sombreroPunta(com.modamod.item.SombreroPunta.CUPULA);
-            case PLANTA_SOMBRERO -> ComboCorte.sombreroPlanta(false);
-            case ESTILO_SOMBRERO -> ComboCorte.sombreroEstilo(false);
-            case GROSOR_SOMBRERO -> ComboCorte.sombreroGrosor(false);
-            case BANDA_SOMBRERO -> ComboCorte.sombreroBanda(false);   // el molde en blanco la saca
+                    Molde.de(com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA, com.modamod.item.BorcegoBotamanga.ADENTRO).conLado(lado);
+            case PUNTA_BORCEGO_IZQ, PUNTA_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_PUNTA, com.modamod.item.CalzadoPunta.CUERO).conLado(lado);
+            case CIERRE_BORCEGO_IZQ, CIERRE_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_CIERRE, com.modamod.item.CalzadoCierre.CORDONES).conLado(lado);
+            case DETALLE_BORCEGO_IZQ, DETALLE_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_DETALLE, com.modamod.item.CalzadoDetalle.NINGUNO).conLado(lado);
+            case ESTILO_CALZADO -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_ESTILO, (false) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+            case FORMA_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_FORMA, com.modamod.item.DelantalForma.RECTO);
+            case LARGO_DELANTAL -> Molde.nivel(com.modamod.prenda.Ejes.DELANTAL_LARGO, com.modamod.item.DelantalItem.LARGO_DE_FABRICA);
+            case INICIO_DELANTAL -> Molde.nivel(com.modamod.prenda.Ejes.DELANTAL_INICIO, com.modamod.item.DelantalItem.INICIO_DE_FABRICA);
+            case ESQUINAS_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_ESQUINAS, com.modamod.item.CapaRuedo.RECTO);
+            case TIRANTES_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_TIRANTES, com.modamod.item.DelantalTirantes.SIN);
+            case COBERTURA_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_COBERTURA, com.modamod.item.DelantalCobertura.ENVOLVENTE);
+            case ALA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ALA, com.modamod.item.SombreroAla.VISERA_CURVA);   // de fábrica: gorra
+            case PUNTA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PUNTA, com.modamod.item.SombreroPunta.CUPULA);
+            case PLANTA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, (false) ? com.modamod.item.SombreroPlanta.CUADRADA : com.modamod.item.SombreroPlanta.REDONDA);
+            case ESTILO_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, (false) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+            case GROSOR_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, (false) ? com.modamod.item.SombreroGrosor.GRUESA : com.modamod.item.SombreroGrosor.FINA);
+            case BANDA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);   // el molde en blanco la saca
             // Rangos y volados (2026-10-12, "vamos con la uno"): el blanco vuelve al largo/tiro de fábrica o quita el volado.
-            case TIRO -> ComboCorte.tiro(com.modamod.item.PantalonTiro.MEDIO);
-            case BOTA_IZQ, BOTA_DER -> ComboCorte.pantalonSuperior(com.modamod.item.Botamanga.PIE, lado);
+            case TIRO -> Molde.de(com.modamod.prenda.Ejes.TIRO, com.modamod.item.PantalonTiro.MEDIO);
+            case BOTA_IZQ, BOTA_DER -> Molde.de(com.modamod.prenda.Ejes.PANTALON_SUPERIOR, com.modamod.item.Botamanga.PIE).conLado(lado);
             case SUP_IZQ, SUP_DER, INF_IZQ, INF_DER -> {
                 boolean sup = rol == Rol.INF_IZQ || rol == Rol.INF_DER;
-                if (cat == Categoria.MEDIAS) yield sup ? ComboCorte.mediasSuperior(com.modamod.item.Botamanga.PIE, lado)
-                        : ComboCorte.mediasInferior(com.modamod.item.Botamanga.PIE, lado);
-                if (cat == Categoria.CALIENTABRAZOS) yield sup ? ComboCorte.calientabrazosSuperior(Variante.Manga.LARGA, lado)
-                        : ComboCorte.calientabrazosInferior(Variante.Manga.LARGA, lado);
+                if (cat == Categoria.MEDIAS) yield sup ? Molde.de(com.modamod.prenda.Ejes.MEDIAS_SUPERIOR, com.modamod.item.Botamanga.PIE).conLado(lado)
+                        : Molde.de(com.modamod.prenda.Ejes.MEDIAS_INFERIOR, com.modamod.item.Botamanga.PIE).conLado(lado);
+                if (cat == Categoria.CALIENTABRAZOS) yield sup ? Molde.de(com.modamod.prenda.Ejes.CALIENTABRAZOS_SUPERIOR, Variante.Manga.LARGA).conLado(lado)
+                        : Molde.de(com.modamod.prenda.Ejes.CALIENTABRAZOS_INFERIOR, Variante.Manga.LARGA).conLado(lado);
                 yield null;
             }
-            case LARGO_POLLERA -> ComboCorte.polleraLargo(com.modamod.item.PolleraLargo.MEDIO);
-            case LARGO_CAPA -> ComboCorte.capaLargo(com.modamod.item.CapaLargo.MEDIO);
-            case CINTURA_POLLERA -> ComboCorte.polleraCintura(7);
-            case FALDON_TOP -> ComboCorte.faldon(7);
-            case VOLADO_INFERIOR -> ComboCorte.voladoRuedo(com.modamod.item.PolleraVolado.SIN);
-            case VOLADO_TOTAL -> ComboCorte.voladoTodo(com.modamod.item.PolleraVolado.SIN);
-            case VOLADO_DELANTAL -> ComboCorte.delantalVolado(com.modamod.item.PolleraVolado.SIN);
-            case VOLADO_LATERAL_DELANTAL -> ComboCorte.delantalLateral(com.modamod.item.PolleraVolado.SIN);
-            case VOLADO_SUPERIOR_DELANTAL -> ComboCorte.delantalSuperior(com.modamod.item.PolleraVolado.SIN);
+            case LARGO_POLLERA -> Molde.de(com.modamod.prenda.Ejes.POLLERA_LARGO, com.modamod.item.PolleraLargo.MEDIO);
+            case LARGO_CAPA -> Molde.de(com.modamod.prenda.Ejes.CAPA_LARGO, com.modamod.item.CapaLargo.MEDIO);
+            case CINTURA_POLLERA -> Molde.nivel(com.modamod.prenda.Ejes.POLLERA_CINTURA, 7);
+            case FALDON_TOP -> Molde.nivel(com.modamod.prenda.Ejes.FALDON, 7);
+            case VOLADO_INFERIOR -> Molde.de(com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO, com.modamod.item.PolleraVolado.SIN);
+            case VOLADO_TOTAL -> Molde.de(com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO, com.modamod.item.PolleraVolado.SIN);
+            case VOLADO_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO, com.modamod.item.PolleraVolado.SIN);
+            case VOLADO_LATERAL_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO_LATERAL, com.modamod.item.PolleraVolado.SIN);
+            case VOLADO_SUPERIOR_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_VOLADO_SUPERIOR, com.modamod.item.PolleraVolado.SIN);
             default -> null;
         };
     }
@@ -1515,11 +1514,11 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     // CHINCHETA se fija: el corte queda aplicado y el molde vuelve al
     // almacén, así el mismo molde sirve para el otro lado. pinCombo = el
     // corte que aplica ese pin ahora; pinFijado = si ya se chinchó.
-    private final ComboCorte[] pinCombo = new ComboCorte[PINES_LOGICOS];
+    private final Molde[] pinCombo = new Molde[PINES_LOGICOS];
     private final boolean[] pinFijado = new boolean[PINES_LOGICOS];
 
     public boolean pinFijado(int i) { return pinFijado[i]; }
-    public ComboCorte pinCombo(int i) { return pinCombo[i]; }
+    public Molde pinCombo(int i) { return pinCombo[i]; }
 
     /**
      * Un pin cambió de contenido: el corte anterior de ese pin (si había)
@@ -1532,7 +1531,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     private void pinCambio(int idx, ItemStack viejo, ItemStack nuevo) {
         if (world == null || world.isClient) return;
         Categoria cat = Categoria.values()[idx / PINES_POR_CATEGORIA];
-        List<ComboCorte> lista = fijadasPorCategoria.get(cat);
+        List<Molde> lista = fijadasPorCategoria.get(cat);
         if (pinCombo[idx] != null) {
             lista.remove(pinCombo[idx]);
             pinCombo[idx] = null;
@@ -1540,7 +1539,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         pinFijado[idx] = false;
         if (!nuevo.isEmpty()) {
             int i = idx % PINES_POR_CATEGORIA;
-            ComboCorte c = comboDePin(cat, i, nuevo, ladoDePin(cat, i));
+            Molde c = comboDePin(cat, i, nuevo, ladoDePin(cat, i));
             if (c != null && lista.size() < 12) {
                 lista.add(c);
                 pinCombo[idx] = c;
@@ -1559,7 +1558,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         if (idx < 0 || idx >= PINES_LOGICOS || idx / PINES_POR_CATEGORIA != categoria.ordinal()) return false;
         int slot = pinSlot(idx);
         ItemStack molde = items.get(slot);
-        List<ComboCorte> lista = fijadasPorCategoria.get(categoria);
+        List<Molde> lista = fijadasPorCategoria.get(categoria);
         if (!molde.isEmpty()) {
             if (pinCombo[idx] == null) return false;
             // Con la bolsa (2026-10-12) el molde elegido es una referencia: no se gasto, no hay nada que devolver.
@@ -1593,7 +1592,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * en el próximo casillero libre.
      */
     public boolean guardarDiseno(String nombreCrudo) {
-        List<ComboCorte> actual = fijadasPorCategoria.get(categoria);
+        List<Molde> actual = fijadasPorCategoria.get(categoria);
         List<DisenoGuardado> lista = disenosPorCategoria.get(categoria);
         if (actual.isEmpty() || lista.size() >= DISENOS_MAXIMO) return false;
         String nombre = nombreCrudo == null || nombreCrudo.isBlank()
@@ -1613,17 +1612,17 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     }
 
     private boolean cargarUltimo() {
-        List<ComboCorte> l = ultimoPorCategoria.get(categoria);
+        List<Molde> l = ultimoPorCategoria.get(categoria);
         return l != null && !l.isEmpty() && cargarCombos(l);
     }
 
-    private boolean cargarCombos(List<ComboCorte> combos) {
+    private boolean cargarCombos(List<Molde> combos) {
         for (int i = categoria.ordinal() * PINES_POR_CATEGORIA; i < (categoria.ordinal() + 1) * PINES_POR_CATEGORIA; i++) {
             pinCombo[i] = null;
             pinFijado[i] = false;
             if (!items.get(pinSlot(i)).isEmpty()) items.set(pinSlot(i), ItemStack.EMPTY);   // era una referencia a la bolsa, no un ítem gastado
         }
-        List<ComboCorte> fijadas = fijadasPorCategoria.get(categoria);
+        List<Molde> fijadas = fijadasPorCategoria.get(categoria);
         fijadas.clear();
         fijadas.addAll(combos);
         marcarFijados(fijadas);
@@ -1636,24 +1635,24 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * ({@code iconoOrigen}) y, si coincide, ese casillero queda con su corte y su fantasma. Primero con el lado que
      * le toca a cada casillero y, para lo que no coincidio (se guardo con otra simetria), con cualquier lado.
      */
-    private void marcarFijados(List<ComboCorte> lista) {
+    private void marcarFijados(List<Molde> lista) {
         int base = categoria.ordinal() * PINES_POR_CATEGORIA;
-        List<ComboCorte> pendientes = new ArrayList<>();
-        for (ComboCorte combo : lista) {
+        List<Molde> pendientes = new ArrayList<>();
+        for (Molde combo : lista) {
             if (!asignarAPin(combo, base, true)) pendientes.add(combo);
         }
-        for (ComboCorte combo : pendientes) asignarAPin(combo, base, false);
+        for (Molde combo : pendientes) asignarAPin(combo, base, false);
     }
 
-    private boolean asignarAPin(ComboCorte combo, int base, boolean ladoDelPin) {
-        if (combo.iconoOrigen().isEmpty()) return false;
-        Item item = net.minecraft.registry.Registries.ITEM.get(combo.iconoOrigen().get());
+    private boolean asignarAPin(Molde combo, int base, boolean ladoDelPin) {
+        if (combo.icono().isEmpty()) return false;
+        Item item = net.minecraft.registry.Registries.ITEM.get(combo.icono().get());
         ItemStack molde = new ItemStack(item);
         for (int i = 0; i < PINES_POR_CATEGORIA; i++) {
             if (pinCombo[base + i] != null || ROLES[categoria.ordinal()][i] == Rol.NINGUNO) continue;
             Lado[] lados = ladoDelPin ? new Lado[]{ladoDePin(categoria, i)} : Lado.values();
             for (Lado l : lados) {
-                ComboCorte c = comboDePin(categoria, i, molde, l);
+                Molde c = comboDePin(categoria, i, molde, l);
                 if (c != null && c.equals(combo)) {
                     pinCombo[base + i] = combo;
                     pinFijado[base + i] = true;
@@ -1789,7 +1788,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      */
     public boolean crearDisenoItem(PlayerEntity jugador, String nombre) {
         if (encendida) { com.modamod.util.DisenosMaquina.avisarTrabajando(jugador); return false; }
-        List<ComboCorte> actual = fijadasPorCategoria.get(categoria);
+        List<Molde> actual = fijadasPorCategoria.get(categoria);
         if (actual.isEmpty()) { jugador.sendMessage(Text.translatable("modamod.disenos.sin_fijar_corte"), true); return false; }
         ItemStack item = new ItemStack(ModeladoMod.DISENO_CORTE);
         item.set(com.modamod.item.ModamodComponents.DISENO_CORTE, new DisenoCorte(categoria.name(), new ArrayList<>(actual)));
@@ -1846,16 +1845,16 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     /** Al des-fijar a mano una fijada de remera, el pin que la produjo se limpia (y el molde, si todavía estaba puesto, vuelve al mundo). */
     /** Suelta todos los cortes fijados de la categoría (y sus chinchetas). */
     private boolean borrarFijadas(Categoria cat) {
-        List<ComboCorte> lista = fijadasPorCategoria.get(cat);
+        List<Molde> lista = fijadasPorCategoria.get(cat);
         if (lista == null || lista.isEmpty()) return false;
-        for (ComboCorte quitada : new java.util.ArrayList<>(lista)) {
+        for (Molde quitada : new java.util.ArrayList<>(lista)) {
             lista.remove(quitada);
             soltarPinDeFijada(cat, quitada);
         }
         return true;
     }
 
-    private void soltarPinDeFijada(Categoria cat, ComboCorte quitada) {
+    private void soltarPinDeFijada(Categoria cat, Molde quitada) {
         for (int i = cat.ordinal() * PINES_POR_CATEGORIA; i < (cat.ordinal() + 1) * PINES_POR_CATEGORIA; i++) {
             if (!quitada.equals(pinCombo[i])) continue;
             pinCombo[i] = null;
@@ -1873,7 +1872,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      * <p><b>2026-09-20, bug real jugando</b>: "sigue cortandose la remera
      * en crop top y en media red" — antes esto aplicaba las fijadas de
      * las 4 categorías a CUALQUIER prenda, confiando en que
-     * {@link PrendaModelado#aplicar} filtrara por tipo de ítem. Eso
+     * {@link Molde#aplicar} filtrara por tipo de ítem. Eso
      * funciona para los ejes propios de cada categoría (remeraLargo,
      * pantalonTiro, etc. — cada uno ya chequea el tipo adentro), pero NO
      * para los transversales (Calce y {@link com.modamod.item.PatronRed}):
@@ -1892,7 +1891,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         Categoria cat = categoriaDe(prenda);
         if (cat == null) return prenda;
         ItemStack out = prenda;
-        for (ComboCorte combo : fijadasPorCategoria.get(cat)) out = PrendaModelado.aplicar(out, combo);
+        for (Molde combo : fijadasPorCategoria.get(cat)) out = combo.aplicar(out);
         return out;
     }
 
@@ -1904,7 +1903,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO);
     }
 
-    /** A qué categoría pertenece esta prenda de verdad — mismo chequeo de tipo que {@link PrendaModelado#aplicar}. */
+    /** A qué categoría pertenece esta prenda de verdad — mismo chequeo de tipo que {@link Molde#aplicar}. */
     @Nullable
     private static Categoria categoriaDe(ItemStack stack) {
         return Categoria.de(com.modamod.prenda.Prendas.categoria(stack));
@@ -1913,7 +1912,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     /**
      * La prenda física del slot {@link #PRENDA} con todas las fijadas ya
      * aplicadas, para el visor 3D — {@link #procesar} no muta el slot real
-     * (cada {@code PrendaModelado.aplicar} devuelve una copia), así que
+     * (cada {@code Molde.aplicar} devuelve una copia), así que
      * llamar esto todos los frames del lado del cliente es seguro.
      */
     public ItemStack previsualizar() {
@@ -2365,11 +2364,11 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         }
 
         for (Categoria cat : Categoria.values()) {
-            List<ComboCorte> destino = fijadasPorCategoria.get(cat);
+            List<Molde> destino = fijadasPorCategoria.get(cat);
             destino.clear();
             NbtList lista = nbt.getList("fijadas_" + cat.name(), NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < lista.size(); i++) {
-                ComboCorte.CODEC.parse(NbtOps.INSTANCE, lista.getCompound(i))
+                Molde.CODEC.parse(NbtOps.INSTANCE, lista.getCompound(i))
                         .result().ifPresent(destino::add);
             }
         }
@@ -2382,9 +2381,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 NbtCompound uno = disenos.getCompound(d);
                 String nombre = uno.getString("nombre");
                 NbtList combosNbt = uno.getList("combos", NbtElement.COMPOUND_TYPE);
-                List<ComboCorte> combos = new ArrayList<>();
+                List<Molde> combos = new ArrayList<>();
                 for (int i = 0; i < combosNbt.size(); i++) {
-                    ComboCorte.CODEC.parse(NbtOps.INSTANCE, combosNbt.getCompound(i)).result().ifPresent(combos::add);
+                    Molde.CODEC.parse(NbtOps.INSTANCE, combosNbt.getCompound(i)).result().ifPresent(combos::add);
                 }
                 destino.add(new DisenoGuardado(nombre, combos));
             }
@@ -2399,9 +2398,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         ultimoPorCategoria.clear();
         for (Categoria cat : Categoria.values()) {
             NbtList lista = nbt.getList("ultimo_" + cat.name(), NbtElement.COMPOUND_TYPE);
-            List<ComboCorte> combos = new ArrayList<>();
+            List<Molde> combos = new ArrayList<>();
             for (int i = 0; i < lista.size(); i++) {
-                ComboCorte.CODEC.parse(NbtOps.INSTANCE, lista.getCompound(i)).result().ifPresent(combos::add);
+                Molde.CODEC.parse(NbtOps.INSTANCE, lista.getCompound(i)).result().ifPresent(combos::add);
             }
             if (!combos.isEmpty()) ultimoPorCategoria.put(cat, combos);
         }
@@ -2411,7 +2410,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             pinFijado[i] = nbt.getBoolean("pin_fijado_" + i);
             if (nbt.contains("pin_combo_" + i)) {
                 int idx = i;
-                ComboCorte.CODEC.parse(NbtOps.INSTANCE, nbt.get("pin_combo_" + i))
+                Molde.CODEC.parse(NbtOps.INSTANCE, nbt.get("pin_combo_" + i))
                         .result().ifPresent(c -> pinCombo[idx] = c);
             }
             // Un pin que en el layout actual no existe (NINGUNO) pudo quedar fijado de un layout viejo:
@@ -2465,8 +2464,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
 
         for (Categoria cat : Categoria.values()) {
             NbtList lista = new NbtList();
-            for (ComboCorte combo : fijadasPorCategoria.get(cat)) {
-                ComboCorte.CODEC.encodeStart(NbtOps.INSTANCE, combo).result().ifPresent(lista::add);
+            for (Molde combo : fijadasPorCategoria.get(cat)) {
+                Molde.CODEC.encodeStart(NbtOps.INSTANCE, combo).result().ifPresent(lista::add);
             }
             nbt.put("fijadas_" + cat.name(), lista);
         }
@@ -2475,8 +2474,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             NbtList disenos = new NbtList();
             for (DisenoGuardado uno : disenosPorCategoria.get(cat)) {
                 NbtList combosNbt = new NbtList();
-                for (ComboCorte combo : uno.combos()) {
-                    ComboCorte.CODEC.encodeStart(NbtOps.INSTANCE, combo).result().ifPresent(combosNbt::add);
+                for (Molde combo : uno.combos()) {
+                    Molde.CODEC.encodeStart(NbtOps.INSTANCE, combo).result().ifPresent(combosNbt::add);
                 }
                 NbtCompound unoNbt = new NbtCompound();
                 unoNbt.putString("nombre", uno.nombre());
@@ -2491,8 +2490,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         nbt.put("disenos_item", listaDisenos);
         for (var e : ultimoPorCategoria.entrySet()) {
             NbtList lista = new NbtList();
-            for (ComboCorte combo : e.getValue()) {
-                ComboCorte.CODEC.encodeStart(NbtOps.INSTANCE, combo).result().ifPresent(lista::add);
+            for (Molde combo : e.getValue()) {
+                Molde.CODEC.encodeStart(NbtOps.INSTANCE, combo).result().ifPresent(lista::add);
             }
             nbt.put("ultimo_" + e.getKey().name(), lista);
         }
@@ -2501,7 +2500,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             nbt.putBoolean("pin_fijado_" + i, pinFijado[i]);
             if (pinCombo[i] != null) {
                 int idx = i;
-                ComboCorte.CODEC.encodeStart(NbtOps.INSTANCE, pinCombo[i]).result()
+                Molde.CODEC.encodeStart(NbtOps.INSTANCE, pinCombo[i]).result()
                         .ifPresent(e -> nbt.put("pin_combo_" + idx, e));
             }
         }

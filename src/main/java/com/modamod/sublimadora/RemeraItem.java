@@ -21,9 +21,12 @@ public class RemeraItem extends com.modamod.prenda.PrendaItem {
     }
 
     /** El corte de la prenda. Sin componente, la remera comun. */
+    /** Largo, manga (la izquierda, o la de los dos) y cuello, cada uno de su eje. */
     public static Variante variante(ItemStack stack) {
-        Variante v = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.VARIANTE);
-        return v == null ? Variante.BASE : v;
+        return new Variante(
+                com.modamod.prenda.Corte.getOrDefault(stack, com.modamod.prenda.Ejes.REMERA_LARGO, Variante.BASE.largo()),
+                com.modamod.prenda.Corte.getOrDefault(stack, com.modamod.prenda.Ejes.REMERA_MANGA, Variante.BASE.manga()),
+                com.modamod.prenda.Corte.getOrDefault(stack, com.modamod.prenda.Ejes.REMERA_CUELLO, Variante.BASE.cuello()));
     }
 
     /**
@@ -37,10 +40,8 @@ public class RemeraItem extends com.modamod.prenda.PrendaItem {
      * solo valor por lado).
      */
     public static Variante.Manga manga(ItemStack stack, com.modamod.region.Lado lado) {
-        Variante.Manga izq = variante(stack).manga();
-        if (lado == com.modamod.region.Lado.IZQUIERDA) return izq;
-        Variante.Manga der = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.MANGA_DERECHA);
-        return der != null ? der : izq;
+        return com.modamod.item.EjeBilateral.leer(stack, lado, com.modamod.prenda.Ejes.REMERA_MANGA,
+                com.modamod.prenda.Ejes.MANGA_DERECHA, Variante.BASE.manga());
     }
 
     /**
@@ -50,15 +51,8 @@ public class RemeraItem extends com.modamod.prenda.PrendaItem {
      * antes se había fijado asimétrica.
      */
     public static void setManga(ItemStack stack, com.modamod.region.Lado lado, Variante.Manga valor) {
-        if (lado != com.modamod.region.Lado.DERECHA) {
-            Variante actual = variante(stack);
-            com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.VARIANTE, new Variante(actual.largo(), valor, actual.cuello()));
-        }
-        if (lado == com.modamod.region.Lado.AMBAS) {
-            com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.MANGA_DERECHA);
-        } else if (lado == com.modamod.region.Lado.DERECHA) {
-            com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.MANGA_DERECHA, valor);
-        }
+        com.modamod.item.EjeBilateral.escribir(stack, lado, com.modamod.prenda.Ejes.REMERA_MANGA,
+                com.modamod.prenda.Ejes.MANGA_DERECHA, Variante.BASE.manga(), valor);
     }
 
     /**

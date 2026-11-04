@@ -1,5 +1,7 @@
 package com.modamod.item;
 
+import com.modamod.prenda.CategoriaDePrenda;
+
 import com.mojang.serialization.Codec;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StringIdentifiable;
@@ -37,5 +39,39 @@ public final class Ruedos {
         else m.put(zona, ruedo);
         if (m.isEmpty()) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.RUEDOS);
         else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.RUEDOS, m);
+    }
+
+    /** Los ruedos de un molde, cada uno en su borde si vale en esta prenda. Devuelve si puso alguno. */
+    public static boolean aplicar(ItemStack prenda, Map<ZonaRuedo, Ruedo> ruedos) {
+        boolean puso = false;
+        for (var e : ruedos.entrySet()) {
+            if (!vale(prenda, e.getKey(), e.getValue())) continue;
+            set(prenda, e.getKey(), e.getValue());
+            puso = true;
+        }
+        return puso;
+    }
+
+    /** Si el ruedo {@code r} tiene sentido en esa zona de esta prenda (el borde decorativo solo en la pollera). */
+    public static boolean vale(ItemStack prenda, ZonaRuedo zona, Ruedo r) {
+        if (r.esDeCapa()) return false;
+        // El fruncido (2026-10-17) solo vale en los bordes de arriba y de abajo de medias y calientabrazos.
+        if (r == Ruedo.FRUNCIDO && zona != ZonaRuedo.SUP_IZQ && zona != ZonaRuedo.SUP_DER
+                && zona != ZonaRuedo.INF_IZQ && zona != ZonaRuedo.INF_DER) return false;
+        boolean extremo = r.ordinal() <= Ruedo.CAMPANA.ordinal() || r.volado() != null || r.borde() != null;
+        return switch (zona) {
+            case TORSO -> es(prenda, CategoriaDePrenda.REMERA) && r.valeEnTela();
+            case PUNO_IZQ, PUNO_DER -> es(prenda, CategoriaDePrenda.REMERA);
+            case POLLERA -> es(prenda, CategoriaDePrenda.POLLERA);
+            case DELANTAL -> es(prenda, CategoriaDePrenda.DELANTAL);
+            case BOTA_IZQ, BOTA_DER -> es(prenda, CategoriaDePrenda.PANTALON) && extremo;
+            case SUP_IZQ, SUP_DER, INF_IZQ, INF_DER -> (es(prenda, CategoriaDePrenda.MEDIAS) || es(prenda, CategoriaDePrenda.CALIENTABRAZOS))
+                    && (extremo || r == Ruedo.FRUNCIDO);
+            default -> false;
+        };
+    }
+
+    private static boolean es(ItemStack prenda, CategoriaDePrenda c) {
+        return com.modamod.prenda.Prendas.es(prenda, c);
     }
 }

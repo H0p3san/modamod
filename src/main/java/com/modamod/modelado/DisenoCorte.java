@@ -11,9 +11,9 @@ import java.util.List;
  * {@code ModeladoBlockEntity.Categoria}) y los cortes fijados de ese diseño. El nombre va en el componente de nombre
  * personalizado del ítem.
  */
-public record DisenoCorte(String categoria, List<ComboCorte> combos) {
+public record DisenoCorte(String categoria, List<Molde> combos) {
     public static final Codec<DisenoCorte> CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.STRING.fieldOf("categoria").forGetter(DisenoCorte::categoria),
-            ComboCorte.CODEC.listOf().fieldOf("combos").forGetter(DisenoCorte::combos)
+            Molde.CODEC.listOf().fieldOf("combos").forGetter(DisenoCorte::combos)
     ).apply(i, DisenoCorte::new));
 }
