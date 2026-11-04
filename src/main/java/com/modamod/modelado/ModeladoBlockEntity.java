@@ -1034,8 +1034,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             return switch (b.tipo) {
                 case MOLDE -> comboEnBlanco(rol, lado, cat);
                 case TRAMA -> switch (rol) {
-                    case MAT1, MAT2, MAT3, PERS_IZQ1, PERS_IZQ2, PERS_IZQ3, PERS_DER1, PERS_DER2, PERS_DER3 ->
-                            Molde.de(com.modamod.prenda.Ejes.RED, com.modamod.item.PatronRed.LISA);
+                    case MAT1, MAT2, MAT3 -> Molde.de(com.modamod.prenda.Ejes.RED, com.modamod.item.PatronRed.LISA);
+                    case PERS_IZQ1, PERS_IZQ2, PERS_IZQ3, PERS_DER1, PERS_DER2, PERS_DER3 ->
+                            Molde.de(com.modamod.prenda.Ejes.RED, com.modamod.item.PatronRed.LISA).conLado(lado);
                     default -> null;
                 };
                 default -> null;
@@ -1052,7 +1053,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 if (item instanceof MoldeRedItem m) c = Molde.de(com.modamod.prenda.Ejes.RED, m.valor);
             }
             case PERS_IZQ1, PERS_IZQ2, PERS_IZQ3, PERS_DER1, PERS_DER2, PERS_DER3 -> {
-                if (item instanceof MoldeRedItem m) c = Molde.de(com.modamod.prenda.Ejes.RED, m.valor);
+                if (item instanceof MoldeRedItem m) c = Molde.de(com.modamod.prenda.Ejes.RED, m.valor).conLado(lado);
             }
             case MANGA_IZQ, MANGA_DER -> {
                 if (item instanceof MoldeRangoItem m) c = Molde.de(com.modamod.prenda.Ejes.REMERA_MANGA, mangaRemeraDeRango(m.rango)).conLado(lado);

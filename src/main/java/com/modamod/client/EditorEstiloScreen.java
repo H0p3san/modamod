@@ -813,9 +813,11 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
             float k = 1f - (float) Math.exp(-dt / 90f);
             focoActual += (enfoque.focoY - focoActual) * k;
             tamActual += (enfoque.tamano - tamActual) * k;
+            PreviewJugador.conArmadura = slot != null;
             PreviewJugador.dibujar(context, jugador, x1, y1, x2, y2, Math.round(tamActual * zoomVista), anguloVista,
                     (y1 + y2) / 2f, inclinacionVista, focoActual);
         } finally {
+            PreviewJugador.conArmadura = false;
             com.modamod.render.FisicaApliques.modoVistaPrevia = com.modamod.render.FisicaApliques.Modo.QUIETO;
             GarmentFeatureRenderer.previewOverride = null;
             GarmentFeatureRenderer.sombreroOverride = null;

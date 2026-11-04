@@ -255,6 +255,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         }
     }
 
+    /** La holgura de cada fila de una media con volumen; el ribete de piel engrosa las 2 filas del borde de arriba o de abajo. */
+    private static float[] filasDeMedia(Pieza pieza, float base, int desde, int hasta) {
+        float[] dil = new float[12];
+        for (int f = 0; f < 12; f++) dil[f] = CuerpoGeometria.dilTelaFila(base, f);
+        if (hasta - desde > 2) {
+            if (pieza.piel()) for (int f = Math.max(desde, hasta - 2); f < hasta; f++) dil[f] += 0.5F;
+            if (pieza.pielSup()) for (int f = desde; f < Math.min(hasta, desde + 2); f++) dil[f] += 0.5F;
+        }
+        return dil;
+    }
+
     private void render1(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz,
                        T entidad, float limbAngle, float limbDistance, float tickDelta,
                        float animationProgress, float headYaw, float headPitch) {
@@ -1320,7 +1331,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                         ? CuerpoGeometria.telaFruncidaVolumen(parte, base, desde, hasta, pieza.fruncido(), pieza.fruncidoSup(),
                                 conPuntaDeMedia(pieza, parte)) : null;
                 dibujarModelPart(fruncida != null ? fruncida
-                                : CuerpoGeometria.telaConVolumenDePierna(parte, base, conPuntaDeMedia(pieza, parte)),
+                                : CuerpoGeometria.telaConVolumenDePierna(parte, filasDeMedia(pieza, base, desde, hasta), conPuntaDeMedia(pieza, parte)),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
                 for (int f = desde; f < hasta; f++) exterior[f] = Math.max(exterior[f], base);
                 continue;

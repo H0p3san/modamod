@@ -430,7 +430,7 @@ public final class CuerpoGeometria {
         return calce == null ? 1.0F : calce.factorVolumen;
     }
 
-    private static float dilTelaFila(float dilatacionBase, int fila) {
+    static float dilTelaFila(float dilatacionBase, int fila) {
         return dilatacionBase + PERFIL_PIERNA[fila] * factorVolumen(dilatacionBase);
     }
 
@@ -459,7 +459,14 @@ public final class CuerpoGeometria {
      * que la media no suma su punta de tela; la planta de la pierna queda.
      */
     public static ModelPart telaConVolumenDePierna(Parte parte, float dilatacionBase, boolean conPunta) {
-        String key = parte.clave() + "|" + dilatacionBase + (conPunta ? "" : "|sinpunta");
+        float[] dil = new float[12];
+        for (int f = 0; f < 12; f++) dil[f] = dilTelaFila(dilatacionBase, f);
+        return telaConVolumenDePierna(parte, dil, conPunta);
+    }
+
+    /** Igual, con la holgura de cada fila (ribete de piel de la media: las filas del borde más gruesas). */
+    public static ModelPart telaConVolumenDePierna(Parte parte, float[] dilFila, boolean conPunta) {
+        String key = parte.clave() + "|" + java.util.Arrays.toString(dilFila) + (conPunta ? "" : "|sinpunta");
         ModelPart cacheada = RAICES_TELA_VOLUMEN.get(key);
         if (cacheada != null) return cacheada;
 
@@ -473,7 +480,7 @@ public final class CuerpoGeometria {
                     java.util.EnumSet.allOf(net.minecraft.util.math.Direction.class);
             caras.remove(net.minecraft.util.math.Direction.UP);
             if (fila != 0) caras.remove(net.minecraft.util.math.Direction.DOWN);
-            float dil = dilTelaFila(dilatacionBase, fila) * S;
+            float dil = dilFila[fila] * S;
             cuboides.add(new ModelPart.Cuboid(
                     uvX, uvY + fila * S,
                     -2 * S, fila * S, -2 * S,
@@ -481,7 +488,7 @@ public final class CuerpoGeometria {
                     dil, 0F, dil,
                     false, texW, texW, caras));
         }
-        cuboides.addAll(pieDePierna(parte, dilTelaFila(dilatacionBase, 11) * S, conPunta));
+        cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
         ModelPart resultado = new ModelPart(cuboides, java.util.Map.of());
         RAICES_TELA_VOLUMEN.put(key, resultado);
         return resultado;

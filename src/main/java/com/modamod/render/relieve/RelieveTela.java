@@ -97,6 +97,14 @@ public final class RelieveTela {
     /** La textura del molde, en px de la cara. */
     static float texturaEn(TexturaTela textura, float fu, float fv, int ancho) {
         float x = fu * ancho, y = fv * MapaRelieve.FILAS_PX;
+        // El relieve se apaga hacia las aristas de la cara (2026-11-04, "la felpa separa las caras de la remera"): cada cara
+        // se empuja por su normal, y con relieve en el borde las caras vecinas quedaban despegadas con una hendija.
+        float aBorde = Math.min(Math.min(x, ancho - x), Math.min(y, MapaRelieve.FILAS_PX - y));
+        float borde = Math.max(0f, Math.min(1f, aBorde / 1.2f));
+        return borde * texturaBruta(textura, x, y);
+    }
+
+    private static float texturaBruta(TexturaTela textura, float x, float y) {
         return switch (textura) {
             case LISA -> 0f;
             case FRUNCIDO -> {

@@ -19,8 +19,10 @@ public final class Ejes {
     // --- Comunes a varias prendas ---
     public static final EjeDeCorte<Calce> CALCE = EjeDeCorte.enumerado("calce", Calce::values)
             .fabrica(Calce.NORMAL).en(REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, DELANTAL);
+    /** La trama del lado izquierdo (2026-11-04, "left custom y right custom no cambian asimetricamente"); sin valor, vale {@link #RED}. */
+    public static final EjeDeCorte<PatronRed> RED_IZQ = EjeDeCorte.enumerado("red_izq", PatronRed::values);
     public static final EjeDeCorte<PatronRed> RED = EjeDeCorte.enumerado("red", PatronRed::values)
-            .fabrica(PatronRed.LISA).en(REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, DELANTAL);
+            .fabrica(PatronRed.LISA).en(REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, DELANTAL).conOtroLado(RED_IZQ, true);
     /** Un ruedo por borde libre; un molde trae solo los suyos y se suman (ver {@link Ruedos#aplicar}). */
     public static final EjeDeCorte<Map<ZonaRuedo, Ruedo>> RUEDOS = EjeDeCorte.de("ruedos", Ruedos.CODEC);
     /** Cómo se lleva puesta (al derecho o dada vuelta). */

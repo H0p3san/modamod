@@ -124,7 +124,7 @@ public final class PiezasDelMod {
         int[] filas = MediasLargo.filasVisibles(stack, lado);
         Parte piernaParte = lado == Lado.DERECHA ? Parte.PIERNA_DER : Parte.PIERNA_IZQ;
 
-        com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack);
+        com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack, lado);
         boolean ribInf = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.INF_DER : com.modamod.item.ZonaRuedo.INF_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
         boolean ribSup = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.SUP_DER : com.modamod.item.ZonaRuedo.SUP_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
 
@@ -333,7 +333,7 @@ public final class PiezasDelMod {
         int filasTiro = PantalonItem.tiro(stack).filas;
         int[] filasPierna = PantalonItem.filasVisibles(stack, lado);
         Parte piernaParte = lado == Lado.DERECHA ? Parte.PIERNA_DER : Parte.PIERNA_IZQ;
-        com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack);
+        com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack, lado);
         boolean ribBota = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.BOTA_DER : com.modamod.item.ZonaRuedo.BOTA_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
         // Nota: usar Encima acá hace que reducirSiHaceFalta trate al
         // pantalón como si tuviera estampa (8x, sin achicar). Es una
@@ -506,7 +506,7 @@ public final class PiezasDelMod {
         List<ClothingTextureCache.CapaMascara> capas = capasDePatron("calientabrazos", com.modamod.tinturas.TinturasBlockEntity.Categoria.CALIENTABRAZOS, stack, lado);
         int[] filas = CalientabrazosItem.filasVisibles(stack, lado);
         Parte brazoParte = lado == Lado.DERECHA ? Parte.BRAZO_DER : Parte.BRAZO_IZQ;
-        com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack);
+        com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack, lado);
         boolean ribInf = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.INF_DER : com.modamod.item.ZonaRuedo.INF_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
         boolean ribSup = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.SUP_DER : com.modamod.item.ZonaRuedo.SUP_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
         ClothingTextureCache.Encima recorte = new ClothingTextureCache.Encima() {
