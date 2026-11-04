@@ -34,7 +34,10 @@ public class GuardarropasBlockEntity extends BlockEntity implements ExtendedScre
      * prendas sino a todo el outfit"): las piezas que llevaba el jugador, por clave ({@link #clave}): sus slots de ropa del mod, la
      * armadura real y la cosmética. Se MUEVEN al mueble al guardar y vuelven al jugador al ponérselo (nunca se copian).
      */
-    public record Outfit(String nombre, java.util.LinkedHashMap<String, ItemStack> piezas) {}
+    public record Outfit(String nombre, java.util.LinkedHashMap<String, ItemStack> piezas, int fila) {
+        /** Sin fila de armadura guardada ({@code -1}): al ponérselo queda la fila que tenga el jugador. */
+        public Outfit(String nombre, java.util.LinkedHashMap<String, ItemStack> piezas) { this(nombre, piezas, -1); }
+    }
 
     public static final int OUTFITS_MAXIMO = Outfits.MAXIMO;
     /**

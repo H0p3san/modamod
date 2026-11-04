@@ -21,8 +21,9 @@ public record OutfitsDatos(List<Outfit> outfits, Map<UUID, String> ultimos) {
 
     private static final Codec<Outfit> OUTFIT = RecordCodecBuilder.create(i -> i.group(
             Codec.STRING.fieldOf("nombre").forGetter(Outfit::nombre),
-            Codec.unboundedMap(Codec.STRING, ItemStack.CODEC).fieldOf("piezas").forGetter(o -> o.piezas())
-    ).apply(i, (n, m) -> new Outfit(n, new LinkedHashMap<>(m))));
+            Codec.unboundedMap(Codec.STRING, ItemStack.CODEC).fieldOf("piezas").forGetter(o -> o.piezas()),
+            Codec.INT.optionalFieldOf("fila", -1).forGetter(Outfit::fila)
+    ).apply(i, (n, m, f) -> new Outfit(n, new LinkedHashMap<>(m), f)));
 
     public static final Codec<OutfitsDatos> CODEC = RecordCodecBuilder.create(i -> i.group(
             OUTFIT.listOf().fieldOf("outfits").forGetter(OutfitsDatos::outfits),

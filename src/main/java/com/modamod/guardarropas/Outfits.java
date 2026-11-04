@@ -99,6 +99,7 @@ public final class Outfits {
             player.sendMessage(Text.translatable("modamod.guardarropas.lleno", MAXIMO), true);
             return false;
         }
+        int fila = com.modamod.ropa.Cosmeticos.de(player).fila();
         var piezas = sacarTodo(player);
         if (piezas.isEmpty()) {
             player.sendMessage(Text.translatable("modamod.guardarropas.sin_ropa"), true);
@@ -107,7 +108,7 @@ public final class Outfits {
         String n = sinColor(nombre);
         if (n.isEmpty()) n = a.ultimos().getOrDefault(player.getUuid(), "Outfit " + (a.outfits().size() + 1));
         a.ultimos().remove(player.getUuid());
-        a.outfits().add(new Outfit(unico(a, n), piezas));
+        a.outfits().add(new Outfit(unico(a, n), piezas, fila));
         a.guardado();
         return true;
     }
@@ -126,22 +127,27 @@ public final class Outfits {
         // Volver al Anterior no es "ponerse un outfit con nombre": no se recuerda su nombre para el próximo guardado.
         if (ANTERIOR.equals(o.nombre())) a.ultimos().remove(player.getUuid());
         else a.ultimos().put(player.getUuid(), o.nombre());
+        int filaAntes = com.modamod.ropa.Cosmeticos.de(player).fila();
         var llevaba = sacarTodo(player);
         var lugares = lugares(player);
+        if (o.fila() >= 0) {
+            var c = com.modamod.ropa.Cosmeticos.de(player);
+            com.modamod.ropa.Cosmeticos.guardar(player, c.conFila(o.fila()));
+        }
         for (var e : o.piezas().entrySet()) {
             Lugar l = lugares.get(e.getKey());
             if (l != null && l.get().isEmpty()) l.set(e.getValue().copy());
             else player.getInventory().offerOrDrop(e.getValue().copy());
         }
         if (!llevaba.isEmpty() && puesto != null) {
-            a.outfits().add(new Outfit(unico(a, puesto), llevaba));
+            a.outfits().add(new Outfit(unico(a, puesto), llevaba, filaAntes));
         } else if (!llevaba.isEmpty()) {
             // El Anterior de antes (si lo hay) se renombra en su lugar; el nuevo ocupa el primer puesto.
             for (int i = 0; i < a.outfits().size(); i++) {
                 Outfit x = a.outfits().get(i);
-                if (ANTERIOR.equals(x.nombre())) a.outfits().set(i, new Outfit(unico(a, ANTERIOR), x.piezas()));
+                if (ANTERIOR.equals(x.nombre())) a.outfits().set(i, new Outfit(unico(a, ANTERIOR), x.piezas(), x.fila()));
             }
-            a.outfits().add(0, new Outfit(ANTERIOR, llevaba));
+            a.outfits().add(0, new Outfit(ANTERIOR, llevaba, filaAntes));
         }
         a.guardado();
         return true;
