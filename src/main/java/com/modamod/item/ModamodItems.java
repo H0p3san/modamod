@@ -121,6 +121,20 @@ public final class ModamodItems {
             new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.PARCHE_ESTRELLA));
     public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_PARCHE_RAYO = register("molde_aplique_parche_rayo",
             new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.PARCHE_RAYO));
+
+    // Traje de Papá Noel (2026-11-04): pompón, hebilla, barba, bigote y los ribetes de piel del gorro y las botas.
+    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_POMPON = register("molde_aplique_pompon",
+            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.POMPON));
+    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_HEBILLA = register("molde_aplique_hebilla",
+            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.HEBILLA));
+    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_BARBA = register("molde_aplique_barba",
+            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.BARBA));
+    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_BIGOTE = register("molde_aplique_bigote",
+            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.BIGOTE));
+    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_RIBETE_GORRO = register("molde_aplique_ribete_gorro",
+            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.RIBETE_GORRO));
+    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_RIBETE_BOTA = register("molde_aplique_ribete_bota",
+            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.RIBETE_BOTA));
     /** Lo fabrica la Mesa de estilado creativa (2026-10-04); no está en la pestaña creativa. */
     public static final com.modamod.aplique.MoldeApliquePersonalizadoItem MOLDE_APLIQUE_PERSONALIZADO = register(
             "molde_aplique_personalizado",

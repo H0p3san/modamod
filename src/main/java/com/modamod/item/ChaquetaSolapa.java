@@ -13,7 +13,9 @@ public enum ChaquetaSolapa implements StringIdentifiable {
     /** Solapa redondeada (de saco clásico): ancha y sin punta. */
     REDONDA("redonda"),
     /** Solapa chal (esmoquin): una sola curva larga y pareja, hasta la cintura. */
-    CHAL("chal");
+    CHAL("chal"),
+    /** Ribete de piel (2026-11-04): una tira pareja y gruesa a lo largo de todo el borde del frente. */
+    PIEL("piel");
 
     public final String clave;
 

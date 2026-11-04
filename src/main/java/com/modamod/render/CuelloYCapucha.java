@@ -180,6 +180,10 @@ public final class CuelloYCapucha {
     private static final Fila[] SOLAPA_CHAL = {
             new Fila(3.0F, 1.2F), new Fila(2.6F, 1.5F), new Fila(2.2F, 1.5F), new Fila(1.8F, 1.5F), new Fila(1.5F, 1.5F),
             new Fila(1.2F, 1.5F), new Fila(0.9F, 1.4F), new Fila(0.7F, 1.2F), new Fila(0.5F, 1.0F)};
+    /** Ribete de piel: una tira pareja de 1,6 px pegada al borde del frente, de arriba a abajo. */
+    private static final Fila[] SOLAPA_PIEL = {
+            new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F),
+            new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F), new Fila(0.3F, 1.6F)};
     /** Las puntas del cuello de camisa: tres filas que apenas bajan del cuello. */
     private static final Fila[] CUELLO_CAMISA = {new Fila(1.4F, 1.9F), new Fila(1.1F, 1.9F), new Fila(0.8F, 1.4F)};
 
@@ -208,6 +212,7 @@ public final class CuelloYCapucha {
             case PICO -> SOLAPA_PICO;
             case REDONDA -> SOLAPA_REDONDA;
             case CHAL -> SOLAPA_CHAL;
+            case PIEL -> SOLAPA_PIEL;
             case NINGUNA -> new Fila[0];
         };
     }

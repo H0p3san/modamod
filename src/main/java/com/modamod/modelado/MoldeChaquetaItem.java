@@ -25,7 +25,9 @@ public class MoldeChaquetaItem extends Item {
         SOLAPA_NINGUNA(null, null, ChaquetaSolapa.NINGUNA), SOLAPA_PICO(null, null, ChaquetaSolapa.PICO),
         SOLAPA_REDONDA(null, null, ChaquetaSolapa.REDONDA), SOLAPA_CHAL(null, null, ChaquetaSolapa.CHAL),
         // Frentes nuevos (2026-10-08): al final.
-        FRENTE_CRUZADA(ChaquetaFrente.CRUZADA, null, null), FRENTE_ABIERTA_PECHO(ChaquetaFrente.ABIERTA_PECHO, null, null);
+        FRENTE_CRUZADA(ChaquetaFrente.CRUZADA, null, null), FRENTE_ABIERTA_PECHO(ChaquetaFrente.ABIERTA_PECHO, null, null),
+        // Ribete de piel del frente (2026-11-04).
+        SOLAPA_PIEL(null, null, ChaquetaSolapa.PIEL);
 
         public final ChaquetaFrente frente;
         public final Boolean capucha;

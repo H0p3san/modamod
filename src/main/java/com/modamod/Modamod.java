@@ -117,6 +117,12 @@ public class Modamod implements ModInitializer {
             entries.add(ModamodItems.MOLDE_APLIQUE_BOLSILLO_TAPA);
             entries.add(ModamodItems.MOLDE_APLIQUE_BOLSILLO_JEAN);
             entries.add(ModamodItems.MOLDE_APLIQUE_TACHA);
+            entries.add(ModamodItems.MOLDE_APLIQUE_POMPON);
+            entries.add(ModamodItems.MOLDE_APLIQUE_HEBILLA);
+            entries.add(ModamodItems.MOLDE_APLIQUE_BARBA);
+            entries.add(ModamodItems.MOLDE_APLIQUE_BIGOTE);
+            entries.add(ModamodItems.MOLDE_APLIQUE_RIBETE_GORRO);
+            entries.add(ModamodItems.MOLDE_APLIQUE_RIBETE_BOTA);
             entries.add(ModamodItems.MOLDE_APLIQUE_TACHAS);
             entries.add(ModamodItems.MOLDE_APLIQUE_PARCHE_CORAZON);
             entries.add(ModamodItems.MOLDE_APLIQUE_PARCHE_ESTRELLA);
@@ -373,6 +379,7 @@ public class Modamod implements ModInitializer {
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_CHAQUETA_SOLAPA_PICO);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_CHAQUETA_SOLAPA_REDONDA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_CHAQUETA_SOLAPA_CHAL);
+            entries.add(com.modamod.modelado.ModeladoMod.MOLDE_CHAQUETA_SOLAPA_PIEL);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_CHAQUETA_FRENTE_CRUZADA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_CHAQUETA_FRENTE_ABIERTA_PECHO);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BANDA_ANCHO_FINO);

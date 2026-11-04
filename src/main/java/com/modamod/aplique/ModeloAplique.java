@@ -34,7 +34,13 @@ public enum ModeloAplique implements StringIdentifiable {
     /** Parches bordados (2026-10-22): relleno en la zona 1 y el borde bordado en la zona 2. */
     PARCHE_CORAZON("parche_corazon"),
     PARCHE_ESTRELLA("parche_estrella"),
-    PARCHE_RAYO("parche_rayo");
+    PARCHE_RAYO("parche_rayo"),
+    POMPON("pompon"),
+    HEBILLA("hebilla"),
+    BARBA("barba"),
+    BIGOTE("bigote"),
+    RIBETE_GORRO("ribete_gorro"),
+    RIBETE_BOTA("ribete_bota");
 
     public final String clave;
 

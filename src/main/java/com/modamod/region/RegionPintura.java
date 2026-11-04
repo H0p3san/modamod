@@ -50,7 +50,9 @@ public enum RegionPintura implements StringIdentifiable {
     ZONA_1("zona_1"), ZONA_2("zona_2"), ZONA_3("zona_3"), ZONA_4("zona_4"), ZONA_5("zona_5"), ZONA_6("zona_6"),
     // Una pierna o un brazo entero (rediseño, "que se pueda aplicar a la media derecha o izquierda entera"): las dos
     // mitades de SUP/INF juntas. Nuevos al final.
-    LADO_IZQ("lado_izq"), LADO_DER("lado_der");
+    LADO_IZQ("lado_izq"), LADO_DER("lado_der"),
+    // El ribete de piel del frente de la chaqueta (2026-11-04): solapa de tipo PIEL, cerrada y abierta. Nuevos al final.
+    SOLAPA_PIEL("solapa_piel"), SOLAPA_PIEL_ABIERTA("solapa_piel_abierta");
 
     public final String clave;
 
@@ -72,7 +74,7 @@ public enum RegionPintura implements StringIdentifiable {
     private static final int FILAS_BORDE = 2;
 
     /** Filas del frente donde puede caer una solapa (la más larga, el chal, baja 9). */
-    private static final int FILAS_SOLAPA = 10;
+    private static final int FILAS_SOLAPA = 12;
 
     /** Filas de frente/espalda donde puede caer el recorte del escote (la V baja hasta acá). */
     private static final int FILAS_ESCOTE = 6;
@@ -86,7 +88,7 @@ public enum RegionPintura implements StringIdentifiable {
     public boolean esSolapaConTipo() {
         return switch (this) {
             case SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL, SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA, SOLAPA_CHAL_ABIERTA,
-                 SOLAPA_CAMISA -> true;
+                 SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA, SOLAPA_CAMISA -> true;
             default -> false;
         };
     }
@@ -97,13 +99,14 @@ public enum RegionPintura implements StringIdentifiable {
             case SOLAPA_PICO, SOLAPA_PICO_ABIERTA -> com.modamod.item.ChaquetaSolapa.PICO;
             case SOLAPA_REDONDA, SOLAPA_REDONDA_ABIERTA -> com.modamod.item.ChaquetaSolapa.REDONDA;
             case SOLAPA_CHAL, SOLAPA_CHAL_ABIERTA -> com.modamod.item.ChaquetaSolapa.CHAL;
+            case SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA -> com.modamod.item.ChaquetaSolapa.PIEL;
             default -> null;
         };
     }
 
     /** ¿Con el frente abierto? (la solapa se pega al borde de la apertura, 1 px del centro). */
     public boolean solapaAbierta() {
-        return this == SOLAPA_PICO_ABIERTA || this == SOLAPA_REDONDA_ABIERTA || this == SOLAPA_CHAL_ABIERTA;
+        return this == SOLAPA_PICO_ABIERTA || this == SOLAPA_REDONDA_ABIERTA || this == SOLAPA_CHAL_ABIERTA || this == SOLAPA_PIEL_ABIERTA;
     }
 
     /** La variante de esta región para una prenda con ese tipo de solapa y frente; null si no tiene solapas. */
@@ -113,6 +116,7 @@ public enum RegionPintura implements StringIdentifiable {
             case PICO -> abierta ? SOLAPA_PICO_ABIERTA : SOLAPA_PICO;
             case REDONDA -> abierta ? SOLAPA_REDONDA_ABIERTA : SOLAPA_REDONDA;
             case CHAL -> abierta ? SOLAPA_CHAL_ABIERTA : SOLAPA_CHAL;
+            case PIEL -> abierta ? SOLAPA_PIEL_ABIERTA : SOLAPA_PIEL;
             case NINGUNA -> null;
         };
     }
@@ -132,7 +136,7 @@ public enum RegionPintura implements StringIdentifiable {
             case TODO, CAPA_EXTERIOR, CAPA_FORRO, CAPA_DETALLES, DELANTAL_PETO, DELANTAL_FALDA,
                  ZONA_1, ZONA_2, ZONA_3, ZONA_4, ZONA_5, ZONA_6 -> null;
             case CUELLO, BORDE_INFERIOR, PECHO, CINTURA, SOLAPAS, SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL,
-                 SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA, SOLAPA_CHAL_ABIERTA, SOLAPA_CAMISA -> Parte.TORSO;
+                 SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA, SOLAPA_CHAL_ABIERTA, SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA, SOLAPA_CAMISA -> Parte.TORSO;
             case MANGA_IZQ -> Parte.BRAZO_IZQ;
             case MANGA_DER -> Parte.BRAZO_DER;
             case SUP_IZQ, INF_IZQ, LADO_IZQ -> cat == Categoria.CALIENTABRAZOS ? Parte.BRAZO_IZQ : Parte.PIERNA_IZQ;
@@ -153,7 +157,7 @@ public enum RegionPintura implements StringIdentifiable {
             // borde del escote (se pinta encima, ver requiereBordeCuello).
             case PECHO -> new int[]{0, 12 - FILAS_BORDE};
             case SOLAPAS, SOLAPA_PICO, SOLAPA_REDONDA, SOLAPA_CHAL, SOLAPA_PICO_ABIERTA, SOLAPA_REDONDA_ABIERTA,
-                 SOLAPA_CHAL_ABIERTA, SOLAPA_CAMISA -> new int[]{0, FILAS_SOLAPA};
+                 SOLAPA_CHAL_ABIERTA, SOLAPA_PIEL, SOLAPA_PIEL_ABIERTA, SOLAPA_CAMISA -> new int[]{0, FILAS_SOLAPA};
             case CINTURA -> new int[]{12 - FILAS_CINTURA, 12};
         };
     }
