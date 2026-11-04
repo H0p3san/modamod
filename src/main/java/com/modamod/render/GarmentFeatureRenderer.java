@@ -207,15 +207,37 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      */
     public static List<ItemStack> conVista(List<ItemStack> puestas, ItemStack vista) {
         List<ItemStack> out = new ArrayList<>(puestas);
-        int donde = out.size();
+        int donde = -1;
         for (int i = out.size() - 1; i >= 0; i--) {
             if (out.get(i).getItem().getClass() == vista.getItem().getClass()) {
                 out.remove(i);
                 donde = i;
             }
         }
+        if (donde < 0) {
+            // Sin ninguna de su clase puesta (2026-11-04): va arriba de lo que por naturaleza va debajo de ella y debajo de lo que va encima.
+            int rango = rangoDeCapa(vista);
+            donde = 0;
+            while (donde < out.size() && rangoDeCapa(out.get(donde)) <= rango) donde++;
+        }
         out.add(Math.min(donde, out.size()), vista);
         return out;
+    }
+
+    /** Qué tan por fuera va una prenda de cuerpo por naturaleza: medias y pantalón por dentro, remera, calientabrazos, pollera, capa y delantal por fuera. */
+    private static int rangoDeCapa(ItemStack s) {
+        var cat = com.modamod.prenda.Prendas.categoria(s);
+        if (cat == null) return 3;
+        return switch (cat) {
+            case MEDIAS -> 0;
+            case PANTALON -> 1;
+            case POLLERA -> 2;
+            case REMERA -> 3;
+            case CALIENTABRAZOS -> 4;
+            case CAPA -> 5;
+            case DELANTAL -> 6;
+            default -> 3;
+        };
     }
 
     public void render0(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz,
@@ -1385,6 +1407,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 }
             }
 
+            // Lo que de verdad se infló cada fila (calce, caída, ruedos, lo de abajo que empuja): los apliques se apoyan ahí
+            // (2026-11-04, "los apliques en partes ensanchadas quedan debajo del modelo").
+            ApliqueRenderer.registrarFilas(origen.get(pieza), parte, fila, dilColgado);
             // Los costados que dan al cuerpo (torso ↔ brazos) casi no se inflan
             // (2026-10-02, "probar no ensanchar los lados internos que coexisten
             // en torso y brazos"): una manga holgada y el torso holgado se metían
@@ -1422,7 +1447,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                 ? CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
                                         costadoInterno ? interno : -1F)
                                 : CuerpoGeometria.telaPorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F),
+                                        costadoInterno ? interno : -1F, pieza.capa() == Capa.MANGA_INTERIOR && esBrazo),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
             }
             // Los escalones hacia adentro (el puño o el ruedo elástico aprietan de golpe): el borde de la fila de arriba

@@ -95,9 +95,9 @@ public final class ApliqueRenderer {
             if (!com.modamod.prenda.Prendas.es(arriba, com.modamod.prenda.CategoriaDePrenda.REMERA)) continue;
             if (com.modamod.item.TopCorte.frente(arriba) == com.modamod.item.ChaquetaFrente.ABIERTA) continue;
             float d = Math.max(0f, Calce.dilatacionEfectiva(arriba));
-            if (d > dil) tela = Math.min(tela, d);
+            tela = Math.min(tela, d);
         }
-        return tela == Float.MAX_VALUE ? tela : Math.max(0.05f, tela - dil - 0.02f - 0.05f);
+        return tela == Float.MAX_VALUE ? tela : Math.max(0.04f, tela - dil - 0.02f - 0.05f);
     }
 
     /** Grosor máximo (px) de los apliques del torso que se están dibujando, o {@link Float#MAX_VALUE} (ver {@link #espacioBajoLaDeArriba}). */
@@ -108,6 +108,29 @@ public final class ApliqueRenderer {
      */
     private static float[] bordeApertura;
     private static final int FILAS_POR_PX = 4;
+
+    /** Lo que de verdad se infló cada fila de cada parte de cada prenda en este cuadro (la anotan las piezas al dibujarse). */
+    private static final java.util.Map<ItemStack, java.util.Map<Parte, float[]>> FILAS_REALES = new java.util.IdentityHashMap<>();
+    private static ItemStack prendaActual;
+
+    static void registrarFilas(ItemStack prenda, Parte parte, float[] fila, float colgado) {
+        if (prenda == null) return;
+        if (FILAS_REALES.size() > 64) FILAS_REALES.clear();
+        float[] copia = java.util.Arrays.copyOf(fila, 13);
+        copia[12] = colgado;
+        FILAS_REALES.computeIfAbsent(prenda, k -> new java.util.EnumMap<>(Parte.class)).put(parte, copia);
+    }
+
+    /** Cuánto sale de verdad la tela de la prenda en la altura del aplique: lo mayor entre la holgura de su calce y la de su fila. */
+    private static float dilatacionReal(Aplique a, float dil) {
+        if (prendaActual == null || a.parte() == Parte.CABEZA) return dil;
+        java.util.Map<Parte, float[]> m = FILAS_REALES.get(prendaActual);
+        float[] f = m == null ? null : m.get(a.parte());
+        if (f == null) return dil;
+        float y = a.y();
+        float real = y >= 12f ? f[12] : f[Math.max(0, Math.min(11, (int) Math.floor(y)))];
+        return Math.max(dil, real);
+    }
 
     /**
      * Los apliques de caja de un ítem con {@code dil} de inflado: las prendas
@@ -131,6 +154,7 @@ public final class ApliqueRenderer {
         // El marco del cuerpo (antes de la pose de cada parte): a él pertenecen los desplazamientos de la tela blanda.
         Matrix3f marco = new Matrix3f(matrices.peek().getNormalMatrix());
         if (apliques != null) {
+            prendaActual = item;
             bordeApertura = com.modamod.prenda.Prendas.es(item, com.modamod.prenda.CategoriaDePrenda.REMERA)
                     && com.modamod.item.TopCorte.frente(item).abre() ? CuelloYCapucha.bordeDelEscote(item) : null;
             try {
@@ -140,6 +164,7 @@ public final class ApliqueRenderer {
                 }
             } finally {
                 bordeApertura = null;
+                prendaActual = null;
             }
         }
         // Correas libres (2026-10-05): comparten el marco y la tela blanda de los apliques.
@@ -213,7 +238,7 @@ public final class ApliqueRenderer {
         parte.rotate(matrices);
         // Sobre la superficie de la tela: el punto del click (en la caja sin
         // inflar) corrido hacia afuera lo que infla el calce, + un pelito.
-        float afuera = dil + 0.02f;
+        float afuera = dilatacionReal(a, dil) + 0.02f;
         // Sobre el busto (2026-10-02, "hay que contemplar los pechos para los
         // apliques"): el punto se guarda en el frente plano del torso y, si hay
         // busto, se apoya en la cúpula y rebota con ella. Sin busto, plano.

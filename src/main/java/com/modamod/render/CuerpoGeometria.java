@@ -756,8 +756,14 @@ public final class CuerpoGeometria {
      */
     public static ModelPart telaPorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
                                          float dilColgado, float interno) {
+        return telaPorFilas(parte, slim, dilFila, hasta, colgado, dilColgado, interno, false);
+    }
+
+    /** {@code tapaMano}: un guante (calientabrazos que llega a la mano) cierra también la tapa de abajo del brazo. */
+    public static ModelPart telaPorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
+                                         float dilColgado, float interno, boolean tapaMano) {
         String key = parte.clave() + "|" + slim + "|" + java.util.Arrays.toString(dilFila) + "|" + hasta
-                + "|" + colgado + "|" + dilColgado + "|" + interno;
+                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano;
         ModelPart cacheada = RAICES_TELA_POR_FILAS.get(key);
         if (cacheada != null) return cacheada;
         // Cada combinación de calces/largos/capas es una entrada: tope para
@@ -816,7 +822,7 @@ public final class CuerpoGeometria {
                     false, texW, texW, costados));
         }
 
-        if (!brazo && hasta >= 12 && colgado == 0) {
+        if ((!brazo || tapaMano) && hasta >= 12 && colgado == 0) {
             float dilAbajo = dilFila[11] * S;
             boolean pierna = parte == Parte.PIERNA_DER || parte == Parte.PIERNA_IZQ;   // una pierna no baja del piso
             cuboides.add(new ModelPart.Cuboid(
