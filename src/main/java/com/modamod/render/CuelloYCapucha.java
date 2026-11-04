@@ -61,10 +61,17 @@ public final class CuelloYCapucha {
     /** Sobre una cabeza de CARAS la capucha crece un 10 % desde el cuello: ya les queda holgada salvo al robot. */
     private static final float CAPUCHA_CARAS = 1.1F;
 
-    /** Con casco, la capucha crece desde el cuello para taparlo (infla 1 px por lado sobre los 4 de media cabeza): un 25 %. */
-    private static float capuchaConCasco() {
-        return 1F + GarmentFeatureRenderer.armaduraCasco / 4F;
+    /**
+     * La capucha está hecha a la medida de un casco (2026-11-04, "ya estaba calibrada para tener un casco adentro... bajala
+     * sin casco"): con casco va tal cual; sin casco se achica desde el cuello lo que infla el casco (1 px por lado sobre los 4
+     * de media cabeza), y sobre una cabeza de CARAS crece un 10 % desde ahí.
+     */
+    private static void escalarCapucha(MatrixStack matrices, BipedEntityModel<?> biped) {
+        if (GarmentFeatureRenderer.armaduraCasco > 0F) return;
+        CabezaCaras.escalar(matrices, biped, SIN_CASCO * (CabezaCaras.puesta(biped) ? CAPUCHA_CARAS : 1F));
     }
+
+    private static final float SIN_CASCO = 4F / 5F;
 
     /** Dibuja cuello de polera, capucha y cordones de lo que haya en {@code prendas}. */
     public static void dibujar(List<ItemStack> prendas, BipedEntityModel<?> biped, MatrixStack matrices,
@@ -103,7 +110,7 @@ public final class CuelloYCapucha {
             // Zona Detalles, como la capucha caída (2026-10-23, "la capucha no esta agarrando color").
             Identifier tela = telaDePieza(capa, color, false, com.modamod.region.RegionPintura.CAPA_DETALLES);
             matrices.push();
-            CabezaCaras.agrandar(matrices, biped, CAPUCHA_CARAS, capuchaConCasco());
+            escalarCapucha(matrices, biped);
             conApliques(capa, matrices, vertexConsumers, luz, () -> CapuchaArchivo.puestaCapa(TopCorte.estiloCapucha(capa), tela,
                     0F, biped.head, matrices, vertexConsumers, luz));
             matrices.pop();
@@ -127,7 +134,7 @@ public final class CuelloYCapucha {
                 if (CabezaCaras.visible(biped)) {
                     ItemStack top = chaqueta;
                     matrices.push();
-                    CabezaCaras.agrandar(matrices, biped, CAPUCHA_CARAS, capuchaConCasco());
+                    escalarCapucha(matrices, biped);
                     conApliques(top, matrices, vertexConsumers, luz,
                             () -> CapuchaArchivo.puesta(TopCorte.estiloCapucha(top), tela, d, biped.head, matrices, vertexConsumers, luz));
                     matrices.pop();

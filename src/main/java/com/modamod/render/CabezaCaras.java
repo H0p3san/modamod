@@ -23,13 +23,12 @@ public final class CabezaCaras {
 
     /** Con una cabeza de CARAS, agranda lo que se dibuje después {@code k} veces desde el cuello (el pivote de la cabeza). */
     public static void agrandar(MatrixStack matrices, BipedEntityModel<?> biped, float k) {
-        agrandar(matrices, biped, k, 1F);
+        if (puesta(biped) && k > 1F) escalar(matrices, biped, k);
     }
 
-    /** Lo mismo, y al menos {@code minimo} veces aunque no haya cabeza de CARAS (el casco, 2026-10-28): el mayor, no se suman. */
-    public static void agrandar(MatrixStack matrices, BipedEntityModel<?> biped, float k, float minimo) {
-        k = Math.max(puesta(biped) ? k : 1F, minimo);
-        if (k <= 1F) return;
+    /** Escala lo que se dibuja en la cabeza {@code k} veces desde el cuello (achica con menos de 1). */
+    public static void escalar(MatrixStack matrices, BipedEntityModel<?> biped, float k) {
+        if (k == 1F) return;
         float px = biped.head.pivotX / 16F, py = biped.head.pivotY / 16F, pz = biped.head.pivotZ / 16F;
         matrices.translate(px, py, pz);
         matrices.scale(k, k, k);
