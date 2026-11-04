@@ -40,7 +40,7 @@ public class MoldeSombreroItem extends Item {
         ESTILO_CAJAS(SombreroEstilo.CAJAS),
         // Segundo lote (2026-10-14): ala larga, planta redonda, ala gruesa y la banda.
         ALA_LARGA(SombreroAla.LARGA), PLANTA_REDONDA(SombreroPlanta.REDONDA),
-        GROSOR_GRUESA(SombreroGrosor.GRUESA), BANDA_PONER(true);
+        GROSOR_GRUESA(SombreroGrosor.GRUESA), BANDA_PONER(true), BANDA_PIEL(true, true);
 
         public final SombreroAla ala;
         public final SombreroPunta punta;
@@ -49,6 +49,8 @@ public class MoldeSombreroItem extends Item {
         public final SombreroGrosor grosor;
         /** Solo el molde de la banda: true = ponerla. */
         public final Boolean banda;
+        /** Solo el molde de la banda de piel: gruesa y peluda. */
+        public boolean piel;
 
         Tipo(SombreroAla ala, SombreroPunta punta, SombreroPlanta planta, SombreroEstilo estilo, SombreroGrosor grosor, Boolean banda) {
             this.ala = ala;
@@ -65,6 +67,7 @@ public class MoldeSombreroItem extends Item {
         Tipo(SombreroEstilo estilo) { this(null, null, null, estilo, null, null); }
         Tipo(SombreroGrosor grosor) { this(null, null, null, null, grosor, null); }
         Tipo(boolean banda) { this(null, null, null, null, null, banda); }
+        Tipo(boolean banda, boolean piel) { this(banda); this.piel = piel; }
 
         public boolean esAla() { return ala != null; }
         public boolean esPunta() { return punta != null; }

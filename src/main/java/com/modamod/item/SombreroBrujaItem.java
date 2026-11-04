@@ -53,6 +53,11 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
         else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);
     }
 
+    /** ¿La banda es de piel (gruesa y peluda)? */
+    public static boolean bandaPiel(ItemStack stack) {
+        return Boolean.TRUE.equals(com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA_PIEL));
+    }
+
     public static SombreroEstilo estilo(ItemStack stack) {
         SombreroEstilo e = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO);
         return e == null ? SombreroEstilo.MALLA : e;

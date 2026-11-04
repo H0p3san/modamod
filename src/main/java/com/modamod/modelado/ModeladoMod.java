@@ -180,6 +180,9 @@ public final class ModeladoMod {
             MoldeSombreroItem.Tipo.PLANTA_REDONDA);
     public static final MoldeSombreroItem MOLDE_SOMBRERO_GROSOR_GRUESA = new MoldeSombreroItem(new Item.Settings().maxCount(1),
             MoldeSombreroItem.Tipo.GROSOR_GRUESA);
+    /** Banda gruesa y peluda, para el gorro de Papá Noel (2026-11-04). */
+    public static final MoldeSombreroItem MOLDE_SOMBRERO_BANDA_PIEL = new MoldeSombreroItem(new Item.Settings().maxCount(1),
+            MoldeSombreroItem.Tipo.BANDA_PIEL);
     public static final MoldeSombreroItem MOLDE_SOMBRERO_BANDA = new MoldeSombreroItem(new Item.Settings().maxCount(1),
             MoldeSombreroItem.Tipo.BANDA_PONER);
 
@@ -464,6 +467,7 @@ public final class ModeladoMod {
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_sombrero_planta_redonda"), MOLDE_SOMBRERO_PLANTA_REDONDA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_sombrero_grosor_gruesa"), MOLDE_SOMBRERO_GROSOR_GRUESA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_sombrero_banda"), MOLDE_SOMBRERO_BANDA);
+        Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_sombrero_banda_piel"), MOLDE_SOMBRERO_BANDA_PIEL);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_banda_zona_cintura"), MOLDE_BANDA_ZONA_CINTURA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_banda_zona_cuello"), MOLDE_BANDA_ZONA_CUELLO);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_banda_ancho_fino"), MOLDE_BANDA_ANCHO_FINO);

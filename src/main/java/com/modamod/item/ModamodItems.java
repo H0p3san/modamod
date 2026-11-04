@@ -131,10 +131,6 @@ public final class ModamodItems {
             new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.BARBA));
     public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_BIGOTE = register("molde_aplique_bigote",
             new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.BIGOTE));
-    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_RIBETE_GORRO = register("molde_aplique_ribete_gorro",
-            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.RIBETE_GORRO));
-    public static final com.modamod.aplique.MoldeApliqueItem MOLDE_APLIQUE_RIBETE_BOTA = register("molde_aplique_ribete_bota",
-            new com.modamod.aplique.MoldeApliqueItem(new Item.Settings().maxCount(1), com.modamod.aplique.ModeloAplique.RIBETE_BOTA));
     /** Lo fabrica la Mesa de estilado creativa (2026-10-04); no está en la pestaña creativa. */
     public static final com.modamod.aplique.MoldeApliquePersonalizadoItem MOLDE_APLIQUE_PERSONALIZADO = register(
             "molde_aplique_personalizado",

@@ -42,7 +42,7 @@ public final class SombreroRenderer {
     private static final float TOPE = 0.6f;
 
     /** Una pieza del sombrero armado y cuánto se baja (px) para apoyar en la copa. */
-    private record Armada(SombreroMalla.Pieza pieza, float dy) {}
+    private record Armada(SombreroMalla.Pieza pieza, float dy, float infla) {}
 
     private static final Map<String, List<Armada>> ARMADOS = new HashMap<>();
 
@@ -53,7 +53,8 @@ public final class SombreroRenderer {
         SombreroPlanta planta = SombreroBrujaItem.planta(sombrero);
         boolean gruesa = SombreroBrujaItem.grosor(sombrero) == com.modamod.item.SombreroGrosor.GRUESA;
         boolean banda = SombreroBrujaItem.banda(sombrero);
-        String clave = ala.clave + "|" + copa.clave + "|" + planta.clave + "|" + gruesa + "|" + banda;
+        boolean piel = banda && SombreroBrujaItem.bandaPiel(sombrero);
+        String clave = ala.clave + "|" + copa.clave + "|" + planta.clave + "|" + gruesa + "|" + banda + "|" + piel;
         List<Armada> hecho = ARMADOS.get(clave);
         if (hecho != null) return hecho;
         List<Armada> out = new ArrayList<>();
@@ -63,7 +64,7 @@ public final class SombreroRenderer {
         } else {
             SombreroMalla.Pieza c = SombreroMalla.de("fina", copa.clave);
             agregar(out, c, 0f);
-            if (banda) agregar(out, SombreroMalla.de("fina", "cinta_" + copa.clave), 0f);
+            if (banda) agregar(out, SombreroMalla.de("fina", "cinta_" + copa.clave), 0f, piel ? PIEL_INFLA : 0f);
             if (ala != SombreroAla.SIN_ALA) {
                 // La carpeta del ala: fina o gruesa, redonda o cuadrada (si hay versión cuadrada de esa ala).
                 String g = gruesa ? "gruesa" : "fina";
@@ -77,8 +78,13 @@ public final class SombreroRenderer {
         return out;
     }
 
-    private static void agregar(List<Armada> out, SombreroMalla.Pieza p, float dy) {
-        if (p != null) out.add(new Armada(p, dy));
+    /** Cuánto (px) se infla la banda de piel hacia afuera: gruesa y peluda. */
+    private static final float PIEL_INFLA = 1.3f;
+
+    private static void agregar(List<Armada> out, SombreroMalla.Pieza p, float dy) { agregar(out, p, dy, 0f); }
+
+    private static void agregar(List<Armada> out, SombreroMalla.Pieza p, float dy, float infla) {
+        if (p != null) out.add(new Armada(p, dy, infla));
     }
 
     public static void dibujar(ItemStack sombrero, BipedEntityModel<?> biped, MatrixStack matrices,
@@ -106,7 +112,7 @@ public final class SombreroRenderer {
             int z = Math.max(0, Math.min(2, a.pieza().zona));
             Identifier tela = ZonaTextura.de(sombrero, z, false);
             VertexConsumer vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(tela));
-            SombreroMalla.dibujar(a.pieza(), a.dy(), m, vc, luz, pitch, roll, cuboides);
+            SombreroMalla.dibujar(a.pieza(), a.dy(), m, vc, luz, pitch, roll, cuboides, a.infla());
         }
         // Gorras con foto de la Sublimadora en el frente de la copa (2026-10-25), a 16x encima del tinte.
         if (SombreroBrujaItem.ala(sombrero).esVisera()) {

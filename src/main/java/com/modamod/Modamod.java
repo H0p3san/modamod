@@ -121,8 +121,6 @@ public class Modamod implements ModInitializer {
             entries.add(ModamodItems.MOLDE_APLIQUE_HEBILLA);
             entries.add(ModamodItems.MOLDE_APLIQUE_BARBA);
             entries.add(ModamodItems.MOLDE_APLIQUE_BIGOTE);
-            entries.add(ModamodItems.MOLDE_APLIQUE_RIBETE_GORRO);
-            entries.add(ModamodItems.MOLDE_APLIQUE_RIBETE_BOTA);
             entries.add(ModamodItems.MOLDE_APLIQUE_TACHAS);
             entries.add(ModamodItems.MOLDE_APLIQUE_PARCHE_CORAZON);
             entries.add(ModamodItems.MOLDE_APLIQUE_PARCHE_ESTRELLA);
@@ -367,6 +365,7 @@ public class Modamod implements ModInitializer {
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_SOMBRERO_PLANTA_REDONDA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_SOMBRERO_GROSOR_GRUESA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_SOMBRERO_BANDA);
+            entries.add(com.modamod.modelado.ModeladoMod.MOLDE_SOMBRERO_BANDA_PIEL);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BANDA_ZONA_CINTURA);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_BANDA_ZONA_CUELLO);
             entries.add(com.modamod.modelado.ModeladoMod.MOLDE_RUEDO_AJUSTADO);

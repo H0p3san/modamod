@@ -352,11 +352,17 @@ final class SombreroMalla {
      * la copa elegida; {@code pitch}/{@code roll} son lo que la tela blanda le suma a cada tramo de la punta.
      */
     static void dibujar(Pieza p, float dy, MatrixStackLike m, VertexConsumer vc, int luz, float pitch, float roll, boolean cuboides) {
+        dibujar(p, dy, m, vc, luz, pitch, roll, cuboides, 0f);
+    }
+
+    /** {@code infla}: px que se empuja cada vértice por su normal (la banda de piel gruesa). */
+    static void dibujar(Pieza p, float dy, MatrixStackLike m, VertexConsumer vc, int luz, float pitch, float roll, boolean cuboides,
+                        float infla) {
         if (cuboides) {
-            emitir(cuboides(p), dy, m, vc, luz, null);
+            emitir(cuboides(p), dy, m, vc, luz, null, infla);
             return;
         }
-        emitir(p.base, dy, m, vc, luz, null);
+        emitir(p.base, dy, m, vc, luz, null, infla);
         for (int i = 0; i < p.punta.size(); i++) {
             Tramo t = p.punta.get(i);
             // El tramo gira sobre su pivote y después lo arrastran los de abajo (la cadena anidada).
@@ -367,7 +373,7 @@ final class SombreroMalla {
                 giros.add(new Quaternionf().rotationZYX(roll * 0.5f, 0f, u.inclinacion + pitch * 0.5f));
                 pivotes.add(new float[] {0f, u.pivoteY, 0f});
             }
-            emitir(t.quads, dy, m, vc, luz, new Object[] {giros, pivotes});
+            emitir(t.quads, dy, m, vc, luz, new Object[] {giros, pivotes}, infla);
         }
     }
 
@@ -442,12 +448,17 @@ final class SombreroMalla {
 
     @SuppressWarnings("unchecked")
     private static void emitir(Quads q, float dy, MatrixStackLike m, VertexConsumer vc, int luz, Object[] cadena) {
+        emitir(q, dy, m, vc, luz, cadena, 0f);
+    }
+
+    private static void emitir(Quads q, float dy, MatrixStackLike m, VertexConsumer vc, int luz, Object[] cadena, float infla) {
         List<Quaternionf> giros = cadena == null ? null : (List<Quaternionf>) cadena[0];
         List<float[]> pivotes = cadena == null ? null : (List<float[]>) cadena[1];
         Vector3f v = new Vector3f(), nv = new Vector3f();
         for (int i = 0; i < q.vertices; i++) {
             v.set(q.pos[i * 3], q.pos[i * 3 + 1], q.pos[i * 3 + 2]);
             nv.set(q.nor[i * 3], q.nor[i * 3 + 1], q.nor[i * 3 + 2]);
+            if (infla != 0f) v.fma(infla, nv);
             if (giros != null) {
                 for (int k = 0; k < giros.size(); k++) {
                     float[] pv = pivotes.get(k);

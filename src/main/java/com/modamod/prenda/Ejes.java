@@ -18,7 +18,7 @@ public final class Ejes {
 
     // --- Comunes a varias prendas ---
     public static final EjeDeCorte<Calce> CALCE = EjeDeCorte.enumerado("calce", Calce::values)
-            .fabrica(Calce.NORMAL).en(REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, DELANTAL);
+            .fabrica(Calce.NORMAL).en(REMERA, PANTALON, MEDIAS, CALIENTABRAZOS, POLLERA, DELANTAL, BANDA);
     /** La trama del lado izquierdo (2026-11-04, "left custom y right custom no cambian asimetricamente"); sin valor, vale {@link #RED}. */
     public static final EjeDeCorte<PatronRed> RED_IZQ = EjeDeCorte.enumerado("red_izq", PatronRed::values);
     public static final EjeDeCorte<PatronRed> RED = EjeDeCorte.enumerado("red", PatronRed::values)
@@ -131,6 +131,8 @@ public final class Ejes {
     public static final EjeDeCorte<SombreroGrosor> SOMBRERO_GROSOR = EjeDeCorte.enumerado("sombrero_grosor", SombreroGrosor::values)
             .fabrica(SombreroGrosor.FINA).en(SOMBRERO);
     public static final EjeDeCorte<Boolean> SOMBRERO_BANDA = EjeDeCorte.bandera("sombrero_banda").fabrica(true).en(SOMBRERO);
+    /** La banda del sombrero de piel: gruesa y peluda (2026-11-04, ribete del gorro de Papá Noel). */
+    public static final EjeDeCorte<Boolean> SOMBRERO_BANDA_PIEL = EjeDeCorte.bandera("sombrero_banda_piel").fabrica(false).en(SOMBRERO);
 
     // --- Banda (choker, cinto) ---
     public static final EjeDeCorte<BandaZona> BANDA_ZONA = EjeDeCorte.enumerado("banda_zona", BandaZona::values)

@@ -38,9 +38,7 @@ public enum ModeloAplique implements StringIdentifiable {
     POMPON("pompon"),
     HEBILLA("hebilla"),
     BARBA("barba"),
-    BIGOTE("bigote"),
-    RIBETE_GORRO("ribete_gorro"),
-    RIBETE_BOTA("ribete_bota");
+    BIGOTE("bigote");
 
     public final String clave;
 

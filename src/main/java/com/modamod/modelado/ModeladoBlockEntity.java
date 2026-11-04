@@ -299,7 +299,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             {Rol.ALA_SOMBRERO, Rol.PUNTA_SOMBRERO, Rol.PLANTA_SOMBRERO, Rol.ESTILO_SOMBRERO, Rol.GROSOR_SOMBRERO, Rol.BANDA_SOMBRERO,
                     Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO},
             // Banda (2026-10-05): Zona, Ancho y Herraje.
-            {Rol.ZONA_BANDA, Rol.ANCHO_BANDA, Rol.HERRAJE_BANDA, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO,
+            {Rol.ZONA_BANDA, Rol.ANCHO_BANDA, Rol.HERRAJE_BANDA, Rol.CALCE, Rol.NINGUNO, Rol.NINGUNO,
                     Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO, Rol.NINGUNO},
             // Borcegos (2026-10-08): Caña, Suela y Botamanga.
             // (2026-10-11, "independizar derecho e izquierdo": un pin por pie; con la simetría activa mandan los dos.)
@@ -1310,7 +1310,10 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         if (t.esPlanta()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, t.planta);
         if (t.esEstilo()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, t.estilo);
         if (t.esGrosor()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, t.grosor);
-        if (t.esBanda()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, t.banda);
+        if (t.esBanda()) {
+            Molde b = Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, t.banda);
+            return new Molde(b.corte().con(com.modamod.prenda.Ejes.SOMBRERO_BANDA_PIEL, t.piel), b.lado(), b.icono());
+        }
         return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PUNTA, t.punta);
     }
 
@@ -1383,7 +1386,10 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case PLANTA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, com.modamod.item.SombreroPlanta.REDONDA);
             case ESTILO_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, com.modamod.item.SombreroEstilo.MALLA);
             case GROSOR_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, com.modamod.item.SombreroGrosor.FINA);
-            case BANDA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);   // el molde en blanco la saca
+            case BANDA_SOMBRERO -> {   // el molde en blanco la saca (y su versión de piel)
+                Molde b = Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);
+                yield new Molde(b.corte().con(com.modamod.prenda.Ejes.SOMBRERO_BANDA_PIEL, false), b.lado(), b.icono());
+            }
             // Rangos y volados (2026-10-12, "vamos con la uno"): el blanco vuelve al largo/tiro de fábrica o quita el volado.
             case TIRO -> Molde.de(com.modamod.prenda.Ejes.TIRO, com.modamod.item.PantalonTiro.MEDIO);
             case BOTA_IZQ, BOTA_DER -> Molde.de(com.modamod.prenda.Ejes.PANTALON_SUPERIOR, com.modamod.item.Botamanga.PIE).conLado(lado);

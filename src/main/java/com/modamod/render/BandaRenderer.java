@@ -46,6 +46,13 @@ public final class BandaRenderer {
         vertexConsumers = EfectoTrim.envolver(banda, vertexConsumers);
 
         BandaZona zona = BandaItem.zona(banda);
+        // Calce del cinto (2026-11-04, "ahora es una gran caja que rodea el cuerpo"): cuánto de la holgura de la ropa de abajo
+        // acompaña. Pegado casi pegado al cuerpo (aprieta la ropa), Oversize un poco más afuera que la ropa.
+        if (zona == BandaZona.CINTURA) {
+            dil = Math.max(0.05f, dil * switch (com.modamod.item.Calce.leer(banda)) {
+                case PEGADO -> 0.2f; case AJUSTADO -> 0.5f; case NORMAL -> 0.75f; case SUELTO -> 1f; case OVERSIZE -> 1.25f;
+            });
+        }
         // Collar y cinto van en el torso (2026-10-11, "che te dije que va anclado en el torso").
         ModelPart marco = biped.body;
         if (!marco.visible) return;

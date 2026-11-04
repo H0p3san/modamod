@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:molde_en_blanco"
+    },
+    {
+      "item": "minecraft:shears"
+    },
+    {
+      "item": "modamod:sombrero_bruja"
+    },
+    {
+      "item": "minecraft:white_wool"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_sombrero_banda_piel",
+    "count": 1
+  }
+}
