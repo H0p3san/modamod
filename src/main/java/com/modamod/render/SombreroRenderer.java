@@ -79,7 +79,7 @@ public final class SombreroRenderer {
     }
 
     /** Cuánto (px) se infla la banda de piel hacia afuera: gruesa y peluda. */
-    private static final float PIEL_INFLA = 1.3f;
+    private static final float PIEL_INFLA = 0.7f;
 
     private static void agregar(List<Armada> out, SombreroMalla.Pieza p, float dy) { agregar(out, p, dy, 0f); }
 

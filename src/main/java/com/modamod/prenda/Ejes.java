@@ -135,6 +135,9 @@ public final class Ejes {
     public static final EjeDeCorte<Boolean> SOMBRERO_BANDA_PIEL = EjeDeCorte.bandera("sombrero_banda_piel").fabrica(false).en(SOMBRERO);
 
     // --- Banda (choker, cinto) ---
+    /** El calce del cinto (2026-11-04): de fábrica Oversize; los moldes de calce lo escriben acá (ver Molde#poner). */
+    public static final EjeDeCorte<Calce> BANDA_CALCE = EjeDeCorte.enumerado("banda_calce", Calce::values)
+            .fabrica(Calce.OVERSIZE).en(BANDA);
     public static final EjeDeCorte<BandaZona> BANDA_ZONA = EjeDeCorte.enumerado("banda_zona", BandaZona::values)
             .fabrica(BandaZona.CINTURA).en(BANDA);
     public static final EjeDeCorte<BandaAncho> BANDA_ANCHO = EjeDeCorte.enumerado("banda_ancho", BandaAncho::values)

@@ -71,7 +71,6 @@ public final class ZonasModelado {
             // Calzado
             {z("cana", Enfoque.PIES, Rol.CANA_BORCEGO_IZQ, Rol.CANA_BORCEGO_DER),
                     z("suela", Enfoque.PIES, Rol.SUELA_BORCEGO_IZQ, Rol.SUELA_BORCEGO_DER),
-                    z("botamanga", Enfoque.PIES, Rol.BOTAMANGA_BORCEGO_IZQ, Rol.BOTAMANGA_BORCEGO_DER),
                     z("punta", Enfoque.PIES, Rol.PUNTA_BORCEGO_IZQ, Rol.PUNTA_BORCEGO_DER),
                     z("cierre", Enfoque.PIES, Rol.CIERRE_BORCEGO_IZQ, Rol.CIERRE_BORCEGO_DER),
                     z("detalle", Enfoque.PIES, Rol.DETALLE_BORCEGO_IZQ, Rol.DETALLE_BORCEGO_DER, Rol.ESTILO_CALZADO)},

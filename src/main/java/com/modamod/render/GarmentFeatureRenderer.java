@@ -281,9 +281,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static float[] filasDeMedia(Pieza pieza, float base, int desde, int hasta) {
         float[] dil = new float[12];
         for (int f = 0; f < 12; f++) dil[f] = CuerpoGeometria.dilTelaFila(base, f);
-        if (hasta - desde > 2) {
-            if (pieza.piel()) for (int f = Math.max(desde, hasta - 2); f < hasta; f++) dil[f] += 0.5F;
-            if (pieza.pielSup()) for (int f = desde; f < Math.min(hasta, desde + 2); f++) dil[f] += 0.5F;
+        // Escalonado suave (2026-11-04, "rompio la continuidad, son cuadraditos flotando"): cada fila del ribete un poco más que la vecina.
+        float[] sube = {0.5F, 0.3F, 0.12F};
+        if (hasta - desde > 3) {
+            if (pieza.piel()) for (int k = 0; k < 3; k++) dil[hasta - 1 - k] += sube[k];
+            if (pieza.pielSup()) for (int k = 0; k < 3; k++) dil[desde + k] += sube[k];
         }
         return dil;
     }
@@ -299,8 +301,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         pantalonSobreCalzado = pantalonSobreElCalzado(entidad);
         // La armadura que se ve infla capa, embozo y capucha (2026-10-28, "que la capa embozo y capucha se inflen mas
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
-        usarArmadura(previewOverride != null ? (com.modamod.client.PreviewJugador.conArmadura
-                        ? ArmaduraVisible.de(entidad::getEquippedStack, 0) : ArmaduraVisible.NINGUNA)
+        // (2026-11-04, "la capa y la capucha se ven mas chicas en la vista previa"): la vista usa lo que infla la armadura del que
+        // mira, la dibuje o no, para que capa, embozo y capucha tengan el tamaño que van a tener en el mundo; sin prendas "encima"
+        // de la armadura, la ropa de cuerpo no se infla por ella.
+        usarArmadura(previewOverride != null ? ArmaduraVisible.de(slot -> piezaVisible(entidad, slot), 0)
                 : ArmaduraVisible.de(slot -> piezaVisible(entidad, slot), com.modamod.ropa.ListaDeRopa.prendasSobreLaArmadura(entidad)),
                 prendas.size());
         // Tela blanda de los apliques (2026-10-04): la inercia de esta entidad, o la de la vista previa.

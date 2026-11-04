@@ -84,6 +84,11 @@ public record Molde(Corte corte, Lado lado, Optional<Identifier> icono) {
     private <T> boolean poner(ItemStack out, CategoriaDePrenda categoria, EjeDeCorte<T> eje, Object crudo) {
         T valor = (T) crudo;
         if (eje == Ejes.RUEDOS) return Ruedos.aplicar(out, (Map<ZonaRuedo, Ruedo>) valor);
+        // El cinto tiene su propio calce, de fábrica Oversize: el molde de calce de siempre lo escribe ahí.
+        if (eje == Ejes.CALCE && categoria == CategoriaDePrenda.BANDA) {
+            Corte.escribir(out, Ejes.BANDA_CALCE, (com.modamod.item.Calce) valor);
+            return true;
+        }
         if (!eje.valeEn(categoria)) return false;
         EjeDeCorte<T> otro = eje.otroLado();
         if (otro == null) Corte.escribir(out, eje, valor);

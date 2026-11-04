@@ -631,7 +631,11 @@ public final class ApliqueRenderer {
             for (GeoQuad quad : cubo.quads()) {
                 if (quad == null) continue;
                 if (zonaTrama >= 0 && zonaDe(quad) != zonaTrama) continue;
+                // Normalizada (2026-11-04, "los apliques salen oscuros en la vista previa"): la matriz de normales de la pila no
+                // viene normalizada cuando la escala no es pareja (la vista de la GUI escala (s, s, -s)), y la luz del shader
+                // espera normales unitarias: sin esto, 1/s de luz = casi negro.
                 Vector3f nq = normales.transform(new Vector3f(quad.normal()));
+                if (nq.lengthSquared() > 1e-12f) nq.normalize();
                 float ax = Math.abs(quad.normal().x()), ay = Math.abs(quad.normal().y()), az = Math.abs(quad.normal().z());
                 for (GeoVertex v : quad.vertices()) {
                     Vector4f p = pos.transform(new Vector4f(v.position().x(), v.position().y(), v.position().z(), 1f));

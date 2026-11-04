@@ -455,10 +455,20 @@ final class SombreroMalla {
         List<Quaternionf> giros = cadena == null ? null : (List<Quaternionf>) cadena[0];
         List<float[]> pivotes = cadena == null ? null : (List<float[]>) cadena[1];
         Vector3f v = new Vector3f(), nv = new Vector3f();
+        float centroY = 0f;
+        if (infla != 0f && q.vertices > 0) {
+            float mn = Float.MAX_VALUE, mx = -Float.MAX_VALUE;
+            for (int i = 0; i < q.vertices; i++) { mn = Math.min(mn, q.pos[i * 3 + 1]); mx = Math.max(mx, q.pos[i * 3 + 1]); }
+            centroY = (mn + mx) / 2f;
+        }
         for (int i = 0; i < q.vertices; i++) {
             v.set(q.pos[i * 3], q.pos[i * 3 + 1], q.pos[i * 3 + 2]);
             nv.set(q.nor[i * 3], q.nor[i * 3 + 1], q.nor[i * 3 + 2]);
-            if (infla != 0f) v.fma(infla, nv);
+            if (infla != 0f) {
+            // La piel engorda hacia afuera y se estira a lo alto desde su centro, así abraza la copa en vez de flotar como un aro.
+            v.fma(infla, nv);
+            v.y = centroY + (v.y - centroY) * (1f + infla * 0.9f);
+        }
             if (giros != null) {
                 for (int k = 0; k < giros.size(); k++) {
                     float[] pv = pivotes.get(k);

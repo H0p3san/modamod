@@ -92,7 +92,9 @@ public enum PatronRed implements StringIdentifiable {
     /** La trama de un lado (medias, calientabrazos, pantalón): la del izquierdo si la tiene, si no la general. */
     public static PatronRed leer(ItemStack stack, com.modamod.region.Lado lado) {
         PatronRed r = lado == com.modamod.region.Lado.IZQUIERDA ? com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.RED_IZQ) : null;
-        return r != null ? r : leer(stack);
+        // El izquierdo en LISA a propósito (sacarle la trama a ese lado) es "sin trama": null, como en el resto del código.
+        if (r != null) return r == LISA ? null : r;
+        return leer(stack);
     }
 
     public static void escribir(ItemStack stack, PatronRed valor) {
