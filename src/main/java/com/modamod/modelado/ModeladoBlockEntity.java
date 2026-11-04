@@ -1175,7 +1175,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             }
             case ESTILO_CALZADO -> {
                 // El mismo molde de cuboides que el sombrero.
-                if (item instanceof MoldeSombreroItem m && m.tipo.esEstilo()) c = Molde.de(com.modamod.prenda.Ejes.BORCEGO_ESTILO, (true) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+                if (item instanceof MoldeSombreroItem m && m.tipo.esEstilo()) c = Molde.de(com.modamod.prenda.Ejes.BORCEGO_ESTILO, com.modamod.item.SombreroEstilo.CAJAS);
             }
             case FORMA_DELANTAL -> {
                 if (item instanceof MoldeFormaDelantalItem m) c = Molde.de(com.modamod.prenda.Ejes.DELANTAL_FORMA, m.valor);
@@ -1300,13 +1300,17 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         return Molde.de(com.modamod.prenda.Ejes.BANDA_HERRAJE, m.tipo.herraje);
     }
 
-    /** El corte de un {@link MoldeSombreroItem} (ala o punta), o null. */
+    /** El corte de un {@link MoldeSombreroItem}: el eje que trae su tipo (ala, punta, planta, estilo, grosor o banda), o null. */
     @Nullable
     private static Molde comboDeMoldeSombrero(Item item) {
         if (!(item instanceof MoldeSombreroItem m)) return null;
-        return m.tipo.esAla() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ALA, m.tipo.ala) : m.tipo.esPlanta() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, (true) ? com.modamod.item.SombreroPlanta.CUADRADA : com.modamod.item.SombreroPlanta.REDONDA)
-                : m.tipo.esEstilo() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, (true) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA) : m.tipo.esGrosor() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, (true) ? com.modamod.item.SombreroGrosor.GRUESA : com.modamod.item.SombreroGrosor.FINA)
-                : m.tipo.esBanda() ? Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, true) : Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PUNTA, m.tipo.punta);
+        var t = m.tipo;
+        if (t.esAla()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ALA, t.ala);
+        if (t.esPlanta()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, t.planta);
+        if (t.esEstilo()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, t.estilo);
+        if (t.esGrosor()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, t.grosor);
+        if (t.esBanda()) return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, t.banda);
+        return Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PUNTA, t.punta);
     }
 
     /** El corte de un {@link MoldeCapaItem} (o del molde de rango, como largo de capa), o null. */
@@ -1324,8 +1328,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case EMBOZO_NINGUNO -> Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, -1);
             case BORDE_EMBOZO -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, true);
             case BORDE_NINGUNO -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, false);
-            case CAPUCHA_MALLA -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (false) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
-            case CAPUCHA_CAJAS -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (true) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+            case CAPUCHA_MALLA -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, com.modamod.item.SombreroEstilo.MALLA);
+            case CAPUCHA_CAJAS -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, com.modamod.item.SombreroEstilo.CAJAS);
         };
     }
 
@@ -1366,7 +1370,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case PUNTA_BORCEGO_IZQ, PUNTA_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_PUNTA, com.modamod.item.CalzadoPunta.CUERO).conLado(lado);
             case CIERRE_BORCEGO_IZQ, CIERRE_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_CIERRE, com.modamod.item.CalzadoCierre.CORDONES).conLado(lado);
             case DETALLE_BORCEGO_IZQ, DETALLE_BORCEGO_DER -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_DETALLE, com.modamod.item.CalzadoDetalle.NINGUNO).conLado(lado);
-            case ESTILO_CALZADO -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_ESTILO, (false) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+            case ESTILO_CALZADO -> Molde.de(com.modamod.prenda.Ejes.BORCEGO_ESTILO, com.modamod.item.SombreroEstilo.MALLA);
             case FORMA_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_FORMA, com.modamod.item.DelantalForma.RECTO);
             case LARGO_DELANTAL -> Molde.nivel(com.modamod.prenda.Ejes.DELANTAL_LARGO, com.modamod.item.DelantalItem.LARGO_DE_FABRICA);
             case INICIO_DELANTAL -> Molde.nivel(com.modamod.prenda.Ejes.DELANTAL_INICIO, com.modamod.item.DelantalItem.INICIO_DE_FABRICA);
@@ -1375,9 +1379,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case COBERTURA_DELANTAL -> Molde.de(com.modamod.prenda.Ejes.DELANTAL_COBERTURA, com.modamod.item.DelantalCobertura.ENVOLVENTE);
             case ALA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ALA, com.modamod.item.SombreroAla.VISERA_CURVA);   // de fábrica: gorra
             case PUNTA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PUNTA, com.modamod.item.SombreroPunta.CUPULA);
-            case PLANTA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, (false) ? com.modamod.item.SombreroPlanta.CUADRADA : com.modamod.item.SombreroPlanta.REDONDA);
-            case ESTILO_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, (false) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
-            case GROSOR_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, (false) ? com.modamod.item.SombreroGrosor.GRUESA : com.modamod.item.SombreroGrosor.FINA);
+            case PLANTA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_PLANTA, com.modamod.item.SombreroPlanta.REDONDA);
+            case ESTILO_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_ESTILO, com.modamod.item.SombreroEstilo.MALLA);
+            case GROSOR_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_GROSOR, com.modamod.item.SombreroGrosor.FINA);
             case BANDA_SOMBRERO -> Molde.de(com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);   // el molde en blanco la saca
             // Rangos y volados (2026-10-12, "vamos con la uno"): el blanco vuelve al largo/tiro de fábrica o quita el volado.
             case TIRO -> Molde.de(com.modamod.prenda.Ejes.TIRO, com.modamod.item.PantalonTiro.MEDIO);
