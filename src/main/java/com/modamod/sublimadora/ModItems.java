@@ -112,14 +112,6 @@ public final class ModItems {
     }
 
     /**
-     * El molde de manga cíclico (único que queda de los cíclicos: el de
-     * cuello y los de largo por valor se retiraron el 2026-09-28, "saca lo
-     * que ya no se usa" — los reemplazan el molde de torso unificado y los
-     * de cuello por valor).
-     */
-    public static final MoldeItem MOLDE_MANGA = molde("manga", MoldeItem.Eje.MANGA);
-
-    /**
      * Moldes de cuello POR VALOR (no cíclicos) — a pedido, mismo cambio
      * que largo/manga. Ver {@link MoldeCuelloItem}.
      */
@@ -136,12 +128,6 @@ public final class ModItems {
             moldeCuello("molde_cuello_corazon", Variante.Cuello.CORAZON);
     public static final MoldeCuelloItem MOLDE_CUELLO_CAMISA =
             moldeCuello("molde_cuello_camisa", Variante.Cuello.CAMISA);
-
-    private static MoldeItem molde(String nombre, MoldeItem.Eje eje) {
-        return Registry.register(Registries.ITEM,
-                Identifier.of(Modamod.MOD_ID, "molde_" + nombre),
-                new MoldeItem(new Item.Settings().maxCount(1), eje));
-    }
 
     private static MoldeCuelloItem moldeCuello(String id, Variante.Cuello valor) {
         return Registry.register(Registries.ITEM,

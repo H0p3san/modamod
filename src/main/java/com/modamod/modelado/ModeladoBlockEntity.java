@@ -6,7 +6,6 @@ import com.modamod.item.ClothingPatternItem;
 import com.modamod.item.PantalonTiro;
 import com.modamod.region.Lado;
 import com.modamod.sublimadora.MoldeCuelloItem;
-import com.modamod.sublimadora.MoldeItem;
 import com.modamod.sublimadora.Variante;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -521,10 +520,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case REMERA -> item instanceof MoldeCuelloItem
                     || item instanceof MoldeChaquetaItem
                     || (item instanceof MoldeCapaItem k && k.tipo == MoldeCapaItem.Tipo.CON_CAPUCHA)
-                    || (item instanceof MoldeItem m && m.eje == MoldeItem.Eje.MANGA)
                     || (item instanceof MoldeRuedoItem r && r.valor.valeEnTela());
-            case PANTALON, MEDIAS -> false;
-            case CALIENTABRAZOS -> item instanceof MoldeItem m && m.eje == MoldeItem.Eje.MANGA;
+            case PANTALON, MEDIAS, CALIENTABRAZOS -> false;
             case POLLERA -> item instanceof MoldePolleraItem || item instanceof MoldeVoladoItem
                     || (item instanceof MoldeRuedoItem q && !q.valor.esDeCapa());
             case CAPA -> item instanceof MoldeCapaItem || (item instanceof MoldeRuedoItem q && q.valor.esDeCapa());
@@ -2312,8 +2309,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
      */
     public static boolean esMolde(ItemStack stack) {
         Item item = stack.getItem();
-        return item instanceof MoldeItem
-                || (item instanceof MoldeEnBlancoItem b && (b.tipo == MoldeEnBlancoItem.Tipo.MOLDE || b.tipo == MoldeEnBlancoItem.Tipo.TRAMA))
+        return (item instanceof MoldeEnBlancoItem b && (b.tipo == MoldeEnBlancoItem.Tipo.MOLDE || b.tipo == MoldeEnBlancoItem.Tipo.TRAMA))
                 || item instanceof MoldeRangoItem
                 || item instanceof MoldeCalceItem || item instanceof MoldeRedItem
                 || item instanceof MoldeCuelloItem

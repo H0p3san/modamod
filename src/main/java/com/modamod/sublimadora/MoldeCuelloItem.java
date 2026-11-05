@@ -12,9 +12,8 @@ import java.util.List;
 /**
  * Molde de cuello: FIJA un valor de {@link Variante.Cuello}, no cicla — a
  * pedido, mismo cambio que ya tuvieron largo y manga (un ítem por valor en
- * vez de un dial cíclico). {@link MoldeItem} (eje CUELLO) sigue existiendo
- * y cíclico para quien lo prefiera; este es la alternativa "elegís por
- * nombre" para la Mesa de Modelado.
+ * vez de un dial cíclico; los moldes cíclicos se retiraron del todo el
+ * 2026-11-05).
  */
 public class MoldeCuelloItem extends Item {
 
