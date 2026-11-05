@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "modamod:molde_aplique_bolsillo_jean"
+      }
+    },
+    "has_plantilla_en_blanco": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "modamod:plantilla_en_blanco"
+          }
+        ]
+      }
+    },
+    "has_blue_dye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:blue_dye"
+          }
+        ]
+      }
+    },
+    "has_wool": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#minecraft:wool"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_plantilla_en_blanco",
+      "has_blue_dye",
+      "has_wool"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "modamod:molde_aplique_bolsillo_jean"
+    ]
+  }
+}

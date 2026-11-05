@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "modamod:molde_mascara_cuadrado"
+      }
+    },
+    "has_mascara_en_blanco": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "modamod:mascara_en_blanco"
+          }
+        ]
+      }
+    },
+    "has_shears": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:shears"
+          }
+        ]
+      }
+    },
+    "has_brick": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:brick"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_mascara_en_blanco",
+      "has_shears",
+      "has_brick"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "modamod:molde_mascara_cuadrado"
+    ]
+  }
+}

@@ -232,6 +232,31 @@ public final class MotorPruebas {
             inf.ok("relieve bajo la tela", "cuerpo plano en las filas tapadas, intacto en el resto");
         } catch (Throwable t) { inf.fallo("relieve bajo la tela", t.toString()); }
 
+        // Logros de recetas (2026-11-05, "aparecen luego de craftearlas"): cada receta tiene el suyo, que la desbloquea en el
+        // libro al conseguir un ingrediente. Si falla: python scripts/generar_logros_recetas.py
+        try {
+            Path recetas = Path.of(MotorPruebas.class.getClassLoader().getResource("data/modamod/recipe").toURI());
+            Path logros = recetas.resolveSibling("advancement").resolve("recipes");
+            java.util.Set<String> premiadas = new java.util.HashSet<>();
+            try (var archivos = Files.walk(logros)) {
+                for (Path p : (Iterable<Path>) archivos.filter(x -> x.toString().endsWith(".json"))::iterator) {
+                    var json = com.google.gson.JsonParser.parseString(Files.readString(p)).getAsJsonObject();
+                    for (var r : json.getAsJsonObject("rewards").getAsJsonArray("recipes")) premiadas.add(r.getAsString());
+                }
+            }
+            List<String> sinLogro = new java.util.ArrayList<>();
+            int total = 0;
+            try (var archivos = Files.list(recetas)) {
+                for (Path p : (Iterable<Path>) archivos.filter(x -> x.toString().endsWith(".json"))::iterator) {
+                    total++;
+                    String id = "modamod:" + p.getFileName().toString().replace(".json", "");
+                    if (!premiadas.contains(id)) sinLogro.add(id);
+                }
+            }
+            Informe.verificar(sinLogro.isEmpty(), "recetas sin logro (correr scripts/generar_logros_recetas.py): " + sinLogro);
+            inf.ok("logros de recetas", total + " recetas, todas con su logro");
+        } catch (Throwable t) { inf.fallo("logros de recetas", t.toString()); }
+
         Path dir = Path.of("").toAbsolutePath().resolve("pruebas");
         Files.createDirectories(dir);
         inf.escribir(dir);
