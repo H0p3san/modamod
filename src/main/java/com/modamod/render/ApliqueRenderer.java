@@ -632,7 +632,8 @@ public final class ApliqueRenderer {
             // matriz con determinante negativo devuelve las normales al revés (la inversa transpuesta de un espejo
             // invierte el sentido), así que el parche quedaba iluminado por detrás. En el mundo el jugador va con
             // (−1, −1, 1): dos espejos, determinante positivo, nada que corregir.
-            float signo = pos.determinant() < 0f ? -1f : 1f;
+            boolean enVisor = pos.determinant() < 0f;
+            float signo = enVisor ? -1f : 1f;
             for (GeoQuad quad : cubo.quads()) {
                 if (quad == null) continue;
                 if (zonaTrama >= 0 && zonaDe(quad) != zonaTrama) continue;
@@ -662,13 +663,13 @@ public final class ApliqueRenderer {
                         else if (ax >= ay) { u = 0.5f + pz; t = 0.5f - py; }
                         else { u = 0.5f + px; t = 0.5f + pz; }
                     }
-                    // Sin sombra (2026-11-04, "va variando según roto, ¿y si le sacamos la sombra?"): un parche es una
-                    // calcomanía pegada a la prenda y su brillo cambiaba con cada rotación del modelo. Con la normal
-                    // siempre hacia arriba, la luz difusa le da de lleno y el aplique se ve igual en cualquier pose; la
-                    // luz del lugar (el bloque) sigue valiendo. La normal de verdad (nq) se sigue usando para despegar
-                    // la pasada de tramas de la tela.
+                    // Sin sombra SOLO en la vista previa (2026-11-04, "eso es solo para la vista previa, no para el
+                    // mundo"): ahí el parche cambiaba de brillo con cada rotación de la figura, así que va con la normal
+                    // hacia arriba y la luz difusa le da siempre de lleno. En el mundo lleva su normal de verdad y se
+                    // sombrea como el resto de la ropa. El espejo del visor es justo lo que distingue un caso del otro.
                     vc.vertex(p.x(), p.y(), p.z()).color(0xFFFFFFFF).texture(u, t)
-                            .overlay(OverlayTexture.DEFAULT_UV).light(luz).normal(0f, 1f, 0f);
+                            .overlay(OverlayTexture.DEFAULT_UV).light(luz)
+                            .normal(enVisor ? 0f : nq.x(), enVisor ? 1f : nq.y(), enVisor ? 0f : nq.z());
                 }
             }
             matrices.pop();
