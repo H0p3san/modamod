@@ -874,8 +874,14 @@ public final class CuerpoGeometria {
      */
     public static ModelPart telaSuavePorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
                                               float dilColgado, float interno) {
+        return telaSuavePorFilas(parte, slim, dilFila, hasta, colgado, dilColgado, interno, false);
+    }
+
+    /** {@code tapaMano}: un guante cierra la mano también en la malla (2026-11-04, "¿cómo tapo las tapas?"). */
+    public static ModelPart telaSuavePorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
+                                              float dilColgado, float interno, boolean tapaMano) {
         String key = "suave|" + parte.clave() + "|" + slim + "|" + java.util.Arrays.toString(dilFila) + "|" + hasta
-                + "|" + colgado + "|" + dilColgado + "|" + interno;
+                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano;
         ModelPart cacheada = RAICES_TELA_POR_FILAS.get(key);
         if (cacheada != null) return cacheada;
         PlantillaCuerpo t = PLANTILLAS_TELA.get(nombre(parte, slim));
@@ -971,6 +977,34 @@ public final class CuerpoGeometria {
                 q[m] = new float[]{ps[m][0], r0.y, ps[m][1], uv[0], uv[1]};
             }
             cuboides.add(cuadro(q, texW, true, r0));
+        }
+        // La tapa de la MANO de un guante: el mismo abanico que la de arriba, en el anillo de abajo y mirando para abajo
+        // (2026-11-04, "¿cómo tapo las tapas?" / "no se tapa la mano"): la malla oversize no cerraba el brazo por abajo,
+        // así que un guante holgado quedaba abierto en la mano. Su UV es la tapa de abajo del brazo, que el recorte
+        // conserva justo cuando la prenda llega a la fila 12 (ver PiezasDelMod#quitarTapas).
+        if (brazo && tapaMano && hasta >= 12) {
+            ModelPart.Cuboid refAbajo = new ModelPart.Cuboid(t.uvX(), t.uvY(), t.originX(), t.originY(), t.originZ(),
+                    t.sizeX(), 1F, t.sizeZ(), 0F, 0F, 0F, false, texW, texW,
+                    java.util.EnumSet.of(net.minecraft.util.math.Direction.UP));
+            ModelPart.Quad qMano = refAbajo.sides[0];
+            int anilloMano = colgado > 0 ? nAnillos - 1 : 12;
+            Rect rM = rect(t, parte, dilA[anilloMano], interno, yA[anilloMano], S);
+            float[][] bordeM = new float[total][];
+            int km = 0;
+            for (int cara = 0; cara < 4; cara++) {
+                for (int j = 0; j < segs[cara]; j++) bordeM[km++] = punto(cara, j / (float) segs[cara], rM);
+            }
+            float[] centroM = {(rM.xmin + rM.xmax) / 2F, (rM.zmin + rM.zmax) / 2F};
+            for (int i = 0; i < total; i++) {
+                float[][] ps = {bordeM[(i + 1) % total], bordeM[i], centroM, centroM};
+                float[][] q = new float[4][];
+                for (int m = 0; m < 4; m++) {
+                    float[] uv = uvTapa(qMano, (ps[m][0] - rM.xmin) / (rM.xmax - rM.xmin),
+                            (ps[m][1] - rM.zmin) / (rM.zmax - rM.zmin));
+                    q[m] = new float[]{ps[m][0], rM.y, ps[m][1], uv[0], uv[1]};
+                }
+                cuboides.add(cuadro(q, texW, 1F, rM));
+            }
         }
         // El fondo del torso entero sin colgar: la caja de siempre (con oversize siempre cuelga, no pasa).
         if (!brazo && hasta >= 12 && colgado == 0) {
@@ -1234,14 +1268,19 @@ public final class CuerpoGeometria {
 
     /** Un cuadro suelto como cuboide de una sola cara; la normal sale de la geometría y apunta hacia afuera (o hacia arriba en la tapa). */
     private static ModelPart.Cuboid cuadro(float[][] p, float texW, boolean tapa, Rect r) {
+        return cuadro(p, texW, tapa ? -1F : 0F, r);
+    }
+
+    /** {@code nyTapa}: 0 = cara de costado (la normal sale del cuadro), −1 = tapa de arriba, +1 = tapa de abajo. */
+    private static ModelPart.Cuboid cuadro(float[][] p, float texW, float nyTapa, Rect r) {
         ModelPart.Vertex[] vs = new ModelPart.Vertex[4];
         for (int i = 0; i < 4; i++) vs[i] = new ModelPart.Vertex(p[i][0], p[i][1], p[i][2], p[i][3], p[i][4]);
         // El constructor remapea las UV de los vértices que recibe: se le pasa una copia y después se ponen los nuestros.
         ModelPart.Quad q = new ModelPart.Quad(vs.clone(), 0F, 0F, 0F, 0F, 1F, 1F, false, net.minecraft.util.math.Direction.NORTH);
         for (int i = 0; i < 4; i++) q.vertices[i] = vs[i];
         float nx, ny, nz;
-        if (tapa) {
-            nx = 0F; ny = -1F; nz = 0F;
+        if (nyTapa != 0F) {
+            nx = 0F; ny = nyTapa; nz = 0F;
         } else {
             float ax = p[2][0] - p[0][0], ay = p[2][1] - p[0][1], az = p[2][2] - p[0][2];
             float bx = p[3][0] - p[1][0], by = p[3][1] - p[1][1], bz = p[3][2] - p[1][2];

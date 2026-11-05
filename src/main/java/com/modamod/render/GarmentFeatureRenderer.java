@@ -1542,7 +1542,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             } else {
                 dibujarModelPart(suave
                                 ? CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F)
+                                        costadoInterno ? interno : -1F, guante)
                                 : CuerpoGeometria.telaPorFilas(parte, slim, fila, hasta, colgado, dilColgado,
                                         costadoInterno ? interno : -1F, guante),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
