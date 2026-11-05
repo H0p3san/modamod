@@ -35,8 +35,6 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
-- Pie de las sandalias: `BorcegosRenderer.pielActual` solo lo fijan el ícono y el maniquí; en el mundo, el pie de
-  cualquier jugador usa la última skin dibujada (la tuya o la del maniquí), no la suya.
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
 
