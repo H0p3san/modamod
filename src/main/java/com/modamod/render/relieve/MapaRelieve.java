@@ -68,6 +68,35 @@ public final class MapaRelieve {
         return m;
     }
 
+    private static final java.util.Map<String, MapaRelieve> SIN_FILAS = new java.util.HashMap<>();
+
+    /**
+     * Este relieve con las filas {@code [desde, hasta)} de {@code parte} planas (2026-11-05, "reemplazar la skin por la
+     * prenda donde haya conflicto"): debajo de una prenda la forma la pone la tela (que envuelve el relieve completo) y el
+     * cuerpo va plano, así ningún escalón del cuerpo atraviesa la tela.
+     */
+    public static MapaRelieve sinFilas(MapaRelieve base, Parte parte, int desde, int hasta) {
+        int i = indice(parte);
+        if (base == PLANO || i < 0 || desde >= hasta) return base;
+        String clave = base.clave + "|sin " + parte + " " + desde + "-" + hasta;
+        MapaRelieve m = SIN_FILAS.get(clave);
+        if (m != null) return m;
+        if (SIN_FILAS.size() > 64) SIN_FILAS.clear();
+        m = new MapaRelieve(clave, base.slim);
+        for (int p = 0; p < base.celdas.length; p++) m.celdas[p] = base.celdas[p].clone();
+        for (int cara = 0; cara < 4; cara++) {
+            float[] g = base.celdas[i][cara];
+            if (g == null) continue;
+            g = g.clone();
+            int nx = anchoPx(parte, cara, base.slim) * R;
+            int y0 = Math.max(0, desde) * R, y1 = Math.min(FILAS_PX, hasta) * R;
+            java.util.Arrays.fill(g, y0 * nx, y1 * nx, 0f);
+            m.celdas[i][cara] = g;
+        }
+        SIN_FILAS.put(clave, m);
+        return m;
+    }
+
     public boolean plana(Parte parte, int cara) {
         int i = indice(parte);
         return i < 0 || celdas[i][cara] == null;

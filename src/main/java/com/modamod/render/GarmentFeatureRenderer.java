@@ -424,7 +424,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             if (llevaCuerpo) {
                 com.modamod.render.relieve.RelieveRender.actual =
                         new com.modamod.render.relieve.RelieveRender.Contexto(parte,
-                                com.modamod.render.relieve.RelieveRender.cuerpoPlano ? com.modamod.render.relieve.MapaRelieve.PLANO : mapaCuerpo);
+                                com.modamod.render.relieve.RelieveRender.cuerpoPlano ? com.modamod.render.relieve.MapaRelieve.PLANO
+                                        : relieveDelCuerpoBajoTela(mapaCuerpo, parte, piezas));
                 List<CuerpoGeometria.SegmentoCuerpo> segmentos = segmentosCuerpo(parte, piezas);
                 if (conVolumen != null) {
                     dibujarModelPart(CuerpoGeometria.cuerpoConVolumenDePierna(parte, conVolumen.dilatacion(),
@@ -1988,6 +1989,19 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             dibujarModelPart(CuerpoGeometria.cuerpoSegmentado(Parte.TORSO, slim, abajo),
                     CuerpoGeometria.Superficie.CUERPO, pielReal, delJugador, matrices, vertexConsumers, luz);
         }
+    }
+
+    /**
+     * El relieve del cuerpo de esa parte, plano en las filas que tapa alguna prenda (2026-11-05, "reemplazar la skin por la
+     * prenda donde haya conflicto"). La tela envuelve el relieve completo del cuerpo (mapaCuerpo), así que la forma se sigue
+     * viendo; el cuerpo de abajo no compite con ella y no la atraviesa (en voxel las grillas de cuerpo y tela no coinciden).
+     */
+    private static com.modamod.render.relieve.MapaRelieve relieveDelCuerpoBajoTela(
+            com.modamod.render.relieve.MapaRelieve mapaCuerpo, Parte parte, @Nullable List<Pieza> piezas) {
+        if (piezas == null) return mapaCuerpo;
+        com.modamod.render.relieve.MapaRelieve m = mapaCuerpo;
+        for (Pieza p : piezas) m = com.modamod.render.relieve.MapaRelieve.sinFilas(m, parte, p.filaDesde(), p.filaHasta());
+        return m;
     }
 
     /** Recorta una lista de tramos contiguos [0,12) a la ventana [desde,hasta), partiendo el que cruce el borde. */
