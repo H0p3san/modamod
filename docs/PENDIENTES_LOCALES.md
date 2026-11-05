@@ -38,16 +38,13 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - **5. Media abierta en una arista**: era el puente de la tela del relieve levantado en el borde de la cara (374823a).
   De paso, caída lisa (6e0444d): las prendas con holgura que cambia por fila van en malla continua con esquinas rectas
   (sin rebordes que se veían como líneas de puntos), relieve empujado en horizontal y el pie de la media sin relieve.
+- **6. Punta del guante**: la malla cerraba la mano pero la tapa venía vacía en la textura; se pinta con la última
+  fila del puño (calientabrazos hasta la mano y mangas con puño Cerrado). Volvió al manual: falta agregar la página.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
-
-## 6. Punta del guante / molde "Cerrado"
-El molde `molde_ruedo_cerrado` existe pero la punta del guante sigue abierta. Código: `tapaPunta` en
-`GarmentFeatureRenderer` (≈ línea 1440) y la tapa de mano en `CuerpoGeometria.telaSuavePorFilas`. Ver cuál de los dos
-caminos se usa de verdad para un guante largo y si la tapa se emite. Sacado del manual hasta que ande.
 
 ## 7. Apliques
 - El brillo varía según la rotación ("no parejos en ningún lado"). Normales en `render/ApliqueRenderer`: en la vista
