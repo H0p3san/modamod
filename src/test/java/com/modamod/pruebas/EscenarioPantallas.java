@@ -146,7 +146,7 @@ public final class EscenarioPantallas {
         r.hacer("reabrir Modeladora para las medias", 0, c -> { if (!(c.currentScreen instanceof ModeladoScreen)) abrirModeladora(c); });
         r.paso("pantalla lista para las medias", c -> c.currentScreen instanceof ModeladoScreen);
         r.hacer("cargar medias", 5, c -> modeladora(c, be -> {
-            be.setStack(ModeladoBlockEntity.PRENDA, new ItemStack(ModamodItems.SOCKS_SOLID));
+            be.setStack(ModeladoBlockEntity.PRENDA, new ItemStack(ModamodItems.MEDIAS));
             return null;
         }));
         irACategoria(r, Categoria.MEDIAS);
@@ -159,9 +159,9 @@ public final class EscenarioPantallas {
             int pin = pinPara(Categoria.MEDIAS, ModeladoMod.MOLDE_RUEDO_FRUNCIDO);
             verificar(ruedos != null && ruedos.containsValue(Ruedo.FRUNCIDO), "ruedos de la salida: " + ruedos + " | salida=" + out + " componentes=" + out.getComponents()
                     + " | pin=" + pin + " rol=" + ModeladoBlockEntity.ROLES[Categoria.MEDIAS.ordinal()][pin]
-                    + " | aplicar directo=" + modeladora(c, be -> com.modamod.prenda.Corte.get(be.fijadas().get(0).aplicar(new ItemStack(ModamodItems.SOCKS_SOLID)), com.modamod.prenda.Ejes.RUEDOS))
+                    + " | aplicar directo=" + modeladora(c, be -> com.modamod.prenda.Corte.get(be.fijadas().get(0).aplicar(new ItemStack(ModamodItems.MEDIAS)), com.modamod.prenda.Ejes.RUEDOS))
                     + " | estado=" + modeladora(c, be -> be.estado() + " tijera=" + be.tijeraOk())
-                    + " | procesar directo=" + modeladora(c, be -> { try { var m = ModeladoBlockEntity.class.getDeclaredMethod("procesar", ItemStack.class); m.setAccessible(true); return com.modamod.prenda.Corte.get((ItemStack) m.invoke(be, new ItemStack(ModamodItems.SOCKS_SOLID)), com.modamod.prenda.Ejes.RUEDOS); } catch (Exception e) { return e.toString(); } }));
+                    + " | procesar directo=" + modeladora(c, be -> { try { var m = ModeladoBlockEntity.class.getDeclaredMethod("procesar", ItemStack.class); m.setAccessible(true); return com.modamod.prenda.Corte.get((ItemStack) m.invoke(be, new ItemStack(ModamodItems.MEDIAS)), com.modamod.prenda.Ejes.RUEDOS); } catch (Exception e) { return e.toString(); } }));
         });
         // ── (el pin "Pant leg" del calzado se sacó el 2026-11-04: la botamanga la decide el orden de la lista de ropa) ──
         r.hacer("retirar las medias", 0, c -> modeladora(c, be -> { be.setStack(ModeladoBlockEntity.SALIDA, ItemStack.EMPTY); return null; }));

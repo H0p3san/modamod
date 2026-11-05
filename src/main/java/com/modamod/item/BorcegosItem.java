@@ -181,14 +181,14 @@ public class BorcegosItem extends com.modamod.prenda.PrendaItem implements Zonas
         String base = cana != BorcegoCana.NINGUNA ? cana.clave
                 : suela == BorcegoSuela.CHANCLA ? "ojotas"
                 : cierre(stack, false) == CalzadoCierre.GLADIADORA ? "gladiadoras" : "sandalias";
-        Text nombre = Text.translatable("item.modamod.borcegos." + base);
+        Text nombre = Text.translatable("item.modamod.calzado." + base);
         String extra = switch (suela) {
             case PLATAFORMA, PLATAFORMA_TENIS -> "plataforma";
             case CUNA -> "cuna";
             case TACO_CHICO -> cana == BorcegoCana.TACO ? null : "taquito";
             default -> null;
         };
-        return extra == null ? nombre : Text.translatable("item.modamod.borcegos.con_" + extra, nombre);
+        return extra == null ? nombre : Text.translatable("item.modamod.calzado.con_" + extra, nombre);
     }
 
     @Override

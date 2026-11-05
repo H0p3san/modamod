@@ -26,7 +26,7 @@ public final class Prendas {
 
     public static void init() {
         // Ropa de cuerpo pegada a la piel.
-        registrar(ModamodItems.SOCKS_SOLID, new DefinicionDePrenda(CategoriaDePrenda.MEDIAS, FormaDeDibujo.FORRO,
+        registrar(ModamodItems.MEDIAS, new DefinicionDePrenda(CategoriaDePrenda.MEDIAS, FormaDeDibujo.FORRO,
                 Parte.PIERNA_IZQ, Parte.PIERNA_DER));
         registrar(ModamodItems.PANTALON, new DefinicionDePrenda(CategoriaDePrenda.PANTALON, FormaDeDibujo.FORRO,
                 Parte.PIERNA_IZQ, Parte.PIERNA_DER));
@@ -40,12 +40,12 @@ public final class Prendas {
         registrar(ModamodItems.CAPA, new DefinicionDePrenda(CategoriaDePrenda.CAPA, FormaDeDibujo.MALLA));
         registrar(ModamodItems.DELANTAL, new DefinicionDePrenda(CategoriaDePrenda.DELANTAL, FormaDeDibujo.MALLA));
         // Accesorios.
-        registrar(ModamodItems.SOMBRERO_BRUJA, new DefinicionDePrenda(CategoriaDePrenda.SOMBRERO, FormaDeDibujo.ACCESORIO));
+        registrar(ModamodItems.SOMBRERO, new DefinicionDePrenda(CategoriaDePrenda.SOMBRERO, FormaDeDibujo.ACCESORIO));
         // El cinto que aprieta se hace cargo del torso: ahí la piel de vanilla se apaga y el mod dibuja el cuerpo
         // comprimido por debajo de la banda (ver BandaItem#reemplazaLaPiel).
         registrar(ModamodItems.BANDA, new DefinicionDePrenda(CategoriaDePrenda.BANDA, FormaDeDibujo.ACCESORIO,
                 s -> com.modamod.item.BandaItem.reemplazaLaPiel(s) ? java.util.Set.of(Parte.TORSO) : java.util.Set.of()));
-        registrar(ModamodItems.BORCEGOS, new DefinicionDePrenda(CategoriaDePrenda.CALZADO, FormaDeDibujo.ACCESORIO));
+        registrar(ModamodItems.CALZADO, new DefinicionDePrenda(CategoriaDePrenda.CALZADO, FormaDeDibujo.ACCESORIO));
         for (Item cara : List.of(ModamodItems.ANTIFAZ, ModamodItems.MEDIA_MASCARA, ModamodItems.MASCARA_COMPLETA)) {
             registrar(cara, new DefinicionDePrenda(CategoriaDePrenda.CARA, FormaDeDibujo.ACCESORIO));
         }

@@ -1,12 +1,12 @@
 {
   "name": "Borcegos y calzado",
-  "icon": "modamod:borcegos",
+  "icon": "modamod:calzado",
   "category": "modamod:03_prendas",
   "sortnum": 5,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:borcegos",
+      "item": "modamod:calzado",
       "title": "Borcegos",
       "link_recipe": false,
       "text": "$(l)Zapatos con carácter, y con cajas.$()$(br2)Un par de botas de cuero con caña, puntera, suela gruesa y cordones, armadas con cajas: se ven los dos pies. Van en un lugar de calzado propio, junto al cinto en la pantalla de Ropa."

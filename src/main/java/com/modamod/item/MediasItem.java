@@ -16,6 +16,6 @@ public class MediasItem extends PrendaItem {
     public Text getName(ItemStack stack) {
         int[] der = MediasLargo.filasVisibles(stack, Lado.DERECHA);
         int[] izq = MediasLargo.filasVisibles(stack, Lado.IZQUIERDA);
-        return Text.translatable("item.modamod.socks_solid." + (java.util.Arrays.equals(der, izq) ? NombresDePrenda.medias(der) : "medias"));
+        return Text.translatable("item.modamod.medias." + (java.util.Arrays.equals(der, izq) ? NombresDePrenda.medias(der) : "medias"));
     }
 }

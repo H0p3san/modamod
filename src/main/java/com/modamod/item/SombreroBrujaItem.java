@@ -96,7 +96,7 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
     public Text getName(ItemStack stack) {
         SombreroAla a = ala(stack);
         // El resto por la copa o el ala que más lo define (2026-10-23): gorra, boina, galera, sombrero vaquero...
-        return Text.translatable("item.modamod.sombrero_bruja." + (a.esDiadema() ? a.clave : NombresDePrenda.sombrero(a, punta(stack))));
+        return Text.translatable("item.modamod.sombrero." + (a.esDiadema() ? a.clave : NombresDePrenda.sombrero(a, punta(stack))));
     }
 
     @Override

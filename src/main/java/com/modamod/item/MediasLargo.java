@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
  * el eje de valores ahora es {@link Botamanga}, compartido con
  * {@link PantalonItem}. Esta clase queda como el lugar de las medias
  * (no hay un "MediasItem" separado, la prenda es un {@code Item} plano
- * — {@code ModamodItems.SOCKS_SOLID}), mismo patrón que
+ * — {@code ModamodItems.MEDIAS}), mismo patrón que
  * {@code PantalonItem} hospeda los suyos.
  *
  * <p>Dos anclajes que se intersecan (igual que antes, sin cambios de

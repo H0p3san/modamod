@@ -101,7 +101,7 @@ public final class EscenarioPrenda {
 
         // Volumen de las medias: Pegado y Oversize tienen que verse DISTINTOS (el reclamo era "no observo ninguna variacion").
         java.util.function.Function<Calce, ItemStack> medias = calce -> {
-            ItemStack m = new ItemStack(ModamodItems.SOCKS_SOLID);
+            ItemStack m = new ItemStack(ModamodItems.MEDIAS);
             com.modamod.prenda.Corte.set(m, com.modamod.prenda.Ejes.CALCE, calce);
             return m;
         };
@@ -111,7 +111,7 @@ public final class EscenarioPrenda {
         prenda(r, "medias calce oversize", mediasSlot, medias.apply(Calce.OVERSIZE));
 
         // Medias con sandalias: calzado sin capellada ni cubo de punta; el pie lo dibuja la piel con la tela de la media.
-        ItemStack sandalias = new ItemStack(ModamodItems.BORCEGOS);
+        ItemStack sandalias = new ItemStack(ModamodItems.CALZADO);
         com.modamod.item.BorcegosItem.setCana(sandalias, com.modamod.item.BorcegoCana.NINGUNA, com.modamod.region.Lado.AMBAS);
         prenda(r, "sandalias con medias", PruebaRopa::calzado, sandalias);
 
@@ -178,8 +178,8 @@ public final class EscenarioPrenda {
         com.modamod.prenda.Corte.set(remera, com.modamod.prenda.Ejes.CALCE, Calce.OVERSIZE);
         prenda(r, "remera oversize", comp -> PruebaRopa.lugar(comp, PruebaRopa.REMERA), remera);
 
-        prenda(r, "medias", comp -> PruebaRopa.lugar(comp, PruebaRopa.MEDIAS), new ItemStack(ModamodItems.SOCKS_SOLID));
-        prenda(r, "borcegos", PruebaRopa::calzado, new ItemStack(ModamodItems.BORCEGOS));
+        prenda(r, "medias", comp -> PruebaRopa.lugar(comp, PruebaRopa.MEDIAS), new ItemStack(ModamodItems.MEDIAS));
+        prenda(r, "borcegos", PruebaRopa::calzado, new ItemStack(ModamodItems.CALZADO));
 
         detalles(r);   // al final: sube al jugador al aire
         return r;

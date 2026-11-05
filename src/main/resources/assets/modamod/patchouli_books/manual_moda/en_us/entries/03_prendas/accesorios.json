@@ -1,12 +1,12 @@
 {
   "name": "Sombreros y bandas",
-  "icon": "modamod:sombrero_bruja",
+  "icon": "modamod:sombrero",
   "category": "modamod:03_prendas",
   "sortnum": 6,
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:sombrero_bruja,modamod:banda",
+      "item": "modamod:sombrero,modamod:banda",
       "title": "Sombreros y bandas",
       "link_recipe": false,
       "text": "$(l)Lo que te ponés cuando ya te pusiste todo.$()$(br2)El sombrero tiene su lugar propio (aparte del casco, así que se lleva con casco, con capucha y con apliques). El cinto y el collar son la misma prenda, la $(o)banda$(), en dos lugares distintos."

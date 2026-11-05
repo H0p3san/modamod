@@ -328,7 +328,7 @@ public final class PantallaMaquina {
             iconoBase = Identifier.of("modamod", "textures/item/pantalon.png");
             color = com.modamod.region.RegionResolver.colorBase(stack);
         } else if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) {
-            iconoBase = Identifier.of("modamod", "textures/item/socks_solid.png");
+            iconoBase = Identifier.of("modamod", "textures/item/medias.png");
             color = com.modamod.region.RegionResolver.colorBase(stack);
         } else if (stack.getItem() == com.modamod.item.ModamodItems.CALIENTABRAZOS) {
             iconoBase = Identifier.of("modamod", "textures/item/calientabrazos.png");

@@ -199,7 +199,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
 
     /** Medias y calientabrazos: las prendas de a pares que tienen simetría lateral. */
     public static boolean admiteSimetria(net.minecraft.item.Item item) {
-        return item == com.modamod.item.ModamodItems.SOCKS_SOLID
+        return item == com.modamod.item.ModamodItems.MEDIAS
                 || item == com.modamod.item.ModamodItems.CALIENTABRAZOS;
     }
 
@@ -245,7 +245,7 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
      */
     private static final net.minecraft.item.Item[] CATEGORIAS = {
             ModItems.REMERA,
-            com.modamod.item.ModamodItems.SOCKS_SOLID,
+            com.modamod.item.ModamodItems.MEDIAS,
             com.modamod.item.ModamodItems.PANTALON,
             com.modamod.item.ModamodItems.CALIENTABRAZOS,
             com.modamod.item.ModamodItems.POLLERA,
@@ -256,9 +256,9 @@ public class SublimadoraBlockEntity extends MaquinaBlockEntity
             com.modamod.item.ModamodItems.MEDIA_MASCARA,
             com.modamod.item.ModamodItems.MASCARA_COMPLETA,
             com.modamod.item.ModamodItems.BARBIJO,
-            com.modamod.item.ModamodItems.SOMBRERO_BRUJA, // gorras con visera (2026-10-25)
+            com.modamod.item.ModamodItems.SOMBRERO, // gorras con visera (2026-10-25)
             com.modamod.item.ModamodItems.BANDA,          // el cinto (2026-11-03)
-            com.modamod.item.ModamodItems.BORCEGOS,       // el calzado (2026-11-03)
+            com.modamod.item.ModamodItems.CALZADO,       // el calzado (2026-11-03)
     };
     private net.minecraft.item.Item categoria = ModItems.REMERA;
 

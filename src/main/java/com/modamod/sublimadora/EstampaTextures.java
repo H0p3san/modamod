@@ -206,7 +206,7 @@ public final class EstampaTextures {
     // La media arranca en la fila 22 de las 12 del cuboide de la pierna: las
     // dos primeras filas del muslo quedan al aire. Igual que con la remera,
     // estos numeros TIENEN que ser los mismos que los de la textura, que es
-    // una silueta plana en socks_solid_layer_1.png.
+    // una silueta plana en medias_layer_1.png.
     private static final int MEDIA_Y = 22;
     private static final int MEDIA_ALTO = 10;
     /** 2 de un costado + 2 + el frente de 4 + 2 + 2 del otro costado. */

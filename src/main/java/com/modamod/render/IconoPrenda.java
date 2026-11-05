@@ -96,7 +96,7 @@ public final class IconoPrenda {
         if (item == com.modamod.item.ModamodItems.PANTALON) return "pantalon";
         if (item instanceof PolleraItem) return "pollera";
         if (item instanceof com.modamod.item.CapaItem) return "capa";
-        if (item == com.modamod.item.ModamodItems.SOCKS_SOLID) return "medias";
+        if (item == com.modamod.item.ModamodItems.MEDIAS) return "medias";
         if (item == com.modamod.item.ModamodItems.CALIENTABRAZOS) return "calientabrazos";
         return null;
     }

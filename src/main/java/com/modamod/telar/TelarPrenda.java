@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public enum TelarPrenda {
     REMERA(() -> com.modamod.sublimadora.ModItems.REMERA, 7, 0, 0),
     PANTALON(() -> ModamodItems.PANTALON, 7, 0, 0),
-    MEDIAS(() -> ModamodItems.SOCKS_SOLID, 2, 1, 0),
+    MEDIAS(() -> ModamodItems.MEDIAS, 2, 1, 0),
     CALIENTABRAZOS(() -> ModamodItems.CALIENTABRAZOS, 2, 1, 0),
     POLLERA(() -> ModamodItems.POLLERA, 6, 3, 0),
     CAPA(() -> ModamodItems.CAPA, 7, 2, 0),
@@ -26,10 +26,10 @@ public enum TelarPrenda {
     CINTO(() -> ModamodItems.BANDA, 0, 0, 2),
     COLLAR(() -> ModamodItems.BANDA, 0, 1, 1),
     DELANTAL(() -> ModamodItems.DELANTAL, 5, 0, 0),
-    BORCEGOS(() -> ModamodItems.BORCEGOS, 0, 2, 4),
-    SOMBRERO(() -> ModamodItems.SOMBRERO_BRUJA, 2, 0, 3),
-    VINCHA(() -> ModamodItems.SOMBRERO_BRUJA, 1, 1, 0),
-    COFIA(() -> ModamodItems.SOMBRERO_BRUJA, 2, 1, 0);
+    BORCEGOS(() -> ModamodItems.CALZADO, 0, 2, 4),
+    SOMBRERO(() -> ModamodItems.SOMBRERO, 2, 0, 3),
+    VINCHA(() -> ModamodItems.SOMBRERO, 1, 1, 0),
+    COFIA(() -> ModamodItems.SOMBRERO, 2, 1, 0);
 
     private final Supplier<? extends Item> item;
     /**

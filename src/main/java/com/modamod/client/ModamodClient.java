@@ -172,21 +172,21 @@ public class ModamodClient implements ClientModInitializer {
             // para "sin tinte". Nuestros colores son 0xRRGGBB, o sea alfa 0,
             // y sin este OR el item se dibuja transparente — desaparecia.
             return 0xFF000000 | color;
-        }, ModamodItems.SOCKS_SOLID, ModamodItems.PANTALON);
+        }, ModamodItems.MEDIAS, ModamodItems.PANTALON);
 
         // Íconos de 64x64 armados con la tela real (2026-09-29, "ok pero los
         // hagamos 64x64" / "B"): muestran capas, patrones, redes, estampas y
         // el largo de verdad. La remera se registra en SublimadoraModClient.
         IconoPrendaItemRenderer icono = new IconoPrendaItemRenderer(null);
         for (var item : new net.minecraft.item.Item[]{ModamodItems.PANTALON, ModamodItems.POLLERA,
-                ModamodItems.SOCKS_SOLID, ModamodItems.CALIENTABRAZOS, ModamodItems.CAPA, ModamodItems.DELANTAL}) {
+                ModamodItems.MEDIAS, ModamodItems.CALIENTABRAZOS, ModamodItems.CAPA, ModamodItems.DELANTAL}) {
             net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(item, icono);
         }
 
         // Sombrero, calzado y banda (2026-10-15): la pieza armada de verdad, no un PNG fijo.
         IconoAccesorioItemRenderer iconoAccesorio = new IconoAccesorioItemRenderer();
         // El maletín también (2026-10-23): sus zonas teñidas y sus apliques, en el inventario, en la mano y apoyado.
-        for (var item : new net.minecraft.item.Item[]{ModamodItems.SOMBRERO_BRUJA, ModamodItems.BORCEGOS, ModamodItems.BANDA, ModamodItems.MALETIN}) {
+        for (var item : new net.minecraft.item.Item[]{ModamodItems.SOMBRERO, ModamodItems.CALZADO, ModamodItems.BANDA, ModamodItems.MALETIN}) {
             net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(item, iconoAccesorio);
         }
 

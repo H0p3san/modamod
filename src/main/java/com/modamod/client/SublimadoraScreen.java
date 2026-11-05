@@ -221,10 +221,10 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
     private List<Enfoque> zonas() {
         net.minecraft.item.Item c = be().categoria();
         if (c == com.modamod.sublimadora.ModItems.REMERA) return List.of(Enfoque.TORSO, Enfoque.ENTERO);
-        if (c == com.modamod.item.ModamodItems.SOCKS_SOLID || c == com.modamod.item.ModamodItems.PANTALON) return List.of(Enfoque.PIERNAS, Enfoque.ENTERO);
+        if (c == com.modamod.item.ModamodItems.MEDIAS || c == com.modamod.item.ModamodItems.PANTALON) return List.of(Enfoque.PIERNAS, Enfoque.ENTERO);
         if (c == com.modamod.item.ModamodItems.CALIENTABRAZOS) return List.of(Enfoque.BRAZOS, Enfoque.ENTERO);
         if (c == com.modamod.item.ModamodItems.BANDA) return List.of(Enfoque.TORSO, Enfoque.ENTERO);
-        if (c == com.modamod.item.ModamodItems.BORCEGOS) return List.of(Enfoque.PIERNAS, Enfoque.ENTERO);
+        if (c == com.modamod.item.ModamodItems.CALZADO) return List.of(Enfoque.PIERNAS, Enfoque.ENTERO);
         return List.of(Enfoque.ENTERO);
     }
 
@@ -376,7 +376,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
 
     private static String claveCategoria(net.minecraft.item.Item item) {
         if (item == com.modamod.sublimadora.ModItems.REMERA) return "remera";
-        if (item == com.modamod.item.ModamodItems.SOCKS_SOLID) return "medias";
+        if (item == com.modamod.item.ModamodItems.MEDIAS) return "medias";
         if (item == com.modamod.item.ModamodItems.PANTALON) return "pantalon";
         if (item == com.modamod.item.ModamodItems.POLLERA) return "pollera";
         if (item == com.modamod.item.ModamodItems.CAPA) return "capa";
@@ -385,7 +385,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         if (item instanceof com.modamod.item.CaraItem c) return c.modelo;
         if (item instanceof com.modamod.item.SombreroBrujaItem) return "sombrero";
         if (item == com.modamod.item.ModamodItems.BANDA) return "banda";
-        if (item == com.modamod.item.ModamodItems.BORCEGOS) return "calzado";
+        if (item == com.modamod.item.ModamodItems.CALZADO) return "calzado";
         return "calientabrazos";
     }
 

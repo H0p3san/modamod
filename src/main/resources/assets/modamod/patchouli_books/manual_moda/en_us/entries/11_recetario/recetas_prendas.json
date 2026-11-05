@@ -18,7 +18,7 @@
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "modamod:socks_solid",
+      "recipe": "modamod:medias",
       "title": "Prendas",
       "recipe2": "modamod:calientabrazos"
     },
@@ -26,11 +26,11 @@
       "type": "patchouli:crafting",
       "recipe": "modamod:delantal",
       "title": "Prendas",
-      "recipe2": "modamod:sombrero_bruja"
+      "recipe2": "modamod:sombrero"
     },
     {
       "type": "patchouli:crafting",
-      "recipe": "modamod:borcegos",
+      "recipe": "modamod:calzado",
       "title": "Prendas",
       "recipe2": "modamod:cinto"
     },

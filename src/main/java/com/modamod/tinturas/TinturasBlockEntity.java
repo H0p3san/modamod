@@ -1946,14 +1946,14 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         return switch (cat) {
             case REMERA -> com.modamod.sublimadora.ModItems.REMERA;
             case PANTALON -> com.modamod.item.ModamodItems.PANTALON;
-            case MEDIAS -> com.modamod.item.ModamodItems.SOCKS_SOLID;
+            case MEDIAS -> com.modamod.item.ModamodItems.MEDIAS;
             case CALIENTABRAZOS -> com.modamod.item.ModamodItems.CALIENTABRAZOS;
             case POLLERA -> com.modamod.item.ModamodItems.POLLERA;
             case CAPA -> com.modamod.item.ModamodItems.CAPA;
             case APLIQUE -> com.modamod.item.ModamodItems.RETAZO_APLIQUE;
             case DELANTAL -> com.modamod.item.ModamodItems.DELANTAL;
-            case SOMBRERO -> com.modamod.item.ModamodItems.SOMBRERO_BRUJA;
-            case CALZADO -> com.modamod.item.ModamodItems.BORCEGOS;
+            case SOMBRERO -> com.modamod.item.ModamodItems.SOMBRERO;
+            case CALZADO -> com.modamod.item.ModamodItems.CALZADO;
             case BANDA -> com.modamod.item.ModamodItems.BANDA;
             case MALETIN -> com.modamod.item.ModamodItems.MALETIN;
             case BANNER -> net.minecraft.item.Items.WHITE_BANNER;

@@ -138,7 +138,7 @@ public class Modamod implements ModInitializer {
                     new ItemStack(ModamodItems.RETAZO_APLIQUE), 0xC82828, 0x1E1E22, 0xE8C050));
             // Medias 3/4 y de red de armadura jubiladas (2026-10-23, "vamos con tu recomendacion"): quedan registradas para no
             // romper mundos; las Medias con su largo y la trama de red de la Modeladora hacen lo mismo y llevan patrones.
-            entries.add(ModamodItems.SOCKS_SOLID);
+            entries.add(ModamodItems.MEDIAS);
             entries.add(ModamodItems.PANTALON);
             entries.add(ModamodItems.POLLERA);
             entries.add(ModamodItems.DELANTAL);
@@ -157,7 +157,7 @@ public class Modamod implements ModInitializer {
             // El sombrero base ya aparece en el primer preset (ANCHA + RECTA).
             // Banda (2026-10-05): un cinto y un choker de fábrica, hasta que lleguen los moldes de la Modeladora.
             entries.add(ModamodItems.BANDA);
-            entries.add(ModamodItems.BORCEGOS);   // 2026-10-08
+            entries.add(ModamodItems.CALZADO);   // 2026-10-08
             // Los calzados armados del zip (2026-10-14): capellada, suela, punta, cierre y detalle de cada uno.
             for (Object[] c : new Object[][] {
                     {com.modamod.item.BorcegoCana.BAJA, com.modamod.item.BorcegoSuela.CHATA, com.modamod.item.CalzadoPunta.CUERO, com.modamod.item.CalzadoCierre.CORDONES, com.modamod.item.CalzadoDetalle.NINGUNO},
@@ -178,7 +178,7 @@ public class Modamod implements ModInitializer {
                     {com.modamod.item.BorcegoCana.BOTA_ALTA, com.modamod.item.BorcegoSuela.CHATA, com.modamod.item.CalzadoPunta.REDONDA, com.modamod.item.CalzadoCierre.COSTURA_LATERAL, com.modamod.item.CalzadoDetalle.NINGUNO},
                     {com.modamod.item.BorcegoCana.TENIS_BAJA, com.modamod.item.BorcegoSuela.GOMA_TENIS, com.modamod.item.CalzadoPunta.GOMA, com.modamod.item.CalzadoCierre.VELCRO, com.modamod.item.CalzadoDetalle.NINGUNO},
                     {com.modamod.item.BorcegoCana.MEDIA, com.modamod.item.BorcegoSuela.CUNA, com.modamod.item.CalzadoPunta.FINA, com.modamod.item.CalzadoCierre.SIN, com.modamod.item.CalzadoDetalle.NINGUNO}}) {
-                net.minecraft.item.ItemStack calzado = new net.minecraft.item.ItemStack(ModamodItems.BORCEGOS);
+                net.minecraft.item.ItemStack calzado = new net.minecraft.item.ItemStack(ModamodItems.CALZADO);
                 com.modamod.item.BorcegosItem.setCana(calzado, (com.modamod.item.BorcegoCana) c[0]);
                 com.modamod.item.BorcegosItem.setSuela(calzado, (com.modamod.item.BorcegoSuela) c[1]);
                 com.modamod.item.BorcegosItem.setPunta(calzado, (com.modamod.item.CalzadoPunta) c[2], com.modamod.region.Lado.AMBAS);
@@ -217,19 +217,19 @@ public class Modamod implements ModInitializer {
                     {com.modamod.item.SombreroAla.VISERA_CORTA, com.modamod.item.SombreroPunta.PANADERO},   // gorra de panadero
                     {com.modamod.item.SombreroAla.TRICORNIO, com.modamod.item.SombreroPunta.CUPULA},        // tricornio
                     {com.modamod.item.SombreroAla.SIN_ALA, com.modamod.item.SombreroPunta.MARINERO}}) {     // gorro de marinero
-                net.minecraft.item.ItemStack variante = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO_BRUJA);
+                net.minecraft.item.ItemStack variante = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO);
                 com.modamod.item.SombreroBrujaItem.setAla(variante, (com.modamod.item.SombreroAla) par[0]);
                 com.modamod.item.SombreroBrujaItem.setPunta(variante, (com.modamod.item.SombreroPunta) par[1]);
                 entries.add(variante);
             }
             // La planta cuadrada de las alas planas (2026-10-14).
-            net.minecraft.item.ItemStack paja = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO_BRUJA);
+            net.minecraft.item.ItemStack paja = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO);
             com.modamod.item.SombreroBrujaItem.setAla(paja, com.modamod.item.SombreroAla.PLANA);
             com.modamod.item.SombreroBrujaItem.setPunta(paja, com.modamod.item.SombreroPunta.CUPULA);
             com.modamod.item.SombreroBrujaItem.setPlanta(paja, com.modamod.item.SombreroPlanta.CUADRADA);
             entries.add(paja);
             // El mismo sombrero en cuboides (2026-10-14).
-            net.minecraft.item.ItemStack cajas = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO_BRUJA);
+            net.minecraft.item.ItemStack cajas = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO);
             com.modamod.item.SombreroBrujaItem.setAla(cajas, com.modamod.item.SombreroAla.VISERA_CURVA);
             com.modamod.item.SombreroBrujaItem.setPunta(cajas, com.modamod.item.SombreroPunta.CUPULA);
             com.modamod.item.SombreroBrujaItem.setEstilo(cajas, com.modamod.item.SombreroEstilo.CAJAS);

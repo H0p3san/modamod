@@ -46,7 +46,7 @@ public final class PiezasDelMod {
     private PiezasDelMod() {}
 
     public static void init() {
-        PiezasDePrenda.registrar(ModamodItems.SOCKS_SOLID, PiezasDelMod::medias);
+        PiezasDePrenda.registrar(ModamodItems.MEDIAS, PiezasDelMod::medias);
         PiezasDePrenda.registrar(ModamodItems.PANTALON, PiezasDelMod::pantalon);
         PiezasDePrenda.registrar(ModItems.REMERA, PiezasDelMod::remera);
         PiezasDePrenda.registrar(ModamodItems.CALIENTABRAZOS, PiezasDelMod::calientabrazos);

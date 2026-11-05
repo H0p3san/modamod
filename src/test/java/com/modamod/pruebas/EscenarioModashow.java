@@ -114,8 +114,8 @@ public final class EscenarioModashow {
                 be.setStack(PruebaRopa.indice(PruebaRopa.REMERA, 0), conTrim(new ItemStack(ModItems.REMERA), "eye", null, 0xD8D0F0));
                 be.setStack(PruebaRopa.indice(PruebaRopa.PANTALON, 0), conTrim(new ItemStack(ModamodItems.POLLERA), "snout", null, 0x302020));
                 be.setStack(PruebaRopa.CAPA, conTrim(new ItemStack(ModamodItems.CAPA), "spire", "amethyst", 0x282838));
-                be.setStack(PruebaRopa.SOMBRERO, conTrim(new ItemStack(ModamodItems.SOMBRERO_BRUJA), "bolt", null, 0x202028));
-                be.setStack(PruebaRopa.CALZADO, conTrim(new ItemStack(ModamodItems.BORCEGOS), "coast", "diamond", 0x404850));
+                be.setStack(PruebaRopa.SOMBRERO, conTrim(new ItemStack(ModamodItems.SOMBRERO), "bolt", null, 0x202028));
+                be.setStack(PruebaRopa.CALZADO, conTrim(new ItemStack(ModamodItems.CALZADO), "coast", "diamond", 0x404850));
                 ItemStack cinto = new ItemStack(ModamodItems.BANDA);
                 com.modamod.item.BandaItem.setZona(cinto, com.modamod.item.BandaZona.CINTURA);
                 be.setStack(PruebaRopa.CINTO, conTrim(cinto, "host", "gold", 0x806020));

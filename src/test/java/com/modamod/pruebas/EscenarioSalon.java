@@ -458,7 +458,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.SOCKS_SOLID), calce));
+        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.MEDIAS), calce));
 
 
 
@@ -476,7 +476,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(PruebaRopa.CALZADO, new ItemStack(ModamodItems.BORCEGOS));
+        be.setStack(PruebaRopa.CALZADO, new ItemStack(ModamodItems.CALZADO));
 
 
 
@@ -846,7 +846,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.SOCKS_SOLID), Calce.OVERSIZE));
+        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.MEDIAS), Calce.OVERSIZE));
 
 
 
@@ -960,7 +960,7 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.SOCKS_SOLID), Calce.AJUSTADO));
+        be.setStack(PruebaRopa.indice(PruebaRopa.MEDIAS, 0), prenda(new ItemStack(ModamodItems.MEDIAS), Calce.AJUSTADO));
 
 
 
@@ -978,13 +978,13 @@ public final class EscenarioSalon {
 
 
 
-        be.setStack(PruebaRopa.SOMBRERO, new ItemStack(ModamodItems.SOMBRERO_BRUJA));
+        be.setStack(PruebaRopa.SOMBRERO, new ItemStack(ModamodItems.SOMBRERO));
 
 
 
 
 
-        be.setStack(PruebaRopa.CALZADO, new ItemStack(ModamodItems.BORCEGOS));
+        be.setStack(PruebaRopa.CALZADO, new ItemStack(ModamodItems.CALZADO));
 
 
 
@@ -2606,7 +2606,7 @@ public final class EscenarioSalon {
 
 
 
-                    ItemStack medias = prenda(new ItemStack(ModamodItems.SOCKS_SOLID), calce);
+                    ItemStack medias = prenda(new ItemStack(ModamodItems.MEDIAS), calce);
 
 
 
@@ -2908,7 +2908,7 @@ public final class EscenarioSalon {
 
 
 
-                            new ItemStack(ModamodItems.SOCKS_SOLID), new ItemStack(ModamodItems.CALIENTABRAZOS), new ItemStack(ModamodItems.DELANTAL)};
+                            new ItemStack(ModamodItems.MEDIAS), new ItemStack(ModamodItems.CALIENTABRAZOS), new ItemStack(ModamodItems.DELANTAL)};
 
 
 

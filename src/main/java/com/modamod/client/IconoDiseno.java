@@ -48,13 +48,13 @@ public final class IconoDiseno {
         String n = switch (cat) {
             case "REMERA" -> "remera";
             case "PANTALON" -> "pantalon";
-            case "MEDIAS" -> "socks_solid";
+            case "MEDIAS" -> "medias";
             case "CALIENTABRAZOS" -> "calientabrazos";
             case "POLLERA" -> "pollera";
             case "CAPA" -> "capa";
-            case "SOMBRERO" -> "sombrero_bruja";
+            case "SOMBRERO" -> "sombrero";
             case "BANDA" -> "banda";
-            case "CALZADO" -> "borcegos";
+            case "CALZADO" -> "calzado";
             case "DELANTAL" -> "delantal";
             case "MALETIN" -> "maletin";
             case "CARA" -> "antifaz";

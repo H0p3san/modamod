@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:remera,modamod:pantalon,modamod:pollera,modamod:capa,modamod:borcegos",
+      "item": "modamod:remera,modamod:pantalon,modamod:pollera,modamod:capa,modamod:calzado",
       "title": "ModaMod",
       "link_recipe": false,
       "text": "$(l)La ropa se viste sobre vos, no a tu lado.$()$(br2)Remeras, pantalones, polleras, capas, borcegos y hasta sombreros: todo se dibuja en capas sobre tu cuerpo, se superpone con criterio y se rehace cuantas veces quieras."

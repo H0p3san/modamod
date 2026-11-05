@@ -9,7 +9,8 @@
     "ShieldDecorationRecipeMixin",
     "LivingEntityCintaMixin",
     "EntityCintaParadaMixin",
-    "SlotUnaPrendaMixin"
+    "SlotUnaPrendaMixin",
+    "RegistroIdsViejosMixin"
   ],
   "client": [
     "AbstractClientPlayerEntityMixin",

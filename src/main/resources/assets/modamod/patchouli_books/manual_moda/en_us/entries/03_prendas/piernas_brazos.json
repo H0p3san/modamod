@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:pantalon,modamod:socks_solid,modamod:calientabrazos",
+      "item": "modamod:pantalon,modamod:medias,modamod:calientabrazos",
       "title": "Piernas y brazos",
       "link_recipe": true,
       "text": "$(l)Tres prendas, cuatro extremidades y varias opiniones.$()$(br2)Cada lado se corta por su cuenta."

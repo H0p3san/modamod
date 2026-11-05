@@ -989,7 +989,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         // Las medias que llegan hasta el pie lo envuelven (2026-10-18): el pie generado usa su tela.
         BorcegosRenderer.mediaIzq = BorcegosRenderer.mediaDer = null;
         for (ItemStack s : prendas) {
-            if (s.getItem() != com.modamod.item.ModamodItems.SOCKS_SOLID || com.modamod.item.PatronRed.leer(s) != null) continue;   // la red tiene agujeros
+            if (s.getItem() != com.modamod.item.ModamodItems.MEDIAS || com.modamod.item.PatronRed.leer(s) != null) continue;   // la red tiene agujeros
             for (Pieza pz : PiezasDePrenda.de(s, entidad)) {
                 if (pz.capa() != Capa.MEDIA || pz.filaHasta() < 12) continue;
                 if (pz.parte() == Parte.PIERNA_IZQ) BorcegosRenderer.mediaIzq = pz.textura();
