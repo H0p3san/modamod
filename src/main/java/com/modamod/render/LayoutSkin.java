@@ -1,6 +1,6 @@
 package com.modamod.render;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 
 /**
  * Donde cae cada parte del cuerpo en una textura con layout de skin.

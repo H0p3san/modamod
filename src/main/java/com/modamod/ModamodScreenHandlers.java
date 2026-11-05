@@ -1,4 +1,4 @@
-package com.modamod.screen;
+package com.modamod;
 
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

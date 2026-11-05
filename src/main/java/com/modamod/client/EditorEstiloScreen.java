@@ -4,7 +4,7 @@ import com.modamod.aplique.Aplique;
 import com.modamod.estilista.EditorEstilo;
 import com.modamod.estilista.EditorEstiloScreenHandler;
 import com.modamod.estilista.PonerApliquePayload;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.render.ApliqueRenderer;
 import com.modamod.render.GarmentFeatureRenderer;
 import com.modamod.render.Pieza;

@@ -2,7 +2,7 @@ package com.modamod.maniqui;
 
 import com.modamod.ropa.GrillaDeRopa;
 import com.modamod.ropa.ListaDeRopa;
-import com.modamod.screen.ModamodScreenHandlers;
+import com.modamod.ModamodScreenHandlers;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

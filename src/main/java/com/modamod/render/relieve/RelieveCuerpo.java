@@ -3,7 +3,7 @@ package com.modamod.render.relieve;
 import com.modamod.body.CuerpoBase;
 import com.modamod.body.InteriorArriba;
 import com.modamod.body.PerfilCuerpo;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 
 import java.util.HashMap;
 import java.util.Map;

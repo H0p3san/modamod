@@ -1,6 +1,6 @@
 package com.modamod.render;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 
 import java.util.List;
 

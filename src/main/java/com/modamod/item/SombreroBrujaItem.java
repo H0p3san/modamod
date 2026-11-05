@@ -95,7 +95,7 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
     @Override public List<Integer> coloresDeFabrica() { return DE_FABRICA; }
 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.sombrero.zona." + (i + 1); }
-    @Override public com.modamod.garment.Parte marco(ItemStack stack) { return com.modamod.garment.Parte.CABEZA; }
+    @Override public com.modamod.prenda.Parte marco(ItemStack stack) { return com.modamod.prenda.Parte.CABEZA; }
 
     /** Vincha o cofia (2026-10-11): el mismo ítem con otra "ala" lleva su nombre. */
     @Override

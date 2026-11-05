@@ -1,6 +1,6 @@
 package com.modamod.region;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.render.CajaSkin;
 import com.modamod.render.LayoutSkin;
 import com.modamod.tinturas.TinturasBlockEntity.Categoria;

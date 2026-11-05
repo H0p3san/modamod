@@ -6,7 +6,7 @@ import com.modamod.aplique.Colocacion;
 import com.modamod.aplique.Oscilacion;
 import com.modamod.aplique.ObjetoAplique;
 import net.minecraft.block.BlockState;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.item.Calce;
 import com.modamod.item.ModamodComponents;
 import net.minecraft.client.MinecraftClient;

@@ -48,7 +48,7 @@ public class MaletinItem extends Item implements com.modamod.item.ZonasTenibles 
     @Override public String claveZona(ItemStack stack, int i) { return "modamod.maletin.zona." + (i + 1); }
 
     /** Cuelga de la mano derecha: los apliques se guardan en el marco del brazo derecho. */
-    @Override public com.modamod.garment.Parte marco(ItemStack stack) { return com.modamod.garment.Parte.BRAZO_DER; }
+    @Override public com.modamod.prenda.Parte marco(ItemStack stack) { return com.modamod.prenda.Parte.BRAZO_DER; }
 
     /** Abre la lista de outfits; {@code fuente} es de dónde sale el maletín (la mano o el que está apoyado). */
     static void abrir(PlayerEntity player, ItemStack maletin, int datoDeApertura, java.util.function.Supplier<ItemStack> fuente) {

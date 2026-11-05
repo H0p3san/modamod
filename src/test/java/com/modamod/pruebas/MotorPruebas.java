@@ -1,6 +1,6 @@
 package com.modamod.pruebas;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.render.CuerpoGeometria;
 import net.minecraft.client.model.ModelPart;
 

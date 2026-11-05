@@ -5,7 +5,7 @@ import com.modamod.body.PerfilesDeCuerpo;
 import com.modamod.prenda.Prendas;
 import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
-import com.modamod.screen.ModamodScreenHandlers;
+import com.modamod.ModamodScreenHandlers;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.ItemGroup;

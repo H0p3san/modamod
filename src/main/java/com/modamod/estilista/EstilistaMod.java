@@ -79,7 +79,7 @@ public final class EstilistaMod {
                 .register(PonerApliquePayload.ID, PonerApliquePayload.CODEC);
         net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(PonerApliquePayload.ID,
                 (payload, context) -> context.server().execute(() -> {
-                    var partes = com.modamod.garment.Parte.values();
+                    var partes = com.modamod.prenda.Parte.values();
                     var caras = net.minecraft.util.math.Direction.values();
                     var superficies = com.modamod.aplique.Aplique.Superficie.values();
                     if (payload.parte() < 0 || payload.parte() >= partes.length
@@ -97,7 +97,7 @@ public final class EstilistaMod {
                 .register(PonerCorreaPayload.ID, PonerCorreaPayload.CODEC);
         net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(PonerCorreaPayload.ID,
                 (payload, context) -> context.server().execute(() -> {
-                    var partes = com.modamod.garment.Parte.values();
+                    var partes = com.modamod.prenda.Parte.values();
                     var caras = net.minecraft.util.math.Direction.values();
                     var modos = com.modamod.correa.ModoCorrea.values();
                     if (payload.parte() < 0 || payload.parte() >= partes.length

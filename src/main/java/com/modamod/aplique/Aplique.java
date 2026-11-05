@@ -1,6 +1,6 @@
 package com.modamod.aplique;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.Direction;

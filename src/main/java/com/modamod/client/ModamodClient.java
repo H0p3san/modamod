@@ -4,7 +4,7 @@ import com.modamod.item.ModamodItems;
 import com.modamod.region.RegionResolver;
 import com.modamod.render.ClothingTextureCache;
 import com.modamod.render.GarmentFeatureRenderer;
-import com.modamod.screen.ModamodScreenHandlers;
+import com.modamod.ModamodScreenHandlers;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;

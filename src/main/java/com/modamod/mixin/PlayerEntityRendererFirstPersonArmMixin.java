@@ -1,6 +1,6 @@
 package com.modamod.mixin;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.render.GarmentFeatureRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;

@@ -304,7 +304,7 @@ public final class CuelloYCapucha {
     /** La textura de la tela del torso de la prenda, o null. */
     static Identifier telaDelTorso(ItemStack ropa) {
         for (com.modamod.render.Pieza p : PiezasDePrenda.de(ropa, null)) {
-            if (p.parte() == com.modamod.garment.Parte.TORSO) return p.textura();
+            if (p.parte() == com.modamod.prenda.Parte.TORSO) return p.textura();
         }
         return null;
     }
@@ -313,7 +313,7 @@ public final class CuelloYCapucha {
         Identifier tela = null;
         int filasTorso = 0;
         for (com.modamod.render.Pieza p : PiezasDePrenda.de(ropa, null)) {
-            if (p.parte() == com.modamod.garment.Parte.TORSO) {
+            if (p.parte() == com.modamod.prenda.Parte.TORSO) {
                 tela = p.textura();
                 filasTorso = p.filaHasta() - p.filaDesde();
                 break;

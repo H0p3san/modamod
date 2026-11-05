@@ -1,4 +1,4 @@
-package com.modamod.garment;
+package com.modamod.prenda;
 
 /**
  * El ordinal que decide quien va arriba cuando dos prendas comparten una

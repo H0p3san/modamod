@@ -627,7 +627,7 @@ public final class ClothingTextureCache {
         NativeImage hecha = CACHE_BORDE_CUELLO.get(base);
         if (hecha != null) return hecha;
         int escala = CuerpoGeometria.ESCALA_TELA;
-        CajaSkin torso = LayoutSkin.base(com.modamod.garment.Parte.TORSO, false).escalada(escala);
+        CajaSkin torso = LayoutSkin.base(com.modamod.prenda.Parte.TORSO, false).escalada(escala);
         NativeImage m = new NativeImage(base.getWidth(), base.getHeight(), true);
         for (int y = 0; y < m.getHeight(); y++) for (int x = 0; x < m.getWidth(); x++) m.setColor(x, y, 0);
         CajaSkin.Rect frente = torso.frente(), atras = torso.atras();
@@ -673,7 +673,7 @@ public final class ClothingTextureCache {
         NativeImage hecha = porRegion.get(region.clave);
         if (hecha != null) return hecha;
         int escala = CuerpoGeometria.ESCALA_TELA;
-        CajaSkin.Rect frente = LayoutSkin.base(com.modamod.garment.Parte.TORSO, false).escalada(escala).frente();
+        CajaSkin.Rect frente = LayoutSkin.base(com.modamod.prenda.Parte.TORSO, false).escalada(escala).frente();
         NativeImage m = new NativeImage(base.getWidth(), base.getHeight(), true);
         for (int y = 0; y < m.getHeight(); y++) for (int x = 0; x < m.getWidth(); x++) m.setColor(x, y, 0);
         float k = escala;
@@ -951,7 +951,7 @@ public final class ClothingTextureCache {
      * (filas, manga) — ver el aviso de más abajo sobre el orden.
      */
     public static void perforarRed(NativeImage img, com.modamod.item.PatronRed tipo,
-                                    com.modamod.garment.Parte parte, int filaDesde, int filaHasta) {
+                                    com.modamod.prenda.Parte parte, int filaDesde, int filaHasta) {
         if (tipo == null || tipo == com.modamod.item.PatronRed.LISA) return;   // sin trama: nada que perforar (celda 0 dividía por cero)
         // LayoutSkin.base(parte,false) sin escalar todavía, para leer el
         // alto REAL del cuboide (12 filas siempre, pero mejor no
@@ -975,7 +975,7 @@ public final class ClothingTextureCache {
         // hombros que siempre empalmen"): en el TORSO, frente y espalda
         // arrancan sus tiras de las anclas de hombro y la tapa de arriba
         // las cruza — ver ARNES_ANCLA_1/2.
-        boolean torso = parte == com.modamod.garment.Parte.TORSO;
+        boolean torso = parte == com.modamod.prenda.Parte.TORSO;
         CajaSkin.Rect[] costados = {caja.derecha(), caja.frente(), caja.izquierda(), caja.atras()};
         for (int i = 0; i < costados.length; i++) {
             CajaSkin.Rect cara = costados[i];
@@ -983,7 +983,7 @@ public final class ClothingTextureCache {
             perforarRedEnCara(img, tipo, cara.x0(), cara.y0(), cara.x1(), cara.y1(), true, yDesde, yHasta, rol);
         }
         CajaSkin.Rect arriba = caja.arriba(), abajo = caja.abajo();
-        boolean brazo = parte == com.modamod.garment.Parte.BRAZO_DER || parte == com.modamod.garment.Parte.BRAZO_IZQ;
+        boolean brazo = parte == com.modamod.prenda.Parte.BRAZO_DER || parte == com.modamod.prenda.Parte.BRAZO_IZQ;
         if (tipo.esArnes() && brazo && filaDesde == 0) {
             // Va DESPUÉS de los costados: lee cómo quedaron sus tiras.
             continuarTirasEnHombro(img, tipo, caja);

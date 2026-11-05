@@ -35,8 +35,8 @@ public final class AccesorioRenderer {
     }
 
     /** Las cajas del accesorio en el marco de {@code parte} (solo los borcegos tienen una forma por pie). */
-    public static List<SombreroRenderer.Caja> cajas(ItemStack stack, com.modamod.garment.Parte parte) {
-        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)) return BorcegosRenderer.cajas(stack, parte == com.modamod.garment.Parte.PIERNA_IZQ);
+    public static List<SombreroRenderer.Caja> cajas(ItemStack stack, com.modamod.prenda.Parte parte) {
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)) return BorcegosRenderer.cajas(stack, parte == com.modamod.prenda.Parte.PIERNA_IZQ);
         return cajas(stack);
     }
 

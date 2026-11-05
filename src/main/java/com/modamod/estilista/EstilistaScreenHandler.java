@@ -2,7 +2,7 @@ package com.modamod.estilista;
 
 import com.modamod.estilista.EditorEstilo;
 import com.modamod.estilista.EditorEstiloScreenHandler;
-import com.modamod.screen.ModamodScreenHandlers;
+import com.modamod.ModamodScreenHandlers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;

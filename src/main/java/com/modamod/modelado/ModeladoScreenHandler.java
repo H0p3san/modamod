@@ -1,6 +1,6 @@
 package com.modamod.modelado;
 
-import com.modamod.screen.ModamodScreenHandlers;
+import com.modamod.ModamodScreenHandlers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;

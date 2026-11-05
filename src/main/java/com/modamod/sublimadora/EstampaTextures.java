@@ -558,7 +558,7 @@ public final class EstampaTextures {
             // se calcule contra el puño de verdad y no contra la manga
             // LARGA que se usa como base (bug real: "ni bordes de mangas").
             com.modamod.render.ClothingTextureCache.perforarRed(salida, red,
-                    com.modamod.garment.Parte.TORSO, 0, variante.largo().filas);
+                    com.modamod.prenda.Parte.TORSO, 0, variante.largo().filas);
         }
 
         Identifier destino = Identifier.of(Modamod.MOD_ID,

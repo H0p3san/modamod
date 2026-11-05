@@ -7,7 +7,7 @@ import com.modamod.aplique.ModeloAplique;
 import com.modamod.aplique.MoldeApliqueItem;
 import com.modamod.aplique.ObjetoAplique;
 import com.modamod.aplique.RetazoApliqueItem;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.item.ModamodComponents;
 import com.modamod.item.ModamodItems;
 import net.minecraft.entity.player.PlayerEntity;
@@ -521,7 +521,7 @@ public class EditorEstilo implements Inventory {
      * no se gasta, "cuánto gasta lo vemos más adelante"). Solo sobre prendas y wearables con caja de cuerpo: no
      * sobre el sombrero ni la banda (que dibujan sus propias cajas) ni la malla de la pollera y la capa.
      */
-    public boolean ponerCorrea(com.modamod.garment.Parte parte, com.modamod.correa.Correa.Punto desde,
+    public boolean ponerCorrea(com.modamod.prenda.Parte parte, com.modamod.correa.Correa.Punto desde,
                                com.modamod.correa.Correa.Punto hasta, com.modamod.correa.ModoCorrea modo, float ancho,
                                com.modamod.correa.Correa.Superficie superficie, float largo) {
         ItemStack prenda = items.get(SLOT_PRENDA), molde = items.get(SLOT_MOLDE);
@@ -544,7 +544,7 @@ public class EditorEstilo implements Inventory {
         if (actuales.size() >= com.modamod.correa.Correa.MAXIMO_POR_PRENDA) return false;
         if (superficie != com.modamod.correa.Correa.Superficie.CAJA) {
             // En la malla x, y son u, v de la tela (px de 64).
-            parte = com.modamod.garment.Parte.TORSO;
+            parte = com.modamod.prenda.Parte.TORSO;
             desde = new com.modamod.correa.Correa.Punto(MathHelper.clamp(desde.x(), 0, 64), MathHelper.clamp(desde.y(), 0, 64), 0, desde.cara());
             hasta = new com.modamod.correa.Correa.Punto(MathHelper.clamp(hasta.x(), 0, 64), MathHelper.clamp(hasta.y(), 0, 64), 0, hasta.cara());
         } else {

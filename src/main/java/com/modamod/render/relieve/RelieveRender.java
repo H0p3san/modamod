@@ -1,6 +1,6 @@
 package com.modamod.render.relieve;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;

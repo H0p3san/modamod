@@ -1,7 +1,7 @@
 package com.modamod.maniqui;
 
 import com.modamod.Modamod;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.render.GarmentFeatureRenderer;
 import com.modamod.render.Pieza;
 import com.modamod.render.PiezasDePrenda;

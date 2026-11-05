@@ -1,6 +1,6 @@
 package com.modamod.item;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;

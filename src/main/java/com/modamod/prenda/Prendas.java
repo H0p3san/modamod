@@ -1,6 +1,6 @@
 package com.modamod.prenda;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.item.ModamodItems;
 import com.modamod.sublimadora.ModItems;
 import net.minecraft.item.BannerItem;

@@ -1,6 +1,6 @@
 package com.modamod.render;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 

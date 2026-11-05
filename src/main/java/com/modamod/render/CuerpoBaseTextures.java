@@ -2,7 +2,7 @@ package com.modamod.render;
 
 import com.modamod.body.CuerpoBase;
 import com.modamod.body.PerfilCuerpo;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.texture.NativeImage;

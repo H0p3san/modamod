@@ -1,6 +1,6 @@
 package com.modamod.render;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;

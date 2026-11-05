@@ -1,6 +1,6 @@
 package com.modamod.ropa;
 
-import com.modamod.screen.ModamodScreenHandlers;
+import com.modamod.ModamodScreenHandlers;
 import com.mojang.datafixers.util.Pair;
 import dev.emi.trinkets.SurvivalTrinketSlot;
 import dev.emi.trinkets.api.SlotGroup;

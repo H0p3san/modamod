@@ -1,7 +1,7 @@
 package com.modamod.render.relieve;
 
 import com.modamod.Modamod;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.item.Calce;
 import com.modamod.item.TexturaTela;
 import com.modamod.render.ClothingTextureCache;

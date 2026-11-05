@@ -101,7 +101,7 @@ public final class DetallesHoodie {
      * botamangas, medias y calientabrazos): una fila de canales alrededor de las 4 caras en la última (o primera)
      * fila con tela. Trabaja sobre la imagen compuesta, a su escala.
      */
-    public static void ribEnBorde(NativeImage img, com.modamod.garment.Parte parte, int desde, int hasta, boolean inf, boolean sup) {
+    public static void ribEnBorde(NativeImage img, com.modamod.prenda.Parte parte, int desde, int hasta, boolean inf, boolean sup) {
         if (hasta <= desde) return;
         int u, v;
         switch (parte) {

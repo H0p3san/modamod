@@ -1,7 +1,7 @@
 package com.modamod.render;
 
 import com.modamod.Modamod;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 import com.modamod.item.PolleraItem;
 import com.modamod.region.Lado;
 import com.modamod.region.RegionResolver;

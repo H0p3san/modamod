@@ -1,4 +1,4 @@
-package com.modamod.garment;
+package com.modamod.prenda;
 
 import com.modamod.region.Lado;
 import org.jetbrains.annotations.Nullable;

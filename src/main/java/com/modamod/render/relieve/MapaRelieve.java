@@ -1,6 +1,6 @@
 package com.modamod.render.relieve;
 
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Parte;
 
 /**
  * Alturas (en px de skin, hacia afuera de cada cara) de los 4 costados de

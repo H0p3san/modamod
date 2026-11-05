@@ -1,8 +1,8 @@
 package com.modamod.client;
 
 import com.modamod.Modamod;
-import com.modamod.garment.Capa;
-import com.modamod.garment.Parte;
+import com.modamod.prenda.Capa;
+import com.modamod.prenda.Parte;
 import com.modamod.item.Calce;
 import com.modamod.item.CalientabrazosItem;
 import com.modamod.item.ModamodItems;
