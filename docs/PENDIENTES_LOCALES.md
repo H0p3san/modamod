@@ -35,18 +35,14 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - **4. Largo de chaqueta, Top y hoodie**: son la misma remera (`piezasDeRemera`), así que 5483eb6 + 52cecdf ya los
   cubren. Verificado con 7 maniquíes por variante (hoodie; chaqueta abierta con solapa en pico): 7 largos distintos,
   capucha y solapas siguen el corte.
+- **5. Media abierta en una arista**: era el puente de la tela del relieve levantado en el borde de la cara (374823a).
+  De paso, caída lisa (6e0444d): las prendas con holgura que cambia por fila van en malla continua con esquinas rectas
+  (sin rebordes que se veían como líneas de puntos), relieve empujado en horizontal y el pie de la media sin relieve.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
-
-## 5. Media abierta en una arista
-Se abre en la pierna **derecha por la arista de atrás/afuera** y en la **izquierda por la arista interna**: donde la
-textura de la pierna da la vuelta (uv 0,16: oeste/norte/este/sur en columnas de 4 px). Ya se probó un margen de 0,5 px
-en los anillos (`EPS_U`) y relleno de bordes de textura: no cambió.
-- Primero `/modamoddebug relieve apagado`: si la línea desaparece, es el relieve empujando cada cara por su normal
-  (`render/relieve`); si sigue, es UV o textura (mirar con DEBUG_DUMP).
 
 ## 6. Punta del guante / molde "Cerrado"
 El molde `molde_ruedo_cerrado` existe pero la punta del guante sigue abierta. Código: `tapaPunta` en
