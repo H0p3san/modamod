@@ -1423,14 +1423,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             int colgado = ruedoLibre ? calce.colgado : 0;
             // Una pierna entera no cuelga por debajo del pie (quedaría enterrada).
             if (pierna && hasta >= 12) colgado = 0;
-            // Un guante tampoco cuelga por debajo de la mano (2026-11-04, "¿cómo tapo las tapas?"): colgando, la tela
-            // pasaba la mano con la boca abierta y la tapa de la mano no se dibujaba (pide colgado == 0).
-            boolean tapaPunta = pieza.capa() == Capa.MANGA_INTERIOR
-                    && (parte == Parte.BRAZO_DER || parte == Parte.BRAZO_IZQ) && hasta >= 12;
-            // Molde de ruedo CERRADO (2026-11-04, "podemos resolver lo del guante con un molde de ruedo que diga
-            // cerrado"): tapa la punta de cualquier prenda que llegue al final de la parte — la mano o el pie, donde el
-            // cuerpo no tiene tapa propia y se ve el hueco. Un borde cerrado tampoco cuelga.
-            if (pieza.ruedo() == com.modamod.item.Ruedo.CERRADO && hasta >= 12) tapaPunta = true;
+            // La punta se cierra SOLO con el molde de ruedo CERRADO (2026-11-04, "podemos resolver lo del guante con un molde de
+            // ruedo que diga cerrado"): la mano o el pie, donde el cuerpo no tiene tapa propia. Llegar a la muñeca (fila 12) no es
+            // cerrar el puño (2026-11-05, "la confusión de la muñeca con el puño"): un calientabrazos largo es un tubo abierto.
+            // Antes todo MANGA_INTERIOR hasta la fila 12 se tomaba por guante y dibujaba una tapa de textura vacía: el píxel
+            // suelto en la mano. Un borde cerrado tampoco cuelga.
+            boolean tapaPunta = pieza.ruedo() == com.modamod.item.Ruedo.CERRADO && hasta >= 12;
             if (tapaPunta) colgado = 0;
             if (cana > 0 && !botamangaAfuera) colgado = 0;     // la botamanga cortada no cuelga sobre el calzado
             if (hasta == desde) colgado = 0;

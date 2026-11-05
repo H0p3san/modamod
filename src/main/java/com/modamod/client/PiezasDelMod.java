@@ -553,10 +553,11 @@ public final class PiezasDelMod {
         com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack, lado);
         boolean ribInf = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.INF_DER : com.modamod.item.ZonaRuedo.INF_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
         boolean ribSup = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.SUP_DER : com.modamod.item.ZonaRuedo.SUP_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
+        boolean cerrado = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.INF_DER : com.modamod.item.ZonaRuedo.INF_IZQ) == com.modamod.item.Ruedo.CERRADO;
         ClothingTextureCache.Encima recorte = new ClothingTextureCache.Encima() {
             // brazoParte en la clave — mismo bug/fix que medias/pantalón.
             @Override public String clave() {
-                String base = "brazo" + brazoParte + filas[0] + "_" + filas[1] + "_" + red + (ribInf ? "i" : "") + (ribSup ? "s" : "");
+                String base = "brazo" + brazoParte + filas[0] + "_" + filas[1] + "_" + red + (ribInf ? "i" : "") + (ribSup ? "s" : "") + (cerrado ? "c" : "");
                 return EstampaTextures.tieneEstampa(stack) ? base + "_" + EstampaTextures.claveEstampas(stack) : base;
             }
             @Override public boolean aplicar(NativeImage destino) {
@@ -564,8 +565,9 @@ public final class PiezasDelMod {
                 recortarFilas(destino, brazoParte, filas[0], filas[1]);
                 if (red != null) ClothingTextureCache.perforarRed(destino, red, brazoParte, filas[0], filas[1]);
                 com.modamod.render.DetallesHoodie.ribEnBorde(destino, brazoParte, filas[0], filas[1], ribInf, ribSup);
-                // Llega a la mano: es guante y la malla cierra la punta (GarmentFeatureRenderer, tapaPunta de MANGA_INTERIOR).
-                if (filas[1] >= 12) pintarTapaDeAbajo(destino, brazoParte);
+                // Solo con el molde Cerrado (la malla cierra la punta con la misma regla, GarmentFeatureRenderer#tapaPunta):
+                // llegar a la muñeca no es cerrar el puño.
+                if (cerrado && filas[1] >= 12) pintarTapaDeAbajo(destino, brazoParte);
                 return true;
             }
         };
