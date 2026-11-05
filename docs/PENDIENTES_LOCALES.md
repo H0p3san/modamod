@@ -9,14 +9,27 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - Texturas compuestas a disco: poner `ClothingTextureCache.DEBUG_DUMP = true` (no queda prendido), probar, mirar
   `run/modamod_debug/`. Sirve para separar si el problema está en la textura o en la geometría.
 - Comando `/modamoddebug` (en `client/DebugApariencia.java`): `relieve`, `pieza`, `partes`, `perf`, `skin`, `slim`, `reset`…
-- Pruebas: `./gradlew` + `MotorPruebas` (en este entorno fallan 27 de oversize/animal print por LWJGL; comparar
-  contra ese mismo resultado, no contra cero).
+- Pruebas: `.\gradlew.bat motorTest` (`MotorPruebas`). En Windows usar `gradlew.bat`: el `./gradlew` de bash falla.
+  En la nube fallaban 27 por LWJGL; en local (2026-11-05) dan **28 OK, 0 FALLO** (contar líneas `[pruebas] FALLO`).
+- Servidor dedicado: `.\gradlew.bat runServidor` (carpeta `run-servidor/`, EULA aceptado, `online-mode=false`, H0p3san
+  es op). Cliente directo al servidor: `.\gradlew.bat runClient --args="--quickPlayMultiplayer localhost:25565"`.
+- `/modamoddebug relieve cuerpo`: le saca el relieve solo al cuerpo (la tela conserva el suyo).
 
-## 1. Arranque y servidor
-- **Mixin del migrador** (commit 4309797, `mixin/RegistroIdsViejosMixin`): ¿el cliente arranca sin error de mixin?
-- **Servidor dedicado**: arrancar uno con el mod. La verificación automática de "nada del lado común carga clases del
-  cliente" no llegó a correr. Sospechosos: `sublimadora/BannerHD`, `sublimadora/EstampaTextures`,
-  `sublimadora/CuelloRecorte` (usan `NativeImage` y están en paquetes comunes).
+## Hecho en local (2026-11-05)
+- **1. Arranque y servidor**: el cliente arranca sin error del mixin del migrador; el dedicado arranca, genera el
+  mundo, acepta al cliente y las máquinas funcionan. Ninguna clase de cliente se carga del lado común.
+- **4. Largo de remera**: los 7 largos dan 7 largos distintos. Las mangas salían completas en Alto, Bajo, Más alto y
+  Muy bajo (el torso recortado no se registraba para `imagenBase`): 52cecdf.
+- **Piel de las caderas con un cuerpo elegido**: de la cintura para abajo va la skin real (acca5d6); con "usar el
+  cuerpo siempre" la pelvis sigue siendo del cuerpo.
+- **Relieve**: el cuerpo atravesaba la tela en voxel (grillas corridas). Primer intento engrosando la tela (0d0e016)
+  abría las prendas en las aristas; quedó el cuerpo plano en las filas que tapa cada prenda (6ef1113).
+- **Nombres en inglés**: las máquinas creativas se llaman igual que las normales (fec6384).
+
+## Sueltos encontrados
+- Falta `models/item/molde_manga.json`: el ítem `modamod:molde_manga` se ve violeta y negro (desde 0.1.0).
+- La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
+- Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
 
 ## 2. Migrador de ids (4309797)
 `socks_solid`→`medias`, `sombrero_bruja`→`sombrero`, `borcegos`→`calzado`. **Copiar el mundo antes**: si el migrador
@@ -30,13 +43,9 @@ no anda, los ítems con id viejo se borran al guardar.
   cada frame (ver la regla en el javadoc de `CacheDeTexturas`).
 - F3+T sigue recargando bien.
 
-## 4. Largo de remera (5483eb6)
-Los 7 niveles del molde de rango daban de a pares el mismo largo. Causa: `CuerpoGeometria.telaPorFilas` dibuja
-**siempre las 12 filas**; el largo sale de la transparencia de la textura, y hay 3 texturas (5, 9, 12 filas) para
-7 largos. Arreglo: `PiezasDelMod.piezasDeRemera` recorta la textura del torso al largo, como las mangas.
-- ¿Los 7 niveles dan 7 largos distintos? ¿"Alto" (7 filas) deja el ombligo al aire?
-- Probar también chaqueta, Top y hoodie: van por otro camino (`CuelloYCapucha.telaDelTorso`) y pueden tener el mismo
-  problema.
+## 4. Largo de chaqueta, Top y hoodie
+La remera ya está (ver arriba). Chaqueta, Top y hoodie van por otro camino (`CuelloYCapucha.telaDelTorso`) y pueden
+tener el mismo problema: ¿los 7 niveles dan 7 largos distintos?
 
 ## 5. Media abierta en una arista
 Se abre en la pierna **derecha por la arista de atrás/afuera** y en la **izquierda por la arista interna**: donde la
