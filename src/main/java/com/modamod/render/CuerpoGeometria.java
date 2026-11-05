@@ -349,9 +349,17 @@ public final class CuerpoGeometria {
      */
     private static ModelPart.Cuboid cajaPierna(int u, int v, float d, float texW) {
         int S = (int) (texW / LayoutSkin.LADO);
-        return new ModelPart.Cuboid(u, v, -2 * S, -d / 2F + 0.01F * S, -2 * S, 4 * S, 12 * S, 4 * S, d, d / 2F, d,
+        // Arriba sube d (como siempre: -d + 0.01). Abajo, el cuerpo (d = 0, también sale de acá) queda en 12 + 0.01 y la tela
+        // PLANTA px más abajo: antes las dos usaban 12 + 0.01 y sus plantas eran coplanares (2026-11-05, rayas del cuerpo
+        // en la planta del pantalón vista de abajo).
+        float arriba = -d + 0.01F * S, abajo = 12 * S + 0.01F * S + (d > 0F ? PLANTA * S : 0F);
+        float dilY = (abajo - arriba - 12 * S) / 2F;
+        return new ModelPart.Cuboid(u, v, -2 * S, arriba + dilY, -2 * S, 4 * S, 12 * S, 4 * S, d, dilY, d,
                 false, texW, texW, TODAS_LAS_CARAS);
     }
+
+    /** Cuánto (px) queda la planta de una pierna de tela por debajo de la del cuerpo; 1/160 de bloque dentro del piso, no se ve. */
+    private static final float PLANTA = 0.1F;
 
     private static ModelPart raiz(Superficie superficie, float dilatacion) {
         if (superficie == Superficie.CUERPO) {
