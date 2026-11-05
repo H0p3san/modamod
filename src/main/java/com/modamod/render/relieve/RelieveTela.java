@@ -35,6 +35,8 @@ public final class RelieveTela {
     public static final float EXTRUSION_MAXIMA = 0.6f;
     /** Cuánto baja la tela por cada px que se aleja de un bulto (px/px). */
     private static final float PENDIENTE = 0.55f;
+    /** px alrededor en los que la tela no baja de lo de abajo: una celda gruesa (1 px) cubre el corrimiento de las grillas. */
+    static final float HOLGURA_GRILLA = 1f;
 
     private static final Map<String, MapaRelieve> CACHE = new HashMap<>();
 
@@ -81,7 +83,16 @@ public final class RelieveTela {
      */
     static float envolver(MapaRelieve abajo, Parte parte, int cara, float fu, float fv, int ancho, float radio) {
         float h = abajo.altura(parte, cara, fu, fv);
-        if (radio <= 0f || abajo.plana(parte, cara)) return h;
+        if (abajo.plana(parte, cara)) return h;
+        // Lo de abajo a menos de HOLGURA_GRILLA, sin pendiente (2026-11-05, "los costados muestran color piel" en voxel): la
+        // caja de tela es más grande que la de abajo con la misma cantidad de bloquecitos, así que hacia los costados las dos
+        // grillas quedan corridas hasta una celda, y un escalón de abajo asomaba por un escalón más bajo de la tela.
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                h = Math.max(h, abajo.altura(parte, cara, fu + dx * HOLGURA_GRILLA / ancho, fv + dy * HOLGURA_GRILLA / MapaRelieve.FILAS_PX));
+            }
+        }
+        if (radio <= 0f) return h;
         for (int anillo = 1; anillo <= 2; anillo++) {
             float r = radio * anillo / 2f;
             for (int k = 0; k < 8; k++) {

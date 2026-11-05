@@ -423,7 +423,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             }
             if (llevaCuerpo) {
                 com.modamod.render.relieve.RelieveRender.actual =
-                        new com.modamod.render.relieve.RelieveRender.Contexto(parte, mapaCuerpo);
+                        new com.modamod.render.relieve.RelieveRender.Contexto(parte,
+                                com.modamod.render.relieve.RelieveRender.cuerpoPlano ? com.modamod.render.relieve.MapaRelieve.PLANO : mapaCuerpo);
                 List<CuerpoGeometria.SegmentoCuerpo> segmentos = segmentosCuerpo(parte, piezas);
                 if (conVolumen != null) {
                     dibujarModelPart(CuerpoGeometria.cuerpoConVolumenDePierna(parte, conVolumen.dilatacion(),

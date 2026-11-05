@@ -151,6 +151,12 @@ public final class DebugApariencia {
                 return 1;
             }));
         }
+        raiz.then(ClientCommandManager.literal("cuerpo").executes(ctx -> {
+            com.modamod.render.relieve.RelieveRender.cuerpoPlano = !com.modamod.render.relieve.RelieveRender.cuerpoPlano;
+            ctx.getSource().sendFeedback(Text.literal("[modamod debug] relieve del cuerpo "
+                    + (com.modamod.render.relieve.RelieveRender.cuerpoPlano ? "apagado (la tela lo conserva)" : "prendido")));
+            return 1;
+        }));
         // "perfil" suelta el forzado: vuelve a mandar el volumen que eligió cada jugador.
         raiz.then(ClientCommandManager.literal("perfil").executes(ctx -> {
             com.modamod.render.relieve.RelieveRender.forzado = null;

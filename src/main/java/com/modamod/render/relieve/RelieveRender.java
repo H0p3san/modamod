@@ -38,6 +38,8 @@ public final class RelieveRender {
     /** Estilo forzado por {@code /modamoddebug relieve} (null = el del perfil). */
     @Nullable
     public static Estilo forzado;
+    /** {@code /modamoddebug relieve cuerpo}: el cuerpo sin relieve y la tela con el suyo, para ver si el cuerpo atraviesa la tela. */
+    public static boolean cuerpoPlano;
 
     /**
      * Fija el estilo del cuadro según el perfil (2026-10-04, "que el volumen de las skins base tambien pueda

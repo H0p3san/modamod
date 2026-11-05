@@ -217,6 +217,25 @@ public final class MotorPruebas {
             inf.ok("moldes", todos.size() + " ejes con fábrica y prendas; ida y vuelta por NBT");
         } catch (Throwable t) { inf.fallo("moldes", t.toString()); }
 
+        // Relieve voxel (2026-11-05, "los costados muestran color piel"): la tela no baja de lo de abajo en lo que se corren
+        // las grillas (media celda gruesa más el calce), o un escalón del cuerpo asoma. Cuerpo con un bulto de 1 px de ancho.
+        try {
+            com.modamod.render.relieve.MapaRelieve cuerpo = com.modamod.render.relieve.MapaRelieve.generar("prueba-bulto", false,
+                    (parte, cara, fu, fv, ancho) -> Math.abs(fu * ancho - ancho / 2f) < 0.5f ? 1.5f : 0f);
+            for (com.modamod.item.Calce calce : com.modamod.item.Calce.values()) {
+                com.modamod.render.relieve.MapaRelieve tela = com.modamod.render.relieve.RelieveTela.de(cuerpo, calce,
+                        com.modamod.item.TexturaTela.LISA, null);
+                int ancho = 8;
+                for (float fu = 0f; fu <= 1f; fu += 0.01f) {
+                    float maxAbajo = 0f;
+                    for (float d = -0.75f; d <= 0.75f; d += 0.05f) maxAbajo = Math.max(maxAbajo, cuerpo.altura(Parte.TORSO, 0, fu + d / ancho, 0.5f));
+                    float t = tela.altura(Parte.TORSO, 0, fu, 0.5f);
+                    Informe.verificar(t >= maxAbajo - 1e-3f, calce + " en fu=" + fu + ": tela " + t + " < cuerpo cerca " + maxAbajo);
+                }
+            }
+            inf.ok("relieve tela cubre al cuerpo", "todos los calces, con el corrimiento de grilla");
+        } catch (Throwable t) { inf.fallo("relieve tela cubre al cuerpo", t.toString()); }
+
         Path dir = Path.of("").toAbsolutePath().resolve("pruebas");
         Files.createDirectories(dir);
         inf.escribir(dir);
