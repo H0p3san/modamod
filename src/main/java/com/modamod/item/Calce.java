@@ -132,8 +132,7 @@ public enum Calce implements StringIdentifiable {
     }
 
     public static void escribir(ItemStack stack, Calce valor) {
-        if (valor == NORMAL) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CALCE);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CALCE, valor);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CALCE, valor);
     }
 
     /**

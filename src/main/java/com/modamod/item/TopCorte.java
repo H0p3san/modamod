@@ -59,8 +59,7 @@ public final class TopCorte {
     }
 
     public static void setFaldon(ItemStack stack, int nivel) {
-        if (nivel < 0 || nivel > 6) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.FALDON);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.FALDON, Math.min(6, nivel));
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.FALDON, nivel < 0 || nivel > 6 ? com.modamod.prenda.EjeDeCorte.SIN_NIVEL : nivel);
     }
 
     /** El largo del faldón: el nivel 0 es el {@code CERO} (3 px); del 1 al 6, de {@code MINIMO} a {@code MAXIMO}. */
@@ -95,8 +94,7 @@ public final class TopCorte {
     }
 
     public static void setConCapucha(ItemStack stack, boolean con) {
-        if (con) com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CON_CAPUCHA, true);
-        else com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CON_CAPUCHA);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CON_CAPUCHA, con);
     }
 
     /** Capucha que de verdad se dibuja o se sube con la tecla: un Top con capucha. */

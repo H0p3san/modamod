@@ -42,8 +42,7 @@ public class PolleraItem extends com.modamod.prenda.PrendaItem {
 
     public static void setCintura(ItemStack stack, int nivel) {
         // 7 = "ninguna" (2026-10-12, molde en blanco): vuelve a la cadera de siempre.
-        if (nivel < 0 || nivel > 6) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_CINTURA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_CINTURA, nivel);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.POLLERA_CINTURA, nivel < 0 || nivel > 6 ? com.modamod.prenda.EjeDeCorte.SIN_NIVEL : nivel);
     }
 
     public static PolleraForma forma(ItemStack stack) {
@@ -67,13 +66,11 @@ public class PolleraItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setVoladoRuedo(ItemStack stack, @org.jetbrains.annotations.Nullable PolleraVolado v) {
-        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_RUEDO, v);
     }
 
     public static void setVoladoTodo(ItemStack stack, @org.jetbrains.annotations.Nullable PolleraVolado v) {
-        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.POLLERA_VOLADO_TODO, v);
     }
 
     /** Borde decorativo del ruedo (2026-10-05) que sale del {@link Ruedo} de la pollera, o null (sin borde decorativo). */

@@ -45,8 +45,7 @@ public class CapaItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setCapucha(ItemStack stack, boolean v) {
-        if (!v) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_CAPUCHA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_CAPUCHA, true);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CAPA_CAPUCHA, v);
     }
 
     public static boolean cuelloAlto(ItemStack stack) {
@@ -54,8 +53,7 @@ public class CapaItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setCuelloAlto(ItemStack stack, boolean v) {
-        if (!v) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_CUELLO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_CUELLO, true);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CAPA_CUELLO, v);
     }
 
     /** Nivel de rango (0..6) del embozo sobre los hombros, o −1 si no lleva (2026-10-11). */
@@ -88,8 +86,7 @@ public class CapaItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setBordeEmbozo(ItemStack stack, boolean v) {
-        if (!v) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, true);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, v);
     }
 
     /** ¿El frente del embozo está abierto un poco? (la tecla de abrir el frente, la misma de la chaqueta). */

@@ -48,8 +48,7 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
     }
 
     public static void setBanda(ItemStack stack, boolean con) {
-        if (con) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA, false);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOMBRERO_BANDA, con);
     }
 
     /** ¿La banda es de piel (gruesa y peluda)? */

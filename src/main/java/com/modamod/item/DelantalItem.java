@@ -37,14 +37,12 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
 
     public static void setInicio(ItemStack stack, int nivel) {
         int n = Math.max(0, Math.min(6, nivel));
-        if (n == INICIO_DE_FABRICA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_INICIO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_INICIO, n);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_INICIO, n);
     }
 
     public static void setLargo(ItemStack stack, int nivel) {
         int n = Math.max(0, Math.min(6, nivel));
-        if (n == LARGO_DE_FABRICA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_LARGO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_LARGO, n);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_LARGO, n);
     }
 
     /** Altura del borde de arriba, en px bajo el hombro: del pecho (1) a la cadera baja (10). */
@@ -77,8 +75,7 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setEsquinas(ItemStack stack, @Nullable CapaRuedo ruedo) {
-        if (ruedo == CapaRuedo.REDONDEADO) com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_ESQUINAS, CapaRuedo.REDONDEADO);
-        else com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_ESQUINAS);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_ESQUINAS, ruedo == CapaRuedo.REDONDEADO ? CapaRuedo.REDONDEADO : CapaRuedo.RECTO);
     }
 
     /** Cobertura (2026-10-11): ENVOLVENTE si no tiene. */
@@ -88,8 +85,7 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setCobertura(ItemStack stack, @Nullable DelantalCobertura c) {
-        if (c == null || c == DelantalCobertura.ENVOLVENTE) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_COBERTURA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_COBERTURA, c);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_COBERTURA, c == null ? DelantalCobertura.ENVOLVENTE : c);
     }
 
     /** Tirantes (2026-10-11); SIN si no lleva. */
@@ -99,8 +95,7 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setTirantes(ItemStack stack, @Nullable DelantalTirantes t) {
-        if (t == null || t == DelantalTirantes.SIN) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_TIRANTES);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_TIRANTES, t);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_TIRANTES, t == null ? DelantalTirantes.SIN : t);
     }
 
     /** Volado del ruedo (los de la pollera), o null. */
@@ -110,8 +105,7 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setVolado(ItemStack stack, @Nullable PolleraVolado v) {
-        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO, v);
     }
 
     @Nullable
@@ -125,13 +119,11 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setVoladoLateral(ItemStack stack, @Nullable PolleraVolado v) {
-        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO_LATERAL);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO_LATERAL, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO_LATERAL, v);
     }
 
     public static void setVoladoSuperior(ItemStack stack, @Nullable PolleraVolado v) {
-        if (v == null) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO_SUPERIOR);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO_SUPERIOR, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_VOLADO_SUPERIOR, v);
     }
 
     @Override

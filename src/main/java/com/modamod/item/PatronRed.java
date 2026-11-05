@@ -98,7 +98,6 @@ public enum PatronRed implements StringIdentifiable {
     }
 
     public static void escribir(ItemStack stack, PatronRed valor) {
-        if (valor == null || valor == LISA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.RED);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.RED, valor);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.RED, valor == null ? LISA : valor);
     }
 }
