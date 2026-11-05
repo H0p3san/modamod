@@ -40,6 +40,8 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
   (sin rebordes que se veían como líneas de puntos), relieve empujado en horizontal y el pie de la media sin relieve.
 - **6. Punta del guante**: la mano se cierra solo con el molde Cerrado (antes todo calientabrazos hasta la muñeca se
   tomaba por guante y dibujaba una tapa vacía: el píxel suelto). La tapa se pinta con la última fila del puño. Sigue fuera del manual: falta volver a agregar su página.
+- **Planta del pantalón**: cuerpo y tela usaban la misma `cajaPierna` y sus plantas eran coplanares (rayas vistas de
+  abajo); el margen es solo de la tela. El molde Cerrado no hace falta en el pantalón: ya cierra la planta.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
