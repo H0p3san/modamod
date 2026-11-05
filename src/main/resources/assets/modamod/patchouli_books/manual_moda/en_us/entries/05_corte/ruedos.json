@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido,modamod:molde_ruedo_cerrado",
+      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido",
       "title": "Ruedos",
       "link_recipe": true,
       "text": "$(l)Cómo termina cada borde.$()$(br2)Cada casillero acepta solo los que le corresponden."
@@ -18,10 +18,6 @@
     {
       "type": "patchouli:text",
       "text": "$(l)Ondulado, festoneado y con pico:$() bordes decorativos, solo en la pollera. $(l)Redondeado:$() las esquinas de abajo de la capa y del delantal. $(l)Con cola:$() la cola de la capa, diez píxeles más que arrastran por el piso.$(br2)$(l)Fruncido:$() en medias y calientabrazos, la tela se arma como una malla con pliegues redondeados en las ocho filas cerca del borde. No funciona en torso, puños, botamangas ni pollera."
-    },
-    {
-      "type": "patchouli:text",
-      "text": "$(l)Cerrado:$() cierra la punta del guante, de la media o de la manga: la tela cubre el extremo en lugar de dejarlo abierto. Sirve para guantes (calientabrazos largos), medias con pie y mangas que terminan en la mano.$(br2)$(l)Ley del escalonado:$() cuando dos filas vecinas de una prenda tienen distinto grosor, el escalón entre ellas se cierra solo con un anillo de tela. No hace falta moldear nada para que quede sin huecos."
     },
     {
       "type": "patchouli:text",
