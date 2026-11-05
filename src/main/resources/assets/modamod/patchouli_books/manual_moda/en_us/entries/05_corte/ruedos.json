@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido",
+      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido,modamod:molde_ruedo_cerrado",
       "title": "Ruedos",
       "link_recipe": true,
       "text": "$(l)Cómo termina cada borde.$()$(br2)Cada casillero acepta solo los que le corresponden."
@@ -21,7 +21,15 @@
     },
     {
       "type": "patchouli:text",
+      "text": "$(l)Cerrado:$() cierra la punta del guante, de la media o de la manga: la tela cubre el extremo en lugar de dejarlo abierto. Sirve para guantes (calientabrazos largos), medias con pie y mangas que terminan en la mano.$(br2)$(l)Ley del escalonado:$() cuando dos filas vecinas de una prenda tienen distinto grosor, el escalón entre ellas se cierra solo con un anillo de tela. No hace falta moldear nada para que quede sin huecos."
+    },
+    {
+      "type": "patchouli:text",
       "text": "$(l)Volados.$() Dos moldes, $(o)recto$() (tira fruncida con muchas ondas chicas y poca apertura) y $(o)circular$() (ruedo abierto con pocas ondas grandes). Valen en cualquier casillero de ruedo y en $(o)Toda la pollera$(), que pone tres filas parejas de arriba a abajo. Si ponés los dos, el del ruedo manda en la última fila."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Ruedo de la pollera.$() La banda de abajo de la pollera es una zona propia: se tiñe aparte de las capas en la mesa de tinturas (zona $(o)ruedo$()) y tiene un borde de piel más grueso, marcado y parejo."
     },
     {
       "type": "patchouli:spotlight",
