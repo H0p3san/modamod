@@ -361,7 +361,9 @@ public final class EstampaTextures {
 
 
     private static final Map<String, Identifier> CACHE = new HashMap<>();
-    private static final Map<String, Identifier> CACHE_CUERPO = new HashMap<>();
+    /** Con tope (2026-11-05): era un HashMap sin límite y cada color o patrón probado en las máquinas dejaba 2 MB vivos. */
+    private static final com.modamod.render.CacheDeTexturas CACHE_CUERPO = new com.modamod.render.CacheDeTexturas("remera", 64)
+            .alExpulsar(com.modamod.render.ClothingTextureCache::olvidarImagenCompuesta);
     /** UUIDs que ya fallaron, para no reintentar la lectura en cada frame. */
     private static final Map<Object, Boolean> FALLADAS = new HashMap<>();
 
@@ -561,16 +563,12 @@ public final class EstampaTextures {
                     com.modamod.prenda.Parte.TORSO, 0, variante.largo().filas);
         }
 
-        Identifier destino = Identifier.of(Modamod.MOD_ID,
-                "cuerpo/" + Long.toHexString(clave.hashCode() & 0xFFFFFFFFL));
-        MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(destino, new NativeImageBackedTexture(salida));
+        Identifier destino = CACHE_CUERPO.registrar(clave, salida);
         // Sin esto, ClothingTextureCache#imagenBase (que lee del resource
         // pack) nunca encuentra esta textura -- y el recorte de manga en
         // runtime cae silenciosamente a "sin recortar" para cualquier
         // remera teñida. Ver el javadoc de registrarImagenCompuesta.
         com.modamod.render.ClothingTextureCache.registrarImagenCompuesta(destino, salida);
-        CACHE_CUERPO.put(clave, destino);
         return destino;
     }
 

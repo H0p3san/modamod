@@ -87,6 +87,7 @@ public final class PerfHud {
         lineas.add("-- cachés");
         lineas.add(String.format("telas compuestas %d  imágenes base %d (%.1f MB)", (int) tela[0], (int) tela[1], tela[2]));
         lineas.add(String.format("acabados %d telas, %d cuadros (~%.0f MB GPU)", trim[0], trim[1], trim[1] * 1.0));
+        lineas.add(String.format("texturas dinámicas vivas %d", com.modamod.render.CacheDeTexturas.vivas()));
 
         int ancho = 0;
         for (String l : lineas) ancho = Math.max(ancho, mc.textRenderer.getWidth(l));
