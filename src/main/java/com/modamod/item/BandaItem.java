@@ -18,6 +18,21 @@ import java.util.List;
  */
 public class BandaItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
 
+
+    /**
+     * ¿El cinto REEMPLAZA la piel del torso? (2026-11-04, "no está reescribiendo la skin para que el cinto la reemplace
+     * en esas partes, es básicamente la premisa del mod"): cuando aprieta, el mod se hace cargo del torso y dibuja el
+     * cuerpo metido por dentro de la banda, en vez de que la banda se sume por encima de la piel de vanilla. Con
+     * Oversize (lo de fábrica) la banda va suelta por afuera y la piel queda como está.
+     *
+     * <p>Lado común: lo lee {@code Prendas} para decir qué partes tapa la prenda, y eso corre también en el servidor.
+     */
+    public static boolean reemplazaLaPiel(ItemStack stack) {
+        if (zona(stack) != com.modamod.item.BandaZona.CINTURA) return false;
+        com.modamod.item.Calce c = com.modamod.prenda.Corte.get(stack, com.modamod.prenda.Ejes.BANDA_CALCE);
+        return c != null && c != com.modamod.item.Calce.OVERSIZE;
+    }
+
     /** Cuero oscuro, borde claro y herraje dorado de fábrica. */
     private static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x8A6240, 0xC9A24A);
 
