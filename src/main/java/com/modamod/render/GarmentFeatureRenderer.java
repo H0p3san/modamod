@@ -1542,9 +1542,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 capasMalla++;
                 dibujarModelPart(mallaOversize, CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices,
                         vertexConsumers, luz);
-            } else if (((uniforme && colgado == 0 && desde == 0 && hasta >= 12) || parte == Parte.CABEZA) && !costadoInterno) {
-                // Solo si la tela cubre la parte entera (2026-11-05, "lower y low están repetidos"): el cubo entero dejaba el
-                // corte a la transparencia de la textura, y la remera tiene 3 texturas (5, 9 y 12 filas) para 7 largos.
+            } else if (((uniforme && colgado == 0) || parte == Parte.CABEZA) && !costadoInterno) {
                 // La cabeza va de una pieza: con la holgura (o el casco) de su fila más inflada.
                 float entera = base;
                 if (parte == Parte.CABEZA) for (int f = desde; f < hasta; f++) entera = Math.max(entera, fila[f]);

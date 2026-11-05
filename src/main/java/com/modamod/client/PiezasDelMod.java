@@ -223,9 +223,15 @@ public final class PiezasDelMod {
                     ribTorso, ribIzq, ribDer, canguro, com.modamod.item.TopCorte.frente(stack), Calce.leer(stack));
         }
 
+        // El largo real (2026-11-05, "lower y low están repetidos"): hay 3 texturas (5, 9 y 12 filas) para 7 largos y la
+        // tela del torso se dibuja con sus 12 filas, así que el corte lo da la transparencia. Se recorta la textura al largo
+        // elegido, como las mangas; sin esto Alto=Medio, Bajo=Muy bajo=Más bajo y no existía el corte de 7 filas.
+        int filasTorso = variante.largo().filas;
+        if (filasTorso < variante.largo().base().filas) textura = recortarMangaYCachear(textura, Parte.TORSO, filasTorso, null);
+
         float dilatacion = Calce.dilatacionEfectiva(stack);
         List<Pieza> piezas = new ArrayList<>(3);
-        piezas.add(new Pieza(Parte.TORSO, capa, textura, dilatacion, 0, variante.largo().filas, false, ruedoTorso));
+        piezas.add(new Pieza(Parte.TORSO, capa, textura, dilatacion, 0, filasTorso, false, ruedoTorso));
         // Mangas POR LADO (2026-09-24, "vamos con mangas distintas") — cada
         // brazo lee su propio valor (RemeraItem#manga, izquierda vive en
         // Variante, derecha es un override aparte) y se recorta
