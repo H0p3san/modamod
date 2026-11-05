@@ -25,23 +25,20 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - **Relieve**: el cuerpo atravesaba la tela en voxel (grillas corridas). Primer intento engrosando la tela (0d0e016)
   abría las prendas en las aristas; quedó el cuerpo plano en las filas que tapa cada prenda (6ef1113).
 - **Nombres en inglés**: las máquinas creativas se llaman igual que las normales (fec6384).
+- **2. Migrador de ids**: medias, sombrero y calzado guardados con id viejo en inventario, trinkets y cofre cargan
+  iguales (lugar y color) y se guardan con el id nuevo. Íconos, nombres y manual bien. Sin cambios de código.
+- **Recetas**: cada una tiene su logro de desbloqueo (`scripts/generar_logros_recetas.py`, a0db6b3); correr el script
+  al agregar recetas, MotorPruebas avisa si falta alguno.
+- **3. Caché de texturas**: `EstampaTextures.CACHE_CUERPO` había quedado sin tope (cada color de remera dejaba
+  ~2,6 MB para siempre); con 600 colores en un maniquí el cliente subía 1586 MB, ahora 53 MB (9e8efe9). F3+T bien,
+  sin cubos violetas. `/modamoddebug perf` muestra las texturas dinámicas vivas.
+- **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
-- Falta `models/item/molde_manga.json`: el ítem `modamod:molde_manga` se ve violeta y negro (desde 0.1.0).
+- Pie de las sandalias: `BorcegosRenderer.pielActual` solo lo fijan el ícono y el maniquí; en el mundo, el pie de
+  cualquier jugador usa la última skin dibujada (la tuya o la del maniquí), no la suya.
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
-
-## 2. Migrador de ids (4309797)
-`socks_solid`→`medias`, `sombrero_bruja`→`sombrero`, `borcegos`→`calzado`. **Copiar el mundo antes**: si el migrador
-no anda, los ítems con id viejo se borran al guardar.
-- Mundo con esos ítems en inventario, puestos (trinkets) y en un cofre: ¿siguen con forma y colores?
-- Íconos (no violeta y negro), nombres por variante, recetas, páginas del manual.
-
-## 3. Caché de texturas con tope (c651f46, `render/CacheDeTexturas`)
-- Editar en el Estilista un buen rato: ¿la memoria (F3) se estabiliza?
-- ¿Aparece el cubo violeta y negro en alguna prenda? Eso sería alguien guardando un id de textura en vez de pedirlo
-  cada frame (ver la regla en el javadoc de `CacheDeTexturas`).
-- F3+T sigue recargando bien.
 
 ## 4. Largo de chaqueta, Top y hoodie
 La remera ya está (ver arriba). Chaqueta, Top y hoodie van por otro camino (`CuelloYCapucha.telaDelTorso`) y pueden
