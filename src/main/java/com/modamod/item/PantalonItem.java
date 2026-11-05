@@ -77,8 +77,7 @@ public class PantalonItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setTiro(ItemStack stack, PantalonTiro tiro) {
-        if (tiro == PantalonTiro.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.TIRO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.TIRO, tiro);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.TIRO, tiro);
     }
 
     /**

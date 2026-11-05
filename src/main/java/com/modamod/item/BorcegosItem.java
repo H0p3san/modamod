@@ -53,8 +53,7 @@ public class BorcegosItem extends com.modamod.prenda.PrendaItem implements Zonas
     }
 
     public static void setEstilo(ItemStack stack, SombreroEstilo v) {
-        if (v == SombreroEstilo.MALLA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BORCEGO_ESTILO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BORCEGO_ESTILO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.BORCEGO_ESTILO, v);
     }
 
     public static CalzadoPunta punta(ItemStack stack, boolean izq) {

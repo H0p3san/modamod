@@ -43,8 +43,7 @@ public final class TopCorte {
     /** Pone el frente del corte (lo usa la Modeladora) y suelta lo que había hecho la tecla. */
     public static void setFrente(ItemStack stack, ChaquetaFrente f) {
         com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.FRENTE_AHORA);
-        if (f == ChaquetaFrente.CERRADA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.FRENTE);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.FRENTE, f);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.FRENTE, f);
     }
 
     /** Abre o cierra el frente ahora (la tecla); si queda como dice el corte, no guarda nada. */
@@ -77,8 +76,7 @@ public final class TopCorte {
     }
 
     public static void setSolapa(ItemStack stack, ChaquetaSolapa v) {
-        if (v == ChaquetaSolapa.NINGUNA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOLAPA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOLAPA, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOLAPA, v);
     }
 
     /** ¿Lleva capucha? Por defecto no. Los cordones y el bolsillo canguro son aparte (2026-10-14). */
@@ -89,8 +87,7 @@ public final class TopCorte {
     }
 
     public static void setEstiloCapucha(ItemStack stack, SombreroEstilo v) {
-        if (v == SombreroEstilo.MALLA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPUCHA_ESTILO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPUCHA_ESTILO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CAPUCHA_ESTILO, v);
     }
 
     public static boolean conCapucha(ItemStack stack) {

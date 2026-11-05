@@ -30,8 +30,7 @@ public class PolleraItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setLargo(ItemStack stack, PolleraLargo largo) {
-        if (largo == PolleraLargo.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_LARGO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_LARGO, largo);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.POLLERA_LARGO, largo);
     }
 
     /** Altura de la cintura en px bajo el hombro (9 = cadera de siempre). */
@@ -53,8 +52,7 @@ public class PolleraItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setForma(ItemStack stack, PolleraForma forma) {
-        if (forma == PolleraForma.CAMPANA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.POLLERA_FORMA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.POLLERA_FORMA, forma);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.POLLERA_FORMA, forma);
     }
 
     /** Volado del borde de abajo (2026-10-05), o null. */

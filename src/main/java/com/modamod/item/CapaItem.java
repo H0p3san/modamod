@@ -28,8 +28,7 @@ public class CapaItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setLargo(ItemStack stack, CapaLargo v) {
-        if (v == CapaLargo.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_LARGO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_LARGO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CAPA_LARGO, v);
     }
 
     public static CapaRuedo ruedo(ItemStack stack) {
@@ -38,8 +37,7 @@ public class CapaItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setRuedo(ItemStack stack, CapaRuedo v) {
-        if (v == CapaRuedo.RECTO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.CAPA_RUEDO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.CAPA_RUEDO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.CAPA_RUEDO, v);
     }
 
     public static boolean capucha(ItemStack stack) {

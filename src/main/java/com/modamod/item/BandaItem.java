@@ -57,18 +57,15 @@ public class BandaItem extends com.modamod.prenda.PrendaItem implements ZonasTen
     }
 
     public static void setZona(ItemStack stack, BandaZona v) {
-        if (v == BandaZona.CINTURA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BANDA_ZONA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_ZONA, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.BANDA_ZONA, v);
     }
 
     public static void setAncho(ItemStack stack, BandaAncho v) {
-        if (v == BandaAncho.MEDIO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BANDA_ANCHO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_ANCHO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.BANDA_ANCHO, v);
     }
 
     public static void setHerraje(ItemStack stack, BandaHerraje v) {
-        if (v == BandaHerraje.NINGUNO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.BANDA_HERRAJE, v);
     }
 
 

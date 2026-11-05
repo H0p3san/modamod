@@ -39,8 +39,7 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
     }
 
     public static void setGrosor(ItemStack stack, SombreroGrosor v) {
-        if (v == SombreroGrosor.FINA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_GROSOR);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_GROSOR, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOMBRERO_GROSOR, v);
     }
 
     /** ¿Lleva banda? Sí de fábrica (los sombreros de antes la tienen). */
@@ -64,8 +63,7 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
     }
 
     public static void setEstilo(ItemStack stack, SombreroEstilo v) {
-        if (v == SombreroEstilo.MALLA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOMBRERO_ESTILO, v);
     }
 
     public static SombreroPlanta planta(ItemStack stack) {
@@ -74,18 +72,15 @@ public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements 
     }
 
     public static void setPlanta(ItemStack stack, SombreroPlanta v) {
-        if (v == SombreroPlanta.REDONDA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_PLANTA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_PLANTA, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOMBRERO_PLANTA, v);
     }
 
     public static void setAla(ItemStack stack, SombreroAla v) {
-        if (v == SombreroAla.ANCHA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_ALA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_ALA, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOMBRERO_ALA, v);
     }
 
     public static void setPunta(ItemStack stack, SombreroPunta v) {
-        if (v == SombreroPunta.RECTA) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA, v);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.SOMBRERO_PUNTA, v);
     }
 
 

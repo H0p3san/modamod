@@ -68,8 +68,7 @@ public class DelantalItem extends com.modamod.prenda.PrendaItem {
     }
 
     public static void setForma(ItemStack stack, DelantalForma forma) {
-        if (forma == DelantalForma.RECTO) com.modamod.prenda.Corte.remove(stack, com.modamod.prenda.Ejes.DELANTAL_FORMA);
-        else com.modamod.prenda.Corte.set(stack, com.modamod.prenda.Ejes.DELANTAL_FORMA, forma);
+        com.modamod.prenda.Corte.escribir(stack, com.modamod.prenda.Ejes.DELANTAL_FORMA, forma);
     }
 
     /** ¿Las esquinas de abajo van redondeadas? (los moldes de ruedo de la capa: recto / redondeado). */
