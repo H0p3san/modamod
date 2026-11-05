@@ -69,6 +69,12 @@ loom {
             vmArg '-Dmodamod.suite=prenda'
             programArgs '--username', 'PruebaModa', '--width', '1920', '--height', '1080'
         }
+        // Servidor dedicado en su carpeta (2026-11-05): si comparte run/ con el cliente se pisan logs/latest.log. ./gradlew.bat runServidor
+        servidor {
+            server()
+            name 'ModaMod servidor dedicado'
+            runDir 'run-servidor'
+        }
         client {
             // Nombre de jugador fijo. Sin esto Loom estrena uno al azar
             // (Player947, Player532...) en cada arranque, y como el UUID
