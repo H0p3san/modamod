@@ -1408,19 +1408,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 dibujarModelPart(fruncida != null ? fruncida
                                 : CuerpoGeometria.telaConVolumenDePierna(parte, dilMedia, conPuntaDeMedia(pieza, parte), desde, hasta),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
-                // La misma ley del escalonado que las prendas de cajas: el perfil del muslo y el ribete de piel mueven la
-                // holgura fila por fila y cada escalón necesita su anillo (antes se cerraban en la geometría con una tapa
-                // que tomaba el UV de la tapa de la pierna — transparente en una media que no llega a la cadera).
-                if (fruncida == null) {
-                    for (int f = desde; f < hasta - 1; f++) {
-                        float sup = dilMedia[f], inf = dilMedia[f + 1];
-                        if (Math.abs(sup - inf) > 0.002F) {
-                            dibujarBoca(parte, slim, pieza.textura(), Math.max(sup, inf), Math.min(sup, inf), -1F,
-                                    sup > inf ? f : f + 1, f + 1, sup > inf ? 1F : -1F,
-                                    delModelo, matrices, vertexConsumers, luz);
-                        }
-                    }
-                }
+                // Sin anillos entre filas (2026-11-05, "caída lisa"): la malla continua de telaConVolumenDePierna ya las une.
                 for (int f = desde; f < hasta; f++) exterior[f] = Math.max(exterior[f], base);
                 continue;
             }
@@ -1461,6 +1449,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     || ruedoLibre && calce == com.modamod.item.Calce.OVERSIZE && (parte == Parte.TORSO || esBrazo);
 
             float[] fila = new float[12];
+            // La parte continua de la holgura (calce, silueta, caída, campana): entre filas se alisa; lo que se suma después
+            // (puño elástico, ribete de piel, botamanga, otra capa) es un escalón a propósito (2026-11-05, "caída lisa").
+            float[] continua = new float[12];
             boolean uniforme = true;
             for (int f = 0; f < 12; f++) {
                 float d = base;
@@ -1479,6 +1470,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     }
                     // Ruedo en campana (2026-10-07): las últimas 3 filas se abren hacia afuera, 0,6 px más cada una.
                     if (pieza.campana() && hasta - desde > 3 && f >= hasta - 3) d += 0.6F * (f - (hasta - 3) + 1);
+                    continua[f] = d;
                     // Ribete de piel (2026-11-04): las 2 últimas filas del borde de abajo (o las 2 primeras del de arriba) más gruesas.
                     if (pieza.piel() && hasta - desde > 2 && f >= hasta - 2) d += 0.5F;
                     if (pieza.pielSup() && hasta - desde > 2 && f < desde + 2) d += 0.5F;
@@ -1502,7 +1494,16 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     }
                 }
                 fila[f] = d;
+                if (f < desde || f >= hasta) continua[f] = d;
                 if (d != base) uniforme = false;
+            }
+            // Bordes de fila 0..12 que quedan en escalón: los cortes de la prenda y donde cambia algo más que la parte continua.
+            boolean[] juntaDura = new boolean[13];
+            juntaDura[0] = juntaDura[12] = true;
+            if (desde > 0 && desde < 12) juntaDura[desde] = true;
+            if (hasta > 0 && hasta < 12) juntaDura[hasta] = true;
+            for (int b = 1; b < 12; b++) {
+                if (Math.abs((fila[b] - fila[b - 1]) - (continua[b] - continua[b - 1])) > 0.01F) juntaDura[b] = true;
             }
             float dilColgado = hasta > 0 ? fila[hasta - 1] : base;
             for (int k = 0; k < colgado; k++) {
@@ -1554,8 +1555,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 dibujarModelPart(suave
                                 ? CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
                                         costadoInterno ? interno : -1F, tapaPunta)
-                                : CuerpoGeometria.telaPorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F, tapaPunta),
+                                : CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
+                                        costadoInterno ? interno : -1F, tapaPunta, juntaDura),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
             }
             // Los escalones hacia adentro (el puño o el ruedo elástico aprietan de golpe): el borde de la fila de arriba
@@ -1569,8 +1570,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     float sup = fila[f], inf = fila[f + 1];
                     // Cualquier diferencia, no solo las que se ven de lejos (2026-11-04, "cortes muy pequeños pero
                     // incluso en partes no escalonadas"): el escalonado del calce mueve las filas por centésimas y
-                    // esas rendijas también dejan ver el interior.
-                    if (Math.abs(sup - inf) > 0.002F) {
+                    // esas rendijas también dejan ver el interior. Solo en las juntas duras: las lisas las une la pared
+                    // inclinada de la malla (2026-11-05, "caída lisa").
+                    if (juntaDura[f + 1] && Math.abs(sup - inf) > 0.002F) {
                         dibujarBoca(parte, slim, pieza.textura(), Math.max(sup, inf), Math.min(sup, inf),
                                 costadoInterno ? interno : -1F, sup > inf ? f : f + 1, f + 1, sup > inf ? 1F : -1F,
                                 delModelo, matrices, vertexConsumers, luz);

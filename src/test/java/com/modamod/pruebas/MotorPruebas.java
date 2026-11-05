@@ -45,6 +45,27 @@ public final class MotorPruebas {
         return a * a * (3f - 2f * a) * b * b * (3f - 2f * b);
     }
 
+    /** Cuántos anchos distintos (x mínima) tiene la malla a la altura del borde de fila {@code borde}. */
+    static int contornosEnBorde(ModelPart p, int borde) throws Exception {
+        List<float[]> vs = new java.util.ArrayList<>();
+        for (Object c : (List<?>) campo(p, "cuboids")) for (Object q : (Object[]) campo(c, "sides")) for (Object v : (Object[]) campo(q, "vertices")) {
+            Object pos = campo(v, "pos");
+            vs.add(new float[]{((Number) pos.getClass().getMethod("x").invoke(pos)).floatValue(), ((Number) pos.getClass().getMethod("y").invoke(pos)).floatValue()});
+        }
+        // Los anillos: las alturas con muchos vértices (las tapas infladas no cuentan), ordenadas de arriba abajo.
+        java.util.TreeMap<Float, Integer> porY = new java.util.TreeMap<>();
+        for (float[] v : vs) porY.merge(Math.round(v[1] * 1000F) / 1000F, 1, Integer::sum);
+        List<Float> anillos = porY.entrySet().stream().filter(e -> e.getValue() >= 16).map(java.util.Map.Entry::getKey).toList();
+        if (anillos.size() < 13) throw new AssertionError("se esperaban 13 anillos y hay " + anillos.size() + ": " + anillos);
+        float yBorde = anillos.get(borde);
+        java.util.TreeSet<Float> xs = new java.util.TreeSet<>();
+        for (float[] v : vs) if (Math.abs(v[1] - yBorde) < 1e-3F) xs.add(Math.round(v[0] * 1000F) / 1000F);
+        if (xs.isEmpty()) throw new AssertionError("ningún vértice en el borde " + borde);
+        // Las x del costado de x mínima: una por contorno (los puntos de las otras caras quedan a ~8 unidades, escala 8).
+        float primera = xs.first();
+        return (int) xs.stream().filter(x -> x <= primera + 4F).count();
+    }
+
     private static float ancho(float[] c) { return c[1] - c[0]; }
     private static float prof(float[] c) { return c[5] - c[4]; }
 
@@ -67,6 +88,21 @@ public final class MotorPruebas {
                 inf.ok(nombre, "malla ok");
             } catch (Throwable t) { inf.fallo(nombre, t.toString()); }
         }
+        // Caída lisa (2026-11-05, "molestan los puntos"): con la holgura creciendo fila a fila, cada borde de fila tiene un solo
+        // contorno (pared inclinada, sin reborde); en una junta dura quedan dos (el escalón a propósito, que cierra el anillo).
+        try {
+            float[] dil = new float[12];
+            for (int f = 0; f < 12; f++) dil[f] = 0.25F + 0.1F * f;
+            boolean[] duras = new boolean[13];
+            duras[0] = duras[12] = true;
+            Informe.verificar(contornosEnBorde(CuerpoGeometria.telaSuavePorFilas(Parte.PIERNA_DER, false, dil, 12, 0, dil[11], -1F, false, duras), 6) == 1,
+                    "junta lisa con más de un contorno (queda reborde)");
+            duras[6] = true;
+            Informe.verificar(contornosEnBorde(CuerpoGeometria.telaSuavePorFilas(Parte.PIERNA_DER, false, dil, 12, 0, dil[11], -1F, false, duras), 6) == 2,
+                    "junta dura sin escalón");
+            inf.ok("caida lisa", "un contorno por borde liso, dos en la junta dura");
+        } catch (Throwable t) { inf.fallo("caida lisa", t.toString()); }
+
         // Ruedo Fruncido: con dilatacion crece el ancho (el fruncido abulta) y la geometria es finita.
         try {
             float[] cero = new float[12], dil = new float[12];

@@ -107,9 +107,19 @@ public final class RelieveRender {
     public static void dibujar(ModelPart parte, Contexto ctx, float escala, MatrixStack matrices,
                                VertexConsumer vc, int luz, int overlay) {
         parte.forEachCuboid(matrices, (entry, path, indice, cuboide) -> {
-            for (ModelPart.Quad q : cuboide.sides) cara(entry, q, ctx, escala, vc, luz, overlay);
+            boolean sinRelieve = path.endsWith(SIN_RELIEVE);
+            for (ModelPart.Quad q : cuboide.sides) {
+                if (sinRelieve) plano(entry, q, vc, luz, overlay);
+                else cara(entry, q, ctx, escala, vc, luz, overlay);
+            }
         });
     }
+
+    /**
+     * Nombre del hijo de una ModelPart que se dibuja sin relieve (2026-11-05, "la tapa del pie sigue abierta"): la planta y la
+     * punta de la media usan el UV de la pierna, así que el relieve empujaba sus costados y no su tapa, y se abrían.
+     */
+    public static final String SIN_RELIEVE = "sin_relieve";
 
     private static void cara(MatrixStack.Entry e, ModelPart.Quad q, Contexto ctx, float escala,
                              VertexConsumer vc, int luz, int ov) {
@@ -159,7 +169,11 @@ public final class RelieveRender {
         int nu = Math.max(1, Math.round((fu1 - fu0) * ancho * celdasPorPx()));
         int nv = Math.max(1, Math.round((fv1 - fv0) * MapaRelieve.FILAS_PX * celdasPorPx()));
 
-        Geo g = new Geo(e, vc, luz, ov, pa, ab, ad, n, escala, umin, umax, vmin, vmax);
+        // Se empuja en la dirección horizontal de la cara, sin su inclinación (2026-11-05, "caída lisa"): las filas de una malla
+        // con caída tienen inclinaciones apenas distintas, y empujando cada una por su normal el borde común se abría en una
+        // rendija finísima (líneas de puntos). En una caja recta la normal ya es horizontal: no cambia nada.
+        Vector3f empuje = new Vector3f(n.x(), 0f, n.z()).normalize();
+        Geo g = new Geo(e, vc, luz, ov, pa, ab, ad, n, empuje, escala, umin, umax, vmin, vmax);
         if (estilo == Estilo.ESCALONADO || estilo == Estilo.ESCALONADO_GRUESO) {
             escalonado(g, ctx, caraIdx, ancho, fu0, fu1, fv0, fv1, nu, nv, tu, tv);
         } else {
@@ -169,11 +183,11 @@ public final class RelieveRender {
 
     /** Lo que hace falta para emitir vértices de una cara. */
     private record Geo(MatrixStack.Entry e, VertexConsumer vc, int luz, int ov, Vector3f a, Vector3f ab, Vector3f ad,
-                       Vector3f n, float escala, float umin, float umax, float vmin, float vmax) {
+                       Vector3f n, Vector3f empuje, float escala, float umin, float umax, float vmin, float vmax) {
         /** Punto (s, t) de la cara, salido {@code h} px hacia afuera. */
         Vector3f punto(float s, float t, float h) {
             return new Vector3f(a).add(ab.x * s, ab.y * s, ab.z * s).add(ad.x * t, ad.y * t, ad.z * t)
-                    .add(n.x * h * escala, n.y * h * escala, n.z * h * escala);
+                    .add(empuje.x * h * escala, empuje.y * h * escala, empuje.z * h * escala);
         }
 
         void vertice(Vector3f p, float s, float t, Vector3f normal) {

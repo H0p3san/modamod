@@ -475,29 +475,21 @@ public final class CuerpoGeometria {
         ModelPart cacheada = RAICES_TELA_VOLUMEN.get(key);
         if (cacheada != null) return cacheada;
 
-        final int S = Superficie.TELA.escala;
-        float texW = LayoutSkin.LADO * S;
-        int uvX = parte == Parte.PIERNA_DER ? 0 : 16 * S;
-        int uvY = parte == Parte.PIERNA_DER ? 16 * S : 48 * S;
-        java.util.List<ModelPart.Cuboid> cuboides = new java.util.ArrayList<>();
-        for (int fila = 0; fila < 12; fila++) {
-            java.util.EnumSet<net.minecraft.util.math.Direction> caras =
-                    java.util.EnumSet.allOf(net.minecraft.util.math.Direction.class);
-            caras.remove(net.minecraft.util.math.Direction.UP);
-            if (fila != 0) caras.remove(net.minecraft.util.math.Direction.DOWN);
-            float dil = dilFila[fila] * S;
-            cuboides.add(new ModelPart.Cuboid(
-                    uvX, uvY + fila * S,
-                    -2 * S, fila * S, -2 * S,
-                    4 * S, S, 4 * S,
-                    dil, 0F, dil,
-                    false, texW, texW, caras));
-        }
+        // Las filas en malla continua con esquinas rectas (2026-11-05, "caída lisa"): una caja por fila dejaba un reborde en cada
+        // cambio de holgura (el perfil del muslo y la pantorrilla, el ribete) y esos rebordes se veían como líneas de puntos.
+        // Solo los cortes de la media quedan en escalón. hasta = 11: sin el fondo de la malla, la planta va en pieDePierna.
+        boolean[] duras = new boolean[13];
+        duras[0] = duras[12] = true;
+        if (desde > 0 && desde < 12) duras[desde] = true;
+        if (hasta > 0 && hasta < 12) duras[hasta] = true;
+        ModelPart filas = telaSuavePorFilas(parte, false, dilFila, 11, 0, dilFila[11], -1F, false, duras);
         // Siempre (2026-11-04, "me está quedando abierta la tapa que cubre el pie"): cortarlas cuando hasta < 12 dejaba
         // la media abierta abajo en los largos que no llegan justo a la fila 12. Si la media no cubre el pie, su textura
         // ya es transparente ahí.
-        cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
-        ModelPart resultado = new ModelPart(cuboides, java.util.Map.of());
+        final int S = Superficie.TELA.escala;
+        ModelPart pie = new ModelPart(pieDePierna(parte, dilFila[11] * S, conPunta), java.util.Map.of());
+        ModelPart resultado = new ModelPart(java.util.List.of(),
+                java.util.Map.of("filas", filas, com.modamod.render.relieve.RelieveRender.SIN_RELIEVE, pie));
         RAICES_TELA_VOLUMEN.put(key, resultado);
         return resultado;
     }
@@ -880,8 +872,22 @@ public final class CuerpoGeometria {
     /** {@code tapaMano}: un guante cierra la mano también en la malla (2026-11-04, "¿cómo tapo las tapas?"). */
     public static ModelPart telaSuavePorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
                                               float dilColgado, float interno, boolean tapaMano) {
+        return telaSuavePorFilas(parte, slim, dilFila, hasta, colgado, dilColgado, interno, tapaMano, null);
+    }
+
+    /**
+     * Con {@code juntasDuras} (13 bordes de fila, 2026-11-05, "caída lisa"): las esquinas quedan rectas, como las cajas, y
+     * cada fila va de su borde de arriba al de abajo con pared inclinada; en un borde duro (puño elástico, ribete de piel,
+     * botamanga, una capa encima) la fila conserva su holgura y el escalón lo cierra el anillo de siempre. Reemplaza a las
+     * cajas de {@link #telaPorFilas} cuando la holgura cambia de fila a fila: los rebordes de cada escalón, más finos que un
+     * píxel, se veían como líneas de puntos.
+     */
+    public static ModelPart telaSuavePorFilas(Parte parte, boolean slim, float[] dilFila, int hasta, int colgado,
+                                              float dilColgado, float interno, boolean tapaMano, @org.jetbrains.annotations.Nullable boolean[] juntasDuras) {
+        boolean redondo = juntasDuras == null;
         String key = "suave|" + parte.clave() + "|" + slim + "|" + java.util.Arrays.toString(dilFila) + "|" + hasta
-                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano;
+                + "|" + colgado + "|" + dilColgado + "|" + interno + "|" + tapaMano
+                + (redondo ? "" : "|caja" + java.util.Arrays.toString(juntasDuras));
         ModelPart cacheada = RAICES_TELA_POR_FILAS.get(key);
         if (cacheada != null) return cacheada;
         PlantillaCuerpo t = PLANTILLAS_TELA.get(nombre(parte, slim));
@@ -938,8 +944,15 @@ public final class CuerpoGeometria {
         java.util.List<ModelPart.Cuboid> cuboides = new java.util.ArrayList<>();
 
         for (int[] banda : bandas) {
-            Rect rA = rect(t, parte, dilA[banda[0]], interno, yA[banda[0]], S);
-            Rect rB = rect(t, parte, dilA[banda[1]], interno, yA[banda[1]], S);
+            float dSup = dilA[banda[0]], dInf = dilA[banda[1]];
+            if (!redondo && banda[1] <= 12) {
+                // Con juntas duras cada fila tiene sus dos bordes: el promedio con la vecina si la junta es lisa, su holgura si es dura.
+                int f = banda[2];
+                dSup = f == 0 || juntasDuras[f] ? dilFila[f] : dilA[f];
+                dInf = f == 11 || juntasDuras[f + 1] ? dilFila[f] : dilA[f + 1];
+            }
+            Rect rA = rect(t, parte, dSup, interno, yA[banda[0]], S);
+            Rect rB = rect(t, parte, dInf, interno, yA[banda[1]], S);
             for (int cara = 0; cara < 4; cara++) {
                 CaraRef cr = caras[cara];
                 if (cr == null) continue;
@@ -951,7 +964,7 @@ public final class CuerpoGeometria {
                     Rect[] rs = {rA, rA, rB, rB};
                     float[] vs = {vSup, vSup, vInf, vInf};
                     for (int i = 0; i < 4; i++) {
-                        float[] p = punto(cara, fs[i], rs[i]);
+                        float[] p = contorno(redondo, cara, fs[i], rs[i]);
                         // fracción en el sentido de las coordenadas crecientes de la cara (el recorrido va al revés en oeste y sur)
                         float g = cara == 0 || cara == 3 ? 1F - fs[i] : fs[i];
                         q[i] = new float[]{p[0], rs[i].y, p[1], cr.uEn(g), vs[i]};
@@ -966,7 +979,7 @@ public final class CuerpoGeometria {
         float[][] borde = new float[total][];
         int k = 0;
         for (int cara = 0; cara < 4; cara++) {
-            for (int j = 0; j < segs[cara]; j++) borde[k++] = punto(cara, j / (float) segs[cara], r0);
+            for (int j = 0; j < segs[cara]; j++) borde[k++] = contorno(redondo, cara, j / (float) segs[cara], r0);
         }
         float[] centro = {(r0.xmin + r0.xmax) / 2F, (r0.zmin + r0.zmax) / 2F};
         for (int i = 0; i < total; i++) {
@@ -992,7 +1005,7 @@ public final class CuerpoGeometria {
             float[][] bordeM = new float[total][];
             int km = 0;
             for (int cara = 0; cara < 4; cara++) {
-                for (int j = 0; j < segs[cara]; j++) bordeM[km++] = punto(cara, j / (float) segs[cara], rM);
+                for (int j = 0; j < segs[cara]; j++) bordeM[km++] = contorno(redondo, cara, j / (float) segs[cara], rM);
             }
             float[] centroM = {(rM.xmin + rM.xmax) / 2F, (rM.zmin + rM.zmax) / 2F};
             for (int i = 0; i < total; i++) {
@@ -1204,6 +1217,11 @@ public final class CuerpoGeometria {
         float norma = (float) Math.pow(Math.pow(Math.abs(nx), REDONDEO) + Math.pow(Math.abs(nz), REDONDEO), 1.0 / REDONDEO);
         if (norma > 1F) { nx /= norma; nz /= norma; }
         return new float[]{cx + nx * a, cz + nz * b};
+    }
+
+    /** {@link #punto} o {@link #puntoCaja} según la malla vaya con las esquinas redondeadas o rectas. */
+    private static float[] contorno(boolean redondo, int cara, float f, Rect r) {
+        return redondo ? punto(cara, f, r) : puntoCaja(cara, f, r);
     }
 
     /** Como {@link #punto} pero sin redondear las esquinas: el contorno de la caja. */
