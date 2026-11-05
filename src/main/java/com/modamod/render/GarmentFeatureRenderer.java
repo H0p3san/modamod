@@ -1214,6 +1214,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         };
         int ancho = Math.round(w), hondo = Math.round(d);
         float v = (uv[1] + hondo + Math.max(0, Math.min(11, filaTextura)) + 0.5F) / 64F;
+        // Medio pixel para adentro de cada cara (2026-11-04, "la media se abre en la arista de atrás a la derecha"): el
+        // anillo llegaba justo al borde de la franja de la parte, y el píxel de al lado ya es de otra prenda — en la
+        // pierna derecha, la costura donde la textura da la vuelta cae justo en esa arista, así que el anillo leía un
+        // texel transparente y dejaba una rayita abierta en cada fila.
+        final float EPS_U = 0.5F;
         float uFrente = uv[0] + hondo, uDer = uv[0] + hondo + ancho, uAtras = uv[0] + 2 * hondo + ancho, uIzq = uv[0];
         matrices.push();
         delModelo.rotate(matrices);
@@ -1221,10 +1226,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         VertexConsumer vc = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(textura));
         float ny = hacia < 0F ? -1F : 1F;
         // Frente (z mínimo), espalda (z máximo) y los dos costados: trapecios entre los dos contornos.
-        bocaQuad(vc, e, luz, v, ox0, oz0, ox1, oz0, ix1, iz0, ix0, iz0, yy, uFrente, uFrente + ancho, ny);
-        bocaQuad(vc, e, luz, v, ox1, oz1, ox0, oz1, ix0, iz1, ix1, iz1, yy, uAtras, uAtras + ancho, ny);
-        bocaQuad(vc, e, luz, v, ox1, oz0, ox1, oz1, ix1, iz1, ix1, iz0, yy, uDer, uDer + hondo, ny);
-        bocaQuad(vc, e, luz, v, ox0, oz1, ox0, oz0, ix0, iz0, ix0, iz1, yy, uIzq, uIzq + hondo, ny);
+        bocaQuad(vc, e, luz, v, ox0, oz0, ox1, oz0, ix1, iz0, ix0, iz0, yy, uFrente + EPS_U, uFrente + ancho - EPS_U, ny);
+        bocaQuad(vc, e, luz, v, ox1, oz1, ox0, oz1, ix0, iz1, ix1, iz1, yy, uAtras + EPS_U, uAtras + ancho - EPS_U, ny);
+        bocaQuad(vc, e, luz, v, ox1, oz0, ox1, oz1, ix1, iz1, ix1, iz0, yy, uDer + EPS_U, uDer + hondo - EPS_U, ny);
+        bocaQuad(vc, e, luz, v, ox0, oz1, ox0, oz0, ix0, iz0, ix0, iz1, yy, uIzq + EPS_U, uIzq + hondo - EPS_U, ny);
         matrices.pop();
     }
 
@@ -1430,9 +1435,13 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             if (pierna && hasta >= 12) colgado = 0;
             // Un guante tampoco cuelga por debajo de la mano (2026-11-04, "¿cómo tapo las tapas?"): colgando, la tela
             // pasaba la mano con la boca abierta y la tapa de la mano no se dibujaba (pide colgado == 0).
-            boolean guante = pieza.capa() == Capa.MANGA_INTERIOR
+            boolean tapaPunta = pieza.capa() == Capa.MANGA_INTERIOR
                     && (parte == Parte.BRAZO_DER || parte == Parte.BRAZO_IZQ) && hasta >= 12;
-            if (guante) colgado = 0;
+            // Molde de ruedo CERRADO (2026-11-04, "podemos resolver lo del guante con un molde de ruedo que diga
+            // cerrado"): tapa la punta de cualquier prenda que llegue al final de la parte — la mano o el pie, donde el
+            // cuerpo no tiene tapa propia y se ve el hueco. Un borde cerrado tampoco cuelga.
+            if (pieza.ruedo() == com.modamod.item.Ruedo.CERRADO && hasta >= 12) tapaPunta = true;
+            if (tapaPunta) colgado = 0;
             if (cana > 0 && !botamangaAfuera) colgado = 0;     // la botamanga cortada no cuelga sobre el calzado
             if (hasta == desde) colgado = 0;
             // Elástico (puños y ruedo del hoodie): la banda sostiene la tela,
@@ -1542,9 +1551,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             } else {
                 dibujarModelPart(suave
                                 ? CuerpoGeometria.telaSuavePorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F, guante)
+                                        costadoInterno ? interno : -1F, tapaPunta)
                                 : CuerpoGeometria.telaPorFilas(parte, slim, fila, hasta, colgado, dilColgado,
-                                        costadoInterno ? interno : -1F, guante),
+                                        costadoInterno ? interno : -1F, tapaPunta),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
             }
             // Los escalones hacia adentro (el puño o el ruedo elástico aprietan de golpe): el borde de la fila de arriba

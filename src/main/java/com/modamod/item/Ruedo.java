@@ -40,7 +40,13 @@ public enum Ruedo implements StringIdentifiable {
      * borde se engrosan hacia afuera como un ribete de peluche; el color sale de la zona de Tintes del borde. Al final: viaja por red
      * por ordinal. Vale en el torso, los puños, las botamangas y los bordes de medias y calientabrazos, no en la pollera ni el delantal.
      */
-    PIEL("piel");
+    PIEL("piel"),
+    /**
+     * Borde cerrado (2026-11-04, "podemos resolver lo del guante con un molde de ruedo que diga cerrado"): el borde se
+     * tapa con una cara en vez de quedar como un tubo abierto. Sirve donde el cuerpo no tiene tapa propia: el guante que
+     * llega a la mano, la media que llega al pie, la manga que pasa la muñeca. Al final: viaja por red por ordinal.
+     */
+    CERRADO("cerrado");
 
     public final String clave;
 
