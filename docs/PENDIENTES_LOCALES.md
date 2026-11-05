@@ -39,7 +39,7 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
   De paso, caída lisa (6e0444d): las prendas con holgura que cambia por fila van en malla continua con esquinas rectas
   (sin rebordes que se veían como líneas de puntos), relieve empujado en horizontal y el pie de la media sin relieve.
 - **6. Punta del guante**: la malla cerraba la mano pero la tapa venía vacía en la textura; se pinta con la última
-  fila del puño (calientabrazos hasta la mano y mangas con puño Cerrado). Volvió al manual: falta agregar la página.
+  fila del puño (calientabrazos hasta la mano y mangas con puño Cerrado). Sigue fuera del manual: falta volver a agregar su página.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
