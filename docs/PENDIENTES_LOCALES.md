@@ -32,15 +32,14 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - **3. Caché de texturas**: `EstampaTextures.CACHE_CUERPO` había quedado sin tope (cada color de remera dejaba
   ~2,6 MB para siempre); con 600 colores en un maniquí el cliente subía 1586 MB, ahora 53 MB (9e8efe9). F3+T bien,
   sin cubos violetas. `/modamoddebug perf` muestra las texturas dinámicas vivas.
+- **4. Largo de chaqueta, Top y hoodie**: son la misma remera (`piezasDeRemera`), así que 5483eb6 + 52cecdf ya los
+  cubren. Verificado con 7 maniquíes por variante (hoodie; chaqueta abierta con solapa en pico): 7 largos distintos,
+  capucha y solapas siguen el corte.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
-
-## 4. Largo de chaqueta, Top y hoodie
-La remera ya está (ver arriba). Chaqueta, Top y hoodie van por otro camino (`CuelloYCapucha.telaDelTorso`) y pueden
-tener el mismo problema: ¿los 7 niveles dan 7 largos distintos?
 
 ## 5. Media abierta en una arista
 Se abre en la pierna **derecha por la arista de atrás/afuera** y en la **izquierda por la arista interna**: donde la
