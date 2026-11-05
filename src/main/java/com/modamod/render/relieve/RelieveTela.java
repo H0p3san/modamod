@@ -80,8 +80,9 @@ public final class RelieveTela {
      * es lo de abajo tal cual.
      */
     static float envolver(MapaRelieve abajo, Parte parte, int cara, float fu, float fv, int ancho, float radio) {
-        float h = abajo.altura(parte, cara, fu, fv);
-        if (radio <= 0f || abajo.plana(parte, cara)) return h;
+        float punto = abajo.altura(parte, cara, fu, fv);
+        if (radio <= 0f || abajo.plana(parte, cara)) return punto;
+        float h = punto;
         for (int anillo = 1; anillo <= 2; anillo++) {
             float r = radio * anillo / 2f;
             for (int k = 0; k < 8; k++) {
@@ -91,7 +92,11 @@ public final class RelieveTela {
                 h = Math.max(h, otro - PENDIENTE * r);
             }
         }
-        return h;
+        // Lo que el puente sube por encima de lo de abajo se apaga en el borde de la cara (2026-11-05, "media abierta en una
+        // arista"): tomaba la altura de un bulto de adentro (el gemelo), la tela quedaba levantada en la arista y la cara
+        // se despegaba de la vecina. Nada en el primer medio px, entero desde 1,5 px.
+        float aLado = Math.min(fu, 1f - fu) * ancho, aPunta = Math.min(fv, 1f - fv) * MapaRelieve.FILAS_PX;
+        return punto + (h - punto) * RelieveCuerpo.rampa(aLado - 0.5f, 1f) * RelieveCuerpo.rampa(aPunta - 0.5f, 1f);
     }
 
     /** La textura del molde, en px de la cara. */

@@ -39,6 +39,12 @@ public final class MotorPruebas {
         return r;
     }
 
+    /** La misma ventana que RelieveCuerpo (smoothstep a 0 en los dos bordes). */
+    private static float ventana(float t, float borde) {
+        float a = Math.max(0f, Math.min(1f, t / borde)), b = Math.max(0f, Math.min(1f, (1f - t) / borde));
+        return a * a * (3f - 2f * a) * b * b * (3f - 2f * b);
+    }
+
     private static float ancho(float[] c) { return c[1] - c[0]; }
     private static float prof(float[] c) { return c[5] - c[4]; }
 
@@ -231,6 +237,25 @@ public final class MotorPruebas {
             Informe.verificar(cuerpo.altura(Parte.TORSO, 1, 0.5f, 3f / 12) == 1f, "sinFilas modificó el mapa original");
             inf.ok("relieve bajo la tela", "cuerpo plano en las filas tapadas, intacto en el resto");
         } catch (Throwable t) { inf.fallo("relieve bajo la tela", t.toString()); }
+
+        // Aristas de la tela (2026-11-05, punto 5 "media abierta en una arista"): la tela no se levanta en el borde de una cara
+        // más que el cuerpo, o cada cara se empuja por su normal y se despega de la vecina. Cuerpo como RelieveCuerpo: se
+        // apaga en los bordes y tiene un bulto cerca de uno (el gemelo).
+        try {
+            com.modamod.render.relieve.MapaRelieve cuerpo = com.modamod.render.relieve.MapaRelieve.generar("prueba-gemelo", false,
+                    (parte, cara, fu, fv, ancho) -> 1.5f * ventana(fu, 0.25f) * ventana(fv, 0.06f));
+            for (com.modamod.item.Calce calce : com.modamod.item.Calce.values()) {
+                com.modamod.render.relieve.MapaRelieve tela = com.modamod.render.relieve.RelieveTela.de(cuerpo, calce,
+                        com.modamod.item.TexturaTela.LISA, null);
+                for (Parte parte : new Parte[]{Parte.PIERNA_DER, Parte.TORSO}) {
+                    for (float[] p : new float[][]{{0f, 0.5f}, {1f, 0.5f}, {0.5f, 0f}, {0.5f, 1f}}) {
+                        float t = tela.altura(parte, 0, p[0], p[1]), c = cuerpo.altura(parte, 0, p[0], p[1]);
+                        Informe.verificar(t <= c + 0.02f, calce + " " + parte + " en la arista " + p[0] + "," + p[1] + ": tela " + t + " > cuerpo " + c);
+                    }
+                }
+            }
+            inf.ok("relieve en las aristas", "la tela no se levanta en el borde de la cara (todos los calces)");
+        } catch (Throwable t) { inf.fallo("relieve en las aristas", t.toString()); }
 
         // Logros de recetas (2026-11-05, "aparecen luego de craftearlas"): cada receta tiene el suyo, que la desbloquea en el
         // libro al conseguir un ingrediente. Si falla: python scripts/generar_logros_recetas.py
