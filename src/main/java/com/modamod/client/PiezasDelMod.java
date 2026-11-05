@@ -241,11 +241,11 @@ public final class PiezasDelMod {
         com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack);
         int filasIzq = RemeraItem.manga(stack, Lado.IZQUIERDA).filas;
         if (filasIzq > 0) {
-            piezas.add(new Pieza(Parte.BRAZO_IZQ, capa, recortarMangaYCachear(textura, Parte.BRAZO_IZQ, filasIzq, red), dilatacion, 0, filasIzq, false, ruedoIzq));
+            piezas.add(new Pieza(Parte.BRAZO_IZQ, capa, recortarMangaYCachear(textura, Parte.BRAZO_IZQ, filasIzq, red, ruedoIzq == com.modamod.item.Ruedo.CERRADO && filasIzq >= 12), dilatacion, 0, filasIzq, false, ruedoIzq));
         }
         int filasDer = RemeraItem.manga(stack, Lado.DERECHA).filas;
         if (filasDer > 0) {
-            piezas.add(new Pieza(Parte.BRAZO_DER, capa, recortarMangaYCachear(textura, Parte.BRAZO_DER, filasDer, red), dilatacion, 0, filasDer, false, ruedoDer));
+            piezas.add(new Pieza(Parte.BRAZO_DER, capa, recortarMangaYCachear(textura, Parte.BRAZO_DER, filasDer, red, ruedoDer == com.modamod.item.Ruedo.CERRADO && filasDer >= 12), dilatacion, 0, filasDer, false, ruedoDer));
         }
         return piezas;
     }
@@ -269,7 +269,13 @@ public final class PiezasDelMod {
      */
     private static Identifier recortarMangaYCachear(Identifier base, Parte brazoParte, int hasta,
                                                       com.modamod.item.PatronRed red) {
-        String key = base + "#manga" + brazoParte + hasta;
+        return recortarMangaYCachear(base, brazoParte, hasta, red, false);
+    }
+
+    /** {@code tapa}: puño Cerrado hasta la mano, la malla cierra la punta y su tapa se pinta (ver {@link #pintarTapaDeAbajo}). */
+    private static Identifier recortarMangaYCachear(Identifier base, Parte brazoParte, int hasta,
+                                                      com.modamod.item.PatronRed red, boolean tapa) {
+        String key = base + "#manga" + brazoParte + hasta + (tapa ? "t" : "");
         Identifier cacheada = CACHE_MANGA.get(key);
         if (cacheada != null) return cacheada;
         NativeImage origen = ClothingTextureCache.imagenBase(base);
@@ -278,6 +284,7 @@ public final class PiezasDelMod {
         copia.copyFrom(origen);
         recortarFilas(copia, brazoParte, 0, hasta);
         if (red != null) ClothingTextureCache.perforarRed(copia, red, brazoParte, 0, hasta);
+        if (tapa) pintarTapaDeAbajo(copia, brazoParte);
         if (ClothingTextureCache.DEBUG_DUMP) {
             try {
                 java.nio.file.Path dir = java.nio.file.Paths.get("modamod_debug");
@@ -404,6 +411,24 @@ public final class PiezasDelMod {
             }
         }
         quitarTapas(img, parte, desde, hasta);
+    }
+
+    /**
+     * La tapa de la mano o el pie pintada con la última fila del frente (2026-11-05, punto 6 "punta del guante"): la malla la cierra
+     * (telaSuavePorFilas con tapaMano) pero el archivo de la prenda trae esa zona vacía, así que la tapa salía transparente salvo
+     * algún píxel del borde. Solo donde está vacía: una tapa dibujada a mano se respeta.
+     */
+    private static void pintarTapaDeAbajo(NativeImage img, Parte parte) {
+        CajaSkin caja = LayoutSkin.base(parte, false).escalada(CuerpoGeometria.ESCALA_TELA);
+        CajaSkin.Rect tapa = caja.abajo(), frente = caja.frente();
+        int anchoTapa = tapa.x1() - tapa.x0(), anchoFrente = frente.x1() - frente.x0();
+        for (int y = tapa.y0(); y < tapa.y1(); y++) {
+            for (int x = tapa.x0(); x < tapa.x1(); x++) {
+                if (((img.getColor(x, y) >>> 24) & 0xFF) != 0) continue;
+                int fx = frente.x0() + (x - tapa.x0()) * anchoFrente / anchoTapa;
+                img.setColor(x, y, img.getColor(fx, frente.y1() - 1));
+            }
+        }
     }
 
     /**
@@ -539,6 +564,8 @@ public final class PiezasDelMod {
                 recortarFilas(destino, brazoParte, filas[0], filas[1]);
                 if (red != null) ClothingTextureCache.perforarRed(destino, red, brazoParte, filas[0], filas[1]);
                 com.modamod.render.DetallesHoodie.ribEnBorde(destino, brazoParte, filas[0], filas[1], ribInf, ribSup);
+                // Llega a la mano: es guante y la malla cierra la punta (GarmentFeatureRenderer, tapaPunta de MANGA_INTERIOR).
+                if (filas[1] >= 12) pintarTapaDeAbajo(destino, brazoParte);
                 return true;
             }
         };
