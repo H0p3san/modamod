@@ -765,7 +765,7 @@ public final class ApliqueRenderer {
     }
 
     // ── textura teñida por zona ────────────────────────────────────────────
-    private static final Map<String, Identifier> CACHE = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas CACHE = new com.modamod.render.CacheDeTexturas("aplique", 128);
 
     /** El atlas gris con cada columna de zona multiplicada por su color (las tramas van aparte, ver {@link #dibujarTramas}). */
     private static Identifier textura(Aplique a) {
@@ -788,9 +788,7 @@ public final class ApliqueRenderer {
                 img.setColor(x, y, (c & 0xFF000000) | (b << 16) | (g << 8) | r);
             }
         }
-        id = Identifier.of(Modamod.MOD_ID, "dynamic/aplique_" + key);
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        CACHE.put(key, id);
+        id = CACHE.registrar(key, img);
         return id;
     }
 

@@ -23,7 +23,9 @@ import java.util.Optional;
 public final class ClothingTextureCache {
 
     private static final Map<Identifier, NativeImage> BASE_IMAGE_CACHE = new HashMap<>();
-    private static final Map<String, Identifier> TINTED_CACHE = new HashMap<>();
+    /** Telas compuestas (~1 MB cada una a 512×512): tope bajo, lo que está en pantalla no se expulsa. */
+    private static final CacheDeTexturas TINTED_CACHE = new CacheDeTexturas("tela", 96)
+            .alExpulsar(id -> ClothingTextureCache.TRANSLUCIDAS.remove(id));
 
     /** Para el HUD de rendimiento: telas compuestas en caché, imágenes base y los MB de estas últimas. */
     public static double[] estadoCache() {
@@ -31,7 +33,7 @@ public final class ClothingTextureCache {
         for (NativeImage i : BASE_IMAGE_CACHE.values()) {
             if (i != null) bytes += (long) i.getWidth() * i.getHeight() * 4;
         }
-        return new double[]{TINTED_CACHE.size(), BASE_IMAGE_CACHE.size(), bytes / 1048576.0};
+        return new double[]{TINTED_CACHE.tamano(), BASE_IMAGE_CACHE.size(), bytes / 1048576.0};
     }
 
     /**
@@ -58,15 +60,21 @@ public final class ClothingTextureCache {
         // imágenes leídas de recursos sin cerrar). Cada textura compuesta se destruye en el TextureManager (cierra su
         // imagen y la memoria de GPU); las imágenes del resource pack, que solo esta caché posee, se cierran acá. Las
         // que llegan por registrarImagenCompuesta las posee su textura: no se tocan.
-        var texturas = MinecraftClient.getInstance().getTextureManager();
-        for (Identifier id : new java.util.HashSet<>(TINTED_CACHE.values())) texturas.destroyTexture(id);
+        // Todas las cachés de texturas dinámicas del mod (2026-11-05), no solo esta: antes las demás sobrevivían al F3+T.
+        CacheDeTexturas.vaciarTodas();
+        TRANSLUCIDAS.clear();
+        // Las máscaras derivadas de las imágenes base: se cierran con ellas (son memoria nativa, el GC no la libera).
+        for (NativeImage m : CACHE_BORDE_CUELLO.values()) if (m != null) m.close();
+        for (java.util.Map<String, NativeImage> porRegion : CACHE_SOLAPA.values())
+            for (NativeImage m : porRegion.values()) if (m != null) m.close();
+        CACHE_BORDE_CUELLO.clear();
+        CACHE_SOLAPA.clear();
         for (Identifier id : IMAGENES_PROPIAS) {
             NativeImage img = BASE_IMAGE_CACHE.get(id);
             if (img != null) img.close();
         }
         IMAGENES_PROPIAS.clear();
         BASE_IMAGE_CACHE.clear();
-        TINTED_CACHE.clear();
     }
 
     /** Ids de {@link #BASE_IMAGE_CACHE} cuya imagen leyó {@link #imagenBase} del resource pack (las posee esta caché). */
@@ -117,10 +125,7 @@ public final class ClothingTextureCache {
             }
         }
 
-        Identifier id = Identifier.of("modamod", "dynamic/tint_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(id, new NativeImageBackedTexture(composite));
-        TINTED_CACHE.put(key, id);
+        Identifier id = TINTED_CACHE.registrar(key, composite);
         return id;
     }
 
@@ -154,10 +159,7 @@ public final class ClothingTextureCache {
             }
         }
 
-        Identifier id = Identifier.of("modamod", "dynamic/tintfill_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(id, new NativeImageBackedTexture(composite));
-        TINTED_CACHE.put(key, id);
+        Identifier id = TINTED_CACHE.registrar(key, composite);
         return id;
     }
 
@@ -376,10 +378,7 @@ public final class ClothingTextureCache {
 
         composite = reducirSiHaceFalta(composite, encima != null, maskImg != null);
 
-        Identifier id = Identifier.of("modamod", "dynamic/garment_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(id, new NativeImageBackedTexture(composite));
-        TINTED_CACHE.put(key, id);
+        Identifier id = TINTED_CACHE.registrar(key, composite);
         return id;
     }
 
@@ -845,12 +844,9 @@ public final class ClothingTextureCache {
         // negro de los huecos y en modo translúcido se vería un halo oscuro.
         if (!translucida && !resolucionCompleta) composite = reducirSiHaceFalta(composite, encima != null, hayAlgunaMascara);
 
-        Identifier id = Identifier.of("modamod", "dynamic/garment_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(id, new NativeImageBackedTexture(composite));
+        Identifier id = TINTED_CACHE.registrar(key, composite);
         if (translucida) TRANSLUCIDAS.add(id);
         else TRANSLUCIDAS.remove(id);
-        TINTED_CACHE.put(key, id);
         return id;
     }
 
@@ -1360,6 +1356,11 @@ public final class ClothingTextureCache {
     public static void registrarImagenCompuesta(Identifier id, NativeImage img) {
         IMAGENES_PROPIAS.remove(id);   // si antes era del resource pack, ahora la posee la textura registrada
         BASE_IMAGE_CACHE.put(id, img);
+    }
+
+    /** Saca una imagen de {@link #registrarImagenCompuesta} cuando su textura se destruye (la cierra la textura). */
+    public static void olvidarImagenCompuesta(Identifier id) {
+        BASE_IMAGE_CACHE.remove(id);
     }
 
     public static NativeImage imagenBase(Identifier id) {

@@ -169,18 +169,16 @@ public final class SombreroRenderer {
     }
 
     // ── textura lisa por color ────────────────────────────────────────────
-    private static final Map<Integer, Identifier> TEXTURAS = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas TEXTURAS = new com.modamod.render.CacheDeTexturas("sombrero", 256);
 
     static Identifier textura(int rgb) {
         int key = rgb & 0xFFFFFF;
-        Identifier id = TEXTURAS.get(key);
+        Identifier id = TEXTURAS.get(String.valueOf(key));
         if (id != null) return id;
         NativeImage img = new NativeImage(TEX, TEX, true);
         int abgr = abgr(key);
         for (int y = 0; y < TEX; y++) for (int x = 0; x < TEX; x++) img.setColor(x, y, abgr);
-        id = Identifier.of(Modamod.MOD_ID, "dynamic/sombrero_" + Integer.toHexString(key));
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        TEXTURAS.put(key, id);
+        id = TEXTURAS.registrar(String.valueOf(key), img);
         return id;
     }
 

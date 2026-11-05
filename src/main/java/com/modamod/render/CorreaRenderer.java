@@ -574,7 +574,7 @@ public final class CorreaRenderer {
 
     // ── texturas de las cintas ───────────────────────────────────────────
 
-    private static final Map<String, Identifier> TEXTURAS = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas TEXTURAS = new com.modamod.render.CacheDeTexturas("correa", 256);
 
     /** 16x16: la banda al centro, el borde a los lados, puntadas claras y (ojalillos) dos agujeros. */
     private static Identifier texturaCorrea(EstiloCorrea estilo, int banda, int borde) {
@@ -591,9 +591,7 @@ public final class CorreaRenderer {
                 img.setColor(x, y, col);
             }
         }
-        id = Identifier.of("modamod", "dynamic/correa_" + clave);
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        TEXTURAS.put(clave, id);
+        id = TEXTURAS.registrar(clave, img);
         return id;
     }
 

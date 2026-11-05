@@ -27,7 +27,7 @@ public final class DetallesHoodie {
 
     private DetallesHoodie() {}
 
-    private static final Map<String, Identifier> CACHE = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas CACHE = new com.modamod.render.CacheDeTexturas("hoodie", 64).alExpulsar(ClothingTextureCache::olvidarImagenCompuesta);
 
     /**
      * La tela con los detalles pintados, o {@code base} si no se pudo leer.
@@ -89,10 +89,8 @@ public final class DetallesHoodie {
         if (ribDer && filasDer > 0) rib(img, s, 40, 20 + filasDer - 1, 16);
         if (ribIzq && filasIzq > 0) rib(img, s, 32, 52 + filasIzq - 1, 16);
 
-        Identifier id = Identifier.of(Modamod.MOD_ID, "dynamic/hoodie_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
+        Identifier id = CACHE.registrar(key, img);
         ClothingTextureCache.registrarImagenCompuesta(id, img);
-        CACHE.put(key, id);
         return id;
     }
 

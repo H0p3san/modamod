@@ -39,7 +39,7 @@ public final class IconoMoldeAplique {
     private static final int[] TINTA = { 59, 36, 16 };
     private static final int[] PAPEL = { 233, 204, 165 };
 
-    private static final Map<String, Identifier> CACHE = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas CACHE = new com.modamod.render.CacheDeTexturas("molde_aplique", 128);
     private static final Map<Identifier, int[]> SPRITES = new HashMap<>();
 
     /** La textura del ícono para ese objeto (la crea la primera vez). */
@@ -54,9 +54,7 @@ public final class IconoMoldeAplique {
         int[] sprite = spriteDe(o);          // {ancho, alto, argb...} o null
         if (sprite != null) dibujo(img, sprite);
         marco(img);
-        id = Identifier.of("modamod", "dynamic/molde_aplique_" + clave);
-        mc.getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        CACHE.put(clave, id);
+        id = CACHE.registrar(clave, img);
         return id;
     }
 

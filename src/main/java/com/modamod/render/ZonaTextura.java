@@ -26,7 +26,7 @@ import java.util.Map;
 public final class ZonaTextura {
 
     private static final int TEX = 256, ESC = 2;   // la máscara es de 512: 2 px por texel (a 64 los motivos de ~3 px de skin salían picados)
-    private static final Map<String, Identifier> CACHE = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas CACHE = new com.modamod.render.CacheDeTexturas("zona", 128);
 
     private ZonaTextura() {}
 
@@ -89,9 +89,7 @@ public final class ZonaTextura {
                 img.setColor(x, y, acc);
             }
         }
-        Identifier id = Identifier.of(Modamod.MOD_ID, "dynamic/tramas_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        CACHE.put(key, id);
+        Identifier id = CACHE.registrar(key, img);
         return id;
     }
 
@@ -124,9 +122,7 @@ public final class ZonaTextura {
                 img.setColor(x, y, (acc >>> 24) < 128 ? 0 : acc | 0xFF000000);
             }
         }
-        Identifier id = Identifier.of(Modamod.MOD_ID, "dynamic/zona_" + Integer.toHexString(key.hashCode()));
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        CACHE.put(key, id);
+        Identifier id = CACHE.registrar(key, img);
         return id;
     }
 }

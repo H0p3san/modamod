@@ -244,7 +244,7 @@ public final class PiezasDelMod {
         return piezas;
     }
 
-    private static final java.util.Map<String, Identifier> CACHE_MANGA = new java.util.HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas CACHE_MANGA = new com.modamod.render.CacheDeTexturas("manga", 96);
 
     /**
      * Copia {@code base} y le recorta el brazo a {@code [0,hasta)} —
@@ -278,11 +278,7 @@ public final class PiezasDelMod {
                 copia.writeTo(dir.resolve("manga_" + brazoParte + "_" + hasta + ".png"));
             } catch (java.io.IOException ignored) {}
         }
-        Identifier id = Identifier.of(Modamod.MOD_ID, "dynamic/manga_" + Integer.toHexString(key.hashCode()));
-        net.minecraft.client.MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(id, new net.minecraft.client.texture.NativeImageBackedTexture(copia));
-        CACHE_MANGA.put(key, id);
-        return id;
+        return CACHE_MANGA.registrar(key, copia);
     }
 
     /**

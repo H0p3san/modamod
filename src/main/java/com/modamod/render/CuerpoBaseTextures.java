@@ -68,7 +68,7 @@ public final class CuerpoBaseTextures {
     private static final float ARRIBA = 0.85f;
     private static final float ABAJO = 0.15f;
 
-    private static final Map<String, Identifier> CACHE = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas CACHE = new com.modamod.render.CacheDeTexturas("cuerpo", 64);
 
     private CuerpoBaseTextures() {}
 
@@ -94,11 +94,7 @@ public final class CuerpoBaseTextures {
             return null;
         }
 
-        Identifier id = Identifier.of("modamod",
-                "dynamic/cuerpo_" + Integer.toHexString(clave.hashCode()));
-        MinecraftClient.getInstance().getTextureManager()
-                .registerTexture(id, new NativeImageBackedTexture(img));
-        CACHE.put(clave, id);
+        Identifier id = CACHE.registrar(clave, img);
         if (com.modamod.render.ClothingTextureCache.DEBUG_DUMP) {
             try {
                 java.nio.file.Path dir = java.nio.file.Paths.get("modamod_debug");

@@ -518,7 +518,7 @@ public final class CuelloYCapucha {
     }
 
     // ── textura ───────────────────────────────────────────────────────────
-    private static final Map<Integer, Identifier> TEXTURAS = new HashMap<>();
+    private static final com.modamod.render.CacheDeTexturas TEXTURAS = new com.modamod.render.CacheDeTexturas("liso", 256);
 
     /**
      * Textura lisa de 64x64 del color {@code rgb}: exterior a la izquierda
@@ -539,7 +539,7 @@ public final class CuelloYCapucha {
 
     static Identifier texturaLisa(int rgb, boolean rib) {
         int key = (rgb & 0xFFFFFF) | (rib ? 0x1000000 : 0);
-        Identifier id = TEXTURAS.get(key);
+        Identifier id = TEXTURAS.get(String.valueOf(key));
         if (id != null) return id;
         NativeImage img = new NativeImage(TEX, TEX, true);
         for (int y = 0; y < TEX; y++) {
@@ -549,9 +549,7 @@ public final class CuelloYCapucha {
                 img.setColor(x, y, 0xFF000000 | (b << 16) | (g << 8) | r);
             }
         }
-        id = Identifier.of(Modamod.MOD_ID, "dynamic/liso_" + Integer.toHexString(key));
-        MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(img));
-        TEXTURAS.put(key, id);
+        id = TEXTURAS.registrar(String.valueOf(key), img);
         return id;
     }
 }
