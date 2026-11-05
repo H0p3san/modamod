@@ -1958,11 +1958,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                             @Nullable List<CuerpoGeometria.SegmentoCuerpo> segmentos,
                                             ModelPart delJugador, MatrixStack matrices,
                                             VertexConsumerProvider vertexConsumers, int luz) {
-        // Con un cuerpo elegido la pelvis también es del cuerpo (2026-09-29,
-        // "porque no cubre la zona de la pelvis?"): la piel real de la cintura
-        // para abajo tiene sentido solo con "Mi propia skin".
-        Identifier pielReal = entidad instanceof AbstractClientPlayerEntity jugador
-                && perfilDe(entidad).cuerpo() == com.modamod.body.CuerpoBase.SKIN_REAL
+        // De la cintura para abajo, la piel real también con un cuerpo elegido (2026-11-05, "vamos con el 2"): las piernas
+        // las dibuja vanilla con la skin, y con la pelvis del cuerpo quedaba su ropa interior pegada al short de la skin.
+        // Solo con el cuerpo entero (siempre, o la vista previa de elegir cuerpo) la pelvis es del cuerpo: ahí las piernas también.
+        boolean cuerpoEntero = perfilOverride != null || perfilDe(entidad).siempre();
+        Identifier pielReal = entidad instanceof AbstractClientPlayerEntity jugador && !cuerpoEntero
                 ? jugador.getSkinTextures().texture() : null;
         if (pielReal == null) {
             ModelPart nuestra = segmentos == null
