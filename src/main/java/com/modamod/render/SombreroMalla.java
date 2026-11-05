@@ -46,11 +46,17 @@ final class SombreroMalla {
     /** Vértices en cuartetos (un cuadro cada 4), en px. */
     static final class Quads {
         final float[] pos, nor, uv;
+        /** Cuánto le toca de la rotación de SU tramo a cada vértice (null = toda): 0 = soldado al tramo de abajo. */
+        @org.jetbrains.annotations.Nullable final float[] peso;
         final int vertices;
         Quads(float[] pos, float[] nor, float[] uv) {
+            this(pos, nor, uv, null);
+        }
+        Quads(float[] pos, float[] nor, float[] uv, @org.jetbrains.annotations.Nullable float[] peso) {
             this.pos = pos;
             this.nor = nor;
             this.uv = uv;
+            this.peso = peso;
             this.vertices = pos.length / 3;
         }
     }
@@ -120,7 +126,7 @@ final class SombreroMalla {
             if (j.has("punta") && j.get("punta").isJsonArray()) {
                 for (JsonElement t : j.getAsJsonArray("punta")) {
                     JsonObject o = t.getAsJsonObject();
-                    Quads q = construir(anillos(o.getAsJsonArray("anillos")), cols, null, null, null, "punta", 0f, p.yBase, 0f, 0f, false);
+                    Quads q = construir(anillos(o.getAsJsonArray("anillos")), cols, null, null, null, "punta", 0f, p.yBase, 0f, 0f, false, true);
                     p.punta.add(new Tramo(p.yBase + o.get("pivoteY").getAsFloat(), o.get("inclinacionRad").getAsFloat(), q));
                 }
             }
@@ -219,6 +225,18 @@ final class SombreroMalla {
      */
     private static Quads construir(Anillo[] anillos, int cols, float[] escala, float[] dy, boolean[] solo, String cierre,
                                    float grosor, float yBase, float cx, float cz, boolean plana) {
+        return construir(anillos, cols, escala, dy, solo, cierre, grosor, yBase, cx, cz, plana, false);
+    }
+
+    /**
+     * {@code soldar}: el primer anillo (y a medias el segundo) se queda con el tramo de abajo en vez de girar con este
+     * (2026-11-04, "el sombrero está formado con tres volúmenes rotados y están muy desconectados"). Cada tramo de la
+     * punta gira sobre su pivote, y como el anillo del pivote es un círculo —no un punto— al girar se iba de donde
+     * terminaba el tramo anterior y dejaba una cuña abierta en la parte de afuera del codo. Soldado, la superficie sigue
+     * sin cortes: el primer paño hace de puente entre los dos.
+     */
+    private static Quads construir(Anillo[] anillos, int cols, float[] escala, float[] dy, boolean[] solo, String cierre,
+                                   float grosor, float yBase, float cx, float cz, boolean plana, boolean soldar) {
         List<Anillo> an = new ArrayList<>(List.of(anillos));
         if (!cierre.equals("abierto")) {
             Anillo ultimo = an.get(an.size() - 1);
@@ -250,8 +268,13 @@ final class SombreroMalla {
         centro.div(Math.max(1, n));
         if (grosor > 0f) centro.add(0f, grosor / 2f, 0f);
 
+        float[] pesoFila = null;
+        if (soldar) {
+            pesoFila = new float[R];
+            for (int r = 0; r < R; r++) pesoFila[r] = r == 0 ? 0f : r == 1 ? 0.75f : 1f;
+        }
         Salida s = new Salida();
-        grilla(s, arriba, par, largo, cols, centro, plana ? ARRIBA : CENTRO);
+        grilla(s, arriba, par, largo, cols, centro, plana ? ARRIBA : CENTRO, pesoFila);
         if (grosor > 0f) {
             Vector3f[][] abajo = new Vector3f[R][cols];
             for (int r = 0; r < R; r++) for (int c = 0; c < cols; c++) abajo[r][c] = new Vector3f(arriba[r][c]).add(0f, grosor, 0f);
@@ -269,16 +292,21 @@ final class SombreroMalla {
 
     private static final class Salida {
         final List<float[]> pos = new ArrayList<>(), nor = new ArrayList<>(), uv = new ArrayList<>();
+        final List<Float> peso = new ArrayList<>();
 
         Quads quads() {
             float[] p = new float[pos.size() * 3], n = new float[pos.size() * 3], t = new float[pos.size() * 2];
+            float[] w = new float[pos.size()];
+            boolean soldado = false;
             for (int i = 0; i < pos.size(); i++) {
                 System.arraycopy(pos.get(i), 0, p, i * 3, 3);
                 System.arraycopy(nor.get(i), 0, n, i * 3, 3);
                 System.arraycopy(uv.get(i), 0, t, i * 2, 2);
+                w[i] = i < peso.size() ? peso.get(i) : 1f;
+                if (w[i] < 1f) soldado = true;
             }
             proyectarUv(p, n, t);
-            return new Quads(p, n, t);
+            return new Quads(p, n, t, soldado ? w : null);
         }
     }
 
@@ -326,6 +354,12 @@ final class SombreroMalla {
     private static final int CENTRO = 0, ARRIBA = 1, ABAJO = 2;
 
     private static void grilla(Salida s, Vector3f[][] p, boolean[] par, float[] largo, int cols, Vector3f centro, int modo) {
+        grilla(s, p, par, largo, cols, centro, modo, null);
+    }
+
+    /** {@code pesoFila}: cuánto le toca a cada anillo de la rotación de su tramo (null = todo). */
+    private static void grilla(Salida s, Vector3f[][] p, boolean[] par, float[] largo, int cols, Vector3f centro, int modo,
+                               @org.jetbrains.annotations.Nullable float[] pesoFila) {
         int R = p.length;
         Vector3f[][] nrm = new Vector3f[R][cols];
         for (Vector3f[] f : nrm) for (int c = 0; c < cols; c++) f[c] = new Vector3f();
@@ -355,15 +389,22 @@ final class SombreroMalla {
                 int c2 = (c + 1) % cols;
                 float ua = (1f + 30f * c / cols) / 64f, ub = (1f + 30f * (c + 1) / cols) / 64f;
                 float va = (1f + Math.min(60f, largo[r])) / 64f, vb = (1f + Math.min(60f, largo[r + 1])) / 64f;
-                vertice(s, p[r][c], nrm[r][c], ua, va);
-                vertice(s, p[r][c2], nrm[r][c2], ub, va);
-                vertice(s, p[r + 1][c2], nrm[r + 1][c2], ub, vb);
-                vertice(s, p[r + 1][c], nrm[r + 1][c], ua, vb);
+                float wa = pesoFila == null || r >= pesoFila.length ? 1f : pesoFila[r];
+                float wb = pesoFila == null || r + 1 >= pesoFila.length ? 1f : pesoFila[r + 1];
+                vertice(s, p[r][c], nrm[r][c], ua, va, wa);
+                vertice(s, p[r][c2], nrm[r][c2], ub, va, wa);
+                vertice(s, p[r + 1][c2], nrm[r + 1][c2], ub, vb, wb);
+                vertice(s, p[r + 1][c], nrm[r + 1][c], ua, vb, wb);
             }
         }
     }
 
     private static void vertice(Salida s, Vector3f p, Vector3f n, float u, float v) {
+        vertice(s, p, n, u, v, 1f);
+    }
+
+    private static void vertice(Salida s, Vector3f p, Vector3f n, float u, float v, float peso) {
+        s.peso.add(peso);
         s.pos.add(new float[] {p.x, p.y, p.z});
         s.nor.add(new float[] {n.x, n.y, n.z});
         s.uv.add(new float[] {u, v});
@@ -399,6 +440,7 @@ final class SombreroMalla {
         float[] n = {nx, ny, nz};
         float[][] uv = {{1f / 64f, 1f / 64f}, {(1f + w) / 64f, 1f / 64f}, {(1f + w) / 64f, (1f + h) / 64f}, {1f / 64f, (1f + h) / 64f}};
         for (int i = 0; i < 4; i++) {
+            s.peso.add(1f);
             s.pos.add(e[i]);
             s.nor.add(n);
             s.uv.add(uv[i]);
@@ -509,12 +551,16 @@ final class SombreroMalla {
             v.set(q.pos[i * 3], q.pos[i * 3 + 1], q.pos[i * 3 + 2]);
             nv.set(q.nor[i * 3], q.nor[i * 3 + 1], q.nor[i * 3 + 2]);
             if (giros != null) {
+                float peso = q.peso == null ? 1f : q.peso[i];
                 for (int k = 0; k < giros.size(); k++) {
                     float[] pv = pivotes.get(k);
+                    // El giro PROPIO del tramo (k = 0) a medias en los anillos soldados al tramo de abajo; los de abajo
+                    // (k > 0) lo arrastran entero.
+                    Quaternionf g = k == 0 && peso < 1f ? new Quaternionf().slerp(giros.get(k), peso) : giros.get(k);
                     v.sub(pv[0], pv[1], pv[2]);
-                    giros.get(k).transform(v);
+                    g.transform(v);
                     v.add(pv[0], pv[1], pv[2]);
-                    giros.get(k).transform(nv);
+                    g.transform(nv);
                 }
             }
             v.y += dy;

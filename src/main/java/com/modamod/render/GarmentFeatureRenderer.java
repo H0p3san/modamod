@@ -133,6 +133,23 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** Lo calcula {@link #render1} una vez por cuadro. */
     private static boolean pantalonSobreCalzado;
 
+    /**
+     * El cinto puesto que aprieta la piel del torso: {filaDesde, filaHasta, dilatación} (ver
+     * {@link BandaRenderer#compresionDeCinto}), o null. Se calcula una vez por cuadro, como {@link #pantalonSobreCalzado}.
+     */
+    @Nullable
+    private static float[] cintoCompresion;
+
+    private static void anotarCinto(List<ItemStack> prendas) {
+        cintoCompresion = null;
+        for (ItemStack s : prendas) {
+            if (!com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.BANDA)) continue;
+            float[] c = BandaRenderer.compresionDeCinto(s);
+            // El que más aprieta manda (dos cintos puestos).
+            if (c != null && (cintoCompresion == null || c[2] < cintoCompresion[2])) cintoCompresion = c;
+        }
+    }
+
     private static ItemStack calzadoDe(@Nullable LivingEntity entidad) {
         if (calzadoOverride != null) return calzadoOverride;
         if (sombreroOverride != null) {
@@ -299,6 +316,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         List<ItemStack> prendas = previewOverride != null ? previewOverride : equipadas(entidad);
         calzado = calzadoDe(entidad);
         pantalonSobreCalzado = pantalonSobreElCalzado(entidad);
+        anotarCinto(prendas);
         // La armadura que se ve infla capa, embozo y capucha (2026-10-28, "que la capa embozo y capucha se inflen mas
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
         // (2026-11-04, "la capa y la capucha se ven mas chicas en la vista previa"): la vista usa lo que infla la armadura del que
@@ -406,7 +424,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             if (llevaCuerpo) {
                 com.modamod.render.relieve.RelieveRender.actual =
                         new com.modamod.render.relieve.RelieveRender.Contexto(parte, mapaCuerpo);
-                List<CuerpoGeometria.SegmentoCuerpo> segmentos = segmentosCuerpo(piezas);
+                List<CuerpoGeometria.SegmentoCuerpo> segmentos = segmentosCuerpo(parte, piezas);
                 if (conVolumen != null) {
                     dibujarModelPart(CuerpoGeometria.cuerpoConVolumenDePierna(parte, conVolumen.dilatacion(),
                                     conVolumen.filaDesde(), conVolumen.filaHasta(), conPuntaDeMedia(conVolumen, parte)),
@@ -2029,12 +2047,23 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         return r.volado() != null || r.borde() != null ? 3 : 0;
     }
 
-    private static List<CuerpoGeometria.SegmentoCuerpo> segmentosCuerpo(@Nullable List<Pieza> piezas) {
-        if (piezas == null) return null;
+    private static List<CuerpoGeometria.SegmentoCuerpo> segmentosCuerpo(Parte parte, @Nullable List<Pieza> piezas) {
         float base = CuerpoGeometria.Superficie.CUERPO.dilatacion;
         float[] porFila = new float[12];
         java.util.Arrays.fill(porFila, base);
         boolean hayCompresion = false;
+        // El cinto vacía la piel de sus filas igual que una prenda que aprieta (ver BandaRenderer#compresionDeCinto).
+        if (parte == Parte.TORSO && cintoCompresion != null) {
+            hayCompresion = true;
+            float propia = cintoCompresion[2] - EPSILON_COMPRESION;
+            for (int f = (int) cintoCompresion[0]; f < (int) cintoCompresion[1]; f++) {
+                if (propia < porFila[f]) porFila[f] = propia;
+            }
+        }
+        if (piezas == null) {
+            if (!hayCompresion) return null;
+            piezas = List.of();
+        }
         for (Pieza pieza : piezas) {
             // "< base + 0.01": también Pegado (base + 0.001), que "reemplaza la
             // skin" (2026-09-30) — el cuerpo se mete apenas por dentro de él en
@@ -2139,6 +2168,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         calzado = calzadoDeTela;
         calzadoDeTela = null;
         pantalonSobreCalzado = false;   // el maniquí no tiene lista: nada de valores viejos del último jugador dibujado
+        anotarCinto(prendas);
         try {
             dibujarTelaConBusto(biped, slim, prendas, matrices, vertexConsumers, luz);
             EfectoTrim.volcar();   // el brillo de la última pieza con acabado (2026-10-22)

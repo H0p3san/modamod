@@ -493,9 +493,10 @@ public final class CuerpoGeometria {
                     dil, 0F, dil,
                     false, texW, texW, caras));
         }
-        // La planta y la punta solo si la tela llega al pie (2026-11-04): una media cortada más arriba las dejaba
-        // dibujadas al final de la pierna, contando con que su textura fuera transparente ahí.
-        if (hasta >= 12) cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
+        // Siempre (2026-11-04, "me está quedando abierta la tapa que cubre el pie"): cortarlas cuando hasta < 12 dejaba
+        // la media abierta abajo en los largos que no llegan justo a la fila 12. Si la media no cubre el pie, su textura
+        // ya es transparente ahí.
+        cuboides.addAll(pieDePierna(parte, dilFila[11] * S, conPunta));
         ModelPart resultado = new ModelPart(cuboides, java.util.Map.of());
         RAICES_TELA_VOLUMEN.put(key, resultado);
         return resultado;
@@ -842,9 +843,12 @@ public final class CuerpoGeometria {
         if ((!brazo || tapaMano) && hasta >= 12 && colgado == 0) {
             float dilAbajo = dilFila[11] * S;
             boolean pierna = parte == Parte.PIERNA_DER || parte == Parte.PIERNA_IZQ;   // una pierna no baja del piso
+            // Nunca por ARRIBA de la muñeca (2026-11-04, "en los ajustados le desaparece la tapa inferior"): con un calce
+            // que aprieta, dilAbajo es negativo y la tapa se metía dentro del brazo, donde no se ve.
+            float bajaTapa = pierna ? 0F : Math.max(0.02F * S, dilAbajo);
             cuboides.add(new ModelPart.Cuboid(
                     t.uvX(), t.uvY(), t.originX(), t.originY(), t.originZ(),
-                    t.sizeX(), 12 * S, t.sizeZ(), dilAbajo, pierna ? 0F : dilAbajo, dilAbajo,
+                    t.sizeX(), 12 * S, t.sizeZ(), dilAbajo, bajaTapa, dilAbajo,
                     false, texW, texW, java.util.EnumSet.of(net.minecraft.util.math.Direction.UP)));
             if (dilAbajo > 0 && !pierna) {
                 cuboides.add(new ModelPart.Cuboid(

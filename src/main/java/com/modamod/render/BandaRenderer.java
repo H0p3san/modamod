@@ -46,6 +46,28 @@ public final class BandaRenderer {
     private static float hz(BandaZona z, float dil) { return (z == BandaZona.CINTURA ? 2f - GROSOR : COLLAR_HZ) + dil; }
     private static float grosor(BandaZona z) { return z == BandaZona.CINTURA ? GROSOR : COLLAR_GROSOR; }
 
+    /**
+     * Las filas del torso que el cinto tiene que VACIAR de piel y hasta dónde apretarla (2026-11-04, "no está
+     * reescribiendo la skin para que el cinto la reemplace en esas partes, es básicamente la premisa del mod"): el cuerpo
+     * se mete por dentro del plano de ADENTRO de la banda, así el cinto ocupa el lugar donde estaba la piel en vez de
+     * sumarse por encima. Devuelve {filaDesde, filaHasta, dilatación} o null si la banda no aprieta (Suelto, Oversize) o
+     * no es de cintura.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static float[] compresionDeCinto(ItemStack banda) {
+        if (BandaItem.zona(banda) != BandaZona.CINTURA) return null;
+        com.modamod.item.Calce c = com.modamod.prenda.Corte.get(banda, com.modamod.prenda.Ejes.BANDA_CALCE);
+        float dil = (c == null ? com.modamod.item.Calce.OVERSIZE : c).dilatacion;
+        float adentro = dil - GROSOR;
+        if (adentro >= CuerpoGeometria.Superficie.CUERPO.dilatacion) return null;
+        float alto = BandaItem.ancho(banda).alto(BandaZona.CINTURA);
+        // Redondeadas HACIA ADENTRO de la banda: así los escalones de la piel caen por debajo de la banda (que los tapa)
+        // y no queda ni un hueco asomando ni la piel pisando el plano de afuera del cinto.
+        int desde = Math.max(0, Math.min(11, Math.round(Y_CINTURA)));
+        int hasta = Math.max(desde + 1, Math.min(12, Math.round(Y_CINTURA + alto)));
+        return new float[] {desde, hasta, adentro};
+    }
+
     public static void dibujar(ItemStack banda, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz, float dil) {
         VertexConsumerProvider sinEfecto = vertexConsumers;

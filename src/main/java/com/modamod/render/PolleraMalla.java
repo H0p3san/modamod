@@ -59,6 +59,8 @@ public final class PolleraMalla {
     private static final int COLUMNAS = 48;
     /** 24 filas (2026-10-05, volados): tres filas de volado necesitan resolución para que se lea el borde de cada una. */
     static final int FILAS = 24;
+    /** Anillos que ocupa la franja de piel del ruedo (2026-11-04, "podría ser más alta"): el escalón duro va arriba del primero. */
+    private static final int FILAS_PIEL = 3;
 
     /** Vértices de la malla que se arma en {@code dibujar}, reusados cuadro a cuadro (hilo de render, sin reentrada). */
     private static final float[][][] POOL_VERTICES = new float[FILAS + 1][COLUMNAS + 1][5];
@@ -245,7 +247,7 @@ public final class PolleraMalla {
                 // Ribete de piel (2026-11-04, "un ruedo abajo, con grosor y su propia pintura"): las 3 últimas anillos se
                 // engrosan hacia afuera; el de arriba de la franja queda a la altura del anterior, así el escalón es un
                 // plano horizontal y no una rampa.
-                if (hem == com.modamod.item.Ruedo.PIEL && f >= FILAS - 2) {
+                if (hem == com.modamod.item.Ruedo.PIEL && f >= FILAS - FILAS_PIEL) {
                     float rr = (float) Math.hypot(x, z);
                     if (rr > 0.5f) {
                         float k = (rr + 0.6f) / rr;
@@ -268,7 +270,9 @@ public final class PolleraMalla {
                 x = xg;
                 z = zg;
                 float yy = y;
-                if (hem == com.modamod.item.Ruedo.PIEL && f == FILAS - 2) yy = cintura + (FILAS - 3) / (float) FILAS * l + 0.05f;
+                if (hem == com.modamod.item.Ruedo.PIEL && f == FILAS - FILAS_PIEL) {
+                    yy = cintura + (FILAS - FILAS_PIEL - 1) / (float) FILAS * l + 0.05f;
+                }
                 // Borde decorativo del ruedo (2026-10-05): las filas de abajo bajan según el dibujo, más cuanto más abajo.
                 if (borde != null && t > 0.8f) {
                     float w = (t - 0.8f) / 0.2f;
@@ -290,8 +294,8 @@ public final class PolleraMalla {
                     // La franja de piel usa la última fila de la tira de la tela (31..32), la pollera lo de arriba (20..31).
                     // La franja de piel se queda DENTRO de la última fila de tela (v 31..32): pasarse de 32 lee la fila 32
                     // de pollera_tela.png, que es transparente, y el ruedo salía medio invisible.
-                    float tope = perfil.vAlto * perfil.fraccion[FILAS - 3];
-                    vv = f >= FILAS - 2 ? 31f + (f - (FILAS - 2)) * 0.49f
+                    float tope = perfil.vAlto * perfil.fraccion[FILAS - FILAS_PIEL - 1];
+                    vv = f >= FILAS - FILAS_PIEL ? 31f + (f - (FILAS - FILAS_PIEL)) * (0.98f / FILAS_PIEL)
                             : 20f + (vv - 20f) * Math.min(1f, 11f / Math.max(1f, tope));
                 }
                 v[4] = vv / 64f;

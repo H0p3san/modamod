@@ -662,8 +662,13 @@ public final class ApliqueRenderer {
                         else if (ax >= ay) { u = 0.5f + pz; t = 0.5f - py; }
                         else { u = 0.5f + px; t = 0.5f + pz; }
                     }
+                    // Sin sombra (2026-11-04, "va variando según roto, ¿y si le sacamos la sombra?"): un parche es una
+                    // calcomanía pegada a la prenda y su brillo cambiaba con cada rotación del modelo. Con la normal
+                    // siempre hacia arriba, la luz difusa le da de lleno y el aplique se ve igual en cualquier pose; la
+                    // luz del lugar (el bloque) sigue valiendo. La normal de verdad (nq) se sigue usando para despegar
+                    // la pasada de tramas de la tela.
                     vc.vertex(p.x(), p.y(), p.z()).color(0xFFFFFFFF).texture(u, t)
-                            .overlay(OverlayTexture.DEFAULT_UV).light(luz).normal(nq.x(), nq.y(), nq.z());
+                            .overlay(OverlayTexture.DEFAULT_UV).light(luz).normal(0f, 1f, 0f);
                 }
             }
             matrices.pop();
