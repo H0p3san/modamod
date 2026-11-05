@@ -250,7 +250,8 @@ public final class PiezasDelMod {
         return piezas;
     }
 
-    private static final com.modamod.render.CacheDeTexturas CACHE_MANGA = new com.modamod.render.CacheDeTexturas("manga", 96);
+    private static final com.modamod.render.CacheDeTexturas CACHE_MANGA = new com.modamod.render.CacheDeTexturas("manga", 96)
+            .alExpulsar(ClothingTextureCache::olvidarImagenCompuesta);
 
     /**
      * Copia {@code base} y le recorta el brazo a {@code [0,hasta)} —
@@ -284,7 +285,11 @@ public final class PiezasDelMod {
                 copia.writeTo(dir.resolve("manga_" + brazoParte + "_" + hasta + ".png"));
             } catch (java.io.IOException ignored) {}
         }
-        return CACHE_MANGA.registrar(key, copia);
+        Identifier id = CACHE_MANGA.registrar(key, copia);
+        // El torso recortado al largo pasa por acá y después las mangas se recortan DE ESA textura: sin esto imagenBase
+        // no la encuentra y las mangas salen completas.
+        ClothingTextureCache.registrarImagenCompuesta(id, copia);
+        return id;
     }
 
     /**
