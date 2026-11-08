@@ -1139,7 +1139,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 if (item instanceof MoldeCapaItem m && m.tipo == MoldeCapaItem.Tipo.CON_CAPUCHA) c = Molde.de(com.modamod.prenda.Ejes.CON_CAPUCHA, true);
                 // Capucha de malla o de cajas (2026-10-23): la pone con ese estilo.
                 else if (item instanceof MoldeCapaItem m && m.tipo.esEstiloCapucha())
-                    c = Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (m.tipo == MoldeCapaItem.Tipo.CAPUCHA_CAJAS) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA);
+                    c = Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (m.tipo == MoldeCapaItem.Tipo.CAPUCHA_CAJAS) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA)
+                            .con(com.modamod.prenda.Ejes.CON_CAPUCHA, true);
             }
             case SOLAPA_CHAQUETA -> {
                 if (item instanceof MoldeChaquetaItem m && m.tipo.esSolapa()) c = comboDeMoldeChaqueta(item);
@@ -1329,8 +1330,11 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case EMBOZO_NINGUNO -> Molde.nivel(com.modamod.prenda.Ejes.CAPA_EMBOZO, -1);
             case BORDE_EMBOZO -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, true);
             case BORDE_NINGUNO -> Molde.de(com.modamod.prenda.Ejes.CAPA_BORDE_EMBOZO, false);
-            case CAPUCHA_MALLA -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, com.modamod.item.SombreroEstilo.MALLA);
-            case CAPUCHA_CAJAS -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, com.modamod.item.SombreroEstilo.CAJAS);
+            // Ponen la capucha además del estilo (como ComboCorte.capaCapuchaEstilo antes de 9a37ae4).
+            case CAPUCHA_MALLA -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, com.modamod.item.SombreroEstilo.MALLA)
+                    .con(com.modamod.prenda.Ejes.CAPA_CAPUCHA, true);
+            case CAPUCHA_CAJAS -> Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, com.modamod.item.SombreroEstilo.CAJAS)
+                    .con(com.modamod.prenda.Ejes.CAPA_CAPUCHA, true);
         };
     }
 

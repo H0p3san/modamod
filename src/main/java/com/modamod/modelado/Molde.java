@@ -56,6 +56,11 @@ public record Molde(Corte corte, Lado lado, Optional<Identifier> icono) {
         return de(Ejes.RUEDOS, Map.copyOf(m));
     }
 
+    /** El mismo molde, que además pone {@code eje} en {@code valor}. */
+    public <T> Molde con(EjeDeCorte<T> eje, T valor) {
+        return new Molde(corte.con(eje, valor), lado, icono);
+    }
+
     public Molde conLado(Lado nuevo) {
         return new Molde(corte, nuevo, icono);
     }
