@@ -1,7 +1,7 @@
 package com.modamod.client;
 
 import com.modamod.item.BandaItem;
-import com.modamod.item.BorcegosItem;
+import com.modamod.item.CalzadoItem;
 import com.modamod.render.AccesorioRenderer;
 import com.modamod.render.BorcegosRenderer;
 import com.modamod.render.FisicaApliques;

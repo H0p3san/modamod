@@ -112,7 +112,7 @@ public final class EscenarioPrenda {
 
         // Medias con sandalias: calzado sin capellada ni cubo de punta; el pie lo dibuja la piel con la tela de la media.
         ItemStack sandalias = new ItemStack(ModamodItems.CALZADO);
-        com.modamod.item.BorcegosItem.setCana(sandalias, com.modamod.item.BorcegoCana.NINGUNA, com.modamod.region.Lado.AMBAS);
+        com.modamod.item.CalzadoItem.setCana(sandalias, com.modamod.item.BorcegoCana.NINGUNA, com.modamod.region.Lado.AMBAS);
         prenda(r, "sandalias con medias", PruebaRopa::calzado, sandalias);
 
         // Tapa de abajo de la cintura (el pantalon pinta su propia tapa): se mira desde abajo, con el jugador volando.

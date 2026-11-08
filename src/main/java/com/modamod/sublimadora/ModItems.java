@@ -108,7 +108,7 @@ public final class ModItems {
                 || com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.CALZADO)
                 // Gorras con visera (2026-10-25): foto en el frente de la copa, ver SombreroRenderer.
                 || (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.SOMBRERO)
-                        && com.modamod.item.SombreroBrujaItem.ala(stack).esVisera());
+                        && com.modamod.item.SombreroItem.ala(stack).esVisera());
     }
 
     /**

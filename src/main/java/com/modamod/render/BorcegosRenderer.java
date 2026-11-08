@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.modamod.item.BorcegoCana;
 import com.modamod.item.BorcegoSuela;
-import com.modamod.item.BorcegosItem;
+import com.modamod.item.CalzadoItem;
 import com.modamod.item.CalzadoCierre;
 import com.modamod.item.CalzadoDetalle;
 import com.modamod.item.CalzadoPunta;
@@ -31,11 +31,11 @@ import java.util.Map;
 /**
  * El calzado (2026-10-08 los borcegos con cajas; 2026-10-14, "agreguemos el calzado": zapatos, tenis y chanclas del zip de
  * Claude Design, de malla). Cada pie se arma con cinco ejes: la capellada, la suela, la punta, el cierre y el detalle
- * ({@link BorcegosItem}); qué piezas lleva cada valor sale de {@code assets/modamod/calzado/ejes.json} y las piezas son las
+ * ({@link CalzadoItem}); qué piezas lleva cada valor sale de {@code assets/modamod/calzado/ejes.json} y las piezas son las
  * de {@link CalzadoMalla}. Tres zonas de color por pie: 0 cuerpo (cuero, tela), 1 suela y 2 detalles (cordones, tiras). Se
  * dibuja en el marco de cada pierna (el pie es el fondo de la caja de la pierna: y 12 es el piso, el frente es −Z) y el
  * pantalón se adapta ({@link GarmentFeatureRenderer}: por dentro se corta donde empieza la caña, por fuera se infla sobre
- * ella). Los apliques y las correas van en el pie en que se pusieron ({@link BorcegosItem#marco}).
+ * ella). Los apliques y las correas van en el pie en que se pusieron ({@link CalzadoItem#marco}).
  */
 public final class BorcegosRenderer {
 
@@ -109,12 +109,12 @@ public final class BorcegosRenderer {
     private static final Map<String, Montado> MONTADOS = new HashMap<>();
 
     private static Montado montar(ItemStack calzado, boolean izq) {
-        BorcegoCana cana = BorcegosItem.cana(calzado, izq);
-        BorcegoSuela suela = BorcegosItem.suela(calzado, izq);
-        CalzadoPunta punta = BorcegosItem.punta(calzado, izq);
-        CalzadoCierre cierre = BorcegosItem.cierre(calzado, izq);
-        CalzadoDetalle detalle = BorcegosItem.detalle(calzado, izq);
-        boolean cajas = BorcegosItem.estilo(calzado) == com.modamod.item.SombreroEstilo.CAJAS;
+        BorcegoCana cana = CalzadoItem.cana(calzado, izq);
+        BorcegoSuela suela = CalzadoItem.suela(calzado, izq);
+        CalzadoPunta punta = CalzadoItem.punta(calzado, izq);
+        CalzadoCierre cierre = CalzadoItem.cierre(calzado, izq);
+        CalzadoDetalle detalle = CalzadoItem.detalle(calzado, izq);
+        boolean cajas = CalzadoItem.estilo(calzado) == com.modamod.item.SombreroEstilo.CAJAS;
         String clave = cana.eje + "|" + suela.eje + "|" + punta.clave + "|" + cierre.clave + "|" + detalle.clave + "|" + cajas;
         Montado hecho = MONTADOS.get(clave);
         if (hecho != null) return hecho;

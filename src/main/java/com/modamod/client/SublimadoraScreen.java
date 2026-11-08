@@ -383,7 +383,7 @@ ButtonWidget borrar = new EstiloPergamino.BotonPergamino(dx, dy + 74, 36, 14, Te
         if (item == com.modamod.item.ModamodItems.DELANTAL) return "delantal";
         if (item instanceof net.minecraft.item.BannerItem) return "banner";
         if (item instanceof com.modamod.item.CaraItem c) return c.modelo;
-        if (item instanceof com.modamod.item.SombreroBrujaItem) return "sombrero";
+        if (item instanceof com.modamod.item.SombreroItem) return "sombrero";
         if (item == com.modamod.item.ModamodItems.BANDA) return "banda";
         if (item == com.modamod.item.ModamodItems.CALZADO) return "calzado";
         return "calientabrazos";

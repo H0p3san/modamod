@@ -63,16 +63,16 @@ public enum TelarPrenda {
             case BORCEGOS -> { }
             case SOMBRERO -> {
                 // La base es una gorra (2026-10-14, "que no sea el sombrero de bruja puede ser el de copa o la gorra").
-                com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.VISERA_CURVA);
-                com.modamod.item.SombreroBrujaItem.setPunta(s, com.modamod.item.SombreroPunta.CUPULA);
+                com.modamod.item.SombreroItem.setAla(s, com.modamod.item.SombreroAla.VISERA_CURVA);
+                com.modamod.item.SombreroItem.setPunta(s, com.modamod.item.SombreroPunta.CUPULA);
                 ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
             case VINCHA -> {
-                com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.VINCHA);
+                com.modamod.item.SombreroItem.setAla(s, com.modamod.item.SombreroAla.VINCHA);
                 ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
             case COFIA -> {
-                com.modamod.item.SombreroBrujaItem.setAla(s, com.modamod.item.SombreroAla.COFIA);
+                com.modamod.item.SombreroItem.setAla(s, com.modamod.item.SombreroAla.COFIA);
                 ((com.modamod.item.ZonasTenibles) s.getItem()).tenirEntero(s, rgb);
             }
             default -> com.modamod.prenda.PrendaItem.setColor(s, rgb);

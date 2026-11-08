@@ -19,12 +19,12 @@ import java.util.List;
  * <p>Los dos pies son independientes (2026-10-11, "no se puede independizar derecho e izquierdo?"): los componentes de
  * siempre son del pie DERECHO y los {@code _izq} son del izquierdo; si el izquierdo no tiene el suyo, copia al derecho.
  */
-public class BorcegosItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
+public class CalzadoItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
 
     /** Cuero marrón oscuro, suela casi negra y cordones crema de fábrica. */
     private static final List<Integer> DE_FABRICA = List.of(0x5A3A24, 0x2E2824, 0xD9CDB0);
 
-    public BorcegosItem(Settings settings) {
+    public CalzadoItem(Settings settings) {
         super(settings);
     }
 

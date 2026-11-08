@@ -49,6 +49,7 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
   quedaba tapado (2116566). Con solo el cinto, el torso es la skin real y la segunda capa se borra solo en sus filas.
   En el maniquí la figura achica el torso con el cinto Ajustado, como con una prenda Ajustado.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
+- **Nombres de clase**: `SombreroBrujaItem` → `SombreroItem` y `BorcegosItem` → `CalzadoItem` (el ítem ya era sombrero y calzado genéricos).
 
 ## Sueltos encontrados
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
@@ -63,4 +64,3 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 ## Pendiente de diseño (no son bugs)
 - Accesorios (capa, cinto, sombrero) dibujados en el orden de la lista en vez de posiciones fijas.
 - Puño de piel de la bota: falta una pieza nueva en el catálogo JSON `assets/modamod/calzado`.
-- Renombrar clases Java `SombreroBrujaItem` y `BorcegosItem` (cosmético).

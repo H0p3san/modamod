@@ -93,7 +93,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      */
     private static boolean pieDelCalzado(Parte parte) {
         return calzado != null
-                && com.modamod.item.BorcegosItem.cana(calzado, parte == Parte.PIERNA_IZQ) == com.modamod.item.BorcegoCana.NINGUNA;
+                && com.modamod.item.CalzadoItem.cana(calzado, parte == Parte.PIERNA_IZQ) == com.modamod.item.BorcegoCana.NINGUNA;
     }
 
     /**
@@ -1414,7 +1414,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             boolean botamangaAfuera = false;
             if (pierna && calzado != null && pieza != conVolumen && pieza.capa() >= Capa.PIERNA_EXTERIOR) {
                 boolean izqPie = parte == Parte.PIERNA_IZQ;   // cada pie con su caña, suela y botamanga
-                cana = com.modamod.item.BorcegosItem.alturaCana(calzado, izqPie);   // 2026-10-14: la capellada y la suela elegidas
+                cana = com.modamod.item.CalzadoItem.alturaCana(calzado, izqPie);   // 2026-10-14: la capellada y la suela elegidas
                 botamangaAfuera = pantalonSobreCalzado;   // lo decide el orden de la lista de ropa
                 if (!botamangaAfuera) hasta = Math.max(desde, Math.min(hasta, 12 - cana));
             }
@@ -1514,7 +1514,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     if (pieza.elasticoSup() && f == desde) d = Math.max(0.05F, base * 0.4F);
                     // Botamanga por fuera: sobre la caña, más ancha que ella (las filas de la suela quedan adentro de la suela).
                     if (botamangaAfuera && f >= 12 - cana
-                            && f < 12 - com.modamod.item.BorcegosItem.suela(calzado, parte == Parte.PIERNA_IZQ).filas) {
+                            && f < 12 - com.modamod.item.CalzadoItem.suela(calzado, parte == Parte.PIERNA_IZQ).filas) {
                         d = Math.max(d, com.modamod.render.BorcegosRenderer.T + 0.12F);
                     }
                     if (exterior[f] != Float.NEGATIVE_INFINITY) d = Math.max(d, exterior[f] + SEPARACION_CAPAS);

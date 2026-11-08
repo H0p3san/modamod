@@ -1,8 +1,8 @@
 package com.modamod.render;
 
 import com.modamod.item.BandaItem;
-import com.modamod.item.BorcegosItem;
-import com.modamod.item.SombreroBrujaItem;
+import com.modamod.item.CalzadoItem;
+import com.modamod.item.SombreroItem;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;

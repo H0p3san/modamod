@@ -2,7 +2,7 @@ package com.modamod.render;
 
 import com.modamod.Modamod;
 import com.modamod.item.SombreroAla;
-import com.modamod.item.SombreroBrujaItem;
+import com.modamod.item.SombreroItem;
 import com.modamod.item.SombreroPlanta;
 import com.modamod.item.SombreroPunta;
 import net.minecraft.client.MinecraftClient;
@@ -48,12 +48,12 @@ public final class SombreroRenderer {
 
     /** Las piezas de un sombrero: la copa y su cinta, el ala (con su planta) o, en la vincha y la cofia, la banda y el moño. */
     private static List<Armada> armar(ItemStack sombrero) {
-        SombreroAla ala = SombreroBrujaItem.ala(sombrero);
-        SombreroPunta copa = SombreroBrujaItem.punta(sombrero);
-        SombreroPlanta planta = SombreroBrujaItem.planta(sombrero);
-        boolean gruesa = SombreroBrujaItem.grosor(sombrero) == com.modamod.item.SombreroGrosor.GRUESA;
-        boolean banda = SombreroBrujaItem.banda(sombrero);
-        boolean piel = banda && SombreroBrujaItem.bandaPiel(sombrero);
+        SombreroAla ala = SombreroItem.ala(sombrero);
+        SombreroPunta copa = SombreroItem.punta(sombrero);
+        SombreroPlanta planta = SombreroItem.planta(sombrero);
+        boolean gruesa = SombreroItem.grosor(sombrero) == com.modamod.item.SombreroGrosor.GRUESA;
+        boolean banda = SombreroItem.banda(sombrero);
+        boolean piel = banda && SombreroItem.bandaPiel(sombrero);
         String clave = ala.clave + "|" + copa.clave + "|" + planta.clave + "|" + gruesa + "|" + banda + "|" + piel;
         List<Armada> hecho = ARMADOS.get(clave);
         if (hecho != null) return hecho;
@@ -104,7 +104,7 @@ public final class SombreroRenderer {
             roll = clamp(d.blando().x * GANANCIA);
             pitch = clamp(-d.blando().z * GANANCIA);
         }
-        boolean cuboides = SombreroBrujaItem.estilo(sombrero) == com.modamod.item.SombreroEstilo.CAJAS;
+        boolean cuboides = SombreroItem.estilo(sombrero) == com.modamod.item.SombreroEstilo.CAJAS;
         matrices.push();
         biped.head.rotate(matrices);
         SombreroMalla.MatrixStackLike m = new SombreroMalla.MatrixStackLike(
@@ -117,7 +117,7 @@ public final class SombreroRenderer {
             SombreroMalla.dibujar(a.pieza(), a.dy(), m, vc, luz, pitch, roll, cuboides);
         }
         // Gorras con foto de la Sublimadora en el frente de la copa (2026-10-25), a 16x encima del tinte.
-        if (SombreroBrujaItem.ala(sombrero).esVisera()) {
+        if (SombreroItem.ala(sombrero).esVisera()) {
             Identifier foto = com.modamod.sublimadora.BannerHD.foto(com.modamod.sublimadora.BannerHD.Forma.GORRA,
                     com.modamod.sublimadora.Estampas.frente(sombrero));
             if (foto != null) {

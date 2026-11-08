@@ -14,12 +14,12 @@ import java.util.List;
  * cono y cinta, en {@code modamod:colores_sombrero}), un ala (ancha/corta) y una punta (recta/doblada) y la
  * dibuja {@link com.modamod.render.SombreroRenderer}; la punta se mece con la tela blanda de los apliques.
  */
-public class SombreroBrujaItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
+public class SombreroItem extends com.modamod.prenda.PrendaItem implements ZonasTenibles {
 
     /** Blanco de fábrica (2026-10-05, "sale blanco de fabrica"): igual que el retazo sin teñir; los colores se ponen en la Mesa de estilado. */
     private static final List<Integer> DE_FABRICA = List.of(0xF2F2F6, 0xF2F2F6, 0xF2F2F6);
 
-    public SombreroBrujaItem(Settings settings) {
+    public SombreroItem(Settings settings) {
         super(settings);
     }
 

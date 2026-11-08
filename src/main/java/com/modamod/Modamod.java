@@ -179,11 +179,11 @@ public class Modamod implements ModInitializer {
                     {com.modamod.item.BorcegoCana.TENIS_BAJA, com.modamod.item.BorcegoSuela.GOMA_TENIS, com.modamod.item.CalzadoPunta.GOMA, com.modamod.item.CalzadoCierre.VELCRO, com.modamod.item.CalzadoDetalle.NINGUNO},
                     {com.modamod.item.BorcegoCana.MEDIA, com.modamod.item.BorcegoSuela.CUNA, com.modamod.item.CalzadoPunta.FINA, com.modamod.item.CalzadoCierre.SIN, com.modamod.item.CalzadoDetalle.NINGUNO}}) {
                 net.minecraft.item.ItemStack calzado = new net.minecraft.item.ItemStack(ModamodItems.CALZADO);
-                com.modamod.item.BorcegosItem.setCana(calzado, (com.modamod.item.BorcegoCana) c[0]);
-                com.modamod.item.BorcegosItem.setSuela(calzado, (com.modamod.item.BorcegoSuela) c[1]);
-                com.modamod.item.BorcegosItem.setPunta(calzado, (com.modamod.item.CalzadoPunta) c[2], com.modamod.region.Lado.AMBAS);
-                com.modamod.item.BorcegosItem.setCierre(calzado, (com.modamod.item.CalzadoCierre) c[3], com.modamod.region.Lado.AMBAS);
-                com.modamod.item.BorcegosItem.setDetalle(calzado, (com.modamod.item.CalzadoDetalle) c[4], com.modamod.region.Lado.AMBAS);
+                com.modamod.item.CalzadoItem.setCana(calzado, (com.modamod.item.BorcegoCana) c[0]);
+                com.modamod.item.CalzadoItem.setSuela(calzado, (com.modamod.item.BorcegoSuela) c[1]);
+                com.modamod.item.CalzadoItem.setPunta(calzado, (com.modamod.item.CalzadoPunta) c[2], com.modamod.region.Lado.AMBAS);
+                com.modamod.item.CalzadoItem.setCierre(calzado, (com.modamod.item.CalzadoCierre) c[3], com.modamod.region.Lado.AMBAS);
+                com.modamod.item.CalzadoItem.setDetalle(calzado, (com.modamod.item.CalzadoDetalle) c[4], com.modamod.region.Lado.AMBAS);
                 entries.add(calzado);
             }
             entries.add(ModamodItems.MOLDE_CORREA_LISA);
@@ -218,21 +218,21 @@ public class Modamod implements ModInitializer {
                     {com.modamod.item.SombreroAla.TRICORNIO, com.modamod.item.SombreroPunta.CUPULA},        // tricornio
                     {com.modamod.item.SombreroAla.SIN_ALA, com.modamod.item.SombreroPunta.MARINERO}}) {     // gorro de marinero
                 net.minecraft.item.ItemStack variante = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO);
-                com.modamod.item.SombreroBrujaItem.setAla(variante, (com.modamod.item.SombreroAla) par[0]);
-                com.modamod.item.SombreroBrujaItem.setPunta(variante, (com.modamod.item.SombreroPunta) par[1]);
+                com.modamod.item.SombreroItem.setAla(variante, (com.modamod.item.SombreroAla) par[0]);
+                com.modamod.item.SombreroItem.setPunta(variante, (com.modamod.item.SombreroPunta) par[1]);
                 entries.add(variante);
             }
             // La planta cuadrada de las alas planas (2026-10-14).
             net.minecraft.item.ItemStack paja = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO);
-            com.modamod.item.SombreroBrujaItem.setAla(paja, com.modamod.item.SombreroAla.PLANA);
-            com.modamod.item.SombreroBrujaItem.setPunta(paja, com.modamod.item.SombreroPunta.CUPULA);
-            com.modamod.item.SombreroBrujaItem.setPlanta(paja, com.modamod.item.SombreroPlanta.CUADRADA);
+            com.modamod.item.SombreroItem.setAla(paja, com.modamod.item.SombreroAla.PLANA);
+            com.modamod.item.SombreroItem.setPunta(paja, com.modamod.item.SombreroPunta.CUPULA);
+            com.modamod.item.SombreroItem.setPlanta(paja, com.modamod.item.SombreroPlanta.CUADRADA);
             entries.add(paja);
             // El mismo sombrero en cuboides (2026-10-14).
             net.minecraft.item.ItemStack cajas = new net.minecraft.item.ItemStack(ModamodItems.SOMBRERO);
-            com.modamod.item.SombreroBrujaItem.setAla(cajas, com.modamod.item.SombreroAla.VISERA_CURVA);
-            com.modamod.item.SombreroBrujaItem.setPunta(cajas, com.modamod.item.SombreroPunta.CUPULA);
-            com.modamod.item.SombreroBrujaItem.setEstilo(cajas, com.modamod.item.SombreroEstilo.CAJAS);
+            com.modamod.item.SombreroItem.setAla(cajas, com.modamod.item.SombreroAla.VISERA_CURVA);
+            com.modamod.item.SombreroItem.setPunta(cajas, com.modamod.item.SombreroPunta.CUPULA);
+            com.modamod.item.SombreroItem.setEstilo(cajas, com.modamod.item.SombreroEstilo.CAJAS);
             entries.add(cajas);
             entries.add(ModamodItems.ANTIFAZ);
             entries.add(ModamodItems.MEDIA_MASCARA);
