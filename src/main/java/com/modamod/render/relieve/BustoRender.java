@@ -566,10 +566,11 @@ public final class BustoRender {
             hondo = cuerpo - Math.max(0f, inflado);
             abrir = 0f;
         } else {
-            // La punta sale toda la holgura por delante de la del cuerpo (2026-11-08, "las tetas cuadradas rompen todos
-            // los chalecos"): con "- inflado" acá la tela solo avanzaba 0,12 por px de holgura en la punta (el plano ya
-            // suma el inflado), y el corpiño de abajo quedaba a 0,01-0,05 px: se peleaban en el borde de abajo.
-            hondo = cuerpo + 0.06f + 0.12f * abrir;
+            // La punta sale media holgura por delante de la del cuerpo (2026-11-08, "las tetas cuadradas rompen todos
+            // los chalecos" y "siento que estan mucho mas grande"): con "- inflado" entero la tela solo avanzaba 0,12 por
+            // px de holgura en la punta (el plano ya suma el inflado) y el corpiño quedaba a 0,01-0,05 px: se peleaban en
+            // el borde de abajo. Con la mitad, 0,62 por px: entre capas al menos ~0,02 px y no se agranda de más.
+            hondo = Math.max(0f, cuerpo + 0.06f + 0.12f * abrir - 0.5f * inflado);
         }
         if (hondo <= 0.01f) return List.of();
         float dy = 0f, dx = 0f;
