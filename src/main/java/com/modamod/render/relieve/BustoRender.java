@@ -260,6 +260,8 @@ public final class BustoRender {
      * asi como dos tetas"): Suelto y Oversize. Normal sigue marcando las dos.
      */
     private static final float CARPA_MANTO = 1f;
+    /** Para comparar en vivo desde el guion de debug ({@code chato <valor>}): el aplastado del manto abierto; −1 = el de siempre. */
+    public static float debugChatoAbierto = -1f;
     /** Celdas por px de la grilla del manto. */
     private static final int PASO = 2;
 
@@ -491,7 +493,11 @@ public final class BustoRender {
         }
         for (int ix = 0; ix <= nx; ix++) tensar(h[ix]);
         // Cuanto más holgada, más chato: la tela sobrante se lo come (Suelto ~0.88, Oversize ~0.65).
-        float chato = 1f - 0.35f * Math.max(0f, Math.min(1f, (carpa - CARPA_MANTO) / 1.5f));
+        // Abierto no se aplasta (2026-11-08, "el verde abierto... el busto atraviesa la tela"): con frente abierto el busto
+        // del cuerpo se dibuja debajo, y aplastado al 65 % (Oversize) el manto quedaba detrás de él (probado con el guion,
+        // chato 0,65 contra 1).
+        float chato = corte > 0 ? 1f : 1f - 0.35f * Math.max(0f, Math.min(1f, (carpa - CARPA_MANTO) / 1.5f));
+        if (corte > 0 && debugChatoAbierto >= 0f) chato = debugChatoAbierto;
 
         Vert[][] g = new Vert[nx + 1][ny + 1];
         float[][] z = new float[nx + 1][ny + 1];
