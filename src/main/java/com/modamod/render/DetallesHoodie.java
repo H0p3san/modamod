@@ -151,8 +151,10 @@ public final class DetallesHoodie {
      * alto, con una orilla oscura de un cuarto de píxel a cada lado (la solapa).
      */
     private static void abrirFrente(NativeImage img, int s, int filasTorso, int ancho) {
-        // Centrada en u 24 (el medio de la cara de adelante, 20..28).
-        int x0 = (24 - ancho / 2) * s, x1 = x0 + ancho * s;
+        // Centrada en u 24 (el medio de la cara de adelante, 20..28). En texels de la imagen escalada: con un ancho impar
+        // (Suelto, 3) la división entera en px de skin corría la apertura medio píxel a un costado (2026-11-08, "la
+        // apertura no esta centrada").
+        int x0 = 24 * s - ancho * s / 2, x1 = x0 + ancho * s;
         int borde = Math.max(1, s / 4);
         for (int y = 20 * s; y < (20 + filasTorso) * s; y++) {
             for (int x = x0 - borde; x < x0; x++) oscurecer(img, x, y, 0.72F);
