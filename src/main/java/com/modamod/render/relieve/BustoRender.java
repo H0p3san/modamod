@@ -477,25 +477,14 @@ public final class BustoRender {
         for (int ix = 0; ix <= nx; ix++) { h[ix][0] = 0f; h[ix][ny] = 0f; }
         for (int iy = 0; iy <= ny; iy++) { h[0][iy] = 0f; h[nx][iy] = 0f; }
         // Frente abierto (2026-10-08, "cortar el manto del busto en el centro de la apertura"): la franja del medio no
-        // lleva tela, y cada mitad se tensa por separado, pegada a la pieza en el canto de la apertura.
+        // lleva tela. El manto se tensa entero, como cerrado, y después se le saca la franja (2026-11-08, "uno se ve
+        // bien con busto, la otra no"): tensar cada mitad pegada a la pieza en el canto bajaba la tela a cero justo
+        // donde el pecho está más alto, y el busto del cuerpo, que con frente abierto se dibuja debajo, la atravesaba.
         int corte = tela.abertura() > 0 ? Math.round(tela.abertura() * 0.5f * PASO) : 0;
         int mitad = nx / 2;
         int izqFin = mitad - corte, derIni = mitad + corte;
-        if (corte > 0) for (int iy = 0; iy <= ny; iy++) {
-            for (int ix = izqFin; ix <= derIni; ix++) h[ix][iy] = 0f;
-        }
         float[] fila = new float[nx + 1];
         for (int iy = 0; iy <= ny; iy++) {
-            if (corte > 0) {
-                float[] izq = new float[izqFin + 1], der = new float[nx - derIni + 1];
-                for (int ix = 0; ix <= izqFin; ix++) izq[ix] = h[ix][iy];
-                for (int ix = derIni; ix <= nx; ix++) der[ix - derIni] = h[ix][iy];
-                tensar(izq);
-                tensar(der);
-                for (int ix = 0; ix <= izqFin; ix++) h[ix][iy] = izq[ix];
-                for (int ix = derIni; ix <= nx; ix++) h[ix][iy] = der[ix - derIni];
-                continue;
-            }
             for (int ix = 0; ix <= nx; ix++) fila[ix] = h[ix][iy];
             tensar(fila);
             for (int ix = 0; ix <= nx; ix++) h[ix][iy] = fila[ix];
