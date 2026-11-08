@@ -57,8 +57,8 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
 
 ## 8. Sin verificar todavía
-- Modeladora: ruedo a "distancia fija".
-- Detalles de la vista previa del Estilista.
+- (2026-11-08) Descartados por falta de datos: "ruedo a distancia fija" de la Modeladora y "detalles de la vista previa
+  del Estilista" (no hay rastro en código, textos ni commits; el usuario no recuerda qué eran).
 
 ## Pendiente de diseño (no son bugs)
 - Accesorios (capa, cinto, sombrero) dibujados en el orden de la lista en vez de posiciones fijas.
