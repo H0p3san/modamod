@@ -181,7 +181,7 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
             cuerpo.rightArm.yaw = MathHelper.lerp(e, cuerpo.rightArm.yaw, 0F);
             cuerpo.leftArm.yaw = MathHelper.lerp(e, cuerpo.leftArm.yaw, 0F);
         }
-        ajustarAlCalce(cuerpo, prendas, slim);
+        ajustarAlCalce(cuerpo, prendas, be.cinto(), slim);
         capasDeSkin(cuerpo, be.figuraSkin(), prendas);
         // Busto de la figura (2026-10-02, "agregale la opcion de ponerle tetas"): quieto, sin rebote.
         com.modamod.render.relieve.BustoRender.Busto busto = be.busto() > 0
@@ -357,7 +357,7 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
      * achica la figura (x/z) hasta quedar apenas por dentro de la tela más
      * ajustada — en toda la parte, no solo donde hay tela.
      */
-    private static void ajustarAlCalce(PlayerEntityModel<LivingEntity> m, List<ItemStack> prendas, boolean slim) {
+    private static void ajustarAlCalce(PlayerEntityModel<LivingEntity> m, List<ItemStack> prendas, ItemStack cinto, boolean slim) {
         for (Parte parte : Parte.values()) {
             if (parte == Parte.CABEZA) continue;
             ModelPart p = com.modamod.render.CuerpoGeometria.delJugador(m, parte);
@@ -372,6 +372,15 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
                 float ancho = pieza.parte() == Parte.TORSO ? 8f : brazo && slim ? 3f : 4f;
                 p.xScale = Math.min(p.xScale, (ancho + 2 * margen) / ancho);
                 p.zScale = Math.min(p.zScale, (4f + 2 * margen) / 4f);
+            }
+        }
+        // El cinto Ajustado va por dentro de la superficie (2026-11-08): no está en la lista de ropa y la figura lo tapaba.
+        if (!cinto.isEmpty() && com.modamod.item.BandaItem.zona(cinto) == com.modamod.item.BandaZona.CINTURA) {
+            com.modamod.item.Calce c = com.modamod.prenda.Corte.get(cinto, com.modamod.prenda.Ejes.BANDA_CALCE);
+            float margen = (c == null ? com.modamod.item.Calce.OVERSIZE : c).dilatacion - 0.03f;
+            if (margen < 0f) {
+                m.body.xScale = Math.min(m.body.xScale, (8f + 2 * margen) / 8f);
+                m.body.zScale = Math.min(m.body.zScale, (4f + 2 * margen) / 4f);
             }
         }
     }
