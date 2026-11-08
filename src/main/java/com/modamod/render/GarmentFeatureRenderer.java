@@ -450,7 +450,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 // el del cuerpo atravesaba el hoodie (2026-10-02, "el hoodie es
                 // atravesado por los pechos, deberia apagarlos y reemplazarlos por
                 // su propia geometria").
-                if (indiceManto(piezas) < 0 || mantoAbierto(piezas, origen)) {
+                if ((indiceManto(piezas) < 0 || mantoAbierto(piezas, origen))
+                        && !com.modamod.render.relieve.BustoRender.debugSinBustoCuerpo) {
                     dibujarBusto(cuerpo, delJugador, infladoBustoCuerpo(piezas), 0f, 20f, true, null,
                             fondoSosten(perfilDe(entidad)), matrices, vertexConsumers, luz);
                 }
@@ -1646,8 +1647,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 }
             }
 
+            // La malla oversize de arriba ya pasa holgada por la cola: la cuña de tela, casi chata con tanta holgura, salía
+            // como una tabla por los costados de la espalda (2026-11-08, "tiene una tira rara atras el chaleco"). La del
+            // pantalón (la cintura) no la envuelve: esa sigue dibujando su cola.
+            boolean caderaPieza = pieza.capa() == Capa.PIERNA_EXTERIOR || pieza.capa() == Capa.POLLERA;
             if (parte == Parte.TORSO && com.modamod.render.relieve.BustoRender.actual != null
-                    && com.modamod.render.relieve.BustoRender.cubreCola(desde, hasta)) {
+                    && com.modamod.render.relieve.BustoRender.cubreCola(desde, hasta) && (mallaOversize == null || caderaPieza)) {
                 // La cola: cada tela que pasa por ahí la envuelve; lo que la pieza no
                 // cubre es transparente en su textura y deja ver lo de abajo.
                 infladoCola = Math.max(fila[Math.max(desde, Math.min(hasta - 1, 10))], infladoCola + SEPARACION_CAPAS);
@@ -1660,7 +1665,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                         matrices, vertexConsumers, luz);
             }
             if (parte == Parte.TORSO && com.modamod.render.relieve.BustoRender.actual != null
-                    && com.modamod.render.relieve.BustoRender.cubre(desde, hasta) && indice >= manto) {
+                    && com.modamod.render.relieve.BustoRender.cubre(desde, hasta) && indice >= manto
+                    && !com.modamod.render.relieve.BustoRender.debugSinBustoTela) {
                 infladoBusto = Math.max(fila[3], infladoBusto + SEPARACION_CAPAS);
                 float carpa = com.modamod.render.relieve.BustoRender.carpaDe(calce);
                 // Suelto y Oversize: un manto apoyado en la tela de cada fila (2026-10-02,

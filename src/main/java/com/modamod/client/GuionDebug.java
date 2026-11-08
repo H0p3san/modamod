@@ -193,6 +193,10 @@ public final class GuionDebug {
                 mc.options.getFov().setValue(Integer.parseInt(t[1]));
             }
             case "chato" -> com.modamod.render.relieve.BustoRender.debugChatoAbierto = Float.parseFloat(t[1]);
+            case "ocultar" -> {
+                com.modamod.render.relieve.BustoRender.debugSinBustoCuerpo = t[1].equals("cuerpo");
+                com.modamod.render.relieve.BustoRender.debugSinBustoTela = t[1].equals("tela");
+            }
             case "foto" -> girar(mc, t[1], t.length > 2 ? t[2].strip() : "frente");
             case "salir" -> cerrarAlTerminar = true;
             default -> log("no entiendo '" + linea + "'");
