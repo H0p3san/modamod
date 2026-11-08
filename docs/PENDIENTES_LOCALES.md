@@ -43,7 +43,8 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - **Planta del pantalón**: cuerpo y tela usaban la misma `cajaPierna` y sus plantas eran coplanares (rayas vistas de
   abajo); el margen es solo de la tela. El molde Cerrado no hace falta en el pantalón: ya cierra la planta.
 - **7. Brillo y color de los apliques** ("el color después de colocarlo" era esto mismo): la orientación se aplicaba dos veces a las normales (multiplyPositionMatrix ya las
-  gira en 1.21). Queda por ver si el parche de la vista previa (normal fija `(0,1,0)` con `enVisor`) sigue haciendo falta.
+  gira en 1.21). El parche de la vista previa (normal fija `(0,1,0)` con `enVisor`) sigue haciendo falta: sin él
+  los apliques se ven raros al girar la figura (probado 2026-11-08).
 - **Cinto que aprieta**: nunca comprimía la piel (iba en su slot de Trinkets, fuera de las listas de ropa) y el Ajustado
   quedaba tapado (2116566). Con solo el cinto, el torso es la skin real y la segunda capa se borra solo en sus filas.
   En el maniquí la figura achica el torso con el cinto Ajustado, como con una prenda Ajustado.
