@@ -1641,8 +1641,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 // La cola: cada tela que pasa por ahí la envuelve; lo que la pieza no
                 // cubre es transparente en su textura y deja ver lo de abajo.
                 infladoCola = Math.max(fila[Math.max(desde, Math.min(hasta - 1, 10))], infladoCola + SEPARACION_CAPAS);
+                // La prenda de las caderas (pantalón, pollera) estira su textura desde su primera fila hasta arriba de la
+                // cola, como la bombacha (2026-11-08, "mapeada la skin base o la prenda que hubiere en las caderas sobre el
+                // volumen del trasero"): si no, la cola de arriba de la cintura quedaba transparente y asomaba la bombacha.
+                boolean cadera = pieza.capa() == Capa.PIERNA_EXTERIOR || pieza.capa() == Capa.POLLERA;
                 dibujarCola(pieza.textura(), delModelo, infladoCola,
-                        com.modamod.render.relieve.BustoRender.carpaDe(calce), 20f, false,
+                        com.modamod.render.relieve.BustoRender.carpaDe(calce), 20f, false, cadera ? desde : 0f,
                         matrices, vertexConsumers, luz);
             }
             if (parte == Parte.TORSO && com.modamod.render.relieve.BustoRender.actual != null
