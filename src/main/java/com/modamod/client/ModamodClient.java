@@ -122,6 +122,7 @@ public class ModamodClient implements ClientModInitializer {
         if (net.fabricmc.loader.api.FabricLoader.getInstance().isDevelopmentEnvironment() || Boolean.getBoolean("modamod.debug")) {
             DebugApariencia.init();
             PerfHud.init();
+            GuionDebug.init();
         }
         ElegirCuerpoCliente.init();
         TwirlCliente.init();
