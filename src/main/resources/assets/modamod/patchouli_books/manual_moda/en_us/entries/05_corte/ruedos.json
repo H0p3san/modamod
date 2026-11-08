@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido",
+      "item": "modamod:molde_ruedo_ajustado,modamod:molde_ruedo_campana,modamod:molde_ruedo_ondulado,modamod:molde_ruedo_festoneado,modamod:molde_ruedo_pico,modamod:molde_ruedo_redondeado,modamod:molde_ruedo_cola,modamod:molde_ruedo_fruncido,modamod:molde_ruedo_cerrado",
       "title": "Ruedos",
       "link_recipe": true,
       "text": "$(l)Cómo termina cada borde.$()$(br2)Cada casillero acepta solo los que le corresponden."
@@ -18,6 +18,10 @@
     {
       "type": "patchouli:text",
       "text": "$(l)Ondulado, festoneado y con pico:$() bordes decorativos, solo en la pollera. $(l)Redondeado:$() las esquinas de abajo de la capa y del delantal. $(l)Con cola:$() la cola de la capa, diez píxeles más que arrastran por el piso.$(br2)$(l)Fruncido:$() en medias y calientabrazos, la tela se arma como una malla con pliegues redondeados en las ocho filas cerca del borde. No funciona en torso, puños, botamangas ni pollera."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Cerrado:$() tapa la punta en lugar de dejar el borde abierto como un tubo. Va en el puño de la remera o del calientabrazos y en el borde de abajo de las medias, y solo cierra cuando la tela llega hasta el final del brazo o de la pierna: el calientabrazos largo se vuelve guante y la manga larga tapa la mano. Si la prenda termina antes, el borde queda abierto como siempre.$(br2)La punta se pinta con la última fila de la tela."
     },
     {
       "type": "patchouli:text",
