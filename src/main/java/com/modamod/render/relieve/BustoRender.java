@@ -300,9 +300,14 @@ public final class BustoRender {
      * dilatación de la pieza, con su caída hacia el ruedo): el manto se apoya
      * en esa superficie y termina en el ruedo de la pieza.
      */
-    public record Tela(float[] fila, int desde, int hasta, int abertura) {
+    public record Tela(float[] fila, int desde, int hasta, int abertura, boolean dejaVer) {
         /** Sin apertura en el frente. */
-        public Tela(float[] fila, int desde, int hasta) { this(fila, desde, hasta, 0); }
+        public Tela(float[] fila, int desde, int hasta) { this(fila, desde, hasta, 0, false); }
+
+        public Tela(float[] fila, int desde, int hasta, int abertura) { this(fila, desde, hasta, abertura, false); }
+
+        /** ¿Se ve el busto del cuerpo debajo (frente abierto, red, translúcida)? Entonces el manto no se aplasta. */
+        boolean conBustoDebajo() { return abertura > 0 || dejaVer; }
 
         float en(float y) {
             if (hasta - desde <= 1) return fila[Math.max(0, desde)];
@@ -338,7 +343,7 @@ public final class BustoRender {
     private static List<Vert[]> malla(Busto b, float inflado, float carpa, boolean rigido, boolean piel,
                                       @Nullable Tela tela, float fondo) {
         if (b.cuadrado()) return comprimirAbajo(cajas(b, inflado, carpa, rigido, piel,
-                tela != null && tela.abertura() > 0), fondo);
+                tela != null && tela.conBustoDebajo()), fondo);
         Forma[] fs = formas(b, inflado, piel || carpa < CARPA_MANTO ? carpa : 0f, rigido, piel);
         if (fs.length == 0) return List.of();
         if (!piel && carpa >= CARPA_MANTO) return manto(fs, inflado, carpa, tela == null ? Tela.uniforme(inflado) : tela);
@@ -499,7 +504,7 @@ public final class BustoRender {
         // Abierto no se aplasta (2026-11-08, "el verde abierto... el busto atraviesa la tela"): con frente abierto el busto
         // del cuerpo se dibuja debajo, y aplastado al 65 % (Oversize) el manto quedaba detrás de él (probado con el guion,
         // chato 0,65 contra 1).
-        float chato = corte > 0 ? 1f : 1f - 0.35f * Math.max(0f, Math.min(1f, (carpa - CARPA_MANTO) / 1.5f));
+        float chato = tela.conBustoDebajo() ? 1f : 1f - 0.35f * Math.max(0f, Math.min(1f, (carpa - CARPA_MANTO) / 1.5f));
         if (corte > 0 && debugChatoAbierto >= 0f) chato = debugChatoAbierto;
 
         Vert[][] g = new Vert[nx + 1][ny + 1];

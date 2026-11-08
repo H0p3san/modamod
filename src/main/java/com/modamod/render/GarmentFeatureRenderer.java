@@ -1672,7 +1672,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 // Suelto y Oversize: un manto apoyado en la tela de cada fila (2026-10-02,
                 // "se marca demasiado en el hoodie no se deberian ver asi como dos tetas").
                 com.modamod.render.relieve.BustoRender.Tela tela =
-                        new com.modamod.render.relieve.BustoRender.Tela(fila.clone(), desde, hasta, aperturaDe(origen.get(pieza)));
+                        new com.modamod.render.relieve.BustoRender.Tela(fila.clone(), desde, hasta, aperturaDe(origen.get(pieza)),
+                                dejaVer(origen.get(pieza), pieza));
                 dibujarBusto(pieza.textura(), delModelo, infladoBusto, carpa, 20f, false, tela, hasta,
                         matrices, vertexConsumers, luz);
             }
@@ -1832,7 +1833,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      */
     private static boolean mantoAbierto(@Nullable List<Pieza> piezas, Map<Pieza, ItemStack> origen) {
         int i = indiceManto(piezas);
-        return i >= 0 && aperturaDe(origen.get(piezas.get(i))) > 0;
+        return i >= 0 && (aperturaDe(origen.get(piezas.get(i))) > 0 || dejaVer(origen.get(piezas.get(i)), piezas.get(i)));
+    }
+
+    /**
+     * ¿La tela deja ver lo de abajo? Red, encaje, perforada, arnés o una textura translúcida (2026-11-08, "los pechos
+     * desaparecen" con una remera oversize de red fina): el manto la reemplazaba y por los agujeros no había busto.
+     */
+    private static boolean dejaVer(@Nullable ItemStack prenda, Pieza pieza) {
+        com.modamod.item.PatronRed red = prenda == null ? null : com.modamod.item.PatronRed.leer(prenda);
+        return red != null && red != com.modamod.item.PatronRed.LISA && !red.esMaterial()
+                || ClothingTextureCache.esTranslucida(pieza.textura());
     }
 
     /** ¿Alguna prenda tapa el busto con un manto? (el Maniquí no dibuja entonces el busto de la figura). */
