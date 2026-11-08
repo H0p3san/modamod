@@ -1183,9 +1183,12 @@ public final class CuerpoGeometria {
                     float dx = lx - cx * S, dz = lz, largo = (float) Math.hypot(dx, dz);
                     if (largo > 1e-3F) { lx += inflado * S * dx / largo; lz += inflado * S * dz / largo; }
                 }
+                // El anillo de arriba de la malla está en y = 24, el plano de la tapa del cuerpo (2026-11-08, "el chaleco
+                // verde tiene zfighting con la tapa"): sube la holgura del calce, como la tapa de la tela suave.
+                float y = p[1] >= 23.999F ? p[1] + factor * com.modamod.item.Calce.OVERSIZE.dilatacion + inflado : p[1];
                 float v = c.uv()[k][1];
                 if (colga) v = v0 + ultima + (v - vMin);
-                q[i] = new float[]{lx, ((24F - p[1]) - piv[1]) * S, lz, c.uv()[k][0] / LayoutSkin.LADO, v / LayoutSkin.LADO};
+                q[i] = new float[]{lx, ((24F - y) - piv[1]) * S, lz, c.uv()[k][0] / LayoutSkin.LADO, v / LayoutSkin.LADO};
             }
             cuboides.add(cuadro(q, texW, tapa, centro));
         }
