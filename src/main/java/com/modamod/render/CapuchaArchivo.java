@@ -66,34 +66,57 @@ final class CapuchaArchivo {
     }
 
     /** Puesta, en el marco de la cabeza. {@code d} = holgura del top (se agranda desde el centro de la cabeza). */
-    static void puesta(SombreroEstilo estilo, Identifier tela, float d, ModelPart cabeza, MatrixStack matrices,
+    static void puesta(SombreroEstilo estilo, Identifier tela, float d, float escala, ModelPart cabeza, MatrixStack matrices,
                        VertexConsumerProvider vcp, int luz) {
-        dibujar("capuchas/" + estilo.clave + "_puesta", tela, d, cabeza, new Vector3f(0F, -4F, 0F), matrices, vcp, luz, 0F);
+        dibujar("capuchas/" + estilo.clave + "_puesta", tela, d, cabeza, new Vector3f(0F, -4F, 0F), matrices, vcp, luz, 0F, escala);
     }
 
     /**
      * La de la capa (2026-10-23, "versiones abiertas abajo para capa y las cerradas que ya tenemos para chaquetas"): la
      * misma, sin la tela bajo el mentón y con la base abierta sobre los hombros.
      */
-    static void puestaCapa(SombreroEstilo estilo, Identifier tela, float d, ModelPart cabeza, MatrixStack matrices,
+    static void puestaCapa(SombreroEstilo estilo, Identifier tela, float d, float escala, ModelPart cabeza, MatrixStack matrices,
                            VertexConsumerProvider vcp, int luz) {
-        dibujar("capuchas/" + estilo.clave + "_puesta_capa", tela, d, cabeza, new Vector3f(0F, -4F, 0F), matrices, vcp, luz, 0F);
+        dibujar("capuchas/" + estilo.clave + "_puesta_capa", tela, d, cabeza, new Vector3f(0F, -4F, 0F), matrices, vcp, luz, 0F, escala);
     }
 
     /** Caída sobre la espalda, en el marco del torso; {@code atras} px más afuera (por encima del embozo de la capa). */
     static void caida(SombreroEstilo estilo, Identifier tela, float d, float atras, ModelPart torso, MatrixStack matrices,
                       VertexConsumerProvider vcp, int luz) {
-        dibujar("capuchas/" + estilo.clave + "_caida", tela, d, torso, new Vector3f(0F, 3F, 1F + atras), matrices, vcp, luz, atras);
+        dibujar("capuchas/" + estilo.clave + "_caida", tela, d, torso, new Vector3f(0F, 3F, 1F + atras), matrices, vcp, luz, atras, 0F);
     }
 
     /** Máscara o barbijo (2026-10-24): {@code cara/<modelo>.json}, en el marco de la cabeza, sin agrandar. */
     static void cara(String modelo, Identifier tela, ModelPart cabeza, MatrixStack matrices, VertexConsumerProvider vcp, int luz) {
-        dibujar("cara/" + modelo, tela, 0F, cabeza, new Vector3f(0F, -4F, 0F), matrices, vcp, luz, 0F);
+        dibujar("cara/" + modelo, tela, 0F, cabeza, new Vector3f(0F, -4F, 0F), matrices, vcp, luz, 0F, 0F);
     }
 
-    /** {@code atras}: corrimiento hacia +z (la espalda) de todas las caras; {@code centro} ya viene corrido igual. */
+    /** Aire mínimo (px, ya escalado) entre la capucha puesta y el cubo de la cabeza. */
+    private static final float AIRE_CABEZA = 0.6F;
+
+    /**
+     * Las esquinas de arriba y adelante de la cabeza atravesaban la capucha sin casco (2026-11-08): la malla redondeada,
+     * achicada a {@code escala} desde el cuello, pasa por dentro del cubo. Solo los vértices que quedan dentro o a menos de
+     * {@link #AIRE_CABEZA} del cubo se corren hacia afuera, en la recta desde el cuello; el resto de la capucha no cambia.
+     */
+    private static void fueraDeLaCabeza(Vector3f p, float escala) {
+        float largo = p.length();
+        if (largo < 1e-4F) return;
+        float x = p.x / largo, y = p.y / largo, z = p.z / largo;
+        // Distancia desde el cuello (0,0,0) hasta la cara del cubo x,z ∈ [-4,4], y ∈ [-8,0] en esa dirección.
+        float t = Float.MAX_VALUE;
+        if (x != 0F) t = Math.min(t, 4F / Math.abs(x));
+        if (z != 0F) t = Math.min(t, 4F / Math.abs(z));
+        t = y < 0F ? Math.min(t, -8F / y) : 0F;
+        if (t > 0F && escala * largo < t + AIRE_CABEZA) p.mul((t + AIRE_CABEZA) / (escala * largo));
+    }
+
+    /**
+     * {@code atras}: corrimiento hacia +z (la espalda) de todas las caras; {@code centro} ya viene corrido igual.
+     * {@code escala}: la de la capucha puesta desde el cuello (0 = no es una capucha puesta, no se corre nada).
+     */
     private static void dibujar(String nombre, Identifier tela, float d, ModelPart parte, Vector3f centro,
-                                MatrixStack matrices, VertexConsumerProvider vcp, int luz, float atras) {
+                                MatrixStack matrices, VertexConsumerProvider vcp, int luz, float atras, float escala) {
         float[][][] caras = caras(nombre);
         if (caras.length == 0) return;
         VertexConsumer vc = vcp.getBuffer(ClothingTextureCache.capaDeRender(tela));
@@ -106,6 +129,7 @@ final class CapuchaArchivo {
         for (float[][] cara : caras) {
             for (int i = 0; i < 4; i++) {
                 p[i] = new Vector3f(cara[i][0], cara[i][1], cara[i][2] + atras).sub(centro).mul(k).add(centro);
+                if (escala > 0F) fueraDeLaCabeza(p[i], escala);
             }
             // La normal hacia afuera del centro de la parte (la capa de render no descarta caras, solo es para la luz).
             Vector3f n = new Vector3f(p[1]).sub(p[0]).cross(new Vector3f(p[2]).sub(p[0]));

@@ -66,9 +66,11 @@ public final class CuelloYCapucha {
      * sin casco"): con casco va tal cual; sin casco se achica desde el cuello lo que infla el casco (1 px por lado sobre los 4
      * de media cabeza), y sobre una cabeza de CARAS crece un 10 % desde ahí.
      */
-    private static void escalarCapucha(MatrixStack matrices, BipedEntityModel<?> biped) {
-        if (GarmentFeatureRenderer.armaduraCasco > 0F) CabezaCaras.escalar(matrices, biped, HOLGURA);
-        else CabezaCaras.escalar(matrices, biped, HOLGURA * SIN_CASCO * (CabezaCaras.puesta(biped) ? CAPUCHA_CARAS : 1F));
+    private static float escalarCapucha(MatrixStack matrices, BipedEntityModel<?> biped) {
+        float k = GarmentFeatureRenderer.armaduraCasco > 0F ? HOLGURA
+                : HOLGURA * SIN_CASCO * (CabezaCaras.puesta(biped) ? CAPUCHA_CARAS : 1F);
+        CabezaCaras.escalar(matrices, biped, k);
+        return k;
     }
 
     private static final float SIN_CASCO = 4F / 5F;
@@ -112,9 +114,9 @@ public final class CuelloYCapucha {
             // Zona Detalles, como la capucha caída (2026-10-23, "la capucha no esta agarrando color").
             Identifier tela = telaDePieza(capa, color, false, com.modamod.region.RegionPintura.CAPA_DETALLES);
             matrices.push();
-            escalarCapucha(matrices, biped);
+            float escala = escalarCapucha(matrices, biped);
             conApliques(capa, matrices, vertexConsumers, luz, () -> CapuchaArchivo.puestaCapa(TopCorte.estiloCapucha(capa), tela,
-                    0F, biped.head, matrices, vertexConsumers, luz));
+                    0F, escala, biped.head, matrices, vertexConsumers, luz));
             matrices.pop();
         }
         // Caída, la de Blockbench (2026-10-24, "pasá la capucha caída de la capa a la de Blockbench así lleva apliques"):
@@ -136,9 +138,9 @@ public final class CuelloYCapucha {
                 if (CabezaCaras.visible(biped)) {
                     ItemStack top = chaqueta;
                     matrices.push();
-                    escalarCapucha(matrices, biped);
+                    float escala = escalarCapucha(matrices, biped);
                     conApliques(top, matrices, vertexConsumers, luz,
-                            () -> CapuchaArchivo.puesta(TopCorte.estiloCapucha(top), tela, d, biped.head, matrices, vertexConsumers, luz));
+                            () -> CapuchaArchivo.puesta(TopCorte.estiloCapucha(top), tela, d, escala, biped.head, matrices, vertexConsumers, luz));
                     matrices.pop();
                 }
             } else if (biped.body.visible) {

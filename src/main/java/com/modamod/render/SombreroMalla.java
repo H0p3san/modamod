@@ -123,6 +123,10 @@ final class SombreroMalla {
             p.escalaCol = escala;
             boolean plana = zonaEsAla(j) && !id.equals("vincha") && !id.equals("cofia");   // las alas planas miran hacia arriba y hacia abajo
             p.base = construir(anillos, cols, escala, dy, solo, cierre, grosor, p.yBase, p.cx, p.cz, plana);
+            String tipo = j.get("tipo").getAsString();
+            if (p.yBase <= -8f) { /* apoyada arriba de la cabeza (cilindro, recta, doblada): no la toca */ }
+            else if (tipo.equals("copa"))fueraDeLaCabeza(p.base, AIRE_CABEZA);
+            else if (tipo.equals("cinta")) fueraDeLaCabeza(p.base, AIRE_CABEZA + 0.15f);   // sigue por fuera de la copa
             if (j.has("punta") && j.get("punta").isJsonArray()) {
                 for (JsonElement t : j.getAsJsonArray("punta")) {
                     JsonObject o = t.getAsJsonObject();
@@ -141,6 +145,28 @@ final class SombreroMalla {
         } catch (Exception e) {
             org.slf4j.LoggerFactory.getLogger("modamod").warn("Sombrero: no se pudo leer la pieza {}/{}", carpeta, id, e);
             return null;
+        }
+    }
+
+    /** Aire mínimo (px) entre la copa y las aristas verticales del cubo de la cabeza. */
+    private static final float AIRE_CABEZA = 0.3f;
+
+    /**
+     * Las esquinas del cubo de la cabeza asomaban por las copas redondas (2026-11-08): en la diagonal el cubo llega a
+     * 5,66 px del eje y varias copas pasan a 5,5. Los vértices a la altura de la cabeza (más un margen arriba) que
+     * quedan a menos de {@code aire} del cubo se corren hacia afuera en horizontal; el resto de la copa no cambia.
+     */
+    private static void fueraDeLaCabeza(Quads q, float aire) {
+        for (int i = 0; i < q.vertices; i++) {
+            float x = q.pos[3 * i], y = q.pos[3 * i + 1], z = q.pos[3 * i + 2];
+            if (y <= -8f - aire) continue;
+            float r = (float) Math.sqrt(x * x + z * z);
+            if (r < 1e-4f) continue;
+            float hasta = 4f * r / Math.max(Math.abs(x), Math.abs(z)) + aire;   // del eje a la cara del cubo, en esa dirección
+            if (r < hasta) {
+                q.pos[3 * i] = x * hasta / r;
+                q.pos[3 * i + 2] = z * hasta / r;
+            }
         }
     }
 
