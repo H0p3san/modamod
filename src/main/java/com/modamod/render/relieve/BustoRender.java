@@ -232,8 +232,12 @@ public final class BustoRender {
             hondo = cuerpo - Math.max(0f, inflado);
             abrir = 0f;
         } else {
-            float punta = Math.max(cuerpo + 0.06f + 0.12f * abrir, inflado);
-            hondo = Math.max(0f, punta - inflado);             // por delante del plano de la tela
+            // La cúpula de la tela es la del cuerpo corrida hacia adelante (2026-11-08, "el busto redondo estaba bien salvo
+            // en las medidas mas grandes que atraviesa un poco la tela"): cada capa tenía su radio y su alto según la
+            // holgura y la punta casi no avanzaba (0,12 por px); con talles grandes la de abajo asomaba en el borde de
+            // arriba. Igual que las cuñas ({@link #separacionCuna}); la carpa solo estira la mitad de abajo, hacia afuera.
+            hondo = cuerpo;
+            abrir = 0f;
         }
         float rx = Math.min(2.6f, 1.95f + 0.07f * t) + 0.5f * abrir;
         float rArriba = 2.3f + 0.16f * t + 0.5f * abrir;
@@ -249,7 +253,7 @@ public final class BustoRender {
         for (int i = 0; i < 2; i++) {
             int lado = i == 0 ? -1 : 1;
             f[i] = new Forma(lado * 2f, ARRIBA + 2.3f + 0.16f * t, rx, rArriba, rAbajo, hondo,
-                    caida, apertura, dx, dy * 0.6f, -2f - inflado, lado);
+                    caida, apertura, dx, dy * 0.6f, piel ? -2f - inflado : -2f - separacionCuna(inflado), lado);
         }
         return f;
     }
