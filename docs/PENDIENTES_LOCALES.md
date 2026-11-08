@@ -42,6 +42,8 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
   tomaba por guante y dibujaba una tapa vacía: el píxel suelto). La tapa se pinta con la última fila del puño. Sigue fuera del manual: falta volver a agregar su página.
 - **Planta del pantalón**: cuerpo y tela usaban la misma `cajaPierna` y sus plantas eran coplanares (rayas vistas de
   abajo); el margen es solo de la tela. El molde Cerrado no hace falta en el pantalón: ya cierra la planta.
+- **7. Brillo de los apliques**: la orientación se aplicaba dos veces a las normales (multiplyPositionMatrix ya las
+  gira en 1.21). Queda por ver si el parche de la vista previa (normal fija `(0,1,0)` con `enVisor`) sigue haciendo falta.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
@@ -51,8 +53,6 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
 
 ## 7. Apliques
-- El brillo varía según la rotación ("no parejos en ningún lado"). Normales en `render/ApliqueRenderer`: en la vista
-  previa normal plana `(0,1,0)` (`enVisor = pos.determinant() < 0`), en el mundo la real.
 - El color después de colocarlo.
 
 ## 8. Sin verificar todavía
