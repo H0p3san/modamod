@@ -1160,9 +1160,6 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             case SUELA_BORCEGO_IZQ, SUELA_BORCEGO_DER -> {
                 if (item instanceof MoldeBorcegoItem m && m.tipo.esSuela()) c = comboDeMoldeBorcego(item, lado);
             }
-            case BOTAMANGA_BORCEGO_IZQ, BOTAMANGA_BORCEGO_DER -> {
-                if (item instanceof MoldeBorcegoItem m && m.tipo.esBotamanga()) c = comboDeMoldeBorcego(item, lado);
-            }
             case PUNTA_BORCEGO_IZQ, PUNTA_BORCEGO_DER -> {
                 if (item instanceof MoldeBorcegoItem m && m.tipo.esPunta()) c = comboDeMoldeBorcego(item, lado);
             }
@@ -1278,7 +1275,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         return Molde.de(com.modamod.prenda.Ejes.SOLAPA, m.tipo.solapa);
     }
 
-    /** El corte de un {@link MoldeBorcegoItem} (caña, suela o botamanga), o null. */
+    /** El corte de un {@link MoldeBorcegoItem} (caña, suela, punta, cierre o detalle), o null. */
     @Nullable
     private static Molde comboDeMoldeBorcego(Item item, Lado lado) {
         if (!(item instanceof MoldeBorcegoItem m)) return null;
@@ -1287,7 +1284,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         if (m.tipo.esPunta()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_PUNTA, m.tipo.punta).conLado(lado);
         if (m.tipo.esCierre()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_CIERRE, m.tipo.cierre).conLado(lado);
         if (m.tipo.esDetalle()) return Molde.de(com.modamod.prenda.Ejes.BORCEGO_DETALLE, m.tipo.detalle).conLado(lado);
-        return Molde.de(com.modamod.prenda.Ejes.BORCEGO_BOTAMANGA, m.tipo.botamanga).conLado(lado);
+        return null;
     }
 
     /** El corte de un {@link MoldeBandaItem} (zona, ancho o herraje), o null. */

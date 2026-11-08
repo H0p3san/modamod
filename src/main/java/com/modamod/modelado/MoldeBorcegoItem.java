@@ -17,8 +17,7 @@ import java.util.List;
 
 /**
  * Moldes del calzado (2026-10-08, "modelame unos borcegos y agreguemos un slot de calzado"; ampliados 2026-10-14 con el
- * zip de Claude Design): la capellada (caña), la suela, la punta, el cierre y el detalle, y cómo se lleva el pantalón (la
- * botamanga por dentro o por fuera) son moldes de la categoría Calzado de la Modeladora, cada uno en su pin (uno por pie).
+ * zip de Claude Design): la capellada (caña), la suela, la punta, el cierre y el detalle, son moldes de la categoría Calzado de la Modeladora, cada uno en su pin (uno por pie).
  * Exclusivos del calzado. El molde en blanco de cada eje vuelve al valor de fábrica de los borcegos.
  */
 public class MoldeBorcegoItem extends Item {
@@ -26,7 +25,6 @@ public class MoldeBorcegoItem extends Item {
     public enum Tipo {
         CANA_BAJA(BorcegoCana.BAJA), CANA_MEDIA(BorcegoCana.MEDIA), CANA_ALTA(BorcegoCana.ALTA),
         SUELA_CHATA(BorcegoSuela.CHATA), SUELA_PLATAFORMA(BorcegoSuela.PLATAFORMA),
-        BOTAMANGA_ADENTRO(BorcegoBotamanga.ADENTRO), BOTAMANGA_AFUERA(BorcegoBotamanga.AFUERA),
         // Capelladas del zip (2026-10-14).
         CANA_BOTA_ALTA(BorcegoCana.BOTA_ALTA), CANA_ZAPATO(BorcegoCana.ZAPATO), CANA_MOCASIN(BorcegoCana.MOCASIN),
         CANA_BAILARINA(BorcegoCana.BAILARINA), CANA_TACO(BorcegoCana.TACO), CANA_TENIS_BAJA(BorcegoCana.TENIS_BAJA),
@@ -50,31 +48,27 @@ public class MoldeBorcegoItem extends Item {
 
         public final BorcegoCana cana;
         public final BorcegoSuela suela;
-        public final BorcegoBotamanga botamanga;
         public final CalzadoPunta punta;
         public final CalzadoCierre cierre;
         public final CalzadoDetalle detalle;
 
-        Tipo(BorcegoCana cana, BorcegoSuela suela, BorcegoBotamanga botamanga, CalzadoPunta punta, CalzadoCierre cierre,
+        Tipo(BorcegoCana cana, BorcegoSuela suela, CalzadoPunta punta, CalzadoCierre cierre,
              CalzadoDetalle detalle) {
             this.cana = cana;
             this.suela = suela;
-            this.botamanga = botamanga;
             this.punta = punta;
             this.cierre = cierre;
             this.detalle = detalle;
         }
 
-        Tipo(BorcegoCana cana) { this(cana, null, null, null, null, null); }
-        Tipo(BorcegoSuela suela) { this(null, suela, null, null, null, null); }
-        Tipo(BorcegoBotamanga botamanga) { this(null, null, botamanga, null, null, null); }
-        Tipo(CalzadoPunta punta) { this(null, null, null, punta, null, null); }
-        Tipo(CalzadoCierre cierre) { this(null, null, null, null, cierre, null); }
-        Tipo(CalzadoDetalle detalle) { this(null, null, null, null, null, detalle); }
+        Tipo(BorcegoCana cana) { this(cana, null, null, null, null); }
+        Tipo(BorcegoSuela suela) { this(null, suela, null, null, null); }
+        Tipo(CalzadoPunta punta) { this(null, null, punta, null, null); }
+        Tipo(CalzadoCierre cierre) { this(null, null, null, cierre, null); }
+        Tipo(CalzadoDetalle detalle) { this(null, null, null, null, detalle); }
 
         public boolean esCana() { return cana != null; }
         public boolean esSuela() { return suela != null; }
-        public boolean esBotamanga() { return botamanga != null; }
         public boolean esPunta() { return punta != null; }
         public boolean esCierre() { return cierre != null; }
         public boolean esDetalle() { return detalle != null; }
