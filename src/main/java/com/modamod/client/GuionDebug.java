@@ -56,6 +56,10 @@ public final class GuionDebug {
     private static String fotoPendiente;
     private static int cuadrosFoto;
     private static int fovAntes = 70;
+    private static int ticksSinGuion;
+    /** Hay un guion corriendo (se restaura todo al vaciarse la cola), hay fotos (HUD y FOV cambiados), se cierra al final. */
+    private static boolean enCurso, modoFoto, cerrarAlTerminar;
+    private static int cerrarEn;
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(GuionDebug::tick);
@@ -71,6 +75,7 @@ public final class GuionDebug {
             cargar(mc);
             espera = 40; // que termine de cargar la ropa y las texturas
         }
+        if (cerrarEn > 0 && --cerrarEn == 0) { mc.scheduleStop(); return; }
         // Sin foco la ventana abre el menú de pausa y el mundo se congela: mientras corre el guion, no se pausa.
         if (!pasos.isEmpty() || fotoPendiente != null) {
             mc.options.pauseOnLostFocus = false;
@@ -87,10 +92,26 @@ public final class GuionDebug {
         }
         if (espera > 0) { espera--; return; }
         String linea = pasos.poll();
+        if (linea == null && enCurso) {
+            // Terminó: todo como estaba (la ropa, el perfil, la cámara), con o sin "salir".
+            enCurso = false;
+            restaurar((IntegratedServer) mc.getServer(), mc.player.getUuid());
+            if (modoFoto) {
+                modoFoto = false;
+                mc.options.getFov().setValue(fovAntes);
+                mc.options.hudHidden = false;
+                mc.options.setPerspective(Perspective.FIRST_PERSON);
+            }
+            mc.options.pauseOnLostFocus = true;
+            log("fin");
+            if (cerrarAlTerminar) { cerrarAlTerminar = false; cerrarEn = 10; }   // que llegue la ropa devuelta antes de guardar
+            return;
+        }
         if (linea == null) {
             // Sin "salir" el juego queda abierto mirando el archivo: un guion nuevo corre sin relanzar (2026-11-08, "demoro
             // mucho eso": cada vuelta de gradle + Minecraft son ~3 minutos).
-            if (mc.world.getTime() % 20 == 0 && Files.exists(mc.runDirectory.toPath().resolve(ARCHIVO))) cargar(mc);
+            // Contador propio: el tiempo del mundo se frena con el juego en pausa.
+            if (++ticksSinGuion % 20 == 0 && Files.exists(mc.runDirectory.toPath().resolve(ARCHIVO))) cargar(mc);
             return;
         }
         try {
@@ -116,9 +137,7 @@ public final class GuionDebug {
                 }
             }
             log("cargado, " + pasos.size() + " pasos");
-            if (!mc.options.hudHidden) fovAntes = mc.options.getFov().getValue();   // un segundo guion no pisa el de antes
-            mc.options.hudHidden = true;
-            mc.options.getFov().setValue(45);
+            enCurso = !pasos.isEmpty();
         } catch (IOException e) {
             log("no se pudo leer " + p + ": " + e);
         }
@@ -169,21 +188,13 @@ public final class GuionDebug {
             });
             case "cmd" -> mc.player.networkHandler.sendChatCommand(linea.substring(4).strip());
             case "esperar" -> espera = Integer.parseInt(t[1]);
-            case "zoom" -> mc.options.getFov().setValue(Integer.parseInt(t[1]));
+            case "zoom" -> {
+                entrarModoFoto(mc);
+                mc.options.getFov().setValue(Integer.parseInt(t[1]));
+            }
+            case "chato" -> com.modamod.render.relieve.BustoRender.debugChatoAbierto = Float.parseFloat(t[1]);
             case "foto" -> girar(mc, t[1], t.length > 2 ? t[2].strip() : "frente");
-            case "salir" -> {
-                restaurar(server, uuid);
-                pasos.addFirst("cerrar");
-                espera = 10;
-            }
-            case "cerrar" -> {
-                mc.options.getFov().setValue(fovAntes);
-                mc.options.hudHidden = false;
-                mc.options.pauseOnLostFocus = true;
-                mc.options.setPerspective(Perspective.FIRST_PERSON);
-                log("fin");
-                mc.scheduleStop();
-            }
+            case "salir" -> cerrarAlTerminar = true;
             default -> log("no entiendo '" + linea + "'");
         }
         log(linea);
@@ -192,6 +203,7 @@ public final class GuionDebug {
     /** Pone la cámara en tercera persona mirando al jugador desde {@code angulo} y deja la foto pendiente. */
     private static void girar(MinecraftClient mc, String nombre, String angulo) {
         cuadrosFoto = 10;
+        entrarModoFoto(mc);
         // La cámara de tercera persona de frente sigue al yaw del jugador: queda fija (yaw 0) y lo que gira es el cuerpo.
         float giro = 0f, pitch = 12f;      // pitch > 0: la cámara baja un poco y centra el torso
         switch (angulo) {
@@ -207,6 +219,15 @@ public final class GuionDebug {
         p.setPitch(pitch); p.prevPitch = pitch;
         giroCuerpo = giro;
         fotoPendiente = "guion_" + nombre + "_" + angulo;
+    }
+
+    /** Sin HUD y con el FOV de las fotos; se guarda el FOV de antes para devolverlo al terminar. */
+    private static void entrarModoFoto(MinecraftClient mc) {
+        if (modoFoto) return;
+        modoFoto = true;
+        fovAntes = mc.options.getFov().getValue();
+        mc.options.hudHidden = true;
+        mc.options.getFov().setValue(45);
     }
 
     /** El yaw del cuerpo y la cabeza mientras se espera la foto (se repite cada tick: el jugador lo corrige solo). */
