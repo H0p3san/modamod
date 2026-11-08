@@ -141,13 +141,43 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private static float[] cintoCompresion;
 
     private static void anotarCinto(List<ItemStack> prendas) {
-        cintoCompresion = null;
+        cintoCompresion = compresionDeCintos(prendas);
+    }
+
+    @Nullable
+    private static float[] compresionDeCintos(List<ItemStack> prendas) {
+        float[] out = null;
         for (ItemStack s : prendas) {
             if (!com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.BANDA)) continue;
             float[] c = BandaRenderer.compresionDeCinto(s);
             // El que más aprieta manda (dos cintos puestos).
-            if (c != null && (cintoCompresion == null || c[2] < cintoCompresion[2])) cintoCompresion = c;
+            if (c != null && (out == null || c[2] < out[2])) out = c;
         }
+        return out;
+    }
+
+    /**
+     * Los cintos puestos. Van en su propio slot de Trinkets, no en la lista de ropa: {@link #equipadas} solo trae ropa de
+     * cuerpo y el cinto no llegaba nunca (2026-11-08, "el cinto ajustado no se ve": quedaba metido dentro de la piel).
+     */
+    private static List<ItemStack> cintosDe(@Nullable LivingEntity entidad) {
+        if (previewOverride != null) return previewOverride;
+        if (sombreroOverride != null) return List.of(sombreroOverride);
+        List<ItemStack> out = new ArrayList<>();
+        if (entidad != null) TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
+            for (var par : c.getAllEquipped()) {
+                if (com.modamod.prenda.Prendas.es(par.getRight(), com.modamod.prenda.CategoriaDePrenda.BANDA)) out.add(par.getRight());
+            }
+        });
+        return out;
+    }
+
+    /** Las partes con cuerpo base: las de la ropa, más el torso si un cinto lo aprieta. */
+    private static List<Parte> partesConCuerpo(List<ItemStack> prendas, boolean cuerpoEntero, boolean cintoAprieta) {
+        if (cuerpoEntero) return List.of(Parte.values());
+        List<Parte> out = com.modamod.prenda.Prendas.partesCubiertas(prendas);
+        if (cintoAprieta && !out.contains(Parte.TORSO)) out.add(Parte.TORSO);
+        return out;
     }
 
     private static ItemStack calzadoDe(@Nullable LivingEntity entidad) {
@@ -316,7 +346,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         List<ItemStack> prendas = previewOverride != null ? previewOverride : equipadas(entidad);
         calzado = calzadoDe(entidad);
         pantalonSobreCalzado = pantalonSobreElCalzado(entidad);
-        anotarCinto(prendas);
+        anotarCinto(cintosDe(entidad));
         // La armadura que se ve infla capa, embozo y capucha (2026-10-28, "que la capa embozo y capucha se inflen mas
         // cuando use armadura"); en la vista previa de las máquinas no cuenta.
         // (2026-11-04, "la capa y la capucha se ven mas chicas en la vista previa"): la vista usa lo que infla la armadura del que
@@ -354,7 +384,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         dibujarSombrero(entidad, biped, matrices, vertexConsumers, luz, holguraDeCinto(prendas), prendas);
         // Máscara y barbijo (2026-10-24): igual, en la cabeza.
         CaraRenderer.dibujar(entidad, biped, matrices, vertexConsumers, luz);
-        if (prendas.isEmpty() && !cuerpoEntero) {
+        if (prendas.isEmpty() && !cuerpoEntero && cintoCompresion == null) {
             dibujarBustoEnLaSkin(entidad, biped, matrices, vertexConsumers, luz);
             com.modamod.render.relieve.BustoRender.actual = null;
             return;
@@ -364,7 +394,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         anotarPollera(prendas);
 
         // Las partes que alguna prenda gobierna: ahi va el cuerpo base.
-        List<Parte> conCuerpo = cuerpoEntero ? List.of(Parte.values()) : com.modamod.prenda.Prendas.partesCubiertas(prendas);
+        List<Parte> conCuerpo = partesConCuerpo(prendas, cuerpoEntero, cintoCompresion != null);
 
         // Las piezas de tela, agrupadas por parte. EnumMap para que el
         // recorrido sea estable: dos frames no pueden dibujar en distinto
@@ -2042,10 +2072,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         // el cuerpo como skin aunque no haya ropa (2026-09-29, "un selector que
         // directamente te deje esa skin de default").
         boolean cuerpoEntero = perfilOverride != null || perfilDe(entidad).siempre();
-        if (prendas.isEmpty() && !cuerpoEntero) return List.of();
+        boolean cinto = compresionDeCintos(cintosDe(entidad)) != null;
+        if (prendas.isEmpty() && !cuerpoEntero && !cinto) return List.of();
         Identifier cuerpo = texturaDelCuerpo(entidad, esSlim(entidad));
         if (cuerpo == null) return List.of();
-        List<Parte> out = new ArrayList<>(cuerpoEntero ? List.of(Parte.values()) : com.modamod.prenda.Prendas.partesCubiertas(prendas));
+        List<Parte> out = new ArrayList<>(partesConCuerpo(prendas, cuerpoEntero, cinto));
         // La cabeza nunca lleva cuerpo base (ver render) — ocultar la de
         // vanilla ahí dejaría al jugador sin cara.
         out.remove(Parte.CABEZA);

@@ -187,7 +187,8 @@ public final class ComposedSkin {
         TrinketsApi.getTrinketComponent(player).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
                 ItemStack stack = par.getRight();
-                if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) prendas.add(stack);
+                // También el cinto que aprieta: gobierna el torso (BandaItem#reemplazaLaPiel).
+                if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack) || com.modamod.item.BandaItem.reemplazaLaPiel(stack)) prendas.add(stack);
             }
         });
         return com.modamod.prenda.Prendas.partesCubiertas(prendas);
