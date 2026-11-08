@@ -1014,6 +1014,21 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
     // de OTRA categoría por error.
 
     /**
+     * Si algún pin de {@code cat} acepta ese molde (el molde en blanco lo aceptan todos). Para el salón de prueba, que arma
+     * una pared con los moldes de cada prenda (2026-11-08).
+     */
+    public static boolean aceptaMolde(Categoria cat, Item molde) {
+        if (molde instanceof MoldeEnBlancoItem) return true;
+        ItemStack pila = new ItemStack(molde);
+        for (int i = 0; i < ROLES[cat.ordinal()].length; i++) {
+            Molde c;
+            try { c = comboDePin(cat, i, pila, Lado.DERECHA); } catch (RuntimeException e) { c = null; }
+            if (c != null && !c.vacio()) return true;
+        }
+        return false;
+    }
+
+    /**
      * El combo que representa {@code molde} puesto en el pin {@code i} de la
      * categoría {@code cat}, o null si ese pin no acepta ese ítem.
      * {@code lado}: el lado que aplica un pin de lado (con simetría activa

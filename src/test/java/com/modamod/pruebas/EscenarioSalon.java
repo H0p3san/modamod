@@ -1146,6 +1146,58 @@ public final class EscenarioSalon {
 
 
 
+    /**
+     * La pared de moldes (2026-11-08, "una pared llena de item frames de izquierda a derecha prenda mas todos los moldes de la
+     * prenda"): una fila por categoría de la Modeladora —la prenda, el molde en blanco y todos los moldes que acepta alguno de
+     * sus pines—, y abajo una fila con los moldes que ninguna categoría acepta (apliques, máscaras, correas...). Mira al norte,
+     * contra el borde sur de la plataforma.
+     */
+    private static void paredDeMoldes(ServerWorld w, int x0, int y, int zPared) {
+        java.util.List<java.util.List<ItemStack>> filas = new java.util.ArrayList<>();
+        java.util.Set<net.minecraft.item.Item> usados = new java.util.HashSet<>();
+        java.util.List<net.minecraft.item.Item> todos = new java.util.ArrayList<>();
+        for (net.minecraft.item.Item it : net.minecraft.registry.Registries.ITEM) {
+            if (!"modamod".equals(net.minecraft.registry.Registries.ITEM.getId(it).getNamespace())) continue;
+            if (net.minecraft.registry.Registries.ITEM.getId(it).getPath().startsWith("molde_")) todos.add(it);
+        }
+        for (com.modamod.modelado.ModeladoBlockEntity.Categoria cat : com.modamod.modelado.ModeladoBlockEntity.Categoria.values()) {
+            java.util.List<ItemStack> fila = new java.util.ArrayList<>();
+            for (net.minecraft.item.Item it : net.minecraft.registry.Registries.ITEM) {
+                var d = com.modamod.prenda.Prendas.de(it);
+                if (d != null && d.categoria() == cat.prenda) fila.add(new ItemStack(it));
+            }
+            fila.add(new ItemStack(com.modamod.modelado.ModeladoMod.MOLDE_EN_BLANCO));
+            for (net.minecraft.item.Item m : todos) {
+                if (m instanceof com.modamod.modelado.MoldeEnBlancoItem) continue;
+                if (com.modamod.modelado.ModeladoBlockEntity.aceptaMolde(cat, m)) { fila.add(new ItemStack(m)); usados.add(m); }
+            }
+            filas.add(fila);
+        }
+        java.util.List<ItemStack> otros = new java.util.ArrayList<>();
+        for (net.minecraft.item.Item m : todos) if (!usados.contains(m) && !(m instanceof com.modamod.modelado.MoldeEnBlancoItem)) otros.add(new ItemStack(m));
+        filas.add(otros);
+        int ancho = 0;
+        for (var f : filas) ancho = Math.max(ancho, f.size());
+        int alto = filas.size();
+        // Piso, aire y fondo de la pared (2 bloques de pasillo delante).
+        for (int x = x0 - 2; x <= x0 + ancho + 1; x++) for (int z = zPared - 4; z <= zPared + 1; z++) {
+            w.setBlockState(new BlockPos(x, y - 1, z), Blocks.SMOOTH_STONE.getDefaultState());
+            for (int dy = 0; dy <= alto + 2; dy++) w.setBlockState(new BlockPos(x, y + dy, z), Blocks.AIR.getDefaultState());
+        }
+        for (int x = x0 - 1; x <= x0 + ancho; x++) for (int dy = 0; dy < alto; dy++)
+            w.setBlockState(new BlockPos(x, y + dy, zPared), Blocks.BLACK_CONCRETE.getDefaultState());
+        for (int r = 0; r < filas.size(); r++) {
+            int yy = y + alto - 1 - r;   // la primera categoría arriba
+            for (int i = 0; i < filas.get(r).size(); i++) {
+                net.minecraft.entity.decoration.ItemFrameEntity marco = new net.minecraft.entity.decoration.ItemFrameEntity(
+                        w, new BlockPos(x0 + i, yy, zPared - 1), Direction.NORTH);
+                marco.setHeldItemStack(filas.get(r).get(i), false);
+                marco.setInvulnerable(true);
+                w.spawnEntity(marco);
+            }
+        }
+    }
+
     private static void armarSalon(MinecraftClient c) {
 
 
@@ -1422,6 +1474,7 @@ public final class EscenarioSalon {
 
 
 
+            paredDeMoldes(w, -12, y, 6 * PASO + 6);
             w.setSpawnPos(new BlockPos(8, y, -6), 0f);
 
 
