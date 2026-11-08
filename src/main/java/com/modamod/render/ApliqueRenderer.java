@@ -263,9 +263,10 @@ public final class ApliqueRenderer {
             matrices.translate((px + n.x * afuera) / 16f, (a.y() + n.y * afuera) / 16f, (a.z() + n.z * afuera) / 16f);
         }
         Matrix4f orient = orientacion(n, giro);
+        // multiplyPositionMatrix ya gira también las normales cuando la matriz es una rotación (MatrixStack, 1.21): girarlas
+        // otra vez a mano aplicaba la orientación dos veces (2026-11-05, punto 7 "el brillo varía según la rotación": los
+        // apliques del ala del sombrero quedaban iluminados de costado, y el giro de cada aplique cambiaba su luz).
         matrices.multiplyPositionMatrix(orient);
-        // También a las normales (es una rotación): la luz del ítem y la tela blanda leen este marco.
-        matrices.peek().getNormalMatrix().mul(orient.get3x3(new Matrix3f()));
         matrices.scale(a.escala(), a.escala(), a.escala());
         float grosor = grosorMaximo(a);
         if (grosor < 1f) matrices.scale(1f, 1f, grosor);
@@ -387,8 +388,7 @@ public final class ApliqueRenderer {
             matrices.push();
             matrices.translate(ancla.x, ancla.y, ancla.z);
             Matrix4f orient = orientacionS(n, c.giro());
-            matrices.multiplyPositionMatrix(orient);
-            matrices.peek().getNormalMatrix().mul(orient.get3x3(new Matrix3f()));
+            matrices.multiplyPositionMatrix(orient);   // también gira las normales (ver dibujarUno)
             matrices.scale(c.escala(), c.escala(), c.escala());
             dibujarEnMarco(c, h, todos, matrices, vertexConsumers, luz, marco);
             matrices.pop();
