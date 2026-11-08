@@ -574,30 +574,24 @@ public final class BustoRender {
         float t = b.talle() * b.sujecion();
         if (t <= 0.05f) return List.of();
         float cuerpo = 0.55f + 0.5f * t;
-        float abrir = Math.max(0f, inflado);
-        float hondo;
-        if (piel) {
-            hondo = cuerpo - Math.max(0f, inflado);
-            abrir = 0f;
-        } else {
-            // La punta sale media holgura por delante de la del cuerpo (2026-11-08, "las tetas cuadradas rompen todos
-            // los chalecos" y "siento que estan mucho mas grande"): con "- inflado" entero la tela solo avanzaba 0,12 por
-            // px de holgura en la punta (el plano ya suma el inflado) y el corpiño quedaba a 0,01-0,05 px: se peleaban en
-            // el borde de abajo. Con la mitad, 0,62 por px: entre capas al menos ~0,02 px y no se agranda de más.
-            hondo = Math.max(0f, cuerpo + 0.06f + 0.12f * abrir - 0.5f * inflado);
-        }
+        // La tela es la cuña del cuerpo corrida hacia adelante {@link #separacionCuna} px (2026-11-08, "las tetas cuadradas
+        // rompen todos los chalecos" / "el oversize se levanta demasiado del busto"): misma forma que la de la piel, así
+        // ninguna capa atraviesa a otra con ningún talle (medido: 0,000 px), y cada una apenas por fuera de la de abajo. Antes
+        // cada capa tenía su propia inclinación: con talles grandes la de abajo asomaba y el oversize quedaba a 0,9 px.
+        // Donde la tela plana ya pasa por delante (holgura mayor que la separación), la cuña queda adentro y no se ve.
+        float hondo = piel ? cuerpo - Math.max(0f, inflado) : cuerpo;
         if (hondo <= 0.01f) return List.of();
         float dy = 0f, dx = 0f;
         if (b.rebote() != null && !rigido) {
             dy = b.rebote().dy() * 12f * 0.6f;
             dx = b.rebote().dx() * 8f;
         }
-        float plano = -2f - inflado;
+        float plano = piel ? -2f - inflado : -2f - separacionCuna(inflado);
         // Como el Female Gender Mod (2026-10-04, "investiga como hace el jenys mod y el female gender mod... porque
         // tus tetas salieron horribles"): una cuña que cuelga de su arista de arriba, pegada al pecho; la cara de
         // adelante baja en pendiente hasta la punta y la de abajo vuelve al pecho.
-        float arriba = ARRIBA - 0.25f * abrir;
-        float largo = 4f + 0.4f * t + 0.3f * abrir;
+        float arriba = ARRIBA;
+        float largo = 4f + 0.4f * t;
         // Cada capa es más ancha que la de abajo (2026-10-04, "piel con remera, en el lado del costado": los
         // triángulos de los costados de la piel y de la tela caían en el mismo plano x = ±4 y se peleaban): la
         // tela sale por el costado lo que está inflada y la rendija del medio se le cierra de a poco.
@@ -616,6 +610,15 @@ public final class BustoRender {
             cuna(q, rendija, 4f + lado, arriba, largo, plano, hondo, dx, dy, colgar, rigido);
         }
         return q;
+    }
+
+    /**
+     * Cuánto va la cuña de una tela por delante de la del cuerpo (px): crece con la holgura pero con techo (0,1 + 0,3), así
+     * el oversize no se despega del busto; nunca más que la holgura. Corpiño 0,05, Normal 0,21, Suelto 0,30, Oversize 0,37.
+     */
+    static float separacionCuna(float inflado) {
+        float i = Math.max(0f, inflado);
+        return Math.min(i, 0.1f + 0.3f * (1f - (float) Math.exp(-i / 0.6f)));
     }
 
     /** Mitad de la rendija entre los dos pechos cuadrados (px). */
