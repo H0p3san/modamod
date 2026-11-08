@@ -262,6 +262,8 @@ public final class BustoRender {
     private static final float CARPA_MANTO = 1f;
     /** Para comparar en vivo desde el guion de debug ({@code chato <valor>}): el aplastado del manto abierto; −1 = el de siempre. */
     public static float debugChatoAbierto = -1f;
+    /** Para aislar desde el guion de debug ({@code ocultar cuerpo|tela|nada}): no dibuja el busto del cuerpo o el de las telas. */
+    public static boolean debugSinBustoCuerpo, debugSinBustoTela;
     /** Celdas por px de la grilla del manto. */
     private static final int PASO = 2;
 
@@ -335,7 +337,8 @@ public final class BustoRender {
      */
     private static List<Vert[]> malla(Busto b, float inflado, float carpa, boolean rigido, boolean piel,
                                       @Nullable Tela tela, float fondo) {
-        if (b.cuadrado()) return comprimirAbajo(cajas(b, inflado, carpa, rigido, piel), fondo);
+        if (b.cuadrado()) return comprimirAbajo(cajas(b, inflado, carpa, rigido, piel,
+                tela != null && tela.abertura() > 0), fondo);
         Forma[] fs = formas(b, inflado, piel || carpa < CARPA_MANTO ? carpa : 0f, rigido, piel);
         if (fs.length == 0) return List.of();
         if (!piel && carpa >= CARPA_MANTO) return manto(fs, inflado, carpa, tela == null ? Tela.uniforme(inflado) : tela);
@@ -562,7 +565,7 @@ public final class BustoRender {
      * el pecho. La textura va proyectada de frente: el frente lleva el pecho,
      * la tapa y los costados estiran la fila o la columna del borde.
      */
-    private static List<Vert[]> cajas(Busto b, float inflado, float carpa, boolean rigido, boolean piel) {
+    private static List<Vert[]> cajas(Busto b, float inflado, float carpa, boolean rigido, boolean piel, boolean abierto) {
         float t = b.talle() * b.sujecion();
         if (t <= 0.05f) return List.of();
         float cuerpo = 0.55f + 0.5f * t;
@@ -597,7 +600,9 @@ public final class BustoRender {
         float rendija = Math.max(0.02f, SEPARACION - 0.5f * Math.max(0f, inflado));
         List<Vert[]> q = new ArrayList<>();
         if (!piel && carpa >= CARPA_MANTO) {
-            float chato = 1f - 0.35f * Math.max(0f, Math.min(1f, (carpa - CARPA_MANTO) / 1.5f));
+            // Abierta no se aplasta, como el manto redondo (2026-11-08): el busto del cuerpo va debajo y con talles grandes
+            // la cuña aplastada al 65 % quedaba hasta 1 px por detrás de él (medido con el perfil de las cuñas).
+            float chato = abierto ? 1f : 1f - 0.35f * Math.max(0f, Math.min(1f, (carpa - CARPA_MANTO) / 1.5f));
             cuna(q, -4f - lado, 4f + lado, arriba, largo, plano, hondo * chato, 0f, dy, carpa * 1.5f, rigido);
         } else {
             float colgar = piel ? 0f : carpa;
