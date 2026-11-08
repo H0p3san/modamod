@@ -454,8 +454,18 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     dibujarBusto(cuerpo, delJugador, infladoBustoCuerpo(piezas), 0f, 20f, true, null,
                             fondoSosten(perfilDe(entidad)), matrices, vertexConsumers, luz);
                 }
-                dibujarCola(cuerpo, delJugador, infladoColaCuerpo(piezas), 0f, 20f, true,
-                        techoBombacha(perfilDe(entidad)), matrices, vertexConsumers, luz);
+                // La cola es de la cadera: con la misma piel que el torso de la cintura para abajo (dibujarCuerpoTorso). Sin
+                // el cuerpo entero es la skin real, con lo que tenga pintado ahí (2026-11-08, "mapeada la skin base o la
+                // prenda que hubiere en las caderas sobre el volumen del trasero": salía la bombacha del cuerpo elegido
+                // sobre el short de la skin).
+                boolean colaDelCuerpo = perfilOverride != null || perfilDe(entidad).siempre();
+                if (entidad instanceof AbstractClientPlayerEntity conSkin && !colaDelCuerpo) {
+                    dibujarCola(conSkin.getSkinTextures().texture(), delJugador, infladoColaCuerpo(piezas), 0f, 20f, true,
+                            matrices, vertexConsumers, luz);
+                } else {
+                    dibujarCola(cuerpo, delJugador, infladoColaCuerpo(piezas), 0f, 20f, true,
+                            techoBombacha(perfilDe(entidad)), matrices, vertexConsumers, luz);
+                }
             }
             if (llevaCuerpo) {
                 com.modamod.render.relieve.RelieveRender.actual =
