@@ -892,8 +892,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * La capa (2026-09-29, "capas... como las capas vanilla (misma dinamica
      * de tela) pero usable y personalizable"): mismo marco y mismos giros que
      * {@code CapeFeatureRenderer} (ver {@link CapaMalla#giros}), así que
-     * flamea igual que la vanilla. Con élitros puestos no se dibuja (como la
-     * vanilla); la capa vanilla se oculta mientras esté esta
+     * flamea igual que la vanilla. Con élitros puestos se dibuja igual y los
+     * tapa (2026-11-08, {@code ElytraFeatureRendererMixin}); la capa vanilla se oculta mientras esté esta
      * ({@code CapeFeatureRendererMixin}).
      */
     private static void dibujarCapa(List<ItemStack> prendas, LivingEntity entidad, BipedEntityModel<?> biped,
@@ -918,7 +918,6 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         ItemStack stack = capaDe(prendas);
         if (stack != null) vertexConsumers = EfectoTrim.envolver(stack, vertexConsumers);   // acabado de trim (2026-10-22, "vamos con todo")
         if (stack == null || (jugador != null && jugador.isInvisible())) return;
-        if (jugador != null && jugador.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST).isOf(net.minecraft.item.Items.ELYTRA)) return;
 
         Identifier textura = texturaCapa(stack);
         // Translúcida (2026-10-01): va al final, después del cuerpo — si se

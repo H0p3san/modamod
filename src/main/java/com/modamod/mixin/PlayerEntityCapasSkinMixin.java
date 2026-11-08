@@ -28,12 +28,11 @@ public abstract class PlayerEntityCapasSkinMixin {
         boolean cuerpoComoSkin = GarmentFeatureRenderer.perfilOverride != null
                 || com.modamod.body.PerfilesDeCuerpo.de((PlayerEntity) (Object) this).siempre();
         // La capa del mod manda (2026-09-29, "la del mod manda"): con una
-        // puesta, la capa vanilla no se dibuja. Con élitros la vanilla sigue
-        // (va pintada en los élitros) y la del mod no se dibuja.
+        // puesta, la capa vanilla no se dibuja, tampoco con élitros: la del mod
+        // los tapa (2026-11-08, ElytraFeatureRendererMixin).
         if (parte == PlayerModelPart.CAPE) {
             PlayerEntity yo = (PlayerEntity) (Object) this;
             if (yo.getWorld().isClient()
-                    && !yo.getEquippedStack(net.minecraft.entity.EquipmentSlot.CHEST).isOf(net.minecraft.item.Items.ELYTRA)
                     && GarmentFeatureRenderer.capaDe(GarmentFeatureRenderer.equipadas(yo)) != null) {
                 cir.setReturnValue(false);
             }

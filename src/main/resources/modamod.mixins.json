@@ -27,7 +27,8 @@
     "HandledScreenAccessor",
     "BannerRendererMixin",
     "BuiltinModelItemRendererMixin",
-    "ClientPlayerEntityCintaMixin"
+    "ClientPlayerEntityCintaMixin",
+    "ElytraFeatureRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
