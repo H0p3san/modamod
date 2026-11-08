@@ -161,8 +161,10 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * cuerpo y el cinto no llegaba nunca (2026-11-08, "el cinto ajustado no se ve": quedaba metido dentro de la piel).
      */
     static List<ItemStack> cintosDe(@Nullable LivingEntity entidad) {
-        if (previewOverride != null) return previewOverride;
+        // Primero el accesorio que muestran las máquinas: su lista de vista previa no lo trae (2026-11-08, "en la vista previa del
+        // cinto se ve la skin en partes").
         if (sombreroOverride != null) return List.of(sombreroOverride);
+        if (previewOverride != null) return previewOverride;
         List<ItemStack> out = new ArrayList<>();
         if (entidad != null) TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
