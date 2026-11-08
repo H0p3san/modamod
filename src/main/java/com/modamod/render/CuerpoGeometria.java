@@ -941,6 +941,9 @@ public final class CuerpoGeometria {
         }
         float[] yA = new float[nAnillos];
         for (int b = 0; b <= 12; b++) yA[b] = t.originY() + b * S;
+        // El anillo de arriba (y con él la tapa) sube su holgura, como la caja de telaPorFilas (2026-11-08, "el zfighting
+        // es con la skin directa"): en originY la tapa quedaba en el mismo plano que la del torso del cuerpo.
+        yA[0] -= Math.max(0F, dilA[0]) * S;
         for (int k = 1; k <= colgado; k++) yA[12 + k] = t.originY() + (hasta + k) * S;
         // Bandas: (anillo de arriba, anillo de abajo, fila de UV).
         java.util.List<int[]> bandas = new java.util.ArrayList<>();
