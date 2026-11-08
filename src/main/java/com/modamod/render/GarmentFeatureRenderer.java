@@ -145,7 +145,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     }
 
     @Nullable
-    private static float[] compresionDeCintos(List<ItemStack> prendas) {
+    static float[] compresionDeCintos(List<ItemStack> prendas) {
         float[] out = null;
         for (ItemStack s : prendas) {
             if (!com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.BANDA)) continue;
@@ -160,7 +160,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * Los cintos puestos. Van en su propio slot de Trinkets, no en la lista de ropa: {@link #equipadas} solo trae ropa de
      * cuerpo y el cinto no llegaba nunca (2026-11-08, "el cinto ajustado no se ve": quedaba metido dentro de la piel).
      */
-    private static List<ItemStack> cintosDe(@Nullable LivingEntity entidad) {
+    static List<ItemStack> cintosDe(@Nullable LivingEntity entidad) {
         if (previewOverride != null) return previewOverride;
         if (sombreroOverride != null) return List.of(sombreroOverride);
         List<ItemStack> out = new ArrayList<>();
@@ -417,8 +417,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 com.modamod.render.relieve.RelieveRender.estilo == com.modamod.render.relieve.RelieveRender.Estilo.APAGADO
                         ? com.modamod.render.relieve.MapaRelieve.PLANO
                         : com.modamod.render.relieve.RelieveCuerpo.de(perfilDe(entidad), slim);
+        // El torso que solo toma el cinto (2026-11-08, "solo en sus filas"): la skin real en todas las filas, apretada a la
+        // altura del cinto, con su segunda capa (ComposedSkin la borra solo ahí). Nada del cuerpo elegido.
+        boolean torsoDelCinto = cintoCompresion != null && !cuerpoEntero
+                && !com.modamod.prenda.Prendas.partesCubiertas(prendas).contains(Parte.TORSO);
         // El torso lo dibuja vanilla (ninguna prenda lo gobierna): el busto va con la piel de la skin.
-        if (!conCuerpo.contains(Parte.TORSO)) dibujarBustoEnLaSkin(entidad, biped, matrices, vertexConsumers, luz);
+        if (!conCuerpo.contains(Parte.TORSO) || torsoDelCinto) dibujarBustoEnLaSkin(entidad, biped, matrices, vertexConsumers, luz);
 
         for (Parte parte : Parte.values()) {
             boolean llevaCuerpo = cuerpo != null && conCuerpo.contains(parte)
@@ -439,7 +443,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 conVolumen = piezas.get(piezas.size() - 1);
             }
 
-            if (llevaCuerpo && parte == Parte.TORSO) {
+            if (llevaCuerpo && parte == Parte.TORSO && !torsoDelCinto) {
                 // Debajo de una tela holgada el busto lo dibuja la tela (su manto):
                 // el del cuerpo atravesaba el hoodie (2026-10-02, "el hoodie es
                 // atravesado por los pechos, deberia apagarlos y reemplazarlos por
@@ -462,7 +466,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                     conVolumen.filaDesde(), conVolumen.filaHasta(), conPuntaDeMedia(conVolumen, parte)),
                             CuerpoGeometria.Superficie.CUERPO, cuerpo, delJugador, matrices, vertexConsumers, luz);
                 } else if (parte == Parte.TORSO) {
-                    dibujarCuerpoTorso(entidad, slim, cuerpo, segmentos, delJugador, matrices, vertexConsumers, luz);
+                    dibujarCuerpoTorso(entidad, slim, cuerpo, segmentos, torsoDelCinto, delJugador, matrices, vertexConsumers, luz);
                 } else if (segmentos == null) {
                     dibujar(CuerpoGeometria.Superficie.CUERPO, parte, slim, cuerpo,
                             CuerpoGeometria.Superficie.CUERPO.dilatacion, delJugador, matrices, vertexConsumers, luz);
@@ -1987,7 +1991,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * camino de siempre sin cortar nada.
      */
     private static void dibujarCuerpoTorso(LivingEntity entidad, boolean slim, Identifier cuerpoReconstruido,
-                                            @Nullable List<CuerpoGeometria.SegmentoCuerpo> segmentos,
+                                            @Nullable List<CuerpoGeometria.SegmentoCuerpo> segmentos, boolean todoPiel,
                                             ModelPart delJugador, MatrixStack matrices,
                                             VertexConsumerProvider vertexConsumers, int luz) {
         // De la cintura para abajo, la piel real también con un cuerpo elegido (2026-11-05, "vamos con el 2"): las piernas
@@ -2008,6 +2012,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         List<CuerpoGeometria.SegmentoCuerpo> completos = segmentos != null ? segmentos
                 : List.of(new CuerpoGeometria.SegmentoCuerpo(0, 12, CuerpoGeometria.Superficie.CUERPO.dilatacion));
 
+        if (todoPiel) {
+            dibujarModelPart(CuerpoGeometria.cuerpoSegmentado(Parte.TORSO, slim, completos),
+                    CuerpoGeometria.Superficie.CUERPO, pielReal, delJugador, matrices, vertexConsumers, luz);
+            return;
+        }
         List<CuerpoGeometria.SegmentoCuerpo> arriba = recortarSegmentos(completos, 0, FILA_CINTURA_TORSO);
         List<CuerpoGeometria.SegmentoCuerpo> abajo = recortarSegmentos(completos, FILA_CINTURA_TORSO, 12);
 

@@ -44,16 +44,19 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
   abajo); el margen es solo de la tela. El molde Cerrado no hace falta en el pantalón: ya cierra la planta.
 - **7. Brillo y color de los apliques** ("el color después de colocarlo" era esto mismo): la orientación se aplicaba dos veces a las normales (multiplyPositionMatrix ya las
   gira en 1.21). Queda por ver si el parche de la vista previa (normal fija `(0,1,0)` con `enVisor`) sigue haciendo falta.
+- **Cinto que aprieta**: nunca comprimía la piel (iba en su slot de Trinkets, fuera de las listas de ropa) y el Ajustado
+  quedaba tapado (2116566). Con solo el cinto, el torso es la skin real y la segunda capa se borra solo en sus filas.
 - **molde_manga**: ítem huérfano sin modelo ni receta, sacado junto con `MoldeItem` (6ba4e7e).
 
 ## Sueltos encontrados
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - La tapa de la mano del guante Cerrado no sale espejada entre los dos brazos (se copia la última fila del frente igual en
   los dos). Decidido dejarlo así; si molesta, en el brazo izquierdo se copia la fila al revés (`pintarTapaDeAbajo`).
+- Maniquí: el cinto Ajustado no se ve (la figura se dibuja entera, sin comprimir la piel); probablemente igual con
+  cualquier prenda Ajustado.
 - Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
 
 ## 8. Sin verificar todavía
-- El cinto reemplaza la piel (c717b19: declara que gobierna el torso si su calce no es Oversize).
 - Modeladora: ruedo a "distancia fija".
 - Detalles de la vista previa del Estilista.
 

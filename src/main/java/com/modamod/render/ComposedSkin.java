@@ -56,11 +56,13 @@ public final class ComposedSkin {
         boolean sombrero = gorro != null;
         // Máscaras y barbijo (2026-10-25, "que mascara antifaz y barbijo desactiven 3dsl de la zona que cubren").
         List<String> caras = partes.contains(Parte.CABEZA) ? List.of() : carasPuestas(player);
-        if (partes.isEmpty() && !sombrero && caras.isEmpty()) return original;
+        // El cinto que aprieta (2026-11-08, "solo en sus filas"): la segunda capa del torso se borra solo a su altura.
+        float[] cinto = partes.contains(Parte.TORSO) ? null : GarmentFeatureRenderer.compresionDeCintos(GarmentFeatureRenderer.cintosDe(player));
+        if (partes.isEmpty() && !sombrero && caras.isEmpty() && cinto == null) return original;
 
         boolean slim = original.model() == SkinTextures.Model.SLIM;
         String key = original.texture() + "|" + SkinRegions.clave(partes, slim) + (sombrero ? "|sombrero" + filas : "")
-                + (caras.isEmpty() ? "" : "|cara" + caras);
+                + (caras.isEmpty() ? "" : "|cara" + caras) + (cinto == null ? "" : "|cinto" + (int) cinto[0] + "-" + (int) cinto[1]);
         SkinTextures cached = CACHE.get(key);
         if (cached != null) return cached;
 
@@ -96,6 +98,13 @@ public final class ComposedSkin {
                     borrar(composed, new CajaSkin.Rect(r.x0(), r.y0() + t[0], r.x1(), r.y0() + t[1]));
                 }
                 if (t[2] < t[3]) borrar(composed, new CajaSkin.Rect(c.atras().x0(), c.atras().y0() + t[2], c.atras().x1(), c.atras().y0() + t[3]));
+            }
+        }
+
+        if (cinto != null) {
+            CajaSkin c = LayoutSkin.overlay(Parte.TORSO, slim);
+            for (CajaSkin.Rect r : List.of(c.frente(), c.derecha(), c.izquierda(), c.atras())) {
+                borrar(composed, new CajaSkin.Rect(r.x0(), r.y0() + (int) cinto[0], r.x1(), r.y0() + (int) cinto[1]));
             }
         }
 
@@ -187,8 +196,7 @@ public final class ComposedSkin {
         TrinketsApi.getTrinketComponent(player).ifPresent(c -> {
             for (var par : c.getAllEquipped()) {
                 ItemStack stack = par.getRight();
-                // También el cinto que aprieta: gobierna el torso (BandaItem#reemplazaLaPiel).
-                if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack) || com.modamod.item.BandaItem.reemplazaLaPiel(stack)) prendas.add(stack);
+                if (com.modamod.prenda.Prendas.esRopaDeCuerpo(stack)) prendas.add(stack);
             }
         });
         return com.modamod.prenda.Prendas.partesCubiertas(prendas);
