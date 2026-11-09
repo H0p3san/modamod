@@ -1668,6 +1668,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     && com.modamod.render.relieve.BustoRender.cubre(desde, hasta) && indice >= manto
                     && !com.modamod.render.relieve.BustoRender.debugSinBustoTela) {
                 infladoBusto = Math.max(fila[3], infladoBusto + SEPARACION_CAPAS);
+                if (com.modamod.render.relieve.BustoRender.debugMedir) org.slf4j.LoggerFactory.getLogger("modamod").info(
+                        "[medir] pieza fila=" + java.util.Arrays.toString(fila) + " base=" + base + " infladoBusto=" + infladoBusto);
                 float carpa = com.modamod.render.relieve.BustoRender.carpaDe(calce);
                 // Suelto y Oversize: un manto apoyado en la tela de cada fila (2026-10-02,
                 // "se marca demasiado en el hoodie no se deberian ver asi como dos tetas").

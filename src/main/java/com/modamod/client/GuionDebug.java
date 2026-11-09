@@ -29,6 +29,7 @@ import java.util.List;
  *
  * <pre>
  * busto 4 cuadrado|redondo   talle del busto (dosis, -1..7) y forma
+ * volumen 0|1|2              redondeado, voxel fino o voxel grueso
  * vaciar                     saca toda la ropa puesta
  * poner 0 modamod:remera[...] pone el ítem (sintaxis de /give) en el lugar de ropa (0 = el de más afuera)
  * cmd time set noon          un comando, sin la barra
@@ -155,6 +156,11 @@ public final class GuionDebug {
                         PerfilesDeCuerpo.de(p).conBusto(dosis, Long.MAX_VALUE).conBustoCuadrado(cuadrado)));
                 espera = 10;
             }
+            case "volumen" -> {
+                int v = Integer.parseInt(t[1]);
+                enServidor(server, uuid, p -> PerfilesDeCuerpo.poner(p, PerfilesDeCuerpo.de(p).conVolumen(v)));
+                espera = 10;
+            }
             case "vaciar" -> {
                 enServidor(server, uuid, p -> {
                     TrinketInventory inv = ListaDeRopa.de(p);
@@ -193,6 +199,12 @@ public final class GuionDebug {
                 mc.options.getFov().setValue(Integer.parseInt(t[1]));
             }
             case "chato" -> com.modamod.render.relieve.BustoRender.debugChatoAbierto = Float.parseFloat(t[1]);
+            case "medir" -> {
+                com.modamod.render.relieve.BustoRender.debugMedir = true;
+                pasos.addFirst("medirfin");
+                espera = 1;
+            }
+            case "medirfin" -> com.modamod.render.relieve.BustoRender.debugMedir = false;
             case "ocultar" -> {
                 com.modamod.render.relieve.BustoRender.debugSinBustoCuerpo = t[1].equals("cuerpo");
                 com.modamod.render.relieve.BustoRender.debugSinBustoTela = t[1].equals("tela");

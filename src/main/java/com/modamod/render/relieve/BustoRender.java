@@ -239,12 +239,12 @@ public final class BustoRender {
             // Desde el plano del pecho, más alta y más ancha (2026-11-08, la tira azul de la ajustada junto al brazo): con
             // la base corrida hacia adelante, más allá del costado del torso quedaba entre las dos bases una franja de la
             // cúpula de abajo a la vista. Así cada cúpula envuelve entera a la de abajo; lo de atrás queda dentro de la tela.
-            hondo = cuerpo + separacionCuna(inflado);
+            hondo = cuerpo + separacionMinima(inflado);
             abrir = 0f;
         }
         // La tela también crece hacia los costados y arriba lo mismo que se corre hacia adelante (2026-11-08, "es por los
         // costados q se sale"): en los costados la cúpula es casi vertical y correrla en z no la separa de la de abajo.
-        float sep = piel ? 0f : separacionCuna(inflado);
+        float sep = piel ? 0f : separacionMinima(inflado);
         float rx = Math.min(2.6f, 1.95f + 0.07f * t) + 0.5f * abrir + sep;
         float rArriba = 2.3f + 0.16f * t + 0.5f * abrir + sep;
         float rAbajo = 1.3f + 0.22f * t + abrir + carpa + sep;
@@ -255,11 +255,13 @@ public final class BustoRender {
             caida *= 0.25f;
             apertura *= 0.5f;
         }
+        medir("formas", "piel", piel, "inflado", inflado, "carpa", carpa, "hondo", hondo, "rx", rx, "rArriba", rArriba,
+                "plano", piel ? -2f - inflado : planoTela(inflado), "t", t);
         Forma[] f = new Forma[2];
         for (int i = 0; i < 2; i++) {
             int lado = i == 0 ? -1 : 1;
             f[i] = new Forma(lado * 2f, ARRIBA + 2.3f + 0.16f * t, rx, rArriba, rAbajo, hondo,
-                    caida, apertura, dx, dy * 0.6f, piel ? -2f - inflado : -2f, lado);
+                    caida, apertura, dx, dy * 0.6f, piel ? -2f - inflado : planoTela(inflado), lado);
         }
         return f;
     }
@@ -274,6 +276,12 @@ public final class BustoRender {
     public static float debugChatoAbierto = -1f;
     /** Para aislar desde el guion de debug ({@code ocultar cuerpo|tela|nada}): no dibuja el busto del cuerpo o el de las telas. */
     public static boolean debugSinBustoCuerpo, debugSinBustoTela;
+    /** Guion de debug ({@code medir}): un cuadro con los valores de cada busto en el log. */
+    public static boolean debugMedir;
+
+    static void medir(String que, Object... v) {
+        if (debugMedir) org.slf4j.LoggerFactory.getLogger("modamod").info("[medir] " + que + " " + java.util.Arrays.toString(v));
+    }
     /** Celdas por px de la grilla del manto. */
     private static final int PASO = 2;
 
@@ -604,7 +612,7 @@ public final class BustoRender {
             dy = b.rebote().dy() * 12f * 0.6f;
             dx = b.rebote().dx() * 8f;
         }
-        float plano = piel ? -2f - inflado : -2f - separacionCuna(inflado);
+        float plano = piel ? -2f - inflado : planoTela(inflado) - separacionMinima(inflado);
         // Como el Female Gender Mod (2026-10-04, "investiga como hace el jenys mod y el female gender mod... porque
         // tus tetas salieron horribles"): una cuña que cuelga de su arista de arriba, pegada al pecho; la cara de
         // adelante baja en pendiente hasta la punta y la de abajo vuelve al pecho.
@@ -615,6 +623,14 @@ public final class BustoRender {
         // tela sale por el costado lo que está inflada y la rendija del medio se le cierra de a poco.
         float lado = Math.max(0f, inflado) + 0.02f * Math.max(0f, inflado);
         float rendija = Math.max(0.02f, SEPARACION - 0.5f * Math.max(0f, inflado));
+        if (!piel) {
+            // Una tela sin holgura (Ajustado, Pegado) tenía los mismos costados y la misma rendija que el cuerpo: en el
+            // mismo plano, peleaban (2026-11-09). Siempre al menos SEPARACION_MINIMA por fuera.
+            lado = Math.max(lado, SEPARACION_MINIMA);
+            rendija = Math.min(rendija, SEPARACION - SEPARACION_MINIMA);
+        }
+        medir("cajas", "piel", piel, "inflado", inflado, "carpa", carpa, "hondo", hondo, "plano", plano, "lado", lado,
+                "rendija", rendija, "t", t, "dy", dy, "dx", dx);
         List<Vert[]> q = new ArrayList<>();
         if (!piel && carpa >= CARPA_MANTO) {
             // Abierta no se aplasta, como el manto redondo (2026-11-08): el busto del cuerpo va debajo y con talles grandes
@@ -637,6 +653,25 @@ public final class BustoRender {
     static float separacionCuna(float inflado) {
         float i = Math.max(0f, inflado);
         return Math.min(i, 0.1f + 0.3f * (1f - (float) Math.exp(-i / 0.6f)));
+    }
+
+    /**
+     * {@link #separacionCuna} con un mínimo (2026-11-09, "z fighting en el pecho con remera ajustada o pegada"): Ajustado y
+     * Pegado no tienen holgura (o aprietan hacia adentro) y la tela quedaba con la misma forma que el busto del cuerpo.
+     */
+    static float separacionMinima(float inflado) {
+        return Math.max(SEPARACION_MINIMA, separacionCuna(inflado));
+    }
+
+    private static final float SEPARACION_MINIMA = 0.05f;
+
+    /**
+     * De dónde sale el busto de una tela: el plano del pecho, o la superficie de la tela si aprieta hacia adentro (Ajustado:
+     * −0,25). Antes salía siempre de z = −2 y con la ajustada quedaba un escalón de 0,25 px en la bisagra de arriba por el
+     * que se veía el busto del cuerpo (medido con el guion: fila = −0,25, cuerpo a −0,31).
+     */
+    static float planoTela(float inflado) {
+        return -2f - Math.min(0f, inflado);
     }
 
     /** Mitad de la rendija entre los dos pechos cuadrados (px). */
