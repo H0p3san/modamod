@@ -692,6 +692,11 @@ public final class ApliqueRenderer {
      * </ul>
      * El resto ({@code nudo}, {@code cuerpo}, {@code centro}) no se mueve.
      */
+    /** Guion de debug ({@code aleteo <rad>|libre}): congela el aleteo propio de las mariposas en ese ángulo. */
+    public static float debugAleteo = Float.NaN;
+    /** Cuánto se pliegan las alas de la mariposa hacia atrás (rad, ~70°). */
+    private static final float PLIEGUE_MAXIMO = 1.2f;
+
     private static final class Blando {
         final float blandura;
         /** Desplazamientos en el espacio del modelo del aplique (x, y, z). */
@@ -738,12 +743,18 @@ public final class ApliqueRenderer {
             } else if (n.startsWith("ala")) {
                 // En el espacio horneado el ala "izq" se abre hacia +x: gira para un lado y la "der" para el otro.
                 // Las mariposas además baten las alas solas, a unos 1,8 Hz (con la intensidad: 0 = quietas).
+                // Las alas van de abiertas (0, en el plano de la tela) a plegadas atrás, sobre el lomo, y nunca pasan del plano
+                // hacia adentro (2026-11-09, "las alas no tienen que bajar del plano de abiertas a plegadas atras"): antes el
+                // aleteo era un seno simétrico y la mitad del ciclo se metían en la prenda. Visto con el guion: el lado
+                // negativo es hacia afuera.
                 float propio = 0f;
                 if (mariposa) {
                     double t = (System.nanoTime() % 1_000_000_000_000L) / 1e9;
-                    propio = 0.55f * (float) Math.sin(2 * Math.PI * 1.8 * t + fase);
+                    propio = -PLIEGUE_MAXIMO * 0.5f * (1f - (float) Math.cos(2 * Math.PI * 1.8 * t + fase));
+                    if (!Float.isNaN(debugAleteo)) propio = debugAleteo;
                 }
-                float aleteo = (firme.y * 0.55f + firme.z * 0.3f + propio) * (n.endsWith("izq") ? 1f : -1f);
+                float apertura = Math.max(-PLIEGUE_MAXIMO, Math.min(0f, firme.y * 0.55f + firme.z * 0.3f + propio));
+                float aleteo = apertura * (n.endsWith("izq") ? 1f : -1f);
                 ry = aleteo;
                 rz = firme.x * 0.1f;
             } else if (n.startsWith("petalo")) {

@@ -199,6 +199,8 @@ public final class GuionDebug {
                 mc.options.getFov().setValue(Integer.parseInt(t[1]));
             }
             case "chato" -> com.modamod.render.relieve.BustoRender.debugChatoAbierto = Float.parseFloat(t[1]);
+            case "aleteo" -> com.modamod.render.ApliqueRenderer.debugAleteo =
+                    t[1].equals("libre") ? Float.NaN : Float.parseFloat(t[1]);
             case "medir" -> {
                 com.modamod.render.relieve.BustoRender.debugMedir = true;
                 pasos.addFirst("medirfin");
