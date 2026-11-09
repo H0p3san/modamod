@@ -213,6 +213,9 @@ public final class GuionDebug {
                 com.modamod.render.relieve.BustoRender.debugSinBustoTela = t[1].equals("tela");
             }
             case "foto" -> girar(mc, t[1], t.length > 2 ? t[2].strip() : "frente");
+            // La pantalla abierta tal cual (sin girar al jugador ni cerrar nada).
+            case "pantalla" -> { fotoPendiente = "guion_" + t[1] + "_pantalla"; cuadrosFoto = 10; }
+            case "cerrar" -> mc.setScreen(null);
             case "salir" -> cerrarAlTerminar = true;
             default -> log("no entiendo '" + linea + "'");
         }
@@ -282,6 +285,11 @@ public final class GuionDebug {
                 case "boton" -> {
                     if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
                         log("tintes: boton " + t[1] + " -> " + be.onButtonClick(Integer.parseInt(t[1])) + " aplique=" + be.apliqueElegido());
+                    }
+                }
+                case "abrir" -> {
+                    if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof net.minecraft.screen.NamedScreenHandlerFactory f) {
+                        p.openHandledScreen(f);
                     }
                 }
                 case "tenir" -> {

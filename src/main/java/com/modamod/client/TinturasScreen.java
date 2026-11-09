@@ -557,7 +557,10 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
         PlayerEntity jugador = client.player;
         if (jugador == null) return;
 
-        if (handler.be.categoria() == TinturasBlockEntity.Categoria.APLIQUE) {
+        // Pintando un aplique de una prenda (2026-11-09, "que la vista previa del aplique no sean las 3 zonas sino el preview
+        // de la remera"): la prenda puesta, como siempre, con el aplique ya pintado.
+        boolean apliqueEnPrenda = handler.be.apliqueElegido() >= 0 && handler.be.apliquesDeEntrada() > 0;
+        if (handler.be.categoria() == TinturasBlockEntity.Categoria.APLIQUE && !apliqueEnPrenda) {
             dibujarMuestrasRetazo(context, handler.be.prendaDeVistaPrevia(resaltada));
             return;
         }

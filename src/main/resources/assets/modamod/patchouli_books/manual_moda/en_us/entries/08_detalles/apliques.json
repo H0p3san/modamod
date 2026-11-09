@@ -23,6 +23,10 @@
     },
     {
       "type": "patchouli:text",
+      "text": "$(l)Volver a teñir un aplique puesto.$() Sin sacarlo y sin retazo: poné la prenda en la Estación de Tintes. Las flechas de la categoría eligen qué se pinta: la prenda o cada aplique ($(o)Aplique 2 de 3: Moño$()). Con uno elegido usás los mismos tres cuadraditos, con color y motivos, y $(o)Teñir$() pinta solo ese. La vista previa muestra la prenda puesta."
+    },
+    {
+      "type": "patchouli:text",
       "text": "$(l)Tela blanda.$() Con $(o)Blandura$() mayor a cero, el aplique se mueve con la inercia de quien lo lleva: las colas del moño se curvan, las alas de la mariposa baten, los pétalos se inclinan y las hojas cuelgan. A cero, queda rígido. $(o)Sacudir$() alterna sacudones fuertes para ver cómo pendulea."
     },
     {
