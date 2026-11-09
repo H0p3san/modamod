@@ -200,6 +200,11 @@ public final class GuionDebug {
             case "cmd" -> mc.player.networkHandler.sendChatCommand(linea.substring(4).strip());
             case "esperar" -> espera = Integer.parseInt(t[1]);
             case "altura" -> alturaFoto = Float.parseFloat(t[1]);
+            // Como F3+T: vuelve a leer los recursos (modelos de ítem, texturas) sin relanzar.
+            case "recargar" -> {
+                mc.reloadResources();
+                espera = 100;
+            }
             case "maletin" -> com.modamod.render.MaletinRenderer.debugBajar = Float.parseFloat(t[1]);
             case "ventana" -> {
                 mc.getWindow().setWindowedSize(Integer.parseInt(t[1]), Integer.parseInt(t[2].strip()));
