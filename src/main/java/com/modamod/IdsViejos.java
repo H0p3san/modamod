@@ -15,7 +15,8 @@ public final class IdsViejos {
     private static final Map<String, String> ITEMS = Map.of(
             "socks_solid", "medias",
             "sombrero_bruja", "sombrero",
-            "borcegos", "calzado"
+            "borcegos", "calzado",
+            "molde_capa_con_capucha", "molde_capucha_malla" // molde de capucha común, sacado 2026-11-09
     );
 
     public static Identifier nuevo(Identifier id) {

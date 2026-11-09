@@ -19,13 +19,13 @@ import java.util.List;
 public class MoldeCapaItem extends Item {
 
     public enum Tipo {
-        CON_CAPUCHA, SIN_CAPUCHA, CUELLO_ALTO, SIN_CUELLO,
+        SIN_CAPUCHA, CUELLO_ALTO, SIN_CUELLO,
         /** Embozo sobre los hombros (2026-10-11): el largo sale del molde de rango; este lo quita. */
         EMBOZO_NINGUNO, BORDE_EMBOZO, BORDE_NINGUNO,
         /** Capucha de malla o de cajas (2026-10-23): ponen la capucha con ese estilo, en el top o en la capa. Al final. */
         CAPUCHA_MALLA, CAPUCHA_CAJAS;
 
-        public boolean esCapucha() { return this == CON_CAPUCHA || this == SIN_CAPUCHA || esEstiloCapucha(); }
+        public boolean esCapucha() { return this == SIN_CAPUCHA || esEstiloCapucha(); }
         public boolean esEstiloCapucha() { return this == CAPUCHA_MALLA || this == CAPUCHA_CAJAS; }
         public boolean esEmbozo() { return this == EMBOZO_NINGUNO; }
         public boolean esBordeEmbozo() { return this == BORDE_EMBOZO || this == BORDE_NINGUNO; }

@@ -519,7 +519,7 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         return switch (cat) {
             case REMERA -> item instanceof MoldeCuelloItem
                     || item instanceof MoldeChaquetaItem
-                    || (item instanceof MoldeCapaItem k && k.tipo == MoldeCapaItem.Tipo.CON_CAPUCHA)
+                    || (item instanceof MoldeCapaItem k && k.tipo.esEstiloCapucha())
                     || (item instanceof MoldeRuedoItem r && r.valor.valeEnTela());
             case PANTALON, MEDIAS, CALIENTABRAZOS -> false;
             case POLLERA -> item instanceof MoldePolleraItem || item instanceof MoldeVoladoItem
@@ -1150,10 +1150,8 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                 if (item instanceof MoldeChaquetaItem m && m.tipo.esFrente()) c = comboDeMoldeChaqueta(item);
             }
             case CAPUCHA_CHAQUETA -> {
-                // Un solo molde de capucha para remera y capa (2026-10-12, "el molde de capucha no es uno solo...").
-                if (item instanceof MoldeCapaItem m && m.tipo == MoldeCapaItem.Tipo.CON_CAPUCHA) c = Molde.de(com.modamod.prenda.Ejes.CON_CAPUCHA, true);
-                // Capucha de malla o de cajas (2026-10-23): la pone con ese estilo.
-                else if (item instanceof MoldeCapaItem m && m.tipo.esEstiloCapucha())
+                // Capucha de malla o de cajas (2026-10-23): la pone con ese estilo. El molde de capucha común se sacó (2026-11-09).
+                if (item instanceof MoldeCapaItem m && m.tipo.esEstiloCapucha())
                     c = Molde.de(com.modamod.prenda.Ejes.CAPUCHA_ESTILO, (m.tipo == MoldeCapaItem.Tipo.CAPUCHA_CAJAS) ? com.modamod.item.SombreroEstilo.CAJAS : com.modamod.item.SombreroEstilo.MALLA)
                             .con(com.modamod.prenda.Ejes.CON_CAPUCHA, true);
             }
@@ -1335,7 +1333,6 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
         }
         if (!(item instanceof MoldeCapaItem m)) return null;
         return switch (m.tipo) {
-            case CON_CAPUCHA -> Molde.de(com.modamod.prenda.Ejes.CAPA_CAPUCHA, true);
             case SIN_CAPUCHA -> Molde.de(com.modamod.prenda.Ejes.CAPA_CAPUCHA, false);
             case CUELLO_ALTO -> Molde.de(com.modamod.prenda.Ejes.CAPA_CUELLO, true);
             case SIN_CUELLO -> Molde.de(com.modamod.prenda.Ejes.CAPA_CUELLO, false);

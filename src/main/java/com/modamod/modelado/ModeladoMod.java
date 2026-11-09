@@ -102,8 +102,6 @@ public final class ModeladoMod {
 
     // ── moldes de capa (a pedido 2026-09-29, "podemos agregar todo eso como patrones de corte?") ──
     // Ruedo, capucha y cuello alto de la capa, cada uno para su pin. Exclusivos de la capa.
-    public static final MoldeCapaItem MOLDE_CAPA_CON_CAPUCHA = new MoldeCapaItem(new Item.Settings().maxCount(1),
-            MoldeCapaItem.Tipo.CON_CAPUCHA);
     /** Capucha de malla o de cajas (2026-10-23), en el top o en la capa. */
     public static final MoldeCapaItem MOLDE_CAPUCHA_MALLA = new MoldeCapaItem(new Item.Settings().maxCount(1), MoldeCapaItem.Tipo.CAPUCHA_MALLA);
     public static final MoldeCapaItem MOLDE_CAPUCHA_CAJAS = new MoldeCapaItem(new Item.Settings().maxCount(1), MoldeCapaItem.Tipo.CAPUCHA_CAJAS);
@@ -430,7 +428,6 @@ public final class ModeladoMod {
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_volado_circular"), MOLDE_VOLADO_CIRCULAR);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_ruedo_redondeado"), MOLDE_RUEDO_REDONDEADO);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_ruedo_cola"), MOLDE_RUEDO_COLA);
-        Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_capa_con_capucha"), MOLDE_CAPA_CON_CAPUCHA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_capucha_malla"), MOLDE_CAPUCHA_MALLA);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_capucha_cajas"), MOLDE_CAPUCHA_CAJAS);
         Registry.register(Registries.ITEM, Identifier.of(Modamod.MOD_ID, "molde_capa_cuello_alto"), MOLDE_CAPA_CUELLO_ALTO);
