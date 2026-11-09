@@ -674,6 +674,63 @@ public final class BustoRender {
         return -2f - Math.min(0f, inflado);
     }
 
+    /**
+     * Cuánto sale, en cada punto (x, y) del frente del torso, la tela tirante que pasa por encima del busto: lo que tiene
+     * que esquivar el delantal (2026-11-09, "los delantales quedan muy gruesos con tetas"). Antes el delantal se corría
+     * entero, fila por fila, hasta la punta del busto (hasta 3,5 px y en todo el ancho, un bloque) y aun así las cúpulas
+     * grandes lo atravesaban. Sale de la malla real del busto (redondo o cuadrado) de la capa de más afuera, tensada por
+     * filas (entre los pechos) y por columnas (cae desde la punta hasta la cintura).
+     */
+    public record Campo(float medio, float[][] h) {
+        /** Lo que sale (px) desde el plano del pecho; 0 fuera del busto. */
+        public float en(float x, float y) {
+            int ix = Math.round((x + medio) * PASO), iy = Math.round(y * PASO);
+            if (ix < 0 || ix >= h.length || iy < 0 || iy >= h[0].length) return 0f;
+            return h[ix][iy];
+        }
+    }
+
+    private static final java.util.Map<String, Campo> CAMPOS = new java.util.HashMap<>();
+
+    public static Campo campoDelantal(Busto b, float inflado) {
+        String clave = b.talle() + "|" + b.sujecion() + "|" + b.cuadrado() + "|" + inflado;
+        Campo c = CAMPOS.get(clave);
+        if (c != null) return c;
+        if (CAMPOS.size() > 64) CAMPOS.clear();
+        // Sin rebote (se arma una vez y se reusa): el delantal ya lleva su margen.
+        Busto quieto = new Busto(b.talle(), b.sujecion(), null, b.cuadrado(), b.cola(), null);
+        List<Vert[]> q = malla(quieto, inflado, 0f, false, false, null, 12f);
+        float medio = 4f;
+        for (Vert[] v : q) for (Vert p : v) medio = Math.max(medio, Math.abs(p.pos().x) + 0.5f);
+        medio = (float) Math.ceil(medio * PASO) / PASO;
+        int nx = Math.round(2f * medio * PASO), ny = 12 * PASO;
+        float[][] h = new float[nx + 1][ny + 1];
+        int n = 10;
+        for (Vert[] v : q) {
+            for (int i = 0; i <= n; i++) {
+                for (int j = 0; j <= n; j++) {
+                    float s = i / (float) n, t = j / (float) n;
+                    // Punto del cuadrilátero (o triángulo con el último vértice repetido) por interpolación bilineal.
+                    Vector3f a = new Vector3f(v[0].pos()).lerp(v[1].pos(), s), d = new Vector3f(v[3].pos()).lerp(v[2].pos(), s);
+                    Vector3f p = a.lerp(d, t);
+                    int ix = Math.round((p.x + medio) * PASO), iy = Math.round(p.y * PASO);
+                    if (ix < 0 || ix > nx || iy < 0 || iy > ny) continue;
+                    h[ix][iy] = Math.max(h[ix][iy], -2f - p.z);
+                }
+            }
+        }
+        float[] fila = new float[nx + 1];
+        for (int iy = 0; iy <= ny; iy++) {
+            for (int ix = 0; ix <= nx; ix++) fila[ix] = h[ix][iy];
+            tensar(fila);
+            for (int ix = 0; ix <= nx; ix++) h[ix][iy] = fila[ix];
+        }
+        for (int ix = 0; ix <= nx; ix++) tensar(h[ix]);
+        c = new Campo(medio, h);
+        CAMPOS.put(clave, c);
+        return c;
+    }
+
     /** Mitad de la rendija entre los dos pechos cuadrados (px). */
     private static final float SEPARACION = 0.25f;
 

@@ -767,26 +767,6 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         Identifier textura = texturaDelantal(stack);
         float[] extra = new float[PolleraMalla.FILAS + 1];
         com.modamod.render.relieve.BustoRender.Busto busto = com.modamod.render.relieve.BustoRender.actual;
-        float talle = busto == null ? 0F : busto.talle();
-        // El busto de lo de abajo (2026-10-19, "los delantales con busto hacen que la remera atraviese el delantal"): la punta de
-        // la cupula de la remera sale max(0,61 + 0,5·t + 0,12·inflado, inflado) del plano del torso (BustoRender#formas; un manto
-        // Suelto/Oversize no sobresale mas que su holgura), y el delantal pasa por fuera de esa punta. Sin remera cuenta la piel.
-        float sale = 0F;
-        if (busto != null && busto.talle() * busto.sujecion() > 0.05F) {
-            float t = busto.talle() * busto.sujecion();
-            float punta = 0.61F + 0.5F * t;
-            boolean hayRemera = false;
-            for (ItemStack p : prendas) {
-                if (!(com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.REMERA))) continue;
-                hayRemera = true;
-                float inflado = com.modamod.item.Calce.dilatacionEfectiva(p);
-                boolean manto = com.modamod.render.relieve.BustoRender.esManto(
-                        com.modamod.render.relieve.BustoRender.carpaDe(com.modamod.item.Calce.leer(p)));
-                sale = Math.max(sale, manto ? inflado : Math.max(0.61F + 0.5F * t + 0.12F * Math.max(0F, inflado), inflado));
-            }
-            if (!hayRemera) sale = punta;
-        }
-        float bustoSale = Math.min(3.5F, Math.max(0F, sale + 0.15F - dilatacion));
         for (int f = 0; f <= PolleraMalla.FILAS; f++) {
             float y = inicio + largo * f / (float) PolleraMalla.FILAS;
             float e = 0F;
@@ -794,9 +774,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 float hol = holguraPollera(y);
                 if (hol >= 0F) e = Math.max(0F, hol + 0.12F - (dilatacion + 0.1F));
             }
-            // El busto: las cúpulas sobresalen entre y 2 y 7 (más en el medio).
-            float peso = Math.max(0F, 1F - Math.abs(y - 4.5F) / 3.4F);
-            e = Math.max(e, Math.max(Math.min(2.4F, 0.4F * talle) * peso, busto == null ? 0F : bustoSale * com.modamod.render.relieve.BustoRender.pesoDeAltura(busto, y)));
+            // El busto ya no aleja la fila entera (2026-11-09, "los delantales quedan muy gruesos con tetas"): el frente lo
+            // esquiva punto por punto con PolleraMalla.frenteDelantal.
             extra[f] = e;
         }
         matrices.push();
@@ -809,7 +788,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         float cola = busto == null ? 0f : busto.cola();
         List<com.modamod.aplique.Aplique> apliques = ApliqueRenderer.apliquesEn(stack, com.modamod.aplique.Aplique.Superficie.DELANTAL);
         float finalDilatacion = dilatacion;
-        float bustoExtra = Math.max(Math.min(2.4F, 0.4F * talle), bustoSale);
+        // Lo que sale el busto por delante de la tela del delantal, para la cinta y los tirantes de cajas.
+        float bustoExtra = 0F;
+        if (busto != null && busto.talle() * busto.sujecion() > 0.05F) {
+            float infl = 0F;
+            for (ItemStack p : prendas) {
+                if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.REMERA)) infl = Math.max(infl, com.modamod.item.Calce.dilatacionEfectiva(p));
+            }
+            com.modamod.render.relieve.BustoRender.Campo cb = com.modamod.render.relieve.BustoRender.campoDelantal(busto, infl);
+            for (float yy = 1F; yy <= 8F; yy += 0.5F) bustoExtra = Math.max(bustoExtra, cb.en(-2.6F, yy) + 0.15F - dilatacion);
+            bustoExtra = Math.max(0F, bustoExtra);
+        }
         boolean pieza = DelantalPieza.activa;
         boolean sinVolados = com.modamod.item.DelantalItem.voladoLateral(stack) == null
                 && com.modamod.item.DelantalItem.voladoSuperior(stack) == null;
@@ -819,17 +808,32 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                         com.modamod.item.DelantalItem.cobertura(stack).ancho, pieza,
                         com.modamod.item.DelantalItem.tirantes(stack), finalDilatacion, bustoExtra);
         int columnas = com.modamod.item.DelantalItem.cobertura(stack).columnas();
-        MallaCapturada malla = grabar("delantal", !apliques.isEmpty()
-                || CorreaRenderer.hayEn(stack, com.modamod.correa.Correa.Superficie.DELANTAL), () ->
-                PolleraMalla.dibujarDelantal(matrices, buffer, luz, finalDilatacion,
-                new PolleraMalla.Piernas(biped.body, biped.rightLeg, biped.leftLeg), mov, twirl, cola, delJugador.pitch,
-                inicio, largo, com.modamod.item.DelantalItem.volado(stack),
-                com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.DELANTAL), extra,
-                adorno, columnas));
+        // El busto de la capa de más afuera (la remera más holgada; sin remera, la piel) que el delantal esquiva.
+        if (busto != null && busto.talle() * busto.sujecion() > 0.05F) {
+            float infladoRemera = 0F;
+            for (ItemStack p : prendas) {
+                if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.REMERA)) {
+                    infladoRemera = Math.max(infladoRemera, com.modamod.item.Calce.dilatacionEfectiva(p));
+                }
+            }
+            PolleraMalla.frenteDelantal = com.modamod.render.relieve.BustoRender.campoDelantal(busto, infladoRemera);
+        }
+        MallaCapturada malla;
+        try {
+            malla = grabar("delantal", !apliques.isEmpty()
+                    || CorreaRenderer.hayEn(stack, com.modamod.correa.Correa.Superficie.DELANTAL), () ->
+                    PolleraMalla.dibujarDelantal(matrices, buffer, luz, finalDilatacion,
+                    new PolleraMalla.Piernas(biped.body, biped.rightLeg, biped.leftLeg), mov, twirl, cola, delJugador.pitch,
+                    inicio, largo, com.modamod.item.DelantalItem.volado(stack),
+                    com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.DELANTAL), extra,
+                    adorno, columnas));
+        } finally {
+            PolleraMalla.frenteDelantal = null;
+        }
         matrices.pop();
         if (!pieza) TirantesDelantal.dibujar(com.modamod.item.DelantalItem.tirantes(stack),
                 com.modamod.region.RegionResolver.colorBase(stack), inicio, finalDilatacion,
-                Math.min(2.4F, 0.4F * talle), delJugador, matrices, vertexConsumers, luz);
+                bustoExtra, delJugador, matrices, vertexConsumers, luz);
         if (malla != null) {
             ApliqueRenderer.dibujarEnMalla(stack, com.modamod.aplique.Aplique.Superficie.DELANTAL, malla, vertexConsumers, luz, matrices.peek().getNormalMatrix());
             CorreaRenderer.dibujarEnMalla(stack, com.modamod.correa.Correa.Superficie.DELANTAL, malla, vertexConsumers, luz, matrices.peek().getNormalMatrix());

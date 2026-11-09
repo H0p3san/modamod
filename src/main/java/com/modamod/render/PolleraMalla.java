@@ -265,6 +265,12 @@ public final class PolleraMalla {
                         z *= k;
                     }
                 }
+                // El delantal pasa por encima del busto siguiendo su forma (2026-11-09, "los delantales quedan muy gruesos
+                // con tetas"): solo el frente, punto por punto, en vez de alejar la fila entera.
+                if (frenteDelantal != null && colDesde >= 0 && z < 0f) {
+                    float sale = frenteDelantal.en(x, y);
+                    if (sale > 0f) z = Math.min(z, -2f - sale - MARGEN_BUSTO);
+                }
                 // Vaivén del paso: la tela se retuerce un poco alrededor del eje del cuerpo.
                 float xg = x * cosG - z * sinG, zg = x * sinG + z * cosG;
                 x = xg;
@@ -442,6 +448,12 @@ public final class PolleraMalla {
      * {@code inicio} px bajo el hombro y mide {@code largoPx}. Las UV son lineales: {@code v} baja de 20 a 20 + largo
      * (1 px de modelo = 1 px de textura) y {@code u} sale del largo de arco con el centro del frente en 24.
      */
+    /** El busto que esquiva el delantal que se está dibujando (lo pone y lo saca {@code GarmentFeatureRenderer}). */
+    @Nullable
+    public static com.modamod.render.relieve.BustoRender.Campo frenteDelantal;
+    /** Cuánto por fuera del busto pasa el delantal (px). */
+    private static final float MARGEN_BUSTO = 0.15f;
+
     public static void dibujarDelantal(MatrixStack matrices, VertexConsumer vc, int luz, float dil, @Nullable Piernas piernas,
                                        CapaMalla.Movimiento mov, float twirl, float cola, float inclinacion,
                                        float inicio, float largoPx, @Nullable PolleraVolado volado,
