@@ -236,7 +236,10 @@ public final class BustoRender {
             // en las medidas mas grandes que atraviesa un poco la tela"): cada capa tenía su radio y su alto según la
             // holgura y la punta casi no avanzaba (0,12 por px); con talles grandes la de abajo asomaba en el borde de
             // arriba. Igual que las cuñas ({@link #separacionCuna}); la carpa solo estira la mitad de abajo, hacia afuera.
-            hondo = cuerpo;
+            // Desde el plano del pecho, más alta y más ancha (2026-11-08, la tira azul de la ajustada junto al brazo): con
+            // la base corrida hacia adelante, más allá del costado del torso quedaba entre las dos bases una franja de la
+            // cúpula de abajo a la vista. Así cada cúpula envuelve entera a la de abajo; lo de atrás queda dentro de la tela.
+            hondo = cuerpo + separacionCuna(inflado);
             abrir = 0f;
         }
         // La tela también crece hacia los costados y arriba lo mismo que se corre hacia adelante (2026-11-08, "es por los
@@ -256,7 +259,7 @@ public final class BustoRender {
         for (int i = 0; i < 2; i++) {
             int lado = i == 0 ? -1 : 1;
             f[i] = new Forma(lado * 2f, ARRIBA + 2.3f + 0.16f * t, rx, rArriba, rAbajo, hondo,
-                    caida, apertura, dx, dy * 0.6f, piel ? -2f - inflado : -2f - separacionCuna(inflado), lado);
+                    caida, apertura, dx, dy * 0.6f, piel ? -2f - inflado : -2f, lado);
         }
         return f;
     }
@@ -492,7 +495,8 @@ public final class BustoRender {
                     int ix = Math.round((p.x + medio) * PASO), iy = Math.round((p.y - y0) * PASO);
                     if (ix < 0 || ix > nx || iy < 0 || iy > ny) continue;
                     // Lo que sale por delante de la superficie de la pieza en esa fila.
-                    float sale = (f.plano() - p.z) - (tela.en(p.y) - inflado);
+                    // Las cúpulas de tela salen del plano del pecho (z = -2): lo que pasan de la superficie de la pieza.
+                    float sale = (f.plano() - p.z) - tela.en(p.y);
                     if (sale > h[ix][iy]) h[ix][iy] = sale;
                 }
             }
