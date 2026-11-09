@@ -460,6 +460,8 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
      * uno elegido la máquina trabaja en la categoría Aplique (los 3 cuadraditos del retazo) y Teñir pinta ese aplique.
      */
     private int apliqueElegido = -1;
+    /** {@link #apliqueElegido}: todos los apliques de la prenda a la vez (2026-11-09, "para poder ponerselo en varios apliques"). */
+    public static final int TODOS = -2;
     /** El aplique que se está tiñendo ahora (lo fija el arranque: cambiar la selección a mitad de ciclo no lo toca). */
     private int apliqueEnCurso = -1;
 
@@ -471,11 +473,17 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         return l == null || com.modamod.prenda.Prendas.es(prendaEntrada, com.modamod.prenda.CategoriaDePrenda.APLIQUE) ? 0 : l.size();
     }
 
-    /** La categoría con que se pinta {@code stack} en la entrada: la de la prenda, o Aplique si hay uno elegido. */
+    /** La categoría con que se pinta {@code stack} en la entrada: la de la prenda, o Aplique si hay uno (o todos) elegido. */
     @Nullable
     private Categoria categoriaDeEntrada(ItemStack stack) {
-        if (apliqueElegido >= 0 && stack == prendaEntrada && apliqueElegido < apliquesDeEntrada()) return Categoria.APLIQUE;
+        if (stack == prendaEntrada && apliqueValido()) return Categoria.APLIQUE;
         return categoriaDe(stack);
+    }
+
+    /** ¿{@link #apliqueElegido} apunta a algo de la prenda de la entrada? */
+    private boolean apliqueValido() {
+        int n = apliquesDeEntrada();
+        return apliqueElegido == TODOS ? n > 1 : apliqueElegido >= 0 && apliqueElegido < n;
     }
 
     /** Calzado: con la simetría (de fábrica) el pie izquierdo copia el diseño del derecho; apagada se pintan por separado. */
@@ -772,7 +780,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         }
 
         ItemStack resultado = be.prendaEntrada;
-        Categoria cat = be.apliqueEnCurso >= 0 ? Categoria.APLIQUE : categoriaDe(resultado);
+        Categoria cat = be.apliqueEnCurso != -1 ? Categoria.APLIQUE : categoriaDe(resultado);
         if (cat != null) {
             // Solo lo FIJADO es el diseño (2026-09-27, "chincheta por
             // cuadradito") — se relee ahora, no al insertar.
@@ -1173,12 +1181,14 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         if (id == BTN_APLIQUE || id == BTN_APLIQUE_ATRAS) {
             int n = apliquesDeEntrada();
             if (n == 0) return false;
-            // -1 (la prenda), 0 .. n-1 (cada aplique), y vuelve.
-            int paso = id == BTN_APLIQUE ? 1 : -1;
-            apliqueElegido = Math.floorMod(apliqueElegido + 1 + paso, n + 1) - 1;
+            // La prenda (-1), cada aplique (0 .. n-1) y, con más de uno, todos juntos (TODOS); y vuelve.
+            int estados = n > 1 ? n + 2 : n + 1;
+            int pos = apliqueElegido == TODOS ? n + 1 : apliqueElegido + 1;
+            pos = Math.floorMod(pos + (id == BTN_APLIQUE ? 1 : -1), estados);
+            apliqueElegido = pos == n + 1 ? TODOS : pos - 1;
             Categoria prenda = categoriaDe(prendaEntrada);
-            categoria = apliqueElegido >= 0 ? Categoria.APLIQUE : prenda != null ? prenda : categoria;
-            if (apliqueElegido >= 0) seleccionada[Categoria.APLIQUE.ordinal()] = Math.min(seleccionada[Categoria.APLIQUE.ordinal()], CASILLAS_APLIQUE - 1);
+            categoria = apliqueElegido != -1 ? Categoria.APLIQUE : prenda != null ? prenda : categoria;
+            if (apliqueElegido != -1) seleccionada[Categoria.APLIQUE.ordinal()] = Math.min(seleccionada[Categoria.APLIQUE.ordinal()], CASILLAS_APLIQUE - 1);
             return true;
         }
         switch (id) {
@@ -1713,7 +1723,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         if (prendaEntrada.isEmpty()) return Text.translatable("modamod.tinturas.aviso.sin_prenda");
         if (estado != Estado.REPOSO) return Text.translatable("modamod.tinturas.hint.tiniendo");
         ItemStack prenda = prendaEntrada;
-        int aplique = apliqueElegido >= 0 && apliqueElegido < apliquesDeEntrada() ? apliqueElegido : -1;
+        int aplique = apliqueValido() ? apliqueElegido : -1;
         prendaEntrada = ItemStack.EMPTY;
         Text motivo = iniciarTenidoInterno(prenda, aplique);
         if (motivo != null) {
@@ -1794,10 +1804,10 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         return iniciarTenidoInterno(stack, -1);
     }
 
-    /** {@code aplique} ≥ 0: tiñe ese aplique de la prenda con la categoría Aplique, no la prenda. */
+    /** {@code aplique} ≥ 0 o {@link #TODOS}: tiñe ese aplique (o todos) de la prenda con la categoría Aplique, no la prenda. */
     @Nullable
     private Text iniciarTenidoInterno(ItemStack stack, int aplique) {
-        Categoria cat = aplique >= 0 ? Categoria.APLIQUE : categoriaDe(stack);
+        Categoria cat = aplique != -1 ? Categoria.APLIQUE : categoriaDe(stack);
         if (cat != null && estado == Estado.REPOSO) categoria = cat;   // la GUI sigue a la prenda que entra (2026-10-04)
         Text motivo = motivoParaNoTenir(stack, cat);
         if (motivo != null) return motivo;
@@ -1865,11 +1875,14 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
         List<com.modamod.aplique.Aplique> apliques = stack.get(com.modamod.item.ModamodComponents.APLIQUES);
         boolean enPrenda = !com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE);
         if (enPrenda) {
-            if (apliques == null || indiceAplique < 0 || indiceAplique >= apliques.size()) return;
-            com.modamod.aplique.Aplique a = apliques.get(indiceAplique);
-            TelaAplique tela = telaDeAplique(a.colores(), borrador);
+            if (apliques == null) return;
             List<com.modamod.aplique.Aplique> nuevos = new ArrayList<>(apliques);
-            nuevos.set(indiceAplique, a.conTela(tela.colores(), tela.tramas()));
+            for (int k = 0; k < apliques.size(); k++) {
+                if (indiceAplique != TODOS && k != indiceAplique) continue;
+                com.modamod.aplique.Aplique a = apliques.get(k);
+                TelaAplique tela = telaDeAplique(a.colores(), borrador);
+                nuevos.set(k, a.conTela(tela.colores(), tela.tramas()));
+            }
             stack.set(com.modamod.item.ModamodComponents.APLIQUES, List.copyOf(nuevos));
             return;
         }
@@ -1972,7 +1985,7 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
                 ItemStack copia = prendaEntrada.copy();
                 pintar(copia, cat, true);
                 // Pintando un aplique, el velo de zona no aplica a la prenda (sus regiones son otras).
-                return cat == Categoria.APLIQUE && apliqueElegido >= 0 ? copia : conVelo(copia, cat, resaltada);
+                return cat == Categoria.APLIQUE && apliqueElegido != -1 ? copia : conVelo(copia, cat, resaltada);
             }
         }
         net.minecraft.item.Item item = itemRepresentativo(categoria);

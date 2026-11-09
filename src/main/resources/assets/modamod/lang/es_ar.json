@@ -1651,5 +1651,6 @@
   "modamod.slot.ropa.lugar": "Cualquier prenda o accesorio del mod. El orden es el de dibujo: arriba a la izquierda va encima de todo y abajo a la derecha, pegado al cuerpo. Capucha: %s",
   "modamod.tinturas.aplique.prenda": "%s (y %s apliques ›)",
   "modamod.tinturas.aplique.n": "Aplique %s de %s: %s",
-  "modamod.tinturas.aplique.objeto": "Objeto"
+  "modamod.tinturas.aplique.objeto": "Objeto",
+  "modamod.tinturas.aplique.todos": "Todos los apliques (%s)"
 }

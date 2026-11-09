@@ -287,6 +287,13 @@ public final class GuionDebug {
                         log("tintes: boton " + t[1] + " -> " + be.onButtonClick(Integer.parseInt(t[1])) + " aplique=" + be.apliqueElegido());
                     }
                 }
+                case "patron" -> {
+                    if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
+                        net.minecraft.util.Identifier id = net.minecraft.util.Identifier.of(t[1]);
+                        be.absorberPatron(new ItemStack(net.minecraft.registry.Registries.ITEM.get(id)));
+                        log("tintes: patron " + t[1] + " -> " + be.elegirPatron(Integer.parseInt(t[2]), id));
+                    }
+                }
                 case "abrir" -> {
                     if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof net.minecraft.screen.NamedScreenHandlerFactory f) {
                         p.openHandledScreen(f);

@@ -559,7 +559,7 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
 
         // Pintando un aplique de una prenda (2026-11-09, "que la vista previa del aplique no sean las 3 zonas sino el preview
         // de la remera"): la prenda puesta, como siempre, con el aplique ya pintado.
-        boolean apliqueEnPrenda = handler.be.apliqueElegido() >= 0 && handler.be.apliquesDeEntrada() > 0;
+        boolean apliqueEnPrenda = handler.be.apliqueElegido() != -1 && handler.be.apliquesDeEntrada() > 0;
         if (handler.be.categoria() == TinturasBlockEntity.Categoria.APLIQUE && !apliqueEnPrenda) {
             dibujarMuestrasRetazo(context, handler.be.prendaDeVistaPrevia(resaltada));
             return;
@@ -668,7 +668,9 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
         }
 
         int nApliques = be.apliquesDeEntrada();
-        if (nApliques > 0 && be.apliqueElegido() >= 0 && be.apliqueElegido() < nApliques) {
+        if (nApliques > 1 && be.apliqueElegido() == TinturasBlockEntity.TODOS) {
+            btnCategoria.setMessage(Text.translatable("modamod.tinturas.aplique.todos", nApliques));
+        } else if (nApliques > 0 && be.apliqueElegido() >= 0 && be.apliqueElegido() < nApliques) {
             com.modamod.aplique.Aplique a = be.getPrendaEntrada().get(com.modamod.item.ModamodComponents.APLIQUES).get(be.apliqueElegido());
             Text nombre = a.objeto() != null ? Text.translatable("modamod.tinturas.aplique.objeto")
                     : Text.translatable("modamod.aplique." + a.modelo().asString());
