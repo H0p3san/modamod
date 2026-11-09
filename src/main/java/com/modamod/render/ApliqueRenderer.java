@@ -648,14 +648,16 @@ public final class ApliqueRenderer {
                 Vector3f nq = normales.transform(nl).mul(signo);
                 if (nq.lengthSquared() > 1e-12f) nq.normalize();
                 float ax = Math.abs(quad.normal().x()), ay = Math.abs(quad.normal().y()), az = Math.abs(quad.normal().z());
+                // Apenas afuera de la tela, en el espacio del modelo (2026-11-09, "en la preview parpadean los patrones"):
+                // antes se corría después de transformar, 0,0025 en coordenadas de salida; en el mundo eso son bloques, pero en
+                // la vista previa son píxeles de pantalla y la trama quedaba a la misma profundidad que la tela.
+                Vector3f nReal = new Vector3f(quad.normal());   // la de la cara, sin dar vuelta por la luz
+                Vector3f afuera = zonaTrama >= 0 && nReal.lengthSquared() > 1e-10f ? nReal.normalize(0.0025f) : null;
                 for (GeoVertex v : quad.vertices()) {
-                    Vector4f p = pos.transform(new Vector4f(v.position().x(), v.position().y(), v.position().z(), 1f));
+                    float vx = v.position().x(), vy = v.position().y(), vz = v.position().z();
+                    if (afuera != null) { vx += afuera.x; vy += afuera.y; vz += afuera.z; }
+                    Vector4f p = pos.transform(new Vector4f(vx, vy, vz, 1f));
                     float u = v.texU(), t = v.texV();
-                    if (zonaTrama >= 0 && nq.lengthSquared() > 1e-10f) {
-                        // Apenas afuera de la tela (no calca la profundidad: el orden en que se vuelcan las capas no importa).
-                        Vector3f n = new Vector3f(nq).normalize(0.0025f);
-                        p.add(n.x, n.y, n.z, 0f);
-                    }
                     if (zonaTrama >= 0) {
                         // Un paño de trama cada 16 px del modelo (posiciones en bloques), centrado en el aplique.
                         float px = v.position().x(), py = v.position().y(), pz = v.position().z();
