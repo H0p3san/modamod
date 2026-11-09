@@ -239,9 +239,12 @@ public final class BustoRender {
             hondo = cuerpo;
             abrir = 0f;
         }
-        float rx = Math.min(2.6f, 1.95f + 0.07f * t) + 0.5f * abrir;
-        float rArriba = 2.3f + 0.16f * t + 0.5f * abrir;
-        float rAbajo = 1.3f + 0.22f * t + abrir + carpa;
+        // La tela también crece hacia los costados y arriba lo mismo que se corre hacia adelante (2026-11-08, "es por los
+        // costados q se sale"): en los costados la cúpula es casi vertical y correrla en z no la separa de la de abajo.
+        float sep = piel ? 0f : separacionCuna(inflado);
+        float rx = Math.min(2.6f, 1.95f + 0.07f * t) + 0.5f * abrir + sep;
+        float rArriba = 2.3f + 0.16f * t + 0.5f * abrir + sep;
+        float rAbajo = 1.3f + 0.22f * t + abrir + carpa + sep;
         float caida = (0.06f + 0.025f * t) * (0.6f + 0.4f * b.sujecion());
         float apertura = 0.04f + 0.012f * t;
         if (rigido) {
@@ -470,16 +473,23 @@ public final class BustoRender {
      */
     private static List<Vert[]> manto(Forma[] fs, float inflado, float carpa, Tela tela) {
         float y0 = tela.desde(), y1 = tela.hasta();
-        int nx = 8 * PASO, ny = Math.round((y1 - y0) * PASO);
+        int anillos = ANILLOS * 4, gajos = GAJOS * 3;
+        // El campo cubre hasta donde llegan las cúpulas (2026-11-08, "es por los costados q se sale"): con los talles
+        // grandes los pechos son más anchos que el torso, y lo que caía fuera de x = ±4 quedaba sin tela encima.
+        float medio = 4f;
+        for (Forma f : fs) {
+            for (int j = 0; j < gajos; j++) medio = Math.max(medio, Math.abs(f.punto(1f, Math.PI * 2 * j / gajos).x) + 0.5f);
+        }
+        medio = (float) Math.ceil(medio * PASO) / PASO;
+        int nx = Math.round(2f * medio * PASO), ny = Math.round((y1 - y0) * PASO);
         if (ny < 2) return List.of();
         float[][] h = new float[nx + 1][ny + 1];
-        int anillos = ANILLOS * 4, gajos = GAJOS * 3;
         for (Forma f : fs) {
             for (int i = 0; i <= anillos; i++) {
                 float r = i / (float) anillos;
                 for (int j = 0; j < gajos; j++) {
                     Vector3f p = f.punto(r, Math.PI * 2 * j / gajos);
-                    int ix = Math.round((p.x + 4f) * PASO), iy = Math.round((p.y - y0) * PASO);
+                    int ix = Math.round((p.x + medio) * PASO), iy = Math.round((p.y - y0) * PASO);
                     if (ix < 0 || ix > nx || iy < 0 || iy > ny) continue;
                     // Lo que sale por delante de la superficie de la pieza en esa fila.
                     float sale = (f.plano() - p.z) - (tela.en(p.y) - inflado);
@@ -521,7 +531,7 @@ public final class BustoRender {
         }
         for (int ix = 0; ix <= nx; ix++) {
             for (int iy = 0; iy <= ny; iy++) {
-                float x = -4f + ix / (float) PASO, y = y0 + iy / (float) PASO;
+                float x = -medio + ix / (float) PASO, y = y0 + iy / (float) PASO;
                 int a = Math.max(0, ix - 1), c = Math.min(nx, ix + 1);
                 int d = Math.max(0, iy - 1), e = Math.min(ny, iy + 1);
                 float fx = (z[c][iy] - z[a][iy]) / ((c - a) / (float) PASO);
