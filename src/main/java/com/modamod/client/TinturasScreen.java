@@ -143,13 +143,14 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
                 () -> this.handler.be.linea(), b -> clickBoton(TinturasBlockEntity.BTN_LINEA)));
 
         // Categoría con flechas a los costados.
+        // Con una prenda con apliques en la entrada (2026-11-09) las flechas eligen qué se pinta: la prenda o cada aplique.
         btnCategoriaAtras = new EstiloPergamino.BotonPergamino(this.x + X_COL, this.y + 24, 18, 16, Text.literal("‹"),
-                b -> clickBoton(TinturasBlockEntity.BTN_CATEGORIA_ATRAS));
+                b -> clickBoton(this.handler.be.apliquesDeEntrada() > 0 ? TinturasBlockEntity.BTN_APLIQUE_ATRAS : TinturasBlockEntity.BTN_CATEGORIA_ATRAS));
         btnCategoria = new EstiloPergamino.BotonPergamino(this.x + X_COL + 20, this.y + 24, ANCHO_COL - 40, 16, Text.literal(""),
-                b -> clickBoton(TinturasBlockEntity.BTN_CATEGORIA));
+                b -> clickBoton(this.handler.be.apliquesDeEntrada() > 0 ? TinturasBlockEntity.BTN_APLIQUE : TinturasBlockEntity.BTN_CATEGORIA));
         btnCategoria.setTooltip(Tooltip.of(Text.translatable("modamod.tinturas.tooltip.categoria")));
         btnCategoriaAdelante = new EstiloPergamino.BotonPergamino(this.x + X_COL + ANCHO_COL - 18, this.y + 24, 18, 16, Text.literal("›"),
-                b -> clickBoton(TinturasBlockEntity.BTN_CATEGORIA));
+                b -> clickBoton(this.handler.be.apliquesDeEntrada() > 0 ? TinturasBlockEntity.BTN_APLIQUE : TinturasBlockEntity.BTN_CATEGORIA));
         this.addDrawableChild(btnCategoriaAtras);
         this.addDrawableChild(btnCategoria);
         this.addDrawableChild(btnCategoriaAdelante);
@@ -663,7 +664,18 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
             handler.zonaActiva = zonaDeSel;
         }
 
-        btnCategoria.setMessage(Text.translatable("modamod.modelado.categoria." + cat.name().toLowerCase(Locale.ROOT)));
+        int nApliques = be.apliquesDeEntrada();
+        if (nApliques > 0 && be.apliqueElegido() >= 0 && be.apliqueElegido() < nApliques) {
+            com.modamod.aplique.Aplique a = be.getPrendaEntrada().get(com.modamod.item.ModamodComponents.APLIQUES).get(be.apliqueElegido());
+            Text nombre = a.objeto() != null ? Text.translatable("modamod.tinturas.aplique.objeto")
+                    : Text.translatable("modamod.aplique." + a.modelo().asString());
+            btnCategoria.setMessage(Text.translatable("modamod.tinturas.aplique.n", be.apliqueElegido() + 1, nApliques, nombre));
+        } else if (nApliques > 0) {
+            btnCategoria.setMessage(Text.translatable("modamod.tinturas.aplique.prenda",
+                    Text.translatable("modamod.modelado.categoria." + cat.name().toLowerCase(Locale.ROOT)), nApliques));
+        } else {
+            btnCategoria.setMessage(Text.translatable("modamod.modelado.categoria." + cat.name().toLowerCase(Locale.ROOT)));
+        }
         btnModo.setMessage(Text.translatable(casilla.modo.traduccion()));
         btnOpacidad.setMessage(Text.literal(casilla.opacidad + "%"));
         int pos = be.posicionEnOrden(sel);

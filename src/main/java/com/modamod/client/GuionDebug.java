@@ -199,6 +199,7 @@ public final class GuionDebug {
                 mc.options.getFov().setValue(Integer.parseInt(t[1]));
             }
             case "chato" -> com.modamod.render.relieve.BustoRender.debugChatoAbierto = Float.parseFloat(t[1]);
+            case "tintes" -> tintes(server, uuid, linea.substring(7).strip());
             case "aleteo" -> com.modamod.render.ApliqueRenderer.debugAleteo =
                     t[1].equals("libre") ? Float.NaN : Float.parseFloat(t[1]);
             case "medir" -> {
@@ -255,6 +256,53 @@ public final class GuionDebug {
         var p = mc.player;
         p.setHeadYaw(giroCuerpo); p.prevHeadYaw = giroCuerpo;
         p.setBodyYaw(giroCuerpo); p.prevBodyYaw = giroCuerpo;
+    }
+
+    /**
+     * La Estación de Tintes de prueba (2026-11-09): {@code tintes poner} pone una creativa junto al jugador y le carga la
+     * prenda del lugar 0 de ropa; {@code tintes boton <id>} aprieta un botón de su pantalla; {@code tintes tenir} tiñe;
+     * {@code tintes sacar} devuelve lo teñido al lugar 0 (y saca la máquina).
+     */
+    private static net.minecraft.util.math.BlockPos posTintes;
+
+    private static void tintes(IntegratedServer server, java.util.UUID uuid, String orden) {
+        enServidor(server, uuid, p -> {
+            var mundo = p.getServerWorld();
+            String[] t = orden.split(" ");
+            switch (t[0]) {
+                case "poner" -> {
+                    posTintes = p.getBlockPos().add(3, 0, 0);
+                    mundo.setBlockState(posTintes, com.modamod.tinturas.TinturasMod.TINTURAS_CREATIVA.getDefaultState());
+                    if (mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
+                        TrinketInventory inv = ListaDeRopa.de(p);
+                        be.cargarEntradaSinArrancar(inv == null ? ItemStack.EMPTY : inv.getStack(0));
+                        log("tintes: entrada con " + be.apliquesDeEntrada() + " apliques");
+                    }
+                }
+                case "boton" -> {
+                    if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
+                        log("tintes: boton " + t[1] + " -> " + be.onButtonClick(Integer.parseInt(t[1])) + " aplique=" + be.apliqueElegido());
+                    }
+                }
+                case "tenir" -> {
+                    if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
+                        net.minecraft.text.Text motivo = be.reintentarTenido();
+                        log("tintes: teñir -> " + (motivo == null ? "arrancó" : motivo.getString()));
+                    }
+                }
+                case "sacar" -> {
+                    if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
+                        ItemStack s = be.getSalida();
+                        TrinketInventory inv = ListaDeRopa.de(p);
+                        if (!s.isEmpty() && inv != null) inv.setStack(0, s.copy());
+                        log("tintes: salida " + (s.isEmpty() ? "vacía" : String.valueOf(s.get(com.modamod.item.ModamodComponents.APLIQUES))));
+                        mundo.removeBlock(posTintes, false);
+                        posTintes = null;
+                    }
+                }
+                default -> log("tintes: no entiendo " + orden);
+            }
+        });
     }
 
     /** La ropa y el perfil de antes del guion: se devuelven al salir, así el guion no pisa la partida. */

@@ -1648,5 +1648,8 @@
   "modamod.maniqui.manos": "Manos",
   "modamod.ropa.fila_armadura": "Fila de la armadura: lo de arriba de esta fila se dibuja encima de la armadura; lo de abajo, debajo.",
   "trinkets.slot.ropa.lugar": "Ropa",
-  "modamod.slot.ropa.lugar": "Cualquier prenda o accesorio del mod. El orden es el de dibujo: arriba a la izquierda va encima de todo y abajo a la derecha, pegado al cuerpo. Capucha: %s"
+  "modamod.slot.ropa.lugar": "Cualquier prenda o accesorio del mod. El orden es el de dibujo: arriba a la izquierda va encima de todo y abajo a la derecha, pegado al cuerpo. Capucha: %s",
+  "modamod.tinturas.aplique.prenda": "%s (y %s apliques ›)",
+  "modamod.tinturas.aplique.n": "Aplique %s de %s: %s",
+  "modamod.tinturas.aplique.objeto": "Objeto"
 }

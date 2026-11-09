@@ -1648,5 +1648,8 @@
   "modamod.maniqui.manos": "Hands",
   "modamod.ropa.fila_armadura": "Armor row: what is above this row is drawn over the armor; what is below, under it.",
   "trinkets.slot.ropa.lugar": "Clothing",
-  "modamod.slot.ropa.lugar": "Any garment or accessory of the mod. The order is the draw order: top left goes over everything and bottom right, against the body. Hood: %s"
+  "modamod.slot.ropa.lugar": "Any garment or accessory of the mod. The order is the draw order: top left goes over everything and bottom right, against the body. Hood: %s",
+  "modamod.tinturas.aplique.prenda": "%s (and %s appliqués ›)",
+  "modamod.tinturas.aplique.n": "Appliqué %s of %s: %s",
+  "modamod.tinturas.aplique.objeto": "Object"
 }
