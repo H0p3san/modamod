@@ -87,6 +87,10 @@ public final class GuionDebug {
             if (--cuadrosFoto > 0) return;
             String nombre = fotoPendiente;
             fotoPendiente = null;
+            // Minecraft no pisa un archivo que ya existe: sin esto quedaba la foto vieja.
+            try {
+                Files.deleteIfExists(mc.runDirectory.toPath().resolve("screenshots").resolve(nombre + ".png"));
+            } catch (IOException ignorado) { }
             ScreenshotRecorder.saveScreenshot(mc.runDirectory, nombre + ".png", mc.getFramebuffer(), m -> {});
             log("foto " + nombre);
             return;
@@ -97,6 +101,7 @@ public final class GuionDebug {
             // Terminó: todo como estaba (la ropa, el perfil, la cámara), con o sin "salir".
             enCurso = false;
             restaurar((IntegratedServer) mc.getServer(), mc.player.getUuid());
+            alturaFoto = 12f;
             if (modoFoto) {
                 modoFoto = false;
                 mc.options.getFov().setValue(fovAntes);
@@ -194,6 +199,12 @@ public final class GuionDebug {
             });
             case "cmd" -> mc.player.networkHandler.sendChatCommand(linea.substring(4).strip());
             case "esperar" -> espera = Integer.parseInt(t[1]);
+            case "altura" -> alturaFoto = Float.parseFloat(t[1]);
+            case "maletin" -> com.modamod.render.MaletinRenderer.debugBajar = Float.parseFloat(t[1]);
+            case "ventana" -> {
+                mc.getWindow().setWindowedSize(Integer.parseInt(t[1]), Integer.parseInt(t[2].strip()));
+                espera = 10;
+            }
             case "zoom" -> {
                 entrarModoFoto(mc);
                 mc.options.getFov().setValue(Integer.parseInt(t[1]));
@@ -227,7 +238,7 @@ public final class GuionDebug {
         cuadrosFoto = 10;
         entrarModoFoto(mc);
         // La cámara de tercera persona de frente sigue al yaw del jugador: queda fija (yaw 0) y lo que gira es el cuerpo.
-        float giro = 0f, pitch = 12f;      // pitch > 0: la cámara baja un poco y centra el torso
+        float giro = 0f, pitch = alturaFoto;      // pitch > 0: la cámara baja un poco y centra el torso
         switch (angulo) {
             case "atras" -> giro = 180f;
             case "costado" -> giro = 90f;
@@ -251,6 +262,9 @@ public final class GuionDebug {
         mc.options.hudHidden = true;
         mc.options.getFov().setValue(45);
     }
+
+    /** Inclinación de la cámara en frente/atrás/costado ({@code altura <grados>}): más = mira más abajo (las manos, los pies). */
+    private static float alturaFoto = 12f;
 
     /** El yaw del cuerpo y la cabeza mientras se espera la foto (se repite cada tick: el jugador lo corrige solo). */
     private static float giroCuerpo;

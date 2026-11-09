@@ -45,8 +45,13 @@ public final class MaletinRenderer {
             {12.3f, 1.2f, 8.8f, 13.5f, 2.0f, 10.0f, 2},
     };
 
-    /** Escala del modelo a px del brazo, y dónde queda la manija: en la mano (y 9,5 del brazo, centrada en el brazo). */
-    private static final float ESCALA = 0.6f, MANIJA_ARRIBA = 13.6f, MANO_Y = 9.5f, BRAZO_X = -1f;
+    /**
+     * Escala del modelo a px del brazo, y dónde queda la manija: agarrada por el puño (2026-11-09, "acomoda el maletin en la
+     * mano asi parezca que lo agarra de la manijita"). Con 9,5 la manija quedaba metida en el brazo y la valija pegada a la
+     * muñeca; calibrado con el guion ("maletin <px>", fotos de frente y de costado), en 11 la barra de la manija sale del
+     * borde de abajo de la mano y la valija cuelga justo debajo.
+     */
+    private static final float ESCALA = 0.6f, MANIJA_ARRIBA = 13.6f, MANO_Y = 11f, BRAZO_X = -1f;
 
     /**
      * Las cajas en el marco del brazo derecho (px, Y hacia abajo): el largo del maletín va hacia adelante (Z del brazo) y el
@@ -63,6 +68,8 @@ public final class MaletinRenderer {
     }
 
     private static final ModelPart[] PARTES = new ModelPart[3];
+    /** Guion de debug ({@code maletin <px>}): baja el maletín esos px para calibrarlo. */
+    public static float debugBajar = 0f;
 
     public static List<SombreroRenderer.Caja> cajas() {
         return CAJAS;
@@ -86,10 +93,13 @@ public final class MaletinRenderer {
                                VertexConsumerProvider vertexConsumers, int luz) {
         if (!(com.modamod.prenda.Prendas.es(maletin, com.modamod.prenda.CategoriaDePrenda.MALETIN))) return;
         vertexConsumers = EfectoTrim.envolver(maletin, vertexConsumers);
+        matrices.push();
+        matrices.translate(0f, debugBajar / 16f, 0f);
         for (int z = 0; z < 3; z++) {
             GarmentFeatureRenderer.dibujarModelPart(parte(z), CuerpoGeometria.Superficie.CUERPO,
                     ZonaTextura.de(maletin, z, false), biped.rightArm, matrices, vertexConsumers, luz);
         }
+        matrices.pop();
         EfectoTrim.volcar();
         ApliqueRenderer.dibujar(maletin, 0f, biped, matrices, vertexConsumers, luz);
     }
