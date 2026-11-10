@@ -691,6 +691,8 @@ Todo el contenido del mod está en su propia pestaña del inventario creativo: *
 
 **Faldón por fuera de la pollera y collar redondeado** (2026-10-11): el faldón de malla de un Top ahora pasa por fuera de las polleras que lleves puestas, sin que se atraviesen. El collar ya no se ve cuadrado: la banda y su borde son anillos de esquinas redondeadas; el herraje y los colgantes siguen igual.
 
+**El faldón sigue al Top** (2026-11-09): el faldón arranca justo donde termina el torso, con su mismo ancho en todos los calces (también los costados, que casi no se inflan) y se abre de a poco hasta pasar las piernas. Su tela es la del Top que continúa: el mismo color y los patrones al mismo tamaño, sin cortarse en la unión (antes se estiraban las filas de abajo del torso). El molde de ruedo del torso pasa a la base del faldón (ajustado, campana, piel, volados): el torso queda recto y sin colgar. El frente abierto sigue hacia abajo con el ancho de la apertura del calce; cruzado, sigue cruzado; abierto solo en el pecho, el faldón va cerrado. Las fotos sublimadas van sobre el lienzo de torso + faldón (una foto al 100 % cubre hasta el ruedo del faldón y un logo se centra en todo el largo), la red y el degradé siguen sin cortarse, y las zonas de Tintes del borde de abajo y del ruedo pasan a la base del faldón (de ahí sale el color del ribete de piel); el pecho baja hasta ahí.
+
 **Collar (2026-10-11):** el collar de `BandaZona.CUELLO` copia la forma y el anclaje de Player Collars (anillo rectangular chico a la base del cuello, anclado a la cabeza).
 
 

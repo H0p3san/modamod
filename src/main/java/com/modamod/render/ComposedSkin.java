@@ -58,11 +58,18 @@ public final class ComposedSkin {
         List<String> caras = partes.contains(Parte.CABEZA) ? List.of() : carasPuestas(player);
         // El cinto que aprieta (2026-11-08, "solo en sus filas"): la segunda capa del torso se borra solo a su altura.
         float[] cinto = partes.contains(Parte.TORSO) ? null : GarmentFeatureRenderer.compresionDeCintos(GarmentFeatureRenderer.cintosDe(player));
-        if (partes.isEmpty() && !sombrero && caras.isEmpty() && cinto == null) return original;
+        // El tiro del pantalón (2026-11-10, "el pantalon con tiro alto se abre al costado"): el pantalón no tapa el torso, así
+        // que la segunda capa de la skin seguía ahí y, con 3D Skin Layers, asomaba por los costados de la cintura holgada.
+        int tiro = partes.contains(Parte.TORSO) ? 0 : filasDeTiro(player);
+        // El cuello alto de la capa, como el sombrero (2026-11-10, "se sale una puntita de la cabeza atras", con 3D Skin
+        // Layers): el pelo de la segunda capa atravesaba el cuello. Se borra atrás y a los costados, en las filas que rodea.
+        ItemStack capa = partes.contains(Parte.CABEZA) ? null : GarmentFeatureRenderer.capaDe(prendasPuestas(player));
+        boolean cuelloCapa = capa != null && com.modamod.item.CapaItem.cuelloAlto(capa);
+        if (partes.isEmpty() && !sombrero && caras.isEmpty() && cinto == null && tiro == 0 && !cuelloCapa) return original;
 
         boolean slim = original.model() == SkinTextures.Model.SLIM;
         String key = original.texture() + "|" + SkinRegions.clave(partes, slim) + (sombrero ? "|sombrero" + filas : "")
-                + (caras.isEmpty() ? "" : "|cara" + caras) + (cinto == null ? "" : "|cinto" + (int) cinto[0] + "-" + (int) cinto[1]);
+                + (caras.isEmpty() ? "" : "|cara" + caras) + (cinto == null ? "" : "|cinto" + (int) cinto[0] + "-" + (int) cinto[1]) + (tiro == 0 ? "" : "|tiro" + tiro) + (cuelloCapa ? "|cuellocapa" : "");
         SkinTextures cached = CACHE.get(key);
         if (cached != null) return cached;
 
@@ -98,6 +105,20 @@ public final class ComposedSkin {
                     borrar(composed, new CajaSkin.Rect(r.x0(), r.y0() + t[0], r.x1(), r.y0() + t[1]));
                 }
                 if (t[2] < t[3]) borrar(composed, new CajaSkin.Rect(c.atras().x0(), c.atras().y0() + t[2], c.atras().x1(), c.atras().y0() + t[3]));
+            }
+        }
+
+        if (cuelloCapa) {
+            CajaSkin c = LayoutSkin.overlay(Parte.CABEZA, slim);
+            for (CajaSkin.Rect r : List.of(c.derecha(), c.izquierda(), c.atras())) {
+                borrar(composed, new CajaSkin.Rect(r.x0(), r.y1() - FILAS_CUELLO_CAPA, r.x1(), r.y1()));
+            }
+        }
+
+        if (tiro > 0) {
+            CajaSkin c = LayoutSkin.overlay(Parte.TORSO, slim);
+            for (CajaSkin.Rect r : List.of(c.frente(), c.derecha(), c.izquierda(), c.atras())) {
+                borrar(composed, new CajaSkin.Rect(r.x0(), r.y1() - tiro, r.x1(), r.y1()));
             }
         }
 
@@ -186,6 +207,30 @@ public final class ComposedSkin {
         float bajo = -8f;
         for (var c : SombreroRenderer.cajas(sombrero)) bajo = Math.max(bajo, c.max()[1]);
         return Math.max(0, Math.min(8, (int) Math.ceil(bajo + 8f)));
+    }
+
+    /** Las filas de abajo de la cabeza que rodea el cuello alto de la capa (3,5 px sobre los hombros). */
+    private static final int FILAS_CUELLO_CAPA = 4;
+
+    /** Lo puesto, o la prenda en construcción del visor de la Mesa (que no está puesta, ver partesDePrendas). */
+    private static List<ItemStack> prendasPuestas(AbstractClientPlayerEntity player) {
+        List<ItemStack> override = GarmentFeatureRenderer.previewOverride;
+        if (override != null) return override;
+        List<ItemStack> puestas = new ArrayList<>();
+        TrinketsApi.getTrinketComponent(player).ifPresent(c -> {
+            for (var par : c.getAllEquipped()) puestas.add(par.getRight());
+        });
+        return puestas;
+    }
+
+    /** Las filas del torso que tapa el pantalón más alto puesto (su tiro), 0 sin pantalón. */
+    private static int filasDeTiro(AbstractClientPlayerEntity player) {
+        int filas = 0;
+        for (ItemStack stack : prendasPuestas(player)) {
+            if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.PANTALON))
+                filas = Math.max(filas, Math.min(12, com.modamod.item.PantalonItem.tiro(stack).filas));
+        }
+        return filas;
     }
 
     private static List<Parte> partesDePrendas(AbstractClientPlayerEntity player) {

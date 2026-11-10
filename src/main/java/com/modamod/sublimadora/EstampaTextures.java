@@ -198,8 +198,35 @@ public final class EstampaTextures {
 
     /** La remera del corte que sea. */
     private static Prenda deLaRemera(Variante v) {
-        return new Prenda(com.modamod.render.CuerpoGeometria.ESCALA_TELA, LIENZO_ANCHO, lienzoAlto(v),
-                BANDA_HOMBRO, v.largo().filas, caras(v));
+        return deLaRemera(v, 0);
+    }
+
+    /**
+     * Con faldón (2026-11-09, "canvas includes faldón"): el lienzo y el cuerpo bajan {@code faldon} px más, así una foto al 100 %
+     * cubre la prenda hasta el ruedo del faldón y un logo se centra en todo el largo.
+     */
+    private static Prenda deLaRemera(Variante v, int faldon) {
+        return new Prenda(com.modamod.render.CuerpoGeometria.ESCALA_TELA, LIENZO_ANCHO,
+                BANDA_HOMBRO + Math.max(v.largo().filas + faldon, v.manga().filas), BANDA_HOMBRO, v.largo().filas + faldon, caras(v));
+    }
+
+    /**
+     * Las caras de la tira del faldón (v 20 en adelante, {@code faldon} filas), con su ventana del lienzo debajo de la del torso.
+     * Mismo lienzo que {@link #deLaRemera(Variante, int)} con manga larga, que es la base con que se estampa el torso.
+     */
+    private static Prenda delFaldon(Variante v, int faldon) {
+        Variante base = new Variante(v.largo(), Variante.Manga.LARGA, v.cuello());
+        int y = BANDA_HOMBRO + v.largo().filas, h = faldon;
+        Cara[] caras = {
+                new Cara(new int[] { 20, 20, 8, h }, new int[] { 8, y, 8, h }, false).principal_(),
+                new Cara(new int[] { 32, 20, 8, h }, new int[] { 8, y, 8, h }, true).espejada().principal_(),
+                new Cara(new int[] { 18, 20, 2, h }, new int[] { 2, y, 2, h }, false),
+                new Cara(new int[] { 16, 20, 2, h }, new int[] { 0, y, 2, h }, true),
+                new Cara(new int[] { 28, 20, 2, h }, new int[] { 20, y, 2, h }, false),
+                new Cara(new int[] { 30, 20, 2, h }, new int[] { 22, y, 2, h }, true),
+        };
+        Prenda torso = deLaRemera(base, faldon);
+        return new Prenda(torso.escala(), torso.lienzoAncho(), torso.lienzoAlto(), torso.cuerpoY(), torso.cuerpoAlto(), caras);
     }
 
     // --- medias -----------------------------------------------------------
@@ -346,7 +373,7 @@ public final class EstampaTextures {
     /** Que prenda estampable es este stack, o null si no lo es. */
     @Nullable
     private static Prenda prendaDe(ItemStack stack) {
-        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) return deLaRemera(RemeraItem.variante(stack));
+        if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.REMERA)) return deLaRemera(RemeraItem.variante(stack), faldonPx(stack));
         if (com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.MEDIAS)) return MEDIAS;
         // Pantalón usa el mismo UV de pierna que las medias (misma Parte.
         // PIERNA_*) — el mapeo de caras es idéntico, se reusa tal cual.
@@ -518,6 +545,15 @@ public final class EstampaTextures {
                                       @Nullable Estampa espalda, int color,
                                       java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas,
                                       @Nullable PatronRed red, java.util.List<CapaEstampa> mascaras, int[] mangas) {
+        return cuerpoEstampado(variante, frente, espalda, color, capas, red, mascaras, mangas, 0);
+    }
+
+    /** Con {@code faldon} px de faldón (0 = sin): el lienzo de las fotos, el degradé y las zonas de Tintes siguen hasta su ruedo. */
+    @Nullable
+    public static Identifier cuerpoEstampado(Variante variante, @Nullable Estampa frente,
+                                      @Nullable Estampa espalda, int color,
+                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas,
+                                      @Nullable PatronRed red, java.util.List<CapaEstampa> mascaras, int[] mangas, int faldon) {
         // Sin estampas, sin patron, sin red y sin tenir no hay nada que
         // componer: se usa la textura del pack tal cual.
         if (frente == null && espalda == null && capas.isEmpty() && red == null && color == RemeraItem.BLANCO
@@ -526,7 +562,8 @@ public final class EstampaTextures {
         }
         String clave = variante.clave() + "|" + frente + "|" + espalda + "|" + color + "|" + capas + "|" + red
                 + "|" + mascaras
-                + (capas.stream().anyMatch(c -> c.region() == com.modamod.region.RegionPintura.PUNOS) ? "|mangas" + mangas[0] + "," + mangas[1] : "");
+                + (capas.stream().anyMatch(c -> c.region() == com.modamod.region.RegionPintura.PUNOS) ? "|mangas" + mangas[0] + "," + mangas[1] : "")
+                + (faldon > 0 ? "|faldon" + faldon : "");
         Identifier hecha = CACHE_CUERPO.get(clave);
         if (hecha != null) return hecha;
         if (FALLADAS.containsKey(clave)) return null;
@@ -540,9 +577,9 @@ public final class EstampaTextures {
                 base.getWidth(), base.getHeight(), false);
         salida.copyFrom(base);
         if (color != RemeraItem.BLANCO) tenir(salida, color);
-        if (!capas.isEmpty()) aplicarPatron(salida, base, capas, variante.largo().filas, mangas);
+        if (!capas.isEmpty()) aplicarPatron(salida, base, capas, variante.largo().filas, mangas, faldon, false);
 
-        if (!estampar(salida, deLaRemera(variante), null, frente, espalda, mascaras)) {
+        if (!estampar(salida, deLaRemera(variante, faldon), null, frente, espalda, mascaras)) {
             salida.close();
             return null;
         }
@@ -559,8 +596,9 @@ public final class EstampaTextures {
             // que se perforan ahí, no acá, para que el refuerzo de borde
             // se calcule contra el puño de verdad y no contra la manga
             // LARGA que se usa como base (bug real: "ni bordes de mangas").
+            // Con faldón el ruedo del torso no es un borde: sigue el faldón (sin refuerzo ahí).
             com.modamod.render.ClothingTextureCache.perforarRed(salida, red,
-                    com.modamod.prenda.Parte.TORSO, 0, variante.largo().filas);
+                    com.modamod.prenda.Parte.TORSO, 0, faldon > 0 ? 12 : variante.largo().filas);
         }
 
         Identifier destino = CACHE_CUERPO.registrar(clave, salida);
@@ -570,6 +608,80 @@ public final class EstampaTextures {
         // remera teñida. Ver el javadoc de registrarImagenCompuesta.
         com.modamod.render.ClothingTextureCache.registrarImagenCompuesta(destino, salida);
         return destino;
+    }
+
+    /** Las px de faldón de un Top, o 0 si no tiene. */
+    public static int faldonPx(ItemStack stack) {
+        return com.modamod.item.TopCorte.faldon(stack) >= 0 ? com.modamod.item.TopCorte.largoFaldon(stack).pixeles : 0;
+    }
+
+    /**
+     * La tela del faldón de un Top (2026-11-09, "la textura del material se distribuye distinto de la prenda que se supone está
+     * continuando"): en la tira del torso, desde v 20, una fila por px de largo, va la tela que sigue debajo del Top: el mismo
+     * teñido, los patrones evaluados más abajo de la última fila del torso (no se cortan ni cambian de tamaño), las fotos sobre el
+     * lienzo de torso + faldón, la red corrida, el frente y el rib del ruedo. La trama sale de una fila del medio del torso (la de
+     * arriba tiene el escote). Null si una foto todavía no bajó (no se cachea).
+     */
+    @Nullable
+    public static Identifier faldon(ItemStack stack) {
+        Variante variante = RemeraItem.variante(stack);
+        int filas = variante.largo().filas;
+        int largo = faldonPx(stack);
+        int color = RemeraItem.color(stack);
+        java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas = com.modamod.region.RegionResolver.capas(stack);
+        PatronRed red = PatronRed.leer(stack);
+        com.modamod.item.ChaquetaFrente frente = com.modamod.item.TopCorte.frente(stack);
+        com.modamod.item.Calce calce = com.modamod.item.Calce.leer(stack);
+        boolean rib = com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO) == com.modamod.item.Ruedo.AJUSTADO;
+        boolean estampada = tieneEstampa(stack);
+        Variante larga = new Variante(Variante.Largo.LARGO, Variante.Manga.LARGA, variante.cuello());
+        String clave = "faldon|" + larga.clave() + "|" + color + "|" + capas + "|" + filas + "|" + largo + "|" + frente
+                + "|" + com.modamod.render.DetallesHoodie.anchoApertura(calce) + "|" + red + (rib ? "|rib" : "")
+                + (estampada ? "|" + claveEstampas(stack) : "");
+        Identifier hecha = CACHE_CUERPO.get(clave);
+        if (hecha != null) return hecha;
+        if (FALLADAS.containsKey(clave)) return null;
+        NativeImage base = telaCuerpo(larga);
+        if (base == null) {
+            FALLADAS.put(clave, true);
+            return null;
+        }
+        int e = com.modamod.render.CuerpoGeometria.ESCALA_TELA;
+        NativeImage cruda = new NativeImage(NativeImage.Format.RGBA, base.getWidth(), base.getHeight(), true);
+        for (int y = 20 * e; y < (20 + largo) * e && y < base.getHeight(); y++) {
+            int desde = 28 * e + Math.floorMod(y - 20 * e, e);   // la fila 8 del torso, repetida
+            for (int x = 16 * e; x < 40 * e && x < base.getWidth(); x++) cruda.setColor(x, y, base.getColor(x, desde));
+        }
+        NativeImage salida = new NativeImage(NativeImage.Format.RGBA, cruda.getWidth(), cruda.getHeight(), false);
+        salida.copyFrom(cruda);
+        if (color != RemeraItem.BLANCO) tenir(salida, color);
+        if (!capas.isEmpty()) aplicarPatron(salida, cruda, capas, filas, new int[]{12, 12}, largo, true);
+        cruda.close();
+        if (estampada && !estampar(salida, delFaldon(variante, largo), null, RemeraItem.estampaDe(stack, Estampa.Cara.FRENTE),
+                RemeraItem.estampaDe(stack, Estampa.Cara.ESPALDA), RemeraItem.capasDe(stack))) {
+            salida.close();
+            return null;
+        }
+        if (red != null) com.modamod.render.ClothingTextureCache.perforarRedFaldon(salida, red, filas, largo);
+        com.modamod.render.DetallesHoodie.frenteDelFaldon(salida, frente, calce, largo, rib);
+        Identifier destino = CACHE_CUERPO.registrar(clave, salida);
+        com.modamod.render.ClothingTextureCache.registrarImagenCompuesta(destino, salida);
+        return destino;
+    }
+
+    /**
+     * Filas [desde, hasta) de la tira del faldón que toma una región de Tintes, o null si no lo toca: el borde y el ruedo de una
+     * remera con faldón son los del faldón (el pecho baja hasta ahí); el cuello, las mangas y las solapas no llegan.
+     */
+    @Nullable
+    private static int[] filasEnFaldon(com.modamod.region.RegionPintura region, int largo) {
+        return switch (region) {
+            case TODO -> new int[]{0, largo};
+            case PECHO -> new int[]{0, Math.max(0, largo - 2)};
+            case BORDE_INFERIOR -> new int[]{Math.max(0, largo - 2), largo};
+            case RUEDO -> new int[]{Math.max(0, largo - 1), largo};
+            default -> null;
+        };
     }
 
     /**
@@ -715,11 +827,27 @@ public final class EstampaTextures {
      */
     private static void aplicarPatron(NativeImage tela, NativeImage cruda,
                                       java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas, int filasTorso, int[] mangas) {
+        aplicarPatron(tela, cruda, capas, filasTorso, mangas, 0, false);
+    }
+
+    /**
+     * {@code faldon}: px de faldón de la prenda (0 = sin). {@code tira}: se pinta la tira del faldón ({@link #faldon}) y no la
+     * remera. Con faldón el degradé baja por los dos y las zonas del borde de abajo son las del faldón.
+     */
+    private static void aplicarPatron(NativeImage tela, NativeImage cruda,
+                                      java.util.List<com.modamod.region.RegionResolver.CapaPatron> capas, int filasTorso, int[] mangas,
+                                      int faldon, boolean tira) {
+        String clave = tira ? com.modamod.render.PatronGenerador.claveFaldon(filasTorso, faldon)
+                : faldon > 0 ? com.modamod.render.PatronGenerador.claveRemeraConFaldon(filasTorso, faldon) : "remera";
+        int e = com.modamod.render.CuerpoGeometria.ESCALA_TELA;
         for (com.modamod.region.RegionResolver.CapaPatron capa : capas) {
             // Sin molde = capa lisa (2026-09-27, cuadradito de Tinturas):
             // máscara null, cubre toda su región.
-            NativeImage mascara = com.modamod.render.PatronGenerador.mascaraDeCapa("remera", capa);
+            NativeImage mascara = com.modamod.render.PatronGenerador.mascaraDeCapa(clave, capa);
             if (!capa.lisa() && mascara == null) continue;
+            // Con faldón, el borde de abajo y el ruedo ya no son del torso.
+            if (!tira && faldon > 0 && (capa.region() == com.modamod.region.RegionPintura.BORDE_INFERIOR
+                    || capa.region() == com.modamod.region.RegionPintura.RUEDO)) continue;
             // Región (2026-09-27, "pintar por región"): esta es la ÚNICA
             // prenda cuya composición NO pasa por
             // ClothingTextureCache#composeGarmentCapas (torso+mangas viven
@@ -727,14 +855,19 @@ public final class EstampaTextures {
             // null (TODO) no recorta nada.
             java.util.List<com.modamod.render.CajaSkin.Rect> region = capa.region() == com.modamod.region.RegionPintura.TODO
                     ? null : capa.region().rects(com.modamod.tinturas.TinturasBlockEntity.Categoria.REMERA,
-                            com.modamod.render.CuerpoGeometria.ESCALA_TELA, filasTorso,
+                            com.modamod.render.CuerpoGeometria.ESCALA_TELA, faldon > 0 ? filasTorso + 2 : filasTorso,
                             l -> new int[]{0, mangas[l == com.modamod.region.Lado.IZQUIERDA ? 0 : 1]});
+            if (tira) {
+                int[] f = filasEnFaldon(capa.region(), faldon);
+                if (f == null || f[1] <= f[0]) continue;
+                region = java.util.List.of(new com.modamod.render.CajaSkin.Rect(16 * e, (20 + f[0]) * e, 40 * e, (20 + f[1]) * e));
+            }
             // Capas en orden: cada una pinta ENCIMA de la anterior donde su
             // máscara sea opaca — a pedido, "orden y cambio de color".
             // Mismo criterio de cobertura (región + máscara + invertido) y de
             // fundido (modo + opacidad) que ClothingTextureCache#composeGarmentCapas.
             // Cuello: además de su zona, solo el borde real del escote de ESTE corte.
-            NativeImage bordeCuello = capa.region().requiereBordeCuello()
+            NativeImage bordeCuello = tira ? null : capa.region().requiereBordeCuello()
                     ? com.modamod.render.ClothingTextureCache.mascaraBordeCuello(cruda)
                     : capa.region().esSolapaConTipo()
                     ? com.modamod.render.ClothingTextureCache.mascaraSolapa(cruda, capa.region()) : null;

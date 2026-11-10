@@ -206,12 +206,15 @@ public final class PiezasDelMod {
                 RegionResolver.capas(stack),
                 com.modamod.item.PatronRed.leer(stack),
                 RemeraItem.capasDe(stack),
-                new int[]{RemeraItem.manga(stack, Lado.IZQUIERDA).filas, RemeraItem.manga(stack, Lado.DERECHA).filas});
+                new int[]{RemeraItem.manga(stack, Lado.IZQUIERDA).filas, RemeraItem.manga(stack, Lado.DERECHA).filas},
+                EstampaTextures.faldonPx(stack));
         // Si todavia no se pudo componer -la foto no bajo- se usa la lisa,
         // que es lo correcto mientras tanto.
         if (textura == null) textura = varianteBase.texturaCuerpo();
         // Ruedo de cada borde libre (2026-10-07): el torso y cada puño llevan el suyo.
         com.modamod.item.Ruedo ruedoTorso = com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO);
+        // Con faldón el ruedo es del faldón (2026-11-09, "que el modificador de ruedo pase a operar en su ruedo"): el torso queda recto.
+        if (com.modamod.item.TopCorte.faldon(stack) >= 0) ruedoTorso = com.modamod.item.Ruedo.RECTO;
         com.modamod.item.Ruedo ruedoIzq = com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.PUNO_IZQ);
         com.modamod.item.Ruedo ruedoDer = com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.PUNO_DER);
         boolean ribTorso = ruedoTorso == com.modamod.item.Ruedo.AJUSTADO;
@@ -361,6 +364,9 @@ public final class PiezasDelMod {
         Parte piernaParte = lado == Lado.DERECHA ? Parte.PIERNA_DER : Parte.PIERNA_IZQ;
         com.modamod.item.PatronRed red = com.modamod.item.PatronRed.leer(stack, lado);
         boolean ribBota = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.BOTA_DER : com.modamod.item.ZonaRuedo.BOTA_IZQ) == com.modamod.item.Ruedo.AJUSTADO;
+        // La botamanga se cierra SOLO con el molde Cerrado (2026-11-10, "el pantalon se cierra solo abajo sin necesitar el molde
+        // cerrado"): el archivo del pantalón trae pintada la tapa del pie, así que al llegar al pie quedaba cerrado igual.
+        boolean cerradoBota = com.modamod.item.Ruedos.get(stack, lado == Lado.DERECHA ? com.modamod.item.ZonaRuedo.BOTA_DER : com.modamod.item.ZonaRuedo.BOTA_IZQ) == com.modamod.item.Ruedo.CERRADO;
         // Nota: usar Encima acá hace que reducirSiHaceFalta trate al
         // pantalón como si tuviera estampa (8x, sin achicar). Es una
         // sobra chica -12 filas de torso- frente a complicar esa deteccion
@@ -372,7 +378,7 @@ public final class PiezasDelMod {
                 // solo una se recorta de verdad. La pieza de TORSO reusa a
                 // propósito la clave de IZQUIERDA (mismo Lado.IZQUIERDA en
                 // su llamada), eso sigue igual.
-                String base = "pantalon" + piernaParte + filasTiro + "_" + filasPierna[0] + "_" + filasPierna[1] + "_" + red + (ribBota ? "b" : "");
+                String base = "pantalon" + piernaParte + filasTiro + "_" + filasPierna[0] + "_" + filasPierna[1] + "_" + red + (ribBota ? "b" : "") + (cerradoBota ? "c" : "");
                 return EstampaTextures.tieneEstampa(stack) ? base + "_" + EstampaTextures.claveEstampas(stack) : base;
             }
             @Override public boolean aplicar(NativeImage destino) {
@@ -380,7 +386,11 @@ public final class PiezasDelMod {
                 pintarCintura(destino, colorBase, filasTiro, capas);
                 recortarFilas(destino, piernaParte, filasPierna[0], filasPierna[1]);
                 if (red != null) ClothingTextureCache.perforarRed(destino, red, piernaParte, filasPierna[0], filasPierna[1]);
+                // También el tiro (2026-11-10, "la trama no se aplica a la parte de arriba"): las filas del torso que sube el pantalón.
+                if (red != null && filasTiro > 0) ClothingTextureCache.perforarRed(destino, red, Parte.TORSO, 12 - Math.min(12, filasTiro), 12);
                 com.modamod.render.DetallesHoodie.ribEnBorde(destino, piernaParte, filasPierna[0], filasPierna[1], ribBota, false);
+                if (cerradoBota && filasPierna[1] >= 12) pintarTapaDeAbajo(destino, piernaParte);
+                else borrarTapaDeAbajo(destino, piernaParte);
                 return true;
             }
         };
@@ -429,6 +439,11 @@ public final class PiezasDelMod {
                 img.setColor(x, y, img.getColor(fx, frente.y1() - 1));
             }
         }
+    }
+
+    private static void borrarTapaDeAbajo(NativeImage img, Parte parte) {
+        CajaSkin.Rect t = LayoutSkin.base(parte, false).escalada(CuerpoGeometria.ESCALA_TELA).abajo();
+        for (int y = t.y0(); y < t.y1(); y++) for (int x = t.x0(); x < t.x1(); x++) img.setColor(x, y, 0);
     }
 
     /**

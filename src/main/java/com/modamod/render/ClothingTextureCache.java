@@ -991,9 +991,33 @@ public final class ClothingTextureCache {
                 false, Integer.MIN_VALUE, Integer.MAX_VALUE, ARNES_ROL_COMUN);
     }
 
+    /**
+     * La red del faldón de un Top (2026-11-09): las 4 caras de su tira (v 20 en adelante, {@code largoPx} filas) con el enrejado
+     * corrido como si siguiera debajo de la fila {@code filasTorso} del torso, así los agujeros no se cortan en la unión. Solo se
+     * refuerza el borde de abajo: arriba sigue el torso.
+     */
+    public static void perforarRedFaldon(NativeImage img, com.modamod.item.PatronRed tipo, int filasTorso, int largoPx) {
+        if (tipo == null || tipo == com.modamod.item.PatronRed.LISA) return;
+        int e = CuerpoGeometria.ESCALA_TELA;
+        int y0 = 20 * e, y1 = Math.min(img.getHeight(), (20 + largoPx) * e + RED_BORDE_PX + 1);
+        int[] cortes = {16, 20, 28, 32, 40};
+        for (int i = 0; i < 4; i++) {
+            int rol = i == 1 || i == 3 ? ARNES_ROL_TORSO : ARNES_ROL_COMUN;
+            perforarRedEnCara(img, tipo, cortes[i] * e, y0, cortes[i + 1] * e, y1, false, Integer.MIN_VALUE, Integer.MAX_VALUE,
+                    rol, filasTorso * e);
+        }
+    }
+
     private static void perforarRedEnCara(NativeImage img, com.modamod.item.PatronRed tipo,
                                      int x0, int y0, int x1, int y1,
                                      boolean llevaCorteVirtual, int yDesde, int yHasta, int rolArnes) {
+        perforarRedEnCara(img, tipo, x0, y0, x1, y1, llevaCorteVirtual, yDesde, yHasta, rolArnes, 0);
+    }
+
+    /** {@code dyHilo}: cuánto se corre el enrejado en vertical (el faldón lo sigue desde la última fila del torso). */
+    private static void perforarRedEnCara(NativeImage img, com.modamod.item.PatronRed tipo,
+                                     int x0, int y0, int x1, int y1,
+                                     boolean llevaCorteVirtual, int yDesde, int yHasta, int rolArnes, int dyHilo) {
         if (tipo.esMaterial()) {
             MaterialTela.aplicar(img, tipo, x0, y0, x1, y1);
             return;
@@ -1023,7 +1047,7 @@ public final class ClothingTextureCache {
             for (int x = x0; x < x1; x++) {
                 if (esBorde[x - x0][y - y0]) continue;
                 if (((img.getColor(x, y) >> 24) & 0xFF) == 0) continue;
-                if (esHilo(x, y, tipo)) continue;
+                if (esHilo(x, y + dyHilo, tipo)) continue;
                 img.setColor(x, y, 0);
             }
         }

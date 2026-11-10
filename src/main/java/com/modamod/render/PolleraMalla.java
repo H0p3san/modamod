@@ -172,13 +172,20 @@ public final class PolleraMalla {
      * del frente (0 = cerrada). Las UV de arriba a abajo son lineales: no hay perfil de largo de tela.
      */
     public static void dibujarFaldon(MatrixStack matrices, VertexConsumer vc, int luz, PolleraForma forma,
-                                     PolleraLargo largo, float dil, @Nullable Piernas piernas, CapaMalla.Movimiento mov,
-                                     float twirl, float cola, float inclinacion, float cintura,
+                                     PolleraLargo largo, com.modamod.item.Ruedo hem, float dil, @Nullable Piernas piernas,
+                                     CapaMalla.Movimiento mov, float twirl, float cola, float inclinacion, float cintura,
                                      float vDesde, float vHasta, int hueco, @Nullable float[] extraPorFila,
-                                     float mitadX, float mitadZ) {
-        dibujar(matrices, vc, luz, forma, largo, null, null, com.modamod.item.Ruedo.RECTO, dil, piernas, mov, twirl, cola,
+                                     float mitadX, float mitadZ, boolean esquinasRedondas) {
+        nArriba = esquinasRedondas ? 3.5f : 40f;
+        dibujar(matrices, vc, luz, forma, largo, hem.volado(), null, hem, dil, piernas, mov, twirl, cola,
                 inclinacion, cintura, vDesde, vHasta, hueco, extraPorFila, Float.NaN, -1, -1, null, mitadX, mitadZ);
     }
+
+    /**
+     * Las esquinas del anillo de arriba del faldón (exponente de la superelipse): rectas como la caja del torso (40) o redondeadas
+     * como la malla Oversize (3,5), que si no asomaban en las esquinas. Lo pone {@link #dibujarFaldon}; va en la clave del anillo.
+     */
+    private static float nArriba = 40f;
 
     private static void dibujar(MatrixStack matrices, VertexConsumer vc, int luz, PolleraForma forma,
                                 PolleraLargo largo, @Nullable PolleraVolado voladoRuedo, @Nullable PolleraVolado voladoTodo,
@@ -228,21 +235,31 @@ public final class PolleraMalla {
         // La tela sale del perfil QUIETO (no del que se mueve): así el dibujo
         // no "nada" sobre la pollera cuando la tela se balancea.
         Perfil perfil = perfil(forma, largo, cola);
+        // El faldón (el único que pasa mitadX) sigue la caja del ruedo del torso: su forma arriba y su reparto de tela.
+        boolean caja = !Float.isNaN(mitadX);
         for (int f = 0; f <= FILAS; f++) {
             float t = f / (float) FILAS;
             float y = cintura + t * l;
             float peso = (float) Math.pow(t, 1.6);
             float cosG = (float) Math.cos(giro * t), sinG = (float) Math.sin(giro * t);
-            float[][] anillo = anillo(t, a0, b0, l, abrir, forma, voladoRuedo, voladoTodo);
+            float[][] anillo = anillo(t, a0, b0, l, abrir, caja ? null : forma, voladoRuedo, voladoTodo);
             for (int c = 0; c <= COLUMNAS; c++) {
                 float x = anillo[c][0], z = anillo[c][1];
                 // Ruedo ajustado / campana (2026-10-08, "un ruedo ajustado que podria servir hasta para polleras"): las
                 // filas de abajo se cierran contra la pierna o se abren hacia afuera, más cuanto más abajo.
                 if (t > 0.8f && (hem == com.modamod.item.Ruedo.AJUSTADO || hem == com.modamod.item.Ruedo.CAMPANA)) {
                     float w = (t - 0.8f) / 0.2f;
-                    float k = hem == com.modamod.item.Ruedo.AJUSTADO ? 1f - 0.35f * w * w : 1f + 0.5f * w * w;
-                    x *= k;
-                    z *= k;
+                    // En el faldón la campana se abre según su largo: corto, la del 50 % quedaba como un plato.
+                    float k = hem == com.modamod.item.Ruedo.AJUSTADO ? 1f - 0.35f * w * w
+                            : 1f + (caja ? 0.5f * Math.min(1f, l / 24f) : 0.5f) * w * w;
+                    if (caja && k < 1f) {
+                        // El faldón ajustado se cierra sobre las piernas, no adentro (el choque lo sacaba en punta).
+                        x = Math.copySign(Math.max(Math.abs(x) * k, Math.min(Math.abs(x), X_PIERNAS)), x);
+                        z = Math.copySign(Math.max(Math.abs(z) * k, Math.min(Math.abs(z), Z_PIERNAS)), z);
+                    } else {
+                        x *= k;
+                        z *= k;
+                    }
                 }
                 // Ribete de piel (2026-11-04, "un ruedo abajo, con grosor y su propia pintura"): las 3 últimas anillos se
                 // engrosan hacia afuera; el de arriba de la franja queda a la altura del anterior, así el escalón es un
@@ -294,7 +311,7 @@ public final class PolleraMalla {
                 v[0] = x;
                 v[1] = yy;
                 v[2] = z;
-                v[3] = perfil.u[f][c] / 64f;
+                v[3] = (caja ? U_CAJA[c] : perfil.u[f][c]) / 64f;
                 float vv = Float.isNaN(vDesde) ? perfil.v[f] : vDesde + (vHasta - vDesde) * t;
                 if (hem == com.modamod.item.Ruedo.PIEL && Float.isNaN(vDesde)) {
                     // La franja de piel usa la última fila de la tira de la tela (31..32), la pollera lo de arriba (20..31).
@@ -546,22 +563,65 @@ public final class PolleraMalla {
      * cuadro, más {@code holguraEn} desde el hoodie y el delantal. Quieto, los parámetros se repiten cuadro a cuadro.
      * Los arreglos devueltos NO se pueden modificar (están compartidos).
      */
-    private record ClaveAnillo(float t, float a0, float b0, float l, float abrir, PolleraForma forma,
-                               @Nullable PolleraVolado ruedo, @Nullable PolleraVolado todo) {}
+    /** {@code forma} null: el anillo del faldón ({@link #anilloCaja}). */
+    private record ClaveAnillo(float t, float a0, float b0, float l, float abrir, @Nullable PolleraForma forma,
+                               @Nullable PolleraVolado ruedo, @Nullable PolleraVolado todo, float n0) {}
 
     private static final java.util.HashMap<ClaveAnillo, float[][]> ANILLOS = new java.util.HashMap<>();
 
     private static float[][] anillo(float t, float a0, float b0, float l, float abrir, PolleraForma forma,
                                     @Nullable PolleraVolado voladoRuedo, @Nullable PolleraVolado voladoTodo) {
-        ClaveAnillo clave = new ClaveAnillo(t, a0, b0, l, abrir, forma, voladoRuedo, voladoTodo);
+        ClaveAnillo clave = new ClaveAnillo(t, a0, b0, l, abrir, forma, voladoRuedo, voladoTodo, forma == null ? nArriba : 0f);
         float[][] hecho = ANILLOS.get(clave);
         if (hecho == null) {
             // Moviéndose, `abrir` cambia cada cuadro: sin tope la memoria crecería sin parar.
             if (ANILLOS.size() > 4096) ANILLOS.clear();
-            hecho = anillo0(t, a0, b0, l, abrir, forma, voladoRuedo, voladoTodo);
+            hecho = forma == null ? anilloCaja(t, a0, b0, l, abrir, voladoRuedo)
+                    : anillo0(t, a0, b0, l, abrir, forma, voladoRuedo, voladoTodo);
             ANILLOS.put(clave, hecho);
         }
         return hecho;
+    }
+
+    /** Lo que ocupan las dos piernas con su aire ({@link #MEDIO_ANCHO_PIERNA}), media vuelta en x y en z, más 0,1. */
+    private static final float X_PIERNAS = 2f + MEDIO_ANCHO_PIERNA + 0.1f, Z_PIERNAS = MEDIO_ANCHO_PIERNA + 0.1f;
+
+    /** u de cada columna del faldón: la vuelta de la caja del torso (16..40), cada cara con los texeles de la suya. */
+    private static final float[] U_CAJA = new float[COLUMNAS + 1];
+    static {
+        for (int c = 0; c <= COLUMNAS; c++) U_CAJA[c] = 16f + c * PERIMETRO / COLUMNAS;
+    }
+
+    /**
+     * El anillo del faldón (2026-11-09, "la joint es inconsistente en los distintos calces, la textura se distribuye distinto"):
+     * arriba es la caja del ruedo del torso ({@code a0 × b0}) con las columnas repartidas como su textura (cada cara sus
+     * texeles, {@link #U_CAJA}); al bajar se abre como el tubo y se redondea.
+     */
+    private static float[][] anilloCaja(float t, float a0, float b0, float l, float abrir, @Nullable PolleraVolado voladoRuedo) {
+        float peso = (float) Math.pow(t, 1.6);
+        float vol = volado(t, voladoRuedo, null)[0];
+        // Un torso más angosto que las piernas (Pegado, Ajustado, Normal) se abre de a poco hasta pasarlas: si no, el choque con
+        // las piernas lo empujaba de golpe en la segunda fila y quedaba un almohadón bajo el ruedo.
+        float r = Math.min(1f, t / 0.25f);
+        r = r * r * (3f - 2f * r);
+        a0 += Math.max(0f, X_PIERNAS - a0) * r;
+        b0 += Math.max(0f, Z_PIERNAS - b0) * r;
+        float a = (a0 + (0.25f + 0.04f * l) * t) * (1f + abrir * peso) + vol;
+        float b = (b0 + (0.3f + 0.05f * l) * t) * (1f + abrir * peso) + vol;
+        // Las esquinas se redondean como las del torso (CuerpoGeometria#punto): el punto de la caja va hacia el centro solo si cae
+        // afuera de la superelipse, así el medio de cada cara queda parejo. La superelipse por ángulo (seccion) corría la tela
+        // hacia las esquinas y en el faldón el dibujo del frente salía al doble de ancho.
+        float w = Math.min(1f, t / 0.4f);
+        w = w * w * (3f - 2f * w);
+        double n = nArriba + (3.5 - nArriba) * w;
+        float[][] out = new float[COLUMNAS + 1][];
+        for (int c = 0; c <= COLUMNAS; c++) {
+            float[] k = cuadrado(U_CAJA[c] - 16f);
+            float norma = (float) Math.pow(Math.pow(Math.abs(k[0]), n) + Math.pow(Math.abs(k[1]), n), 1.0 / n);
+            if (norma > 1f) { k[0] /= norma; k[1] /= norma; }
+            out[c] = new float[]{k[0] * a, k[1] * b};
+        }
+        return out;
     }
 
     private static float[][] anillo0(float t, float a0, float b0, float l, float abrir, PolleraForma forma,
@@ -838,12 +898,17 @@ public final class PolleraMalla {
      * la caja: derecho de atrás hacia adelante, frente, izquierdo, espalda),
      * redondeado a una superelipse de exponente {@code n}.
      */
+    /** El punto {@code s} (0..24) del contorno de la caja del torso, en el cuadrado [-1, 1]². */
+    private static float[] cuadrado(float s) {
+        if (s < 4f) return new float[]{-1f, 1f - s / 2f};
+        if (s < 12f) return new float[]{-1f + (s - 4f) / 4f, -1f};
+        if (s < 16f) return new float[]{1f, -1f + (s - 12f) / 2f};
+        return new float[]{1f - (s - 16f) / 4f, 1f};
+    }
+
     private static float[] seccion(float s, float a, float b, float n) {
-        float rx, rz;
-        if (s < 4f) { rx = -1f; rz = 1f - s / 2f; }
-        else if (s < 12f) { rx = -1f + (s - 4f) / 4f; rz = -1f; }
-        else if (s < 16f) { rx = 1f; rz = -1f + (s - 12f) / 2f; }
-        else { rx = 1f - (s - 16f) / 4f; rz = 1f; }
+        float[] k = cuadrado(s);
+        float rx = k[0], rz = k[1];
         double th = Math.atan2(rz, rx);
         double co = Math.cos(th), si = Math.sin(th);
         float x = (float) (a * Math.signum(co) * Math.pow(Math.abs(co), 2.0 / n));

@@ -147,6 +147,19 @@ public final class DetallesHoodie {
     }
 
     /**
+     * El frente de la tela del faldón (2026-11-09, "test it with open front"): sigue al del torso en las {@code filas} de la tira
+     * (la apertura con su ancho según el calce, o el cruce). Abierto solo en el pecho, el faldón va cerrado. Con ruedo ajustado
+     * el rib va en su última fila (el torso ya no lo lleva).
+     */
+    public static void frenteDelFaldon(NativeImage img, com.modamod.item.ChaquetaFrente frente, com.modamod.item.Calce calce,
+                                       int filas, boolean rib) {
+        int s = img.getWidth() / LayoutSkin.LADO;
+        if (rib && filas > 0) rib(img, s, 16, 20 + filas - 1, 24);
+        if (frente == com.modamod.item.ChaquetaFrente.ABIERTA) abrirFrente(img, s, filas, anchoApertura(calce));
+        else if (frente == com.modamod.item.ChaquetaFrente.CRUZADA) cruzarFrente(img, s, filas);
+    }
+
+    /**
      * Frente abierto: 2 píxeles del medio de la cara de adelante del torso (u 23..25) transparentes en todo el
      * alto, con una orilla oscura de un cuarto de píxel a cada lado (la solapa).
      */

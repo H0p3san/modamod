@@ -562,19 +562,31 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         if (tela == null) return;
         ModelPart delJugador = CuerpoGeometria.delJugador(biped, Parte.TORSO);
         if (!delJugador.visible) return;
-        // Filas de la tela del torso que se estiran sobre el faldón: las de abajo del Top, sin el rib del ruedo.
         int filas = com.modamod.sublimadora.RemeraItem.variante(stack).largo().filas;
         int filasAbrigo = filas;
-        if (com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO) == com.modamod.item.Ruedo.AJUSTADO) filas -= 2;
-        filas = Math.max(3, filas);
-        float v1 = 20F + filas - 0.25F;
-        float v0 = 20F + Math.max(0, Math.min(FALDON_CINTURA, filas - 3)) + 0.25F;
+        // Su propia tela (2026-11-09): la del Top que sigue debajo de su última fila, con los patrones al mismo tamaño. Mientras no
+        // está (una foto sin bajar) se estiran las filas de abajo del torso, como antes.
+        Identifier propia = com.modamod.sublimadora.EstampaTextures.faldon(stack);
+        float v0, v1;
+        if (propia != null) {
+            tela = propia;
+            v0 = 20F;
+            v1 = 20F + com.modamod.sublimadora.EstampaTextures.faldonPx(stack);
+        } else {
+            filas = Math.max(3, filas);
+            v1 = 20F + filas - 0.25F;
+            v0 = 20F + Math.max(0, Math.min(FALDON_CINTURA, filas - 3)) + 0.25F;
+        }
         com.modamod.item.Calce calce = com.modamod.item.Calce.leer(stack);
         float dilatacion = Math.max(0F, com.modamod.item.Calce.dilatacionEfectiva(stack)) + calce.caida
                 + 0.3F + polleras * SEPARACION_POLLERAS;
         // Arranca en el ruedo del abrigo con su ancho (2026-10-18, "el faldon de los abrigos no coincide muy bien con el abrigo
         // tanto en la coneccion del borde como en el ancho"); cada pollera de abajo suma su separación.
-        float[] ruedo = ruedoDelAbrigo(stack, calce, Math.max(1, filasAbrigo));
+        // El borde que de verdad dibujó el torso en este cuadro (2026-11-09, "la joint es inconsistente en los distintos calces"):
+        // los costados que dan a los brazos casi no se inflan; el Oversize de malla sigue saliendo de su malla.
+        float[] borde = BORDE_TORSO.remove(stack);
+        float[] ruedo = borde != null ? new float[]{borde[0] + 0.05F, borde[1] + 0.05F, borde[2]}
+                : ruedoDelAbrigo(stack, calce, Math.max(1, filasAbrigo));
         float mitadX = ruedo[0] + polleras * SEPARACION_POLLERAS, mitadZ = ruedo[1] + polleras * SEPARACION_POLLERAS;
         float cinturaFaldon = ruedo[2];
         float holguraFaldon = mitadX - 4F;
@@ -600,25 +612,27 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             }
         }
         PolleraMalla.dibujarFaldon(matrices, buffer, luz, com.modamod.item.PolleraForma.TUBO,
-                com.modamod.item.TopCorte.largoFaldon(stack), dilatacion,
+                com.modamod.item.TopCorte.largoFaldon(stack),
+                com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO), dilatacion,
                 new PolleraMalla.Piernas(biped.body, biped.rightLeg, biped.leftLeg), mov, twirl, cola, delJugador.pitch,
-                cinturaFaldon, v0, v1, com.modamod.item.TopCorte.frente(stack).abre() ? 2 : 0, extra, mitadX, mitadZ);
+                cinturaFaldon, v0, v1,
+                // Con su tela, la apertura ya viene en la textura con el ancho del torso; sin ella, el hueco de siempre.
+                propia == null && com.modamod.item.TopCorte.frente(stack) == com.modamod.item.ChaquetaFrente.ABIERTA ? 2 : 0,
+                extra, mitadX, mitadZ, borde == null && calce == com.modamod.item.Calce.OVERSIZE);
         matrices.pop();
     }
 
     /**
      * Dónde termina el abrigo y cuánto mide ahí: {mitad en x, mitad en z, y bajo el hombro} de su ruedo, 0,05 por fuera para que no
-     * se empaten. Con calce Oversize sale de la malla de Blockbench (el anillo del ruedo con lo que cuelga); con ruedo ajustado,
-     * del anillo ya cerrado sobre el cuerpo; con los otros calces, de la dilatación de la última fila más lo que cuelga.
+     * se empaten. Con calce Oversize sale de la malla de Blockbench (el anillo de su última fila: con faldón el torso no cuelga ni
+     * remata); si no, de la dilatación de la última fila. Los otros calces lo anota el torso al dibujarse ({@link #BORDE_TORSO}).
      */
     private static float[] ruedoDelAbrigo(ItemStack stack, com.modamod.item.Calce calce, int hasta) {
-        boolean elastico = com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO) == com.modamod.item.Ruedo.AJUSTADO;
-        float base = com.modamod.item.Calce.dilatacionEfectiva(stack);
-        float cierre = Math.max(0.05F, base * 0.4F);
+        float dil = com.modamod.item.Calce.dilatacionEfectiva(stack) + calce.caida;
         if (calce == com.modamod.item.Calce.OVERSIZE) {
             MallaOversize.Datos d = MallaOversize.de("torso");
             if (d != null) {
-                int anillo = Math.min(elastico ? hasta : hasta + calce.colgado, d.bandas());
+                int anillo = Math.min(hasta, d.bandas());
                 float mx = 0F, mz = 0F, yBb = 24F - hasta;
                 for (int i = 0; i < d.v().length; i++) {
                     if (d.anillo()[i] != anillo) continue;
@@ -626,14 +640,14 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     mz = Math.max(mz, Math.abs(d.v()[i][2]));
                     yBb = d.v()[i][1];
                 }
-                if (elastico) { mx = 4F + cierre; mz = 2F + cierre; }
                 return new float[]{mx + 0.05F, mz + 0.05F, 24F - yBb};
             }
         }
-        float dil = elastico ? cierre : base + calce.caida;
-        int colgado = elastico ? 0 : calce.colgado;
-        return new float[]{4F + dil + 0.05F, 2F + dil + 0.05F, hasta + colgado};
+        return new float[]{4F + dil + 0.05F, 2F + dil + 0.05F, hasta};
     }
+
+    /** Dónde terminó el torso de cada Top con faldón en este cuadro: {mitad en x, mitad en z, fila}. Lo anota el torso, lo usa el faldón. */
+    private static final Map<ItemStack, float[]> BORDE_TORSO = new java.util.IdentityHashMap<>();
 
     /** Altura de la cintura del faldón (px bajo el hombro): más arriba que la cadera (9) de la pollera. */
     private static final int FALDON_CINTURA = 6;
@@ -1485,6 +1499,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             // Elástico (puños y ruedo del hoodie): la banda sostiene la tela,
             // no cuelga — la caída queda como globo arriba de la banda.
             if (pieza.elastico()) colgado = 0;
+            // Con faldón (2026-11-09) el torso no cuelga: el faldón lo sigue desde su última fila.
+            ItemStack conFaldon = parte == Parte.TORSO && origen.get(pieza) != null
+                    && com.modamod.prenda.Prendas.es(origen.get(pieza), com.modamod.prenda.CategoriaDePrenda.REMERA)
+                    && com.modamod.item.TopCorte.faldon(origen.get(pieza)) >= 0 ? origen.get(pieza) : null;
+            if (conFaldon != null) colgado = 0;
             // Oversize en malla (2026-10-15, "podemos hacer la ropa oversize de malla?"): el torso y las mangas con ruedo libre
             // van como una superficie continua con las esquinas redondeadas y la holgura interpolada, no como cajas escalonadas.
             boolean esBrazo = parte == Parte.BRAZO_DER || parte == Parte.BRAZO_IZQ;
@@ -1574,6 +1593,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             boolean conBrazo = parte == Parte.TORSO || parte == Parte.BRAZO_DER || parte == Parte.BRAZO_IZQ;
             float interno = conBrazo ? 0.05F + 0.04F * indice : -1F;
             boolean costadoInterno = interno >= 0F && base > interno;
+            if (conFaldon != null && !suave && hasta > 0) {
+                float d = Math.max(0F, fila[hasta - 1]);   // el Ajustado (holgura negativa) igual va por fuera del cuerpo
+                BORDE_TORSO.put(conFaldon, new float[]{4F + CuerpoGeometria.costadosX(parte, d, costadoInterno ? interno : -1F)[0],
+                        2F + d, hasta});
+            }
             // Malla de Blockbench (2026-10-16): cada malla oversize de la misma parte queda 0,3 px por fuera de la de abajo.
             ModelPart mallaOversize = suave
                     ? CuerpoGeometria.telaOversize(parte, pantalonOversize && parte == Parte.TORSO, slim, desde, hasta, colgado,
@@ -1701,6 +1725,32 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     }
 
     /** Como {@link #dibujar}, para cuando la ModelPart ya viene resuelta (CUERPO segmentado). */
+    /**
+     * {@code ModelPart.render} escrito a mano (2026-11-10, "sodium y iris"): nuestras telas arman cada cara como un cuboide de
+     * 1×1×1 al que se le cambia la cara (CuerpoGeometria.cuadro). Sodium no dibuja las caras del cuboide sino una copia que
+     * guarda al crearlo, así que con Sodium o Iris la tela salía como un cubito escondido dentro del cuerpo: invisible.
+     */
+    static void renderAMano(ModelPart parte, MatrixStack matrices, VertexConsumer vc, int luz, int overlay) {
+        if (!parte.visible || (parte.cuboids.isEmpty() && parte.children.isEmpty())) return;
+        matrices.push();
+        parte.rotate(matrices);
+        if (!parte.hidden) {
+            MatrixStack.Entry e = matrices.peek();
+            org.joml.Vector3f n = new org.joml.Vector3f(), w = new org.joml.Vector3f();
+            for (ModelPart.Cuboid c : parte.cuboids) {
+                for (ModelPart.Quad q : c.sides) {
+                    e.transformNormal(q.direction, n);
+                    for (ModelPart.Vertex v : q.vertices) {
+                        e.getPositionMatrix().transformPosition(v.pos.x() / 16F, v.pos.y() / 16F, v.pos.z() / 16F, w);
+                        vc.vertex(w.x, w.y, w.z, 0xFFFFFFFF, v.u, v.v, overlay, luz, n.x, n.y, n.z);
+                    }
+                }
+            }
+        }
+        for (ModelPart hijo : parte.children.values()) renderAMano(hijo, matrices, vc, luz, overlay);
+        matrices.pop();
+    }
+
     static void dibujarModelPart(ModelPart nuestra, CuerpoGeometria.Superficie superficie,
                                 Identifier textura, ModelPart delJugador, MatrixStack matrices,
                                 VertexConsumerProvider vertexConsumers, int luz) {
@@ -1730,7 +1780,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     com.modamod.render.relieve.RelieveRender.dibujar(nuestra, relieve, superficie.escala,
                             copia, vc, luz, OverlayTexture.DEFAULT_UV);
                 } else {
-                    nuestra.render(copia, vc, luz, OverlayTexture.DEFAULT_UV);
+                    renderAMano(nuestra, copia, vc, luz, OverlayTexture.DEFAULT_UV);
                 }
             });
             return;
@@ -1740,7 +1790,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             com.modamod.render.relieve.RelieveRender.dibujar(nuestra, relieve, superficie.escala,
                     matrices, buffer, luz, OverlayTexture.DEFAULT_UV);
         } else {
-            nuestra.render(matrices, buffer, luz, OverlayTexture.DEFAULT_UV);
+            renderAMano(nuestra, matrices, buffer, luz, OverlayTexture.DEFAULT_UV);
         }
     }
 

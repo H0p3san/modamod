@@ -92,6 +92,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         for (Parte parte : GarmentFeatureRenderer.partesAOcultarDeVanilla(jugador)) {
             CuerpoGeometria.delJugador(biped, parte).visible = false;
         }
+        if (com.modamod.client.GuionDebug.sinBrazos) {
+            biped.leftArm.visible = biped.rightArm.visible = false;
+            if (biped instanceof net.minecraft.client.render.entity.model.PlayerEntityModel<?> p) p.leftSleeve.visible = p.rightSleeve.visible = false;
+        }
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE",
@@ -103,6 +107,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         if (!(this.model instanceof BipedEntityModel<?> biped)) return;
         for (Parte parte : GarmentFeatureRenderer.partesAOcultarDeVanilla(jugador)) {
             CuerpoGeometria.delJugador(biped, parte).visible = true;
+        }
+        if (com.modamod.client.GuionDebug.sinBrazos) {
+            biped.leftArm.visible = biped.rightArm.visible = true;
+            if (biped instanceof net.minecraft.client.render.entity.model.PlayerEntityModel<?> p) p.leftSleeve.visible = p.rightSleeve.visible = true;
         }
     }
 

@@ -272,7 +272,8 @@ public final class PatronGenerador {
         double rad = Math.toRadians(anguloPaso);
         double sin = Math.sin(rad), cos = Math.cos(rad);
         for (Caja caja : cajas) {
-            int w = caja.x1() - caja.x0(), h = caja.alto();
+            Caja ref = referencia(prenda, caja);
+            int w = ref.x1() - ref.x0(), h = ref.alto(), hDeg = altoDegrade(prenda, caja);
             boolean espejar = caja == PIERNA_IZQ || caja == BRAZO_IZQ;
             int cuarto = w / 4;
             double p00 = 0, p10 = w * sin, p01 = h * cos, p11 = w * sin + h * cos;
@@ -281,7 +282,7 @@ public final class PatronGenerador {
             int largo = (int) Math.round(max - min);
             int inicioBloque = Math.round(posPaso / 100f * Math.max(0, largo - bloque));
             double minFinal = min;
-            boolean simetrica = simetria && caja == TORSO;
+            boolean simetrica = simetria && ref == TORSO;
             recorrer(caja, img, desplegar(prenda, caja, simetrica, (lx, ly) -> {
                 int lxEspejado = espejar ? Math.floorMod(3 * cuarto - lx, w) : lx;
                 if (simetrica) lxEspejado = reflejoTorso(lxEspejado, w);
@@ -296,7 +297,7 @@ public final class PatronGenerador {
                 int indice = forma == Forma.TRES_RAYAS
                         ? Math.floorDiv(dRaya - inicioBloque, periodo) : Math.floorDiv(dRaya, periodo);
                 int cob = opaco || esContorno ? 255 : 0;
-                return pixelMascara(cob, esContorno, indice, 0, semilla, ly, h);
+                return pixelMascara(cob, esContorno, indice, 0, semilla, ly, hDeg);
             }));
         }
 
@@ -366,7 +367,48 @@ public final class PatronGenerador {
         return "pollera:" + forma.name() + ":" + largo.name() + (pasoCola > 0 ? ":" + pasoCola : "");
     }
 
+    /**
+     * Clave de prenda del faldón de un Top (2026-11-09): una tira del torso de {@code largoPx} filas (1 por px de modelo) cuyos
+     * patrones siguen los del torso por debajo de la fila {@code filasTorso}.
+     */
+    public static String claveFaldon(int filasTorso, int largoPx) {
+        return "faldon:" + filasTorso + ":" + largoPx;
+    }
+
+    /** Clave de prenda de una remera con faldón: la misma, salvo el degradé, que baja por el torso y el faldón juntos. */
+    public static String claveRemeraConFaldon(int filasTorso, int largoPx) {
+        return "remera@" + filasTorso + ":" + largoPx;
+    }
+
+    /** {filas del torso, largo del faldón} de una clave de remera con faldón o de faldón, o null. */
+    @org.jetbrains.annotations.Nullable
+    private static int[] faldonDe(String prenda) {
+        int i = prenda.startsWith("faldon:") ? 7 : prenda.startsWith("remera@") ? 7 : -1;
+        if (i < 0) return null;
+        String[] p = prenda.substring(i).split(":");
+        return new int[]{Integer.parseInt(p[0]), Integer.parseInt(p[1])};
+    }
+
+    /** La caja de la tira del faldón: la del torso con una fila de 8 px de máscara por px de largo. */
+    private static Caja cajaFaldon(int largoPx) {
+        return new Caja(TORSO.x0(), TORSO.yTop(), TORSO.x1(), largoPx * 8, TORSO.prof());
+    }
+
+    /** La caja con la que se calcula el dibujo: la del torso para la tira del faldón, así es el mismo dibujo. */
+    private static Caja referencia(String prenda, Caja caja) {
+        return prenda.startsWith("faldon:") ? TORSO : caja;
+    }
+
+    /** El alto sobre el que corre el degradé: con faldón, el torso y el faldón juntos (en px de máscara, desde arriba del torso). */
+    private static int altoDegrade(String prenda, Caja caja) {
+        int[] f = faldonDe(prenda);
+        if (f != null && (caja == TORSO || prenda.startsWith("faldon:"))) return (f[0] + f[1]) * 8;
+        return caja.alto();
+    }
+
     private static List<Caja> cajasDe(String prenda) {
+        if (prenda.startsWith("faldon:")) return List.of(cajaFaldon(faldonDe(prenda)[1]));
+        if (prenda.startsWith("remera@")) return CAJAS_POR_PRENDA.get("remera");
         return CAJAS_POR_PRENDA.get(prenda.startsWith("pollera:") ? "pollera" : prenda);
     }
 
@@ -387,6 +429,11 @@ public final class PatronGenerador {
      * desplegar (el reflejo del torso no sirve: la media vuelta ya no mide 96).
      */
     private static ValorTira desplegar(String prenda, Caja caja, boolean simetria, ValorTira f) {
+        if (prenda.startsWith("faldon:")) {
+            // La tira del faldón es la tela que sigue debajo de la fila filasTorso del torso, una fila por px.
+            int desde = faldonDe(prenda)[0] * 8;
+            return (lx, ly) -> f.valor(lx, desde + ly);
+        }
         if (!prenda.startsWith("pollera:") || caja != TORSO) return f;
         String[] partes = prenda.split(":");
         PolleraMalla.Perfil perfil = PolleraMalla.perfil(com.modamod.item.PolleraForma.valueOf(partes[1]),
@@ -448,7 +495,8 @@ public final class PatronGenerador {
         if (cacheada != null) return cacheada;
         NativeImage img = mascaraVacia();
         for (Caja caja : cajas) {
-            recorrer(caja, img, (lx, ly) -> pixelMascara(255, false, 0, 0, 0, ly, caja.alto()));
+            int hDeg = altoDegrade(prenda, caja);
+            recorrer(caja, img, desplegar(prenda, caja, false, (lx, ly) -> pixelMascara(255, false, 0, 0, 0, ly, hDeg)));
         }
         CACHE.put(key, img);
         return img;
@@ -506,14 +554,15 @@ public final class PatronGenerador {
         NativeImage img = mascaraVacia();
         int[] celda = new int[2];
         for (Caja caja : cajas) {
-            int w = caja.x1() - caja.x0(), h = caja.alto();
+            Caja ref = referencia(prenda, caja);
+            int w = ref.x1() - ref.x0(), h = ref.alto(), hDeg = altoDegrade(prenda, caja);
             boolean espejar = caja == PIERNA_IZQ || caja == BRAZO_IZQ;
             int cuarto = w / 4;
             // Centro del FRENTE de esta caja: en brazo/pierna las 4 caras
             // miden lo mismo (frente = 2ª columna); el torso es der 32 |
             // frente 64 | izq 32 | atrás 64.
-            double centroFrente = caja == TORSO ? 64 : cuarto * 1.5;
-            boolean simetrica = dist.simetria() && caja == TORSO;
+            double centroFrente = ref == TORSO ? 64 : cuarto * 1.5;
+            boolean simetrica = dist.simetria() && ref == TORSO;
             recorrer(caja, img, desplegar(prenda, caja, simetrica, (lx, ly) -> {
                 int u = espejar ? Math.floorMod(3 * cuarto - lx, w) : lx;
                 if (simetrica) u = reflejoTorso(u, w);
@@ -524,7 +573,7 @@ public final class PatronGenerador {
                         : rolSprite(motivo, repeticion, u + 0.5, ly + 0.5, w, h, k, semilla,
                                 posPaso / 20.0, centroFrente, grillaPaso, dist, celda);
                 int cob = rol == ROL_NADA ? 0 : rol == ROL_MEDIO ? 128 : 255;
-                return pixelMascara(cob, rol == ROL_CONTORNO, celda[0], celda[1], semilla, ly, h);
+                return pixelMascara(cob, rol == ROL_CONTORNO, celda[0], celda[1], semilla, ly, hDeg);
             }));
         }
         CACHE.put(key, img);

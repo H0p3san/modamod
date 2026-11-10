@@ -1178,6 +1178,18 @@ public final class CuerpoGeometria {
                     float nzs = Math.abs(ddz) > 2F ? Math.signum(ddz) * (2F + factor * (Math.abs(ddz) - 2F)) : ddz;
                     p = new float[]{cxm + nxs, p[1], nzs};
                 }
+                // Las esquinas redondeadas de la malla cortaban por dentro de las aristas del torso (4, 2) y la piel asomaba
+                // a lo largo del tiro (2026-11-10, "el pantalon con tiro alto se abre al costado"): la esquina queda afuera.
+                // En las piernas, solo las esquinas de afuera (las de adentro dan a la otra pierna).
+                boolean piernaMalla = parte == Parte.PIERNA_DER || parte == Parte.PIERNA_IZQ;
+                if (parte == Parte.TORSO || piernaMalla) {
+                    float hxE = parte == Parte.TORSO ? 4F : 2F, cxE = parte == Parte.TORSO ? 0F : centroMundo;
+                    float ddx = p[0] - cxE, ax = Math.abs(ddx), az = Math.abs(p[2]);
+                    boolean afuera = !piernaMalla || ddx * sgC > 0F;
+                    if (afuera && ax > hxE - 1F && az > 1F && (ax < hxE + 0.05F || az < 2.05F)) {
+                        p = new float[]{cxE + Math.signum(ddx) * Math.max(ax, hxE + 0.05F), p[1], Math.signum(p[2]) * Math.max(az, 2.05F)};
+                    }
+                }
                 float lx = (p[0] - piv[0]) * S, lz = (p[2] - piv[2]) * S;
                 if (inflado != 0F) {
                     float dx = lx - cx * S, dz = lz, largo = (float) Math.hypot(dx, dz);
@@ -1475,6 +1487,16 @@ public final class CuerpoGeometria {
                     t.sizeX(), (hasta - desde) * S, t.sizeZ(),
                     dil, dil, dil,
                     false, texW, texH, caras));
+        }
+        // La planta del pie / la palma (2026-11-10, "aparecen sin tapa los pies" en ajustado y pegado): ya no la tapa la prenda
+        // (se cierra solo con el molde Cerrado). Va en una caja entera, sin correr la v, así lee el pixel que le corresponde.
+        SegmentoCuerpo ultimo = segmentos.isEmpty() ? null : segmentos.get(segmentos.size() - 1);
+        if (ultimo != null && ultimo.filaHasta() >= 12) {
+            float dil = ultimo.dilatacion() * S;
+            cuboides.add(new ModelPart.Cuboid(
+                    t.uvX(), t.uvY(), t.originX(), t.originY(), t.originZ(),
+                    t.sizeX(), 12 * S, t.sizeZ(), dil, 0F, dil,
+                    false, texW, texH, java.util.EnumSet.of(net.minecraft.util.math.Direction.UP)));
         }
         ModelPart resultado = new ModelPart(cuboides, java.util.Map.of());
         RAICES_CUERPO_SEGMENTADO.put(key, resultado);

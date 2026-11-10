@@ -6,3 +6,5 @@ accessible class net/minecraft/client/model/ModelPart$Vertex
 accessible field net/minecraft/client/model/ModelPart$Cuboid sides [Lnet/minecraft/client/model/ModelPart$Quad;
 # Busto en modelos de otros mods (2026-10-02): las UV del torso de cualquier modelo humanoide.
 accessible field net/minecraft/client/model/ModelPart cuboids Ljava/util/List;
+# Sodium (2026-11-10): GarmentFeatureRenderer#renderAMano recorre los hijos para dibujar sin ModelPart.render.
+accessible field net/minecraft/client/model/ModelPart children Ljava/util/Map;

@@ -36,8 +36,14 @@ import java.util.List;
  * esperar 20                 ticks
  * zoom 20                    campo de visión (30..110; menos = más cerca), 45 de entrada
  * listar                     escribe en el log la ropa puesta y el perfil
- * foto nombre frente|atras|costado|abajo|arriba   una captura en run/screenshots/guion_nombre_angulo.png
+ * foto nombre frente|atras|costado|diagonal|abajo|arriba   una captura en run/screenshots/guion_nombre_angulo.png
+ * twirl                      pide la vuelta (como la tecla R)
+ * caminar 20                 camina para adelante esos ticks (las fotos salen en movimiento)
+ * siempre 1                  el cuerpo elegido siempre (0 lo apaga)
+ * brazos 0                   esconde los brazos del jugador (1 los vuelve a mostrar)
+ * usar 2 0 0                 clic derecho al bloque a esa distancia del jugador (abre máquinas)
  * fotos nombre               las cinco
+ * abierta                    escribe en el log qué pantalla está abierta
  * salir                      cierra el juego
  * </pre>
  * Sin {@code salir} el juego queda abierto y cada {@code guion.txt} nuevo se ejecuta apenas aparece.
@@ -61,6 +67,10 @@ public final class GuionDebug {
     /** Hay un guion corriendo (se restaura todo al vaciarse la cola), hay fotos (HUD y FOV cambiados), se cierra al final. */
     private static boolean enCurso, modoFoto, cerrarAlTerminar;
     private static int cerrarEn;
+    /** Ticks que le quedan a "caminar" con la tecla de adelante apretada. */
+    private static int caminando;
+    /** "brazos 0": los brazos del jugador no se dibujan (para ver los costados del torso). */
+    public static boolean sinBrazos;
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(GuionDebug::tick);
@@ -77,6 +87,7 @@ public final class GuionDebug {
             espera = 40; // que termine de cargar la ropa y las texturas
         }
         if (cerrarEn > 0 && --cerrarEn == 0) { mc.scheduleStop(); return; }
+        if (caminando > 0 && --caminando == 0) mc.options.forwardKey.setPressed(false);
         // Sin foco la ventana abre el menú de pausa y el mundo se congela: mientras corre el guion, no se pausa.
         if (!pasos.isEmpty() || fotoPendiente != null) {
             mc.options.pauseOnLostFocus = false;
@@ -166,6 +177,12 @@ public final class GuionDebug {
                 enServidor(server, uuid, p -> PerfilesDeCuerpo.poner(p, PerfilesDeCuerpo.de(p).conVolumen(v)));
                 espera = 10;
             }
+            case "brazos" -> sinBrazos = t[1].strip().equals("0");
+            case "siempre" -> {
+                boolean v = t[1].strip().equals("1");
+                enServidor(server, uuid, p -> PerfilesDeCuerpo.poner(p, PerfilesDeCuerpo.de(p).conSiempre(v)));
+                espera = 10;
+            }
             case "vaciar" -> {
                 enServidor(server, uuid, p -> {
                     TrinketInventory inv = ListaDeRopa.de(p);
@@ -198,6 +215,11 @@ public final class GuionDebug {
                 log("perfil: " + PerfilesDeCuerpo.de(p));
             });
             case "cmd" -> mc.player.networkHandler.sendChatCommand(linea.substring(4).strip());
+            case "twirl" -> net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new com.modamod.util.RedTwirl.Pedir());
+            case "caminar" -> {
+                caminando = Integer.parseInt(t[1]);
+                mc.options.forwardKey.setPressed(true);
+            }
             case "esperar" -> espera = Integer.parseInt(t[1]);
             case "altura" -> alturaFoto = Float.parseFloat(t[1]);
             // Como F3+T: vuelve a leer los recursos (modelos de ítem, texturas) sin relanzar.
@@ -232,6 +254,14 @@ public final class GuionDebug {
             // La pantalla abierta tal cual (sin girar al jugador ni cerrar nada).
             case "pantalla" -> { fotoPendiente = "guion_" + t[1] + "_pantalla"; cuadrosFoto = 10; }
             case "cerrar" -> mc.setScreen(null);
+            // Clic derecho al bloque a esa distancia del jugador (para abrir máquinas).
+            case "usar" -> {
+                String[] d = linea.split(" ");
+                net.minecraft.util.math.BlockPos pos = mc.player.getBlockPos().add(Integer.parseInt(d[1]), Integer.parseInt(d[2]), Integer.parseInt(d[3]));
+                mc.interactionManager.interactBlock(mc.player, net.minecraft.util.Hand.MAIN_HAND,
+                        new net.minecraft.util.hit.BlockHitResult(pos.toCenterPos(), net.minecraft.util.math.Direction.UP, pos, false));
+            }
+            case "abierta" -> log("pantalla abierta: " + (mc.currentScreen == null ? "ninguna" : mc.currentScreen.getClass().getSimpleName()));
             case "salir" -> cerrarAlTerminar = true;
             default -> log("no entiendo '" + linea + "'");
         }
@@ -247,6 +277,7 @@ public final class GuionDebug {
         switch (angulo) {
             case "atras" -> giro = 180f;
             case "costado" -> giro = 90f;
+            case "diagonal" -> giro = 45f;
             case "abajo" -> pitch = 55f;   // la cámara queda abajo mirando para arriba
             case "arriba" -> pitch = -55f;
             default -> {}
