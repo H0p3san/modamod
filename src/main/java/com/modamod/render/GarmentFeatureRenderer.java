@@ -232,6 +232,31 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     public GarmentFeatureRenderer(FeatureRendererContext<T, M> contexto) {
         super(contexto);
+        INSTANCIAS.add(this);
+    }
+
+    private static final List<GarmentFeatureRenderer<?, ?>> INSTANCIAS = new ArrayList<>();
+
+    /**
+     * Dibuja la ropa y el cuerpo de {@code jugador} en {@code vcp} con el modelo sin pose, fuera del render del mundo
+     * (para ChequeoCapas). Devuelve las texturas del cuerpo, o null si no encontró su dibujante.
+     */
+    @Nullable
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static List<Identifier> dibujarSinPose(AbstractClientPlayerEntity jugador, VertexConsumerProvider vcp) {
+        var modelo = ((net.minecraft.client.render.entity.LivingEntityRenderer) net.minecraft.client.MinecraftClient.getInstance()
+                .getEntityRenderDispatcher().getRenderer(jugador)).getModel();
+        for (GarmentFeatureRenderer f : INSTANCIAS) {
+            if (f.getContextModel() != modelo || !(modelo instanceof BipedEntityModel<?> biped)) continue;
+            for (ModelPart p : new ModelPart[]{biped.head, biped.body, biped.rightArm, biped.leftArm, biped.rightLeg, biped.leftLeg}) p.resetTransform();
+            f.render(new MatrixStack(), vcp, 0xF000F0, jugador, 0f, 0f, 1f, 0f, 0f, 0f);
+            List<Identifier> cuerpo = new ArrayList<>();
+            Identifier elegido = texturaDelCuerpo(jugador, esSlim(jugador));
+            if (elegido != null) cuerpo.add(elegido);
+            cuerpo.add(jugador.getSkinTextures().texture());
+            return cuerpo;
+        }
+        return null;
     }
 
     @Override
@@ -1111,9 +1136,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         try {
             for (ItemStack puesto : accesorios) {
                 // La máscara y el barbijo los dibuja CaraRenderer (con sus apliques).
-                if (!puesto.isEmpty() && AccesorioRenderer.es(puesto) && !(puesto.getItem() instanceof com.modamod.item.CaraItem)) {
-                    AccesorioRenderer.dibujar(puesto, biped, matrices, vertexConsumers, luz, dil);
-                }
+                if (puesto.isEmpty() || !AccesorioRenderer.es(puesto) || puesto.getItem() instanceof com.modamod.item.CaraItem) continue;
+                AccesorioRenderer.dibujar(puesto, biped, matrices, vertexConsumers, luz, dil);
             }
         } finally {
             BorcegosRenderer.mediaIzq = BorcegosRenderer.mediaDer = null;
@@ -1124,39 +1148,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** Cuánto sale del torso la ropa en la cintura (2026-10-05): el cinto va por encima, sin hundirse en un hoodie oversize. */
     public static float holguraDeCinto(List<ItemStack> prendas) {
         float m = 0f;
-        int polleras = 0;
-        boolean delantal = false;
-        for (ItemStack p : prendas) {
-            m = Math.max(m, com.modamod.item.Calce.dilatacionEfectiva(p));
-            if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.POLLERA)) polleras++;
-            if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) delantal = true;
-        }
-        float holgura = Math.max(BandaRenderer.DIL_MESA, m * 1.4f + 0.25f);
-        // También por encima del delantal (2026-11-11, "el cinto tiene atravesamientos"): el delantal va a la holgura de la
-        // ropa más 0,2 y la separación de cada pollera, y además pasa por fuera de polleras y faldones (dibujarDelantal).
-        if (delantal) {
-            float base = Math.max(0f, m) + 0.2f + polleras * SEPARACION_POLLERAS + 0.1f;
-            for (float y = 7.6f; y <= 8.7f; y += 0.5f) {
-                float faldas = -1f;
-                int i = 0;
-                for (ItemStack s : prendas) {
-                    if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)) {
-                        faldas = Math.max(faldas, PolleraMalla.holguraEn(com.modamod.item.PolleraItem.forma(s), com.modamod.item.PolleraItem.largo(s),
-                                com.modamod.item.PolleraItem.voladoRuedo(s), com.modamod.item.PolleraItem.voladoTodo(s),
-                                Math.max(0F, com.modamod.item.Calce.dilatacionEfectiva(s)) + i++ * SEPARACION_POLLERAS, y, com.modamod.item.PolleraItem.cintura(s)));
-                    } else if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA) && com.modamod.item.TopCorte.faldon(s) >= 0) {
-                        // El faldón, por su ruedo de fábrica (el que de verdad dibuja el torso se sabe recién al dibujarlo).
-                        float[] r = ruedoDelAbrigo(s, com.modamod.item.Calce.leer(s),
-                                Math.max(1, com.modamod.sublimadora.RemeraItem.variante(s).largo().filas));
-                        faldas = Math.max(faldas, PolleraMalla.holguraEnFaldon(com.modamod.item.TopCorte.largoFaldon(s),
-                                com.modamod.item.Ruedos.get(s, com.modamod.item.ZonaRuedo.TORSO).volado(),
-                                r[0] + polleras * SEPARACION_POLLERAS, r[1] + polleras * SEPARACION_POLLERAS, null, y, r[2], -1f) + 0.5f);
-                    }
-                }
-                holgura = Math.max(holgura, Math.max(base, faldas + 0.12f) + 0.25f);
-            }
-        }
-        return holgura;
+        for (ItemStack p : prendas) m = Math.max(m, com.modamod.item.Calce.dilatacionEfectiva(p));
+        return Math.max(BandaRenderer.DIL_MESA, m * 1.4f + 0.25f);
     }
 
     /** ¿Hay un hoodie (chaqueta con capucha) entre las prendas? */

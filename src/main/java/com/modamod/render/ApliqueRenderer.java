@@ -70,6 +70,7 @@ public final class ApliqueRenderer {
     /** Los apliques de todas las prendas de {@code prendas} (los de caja; pollera y capa van en su malla). */
     public static void dibujar(List<ItemStack> prendas, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz) {
+        EfectoTrim.ultimaPrenda = null;   // lo de acá no es de la última prenda dibujada (ChequeoCapas)
         for (int i = 0; i < prendas.size(); i++) {
             ItemStack prenda = prendas.get(i);
             float dil = Math.max(0f, Calce.dilatacionEfectiva(prenda));

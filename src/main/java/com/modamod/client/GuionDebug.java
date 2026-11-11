@@ -267,14 +267,10 @@ public final class GuionDebug {
             case "perf" -> { com.modamod.render.Perf.activo = !t[1].equals("0"); }
             case "tercera" -> mc.options.setPerspective(t[1].equals("0") ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
             case "capas" -> {
-                boolean slim = mc.player.getSkinTextures().model() == net.minecraft.client.util.SkinTextures.Model.SLIM;
-                var modelo = new net.minecraft.client.render.entity.model.PlayerEntityModel<net.minecraft.entity.LivingEntity>(
-                        mc.getEntityModelLoader().getModelPart(slim ? net.minecraft.client.render.entity.model.EntityModelLayers.PLAYER_SLIM
-                                : net.minecraft.client.render.entity.model.EntityModelLayers.PLAYER), slim);
-                var avisos = com.modamod.render.relieve.ChequeoCapas.revisar(modelo, slim,
-                        com.modamod.render.GarmentFeatureRenderer.equipadas(mc.player), com.modamod.body.PerfilesDeCuerpo.de(mc.player));
-                log("capas " + (t.length > 1 ? t[1] : "") + ": " + (avisos.isEmpty() ? "en orden" : avisos.size() + " avisos"));
-                for (String aviso : avisos) log("  capas: " + aviso);
+                var avisos = com.modamod.render.relieve.ChequeoCapas.revisar(mc.player);
+                log("capas " + (t.length > 1 ? t[1] : "") + ": " + (avisos == null ? "no se pudo dibujar"
+                        : avisos.isEmpty() ? "en orden" : avisos.size() + " avisos"));
+                if (avisos != null) for (String aviso : avisos) log("  capas: " + aviso);
             }
             case "perflog" -> log("perf: " + PerfHud.resumen());
             case "abierta" -> log("pantalla abierta: " + (mc.currentScreen == null ? "ninguna" : mc.currentScreen.getClass().getSimpleName()));

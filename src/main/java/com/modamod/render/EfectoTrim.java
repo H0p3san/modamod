@@ -118,7 +118,12 @@ public final class EfectoTrim {
      * emisiva aditiva ({@code RenderLayer.getEyes}) con los MISMOS vértices (grabados y repetidos en {@link #volcar}): de
      * noche brilla solo eso. El diamante suma el glint de los encantamientos.
      */
+    /** La prenda cuyo dibujo acaba de empezar (como {@code ClothingTextureCache.ultimaTextura}): la lee ChequeoCapas. */
+    @Nullable
+    public static ItemStack ultimaPrenda;
+
     public static VertexConsumerProvider envolver(@Nullable ItemStack prenda, VertexConsumerProvider real) {
+        ultimaPrenda = prenda;
         if (prenda == null || real instanceof Proveedor) return real;
         Identifier patron = com.modamod.prenda.Acabado.trim(prenda);
         if (patron == null) return real;

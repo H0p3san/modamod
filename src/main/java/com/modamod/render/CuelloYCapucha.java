@@ -80,6 +80,7 @@ public final class CuelloYCapucha {
     /** Dibuja cuello de polera, capucha y cordones de lo que haya en {@code prendas}. */
     public static void dibujar(List<ItemStack> prendas, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz) {
+        EfectoTrim.ultimaPrenda = null;   // lo de acá no es de la última prenda dibujada (ChequeoCapas)
         ItemStack polera = null, chaqueta = null;
         for (ItemStack s : prendas) {
             if (!(com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA))) continue;
