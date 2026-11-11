@@ -619,6 +619,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 extra[f] = hol < 0F ? 0F : Math.max(0F, hol + 0.5F - (holguraFaldon + 0.1F));
             }
         }
+        faldones.add(new FaldonDibujado(com.modamod.item.TopCorte.largoFaldon(stack),
+                com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO).volado(), mitadX, mitadZ, extra, cinturaFaldon));
         PolleraMalla.dibujarFaldon(matrices, buffer, luz, com.modamod.item.PolleraForma.TUBO,
                 com.modamod.item.TopCorte.largoFaldon(stack),
                 com.modamod.item.Ruedos.get(stack, com.modamod.item.ZonaRuedo.TORSO), dilatacion,
@@ -787,15 +789,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         float propia = Math.max(0F, com.modamod.item.Calce.dilatacionEfectiva(stack));
         float dilatacion = Math.max(propia, otras) + 0.1F + nivel * SEPARACION_POLLERAS + 0.1F;
         Identifier textura = texturaDelantal(stack);
+        // Mientras gira, el delantal se apoya sobre las polleras y faldones abiertos por el giro (2026-11-11).
+        float giroFaldas = previewOverride == null ? (entidad != null
+                ? com.modamod.client.TwirlCliente.progreso(entidad, tickDelta) : twirlFigura) : -1f;
         float[] extra = new float[PolleraMalla.FILAS + 1];
         com.modamod.render.relieve.BustoRender.Busto busto = com.modamod.render.relieve.BustoRender.actual;
         for (int f = 0; f <= PolleraMalla.FILAS; f++) {
             float y = inicio + largo * f / (float) PolleraMalla.FILAS;
             float e = 0F;
-            if (!polleras.isEmpty()) {
-                float hol = holguraPollera(y);
-                if (hol >= 0F) e = Math.max(0F, hol + 0.12F - (dilatacion + 0.1F));
-            }
+            // Por fuera de las polleras y de los faldones (2026-11-11, el faldón del buzo atravesaba el delantal).
+            float hol = holguraDeFaldas(y, giroFaldas);
+            if (hol >= 0F) e = Math.max(0F, hol + 0.12F - (dilatacion + 0.1F));
             // El busto ya no aleja la fila entera (2026-11-09, "los delantales quedan muy gruesos con tetas"): el frente lo
             // esquiva punto por punto con PolleraMalla.frenteDelantal.
             extra[f] = e;
@@ -817,7 +821,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             for (ItemStack p : prendas) {
                 if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.REMERA)) infl = Math.max(infl, com.modamod.item.Calce.dilatacionEfectiva(p));
             }
-            com.modamod.render.relieve.BustoRender.Campo cb = com.modamod.render.relieve.BustoRender.campoDelantal(busto, infl);
+            com.modamod.render.relieve.BustoRender.Campo cb = campoDelBusto(busto, infl);
             for (float yy = 1F; yy <= 8F; yy += 0.5F) bustoExtra = Math.max(bustoExtra, cb.en(-2.6F, yy) + 0.15F - dilatacion);
             bustoExtra = Math.max(0F, bustoExtra);
         }
@@ -838,7 +842,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                     infladoRemera = Math.max(infladoRemera, com.modamod.item.Calce.dilatacionEfectiva(p));
                 }
             }
-            PolleraMalla.frenteDelantal = com.modamod.render.relieve.BustoRender.campoDelantal(busto, infladoRemera);
+            PolleraMalla.frenteDelantal = campoDelBusto(busto, infladoRemera);
         }
         MallaCapturada malla;
         try {
@@ -1055,6 +1059,16 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * cinto y choker). {@code sombreroOverride} (el nombre quedó del sombrero) es el que muestra la Mesa de estilado,
      * el Guardarropas y la Modeladora aunque no esté puesto.
      */
+    /** ¿Hay alguna capucha (de Top o de capa) puesta en la cabeza? */
+    public static boolean capuchaPuesta(List<ItemStack> prendas) {
+        for (ItemStack s : prendas) {
+            boolean capucha = com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.CAPA)
+                    ? com.modamod.item.CapaItem.capucha(s) : com.modamod.item.TopCorte.tieneCapucha(s);
+            if (capucha && com.modamod.item.TopCorte.capuchaArriba(s)) return true;
+        }
+        return false;
+    }
+
     private static void dibujarSombrero(LivingEntity entidad, BipedEntityModel<?> biped, MatrixStack matrices,
                                         VertexConsumerProvider vertexConsumers, int luz, float dil, List<ItemStack> prendas) {
         // La piel de quien lleva el calzado, para el pie de las sandalias y ojotas (2026-10-14).
@@ -1070,10 +1084,13 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 else if (pz.parte() == Parte.PIERNA_DER) BorcegosRenderer.mediaDer = pz.textura();
             }
         }
+        // Con la capucha puesta el sombrero va por fuera de ella (2026-11-11, "la capucha con sombrero tiene atravesamientos").
+        SombreroRenderer.sobreCapucha = capuchaPuesta(prendas);
         try {
             dibujarAccesorios(entidad, biped, matrices, vertexConsumers, luz, dil);
         } finally {
             BorcegosRenderer.mediaIzq = BorcegosRenderer.mediaDer = null;
+            SombreroRenderer.sobreCapucha = false;
         }
     }
 
@@ -1096,8 +1113,39 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** Cuánto sale del torso la ropa en la cintura (2026-10-05): el cinto va por encima, sin hundirse en un hoodie oversize. */
     public static float holguraDeCinto(List<ItemStack> prendas) {
         float m = 0f;
-        for (ItemStack p : prendas) m = Math.max(m, com.modamod.item.Calce.dilatacionEfectiva(p));
-        return Math.max(BandaRenderer.DIL_MESA, m * 1.4f + 0.25f);
+        int polleras = 0;
+        boolean delantal = false;
+        for (ItemStack p : prendas) {
+            m = Math.max(m, com.modamod.item.Calce.dilatacionEfectiva(p));
+            if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.POLLERA)) polleras++;
+            if (com.modamod.prenda.Prendas.es(p, com.modamod.prenda.CategoriaDePrenda.DELANTAL)) delantal = true;
+        }
+        float holgura = Math.max(BandaRenderer.DIL_MESA, m * 1.4f + 0.25f);
+        // También por encima del delantal (2026-11-11, "el cinto tiene atravesamientos"): el delantal va a la holgura de la
+        // ropa más 0,2 y la separación de cada pollera, y además pasa por fuera de polleras y faldones (dibujarDelantal).
+        if (delantal) {
+            float base = Math.max(0f, m) + 0.2f + polleras * SEPARACION_POLLERAS + 0.1f;
+            for (float y = 7.6f; y <= 8.7f; y += 0.5f) {
+                float faldas = -1f;
+                int i = 0;
+                for (ItemStack s : prendas) {
+                    if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.POLLERA)) {
+                        faldas = Math.max(faldas, PolleraMalla.holguraEn(com.modamod.item.PolleraItem.forma(s), com.modamod.item.PolleraItem.largo(s),
+                                com.modamod.item.PolleraItem.voladoRuedo(s), com.modamod.item.PolleraItem.voladoTodo(s),
+                                Math.max(0F, com.modamod.item.Calce.dilatacionEfectiva(s)) + i++ * SEPARACION_POLLERAS, y, com.modamod.item.PolleraItem.cintura(s)));
+                    } else if (com.modamod.prenda.Prendas.es(s, com.modamod.prenda.CategoriaDePrenda.REMERA) && com.modamod.item.TopCorte.faldon(s) >= 0) {
+                        // El faldón, por su ruedo de fábrica (el que de verdad dibuja el torso se sabe recién al dibujarlo).
+                        float[] r = ruedoDelAbrigo(s, com.modamod.item.Calce.leer(s),
+                                Math.max(1, com.modamod.sublimadora.RemeraItem.variante(s).largo().filas));
+                        faldas = Math.max(faldas, PolleraMalla.holguraEnFaldon(com.modamod.item.TopCorte.largoFaldon(s),
+                                com.modamod.item.Ruedos.get(s, com.modamod.item.ZonaRuedo.TORSO).volado(),
+                                r[0] + polleras * SEPARACION_POLLERAS, r[1] + polleras * SEPARACION_POLLERAS, null, y, r[2], -1f) + 0.5f);
+                    }
+                }
+                holgura = Math.max(holgura, Math.max(base, faldas + 0.12f) + 0.25f);
+            }
+        }
+        return holgura;
     }
 
     /** ¿Hay un hoodie (chaqueta con capucha) entre las prendas? */
@@ -1357,8 +1405,38 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     /** La profundidad de la pollera más de adentro, o −1: lo de más afuera se abre por fuera de ella. */
     private static int profundidadPollera = -1;
 
+    /** Los faldones ya dibujados en este cuadro: lo de encima (el delantal) pasa por fuera, como de las polleras. */
+    private record FaldonDibujado(com.modamod.item.PolleraLargo largo, @Nullable com.modamod.item.PolleraVolado volado,
+                                  float mitadX, float mitadZ, @Nullable float[] extra, float cintura) {}
+
+    private static final List<FaldonDibujado> faldones = new java.util.ArrayList<>();
+
+    /** Cuánto sale del torso lo que cuelga de la cintura (polleras y faldones) a la altura {@code y}, o −1. */
+    private static float holguraDeFaldas(float y, float twirl) {
+        float mejor = holguraPollera(y, twirl);
+        for (FaldonDibujado f : faldones) {
+            mejor = Math.max(mejor, PolleraMalla.holguraEnFaldon(f.largo, f.volado, f.mitadX, f.mitadZ, f.extra, y, f.cintura, twirl));
+        }
+        return mejor;
+    }
+
+    /** El manto del busto de la tela de más afuera dibujada en este cuadro: el delantal lo esquiva tal cual es. */
+    private record Manto(float inflado, float carpa, com.modamod.render.relieve.BustoRender.Tela tela, float fondo) {}
+
+    @Nullable
+    private static Manto mantoDeAfuera;
+
+    private static com.modamod.render.relieve.BustoRender.Campo campoDelBusto(
+            com.modamod.render.relieve.BustoRender.Busto busto, float inflado) {
+        Manto m = mantoDeAfuera;
+        return m == null ? com.modamod.render.relieve.BustoRender.campoDelantal(busto, inflado)
+                : com.modamod.render.relieve.BustoRender.campoDelantal(busto, m.inflado, m.carpa, m.tela, m.fondo);
+    }
+
     private static void anotarPollera(List<ItemStack> prendas) {
         polleras.clear();
+        faldones.clear();
+        mantoDeAfuera = null;
         profundidadPollera = -1;
         for (int k = 0; k < prendas.size(); k++) {
             ItemStack s = prendas.get(k);
@@ -1370,12 +1448,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     /** Cuánto sale la pollera puesta del torso a la altura {@code y}, o −1 (ver {@link PolleraMalla#holguraEn}). */
     private static float holguraPollera(float y) {
+        return holguraPollera(y, -1F);
+    }
+
+    /** Con las polleras abiertas por el twirl ({@code twirl} 0..1, −1 quietas). */
+    private static float holguraPollera(float y, float twirl) {
         float mejor = -1F;
         for (int i = 0; i < polleras.size(); i++) {
             ItemStack s = polleras.get(i);
             mejor = Math.max(mejor, PolleraMalla.holguraEn(com.modamod.item.PolleraItem.forma(s), com.modamod.item.PolleraItem.largo(s),
                     com.modamod.item.PolleraItem.voladoRuedo(s), com.modamod.item.PolleraItem.voladoTodo(s),
-                    Math.max(0F, com.modamod.item.Calce.dilatacionEfectiva(s)) + i * SEPARACION_POLLERAS, y, com.modamod.item.PolleraItem.cintura(s)));
+                    Math.max(0F, com.modamod.item.Calce.dilatacionEfectiva(s)) + i * SEPARACION_POLLERAS, y, com.modamod.item.PolleraItem.cintura(s), twirl));
         }
         return mejor;
     }
@@ -1729,6 +1812,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                 dejaVer(origen.get(pieza), pieza));
                 dibujarBusto(pieza.textura(), delModelo, infladoBusto, carpa, 20f, false, tela, hasta,
                         matrices, vertexConsumers, luz);
+                mantoDeAfuera = new Manto(infladoBusto, carpa, tela, hasta);
             }
 
             for (int f = desde; f < hasta; f++) exterior[f] = Math.max(exterior[f], fila[f]);

@@ -515,16 +515,43 @@ public final class PolleraMalla {
      */
     public static float holguraEn(PolleraForma forma, PolleraLargo largo, @Nullable PolleraVolado voladoRuedo,
                                   @Nullable PolleraVolado voladoTodo, float dil, float y, float cintura) {
+        return holguraEn(forma, largo, voladoRuedo, voladoTodo, dil, y, cintura, -1f);
+    }
+
+    /** Lo que se abre la malla a mitad de un twirl ({@code twirl} 0..1, −1 quieta), como en {@link #dibujar}. */
+    private static float abrirDeTwirl(float twirl, PolleraForma forma) {
+        return twirl < 0f ? 0f : 1.3f * (float) Math.sin(Math.PI * twirl) * movimientoDe(forma);
+    }
+
+    /** Con la pollera abierta por el twirl (2026-11-11: el delantal se apoya sobre ella mientras gira). */
+    public static float holguraEn(PolleraForma forma, PolleraLargo largo, @Nullable PolleraVolado voladoRuedo,
+                                  @Nullable PolleraVolado voladoTodo, float dil, float y, float cintura, float twirl) {
         float l = largo.pixeles;
         if (y <= cintura || y > cintura + l + 0.5f) return -1f;
         float t = Math.min(1f, (y - cintura) / l);
         float holgura = Math.max(dil, 0.25f);
         float a0 = 4f + holgura + 0.1f, b0 = 2f + holgura + 0.1f;
         float max = 0f;
-        for (float[] q : anillo(t, a0, b0, l, 0f, forma, voladoRuedo, voladoTodo)) {
+        for (float[] q : anillo(t, a0, b0, l, abrirDeTwirl(twirl, forma), forma, voladoRuedo, voladoTodo)) {
             max = Math.max(max, Math.max(Math.abs(q[0]) - 4f, Math.abs(q[1]) - 2f));
         }
         return max;
+    }
+
+    /**
+     * Lo mismo para el faldón quieto de un Top, que arranca con la mitad de ancho de su abrigo ({@code mitadX}, {@code mitadZ})
+     * y se aleja {@code extraPorFila} (2026-11-11: el delantal de encima pasa por fuera de él, como de la pollera).
+     */
+    public static float holguraEnFaldon(PolleraLargo largo, @Nullable PolleraVolado volado, float mitadX, float mitadZ,
+                                        @Nullable float[] extraPorFila, float y, float cintura, float twirl) {
+        float l = largo.pixeles;
+        if (y <= cintura || y > cintura + l + 0.5f) return -1f;
+        float t = Math.min(1f, (y - cintura) / l);
+        float max = 0f;
+        for (float[] q : anillo(t, mitadX, mitadZ, l, abrirDeTwirl(twirl, PolleraForma.TUBO), PolleraForma.TUBO, volado, null)) {
+            max = Math.max(max, Math.max(Math.abs(q[0]) - 4f, Math.abs(q[1]) - 2f));
+        }
+        return max + (extraPorFila == null ? 0f : extraPorFila[Math.min(FILAS, Math.round(t * FILAS))]);
     }
 
     /**

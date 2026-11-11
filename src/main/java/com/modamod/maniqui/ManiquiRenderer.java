@@ -217,7 +217,10 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
             }
             dibujarArmadura(be, cuerpo, matrices, vertexConsumers, luz);
             if (!be.sombrero().isEmpty()) {
+                // Sobre la capucha puesta, como en el jugador (2026-11-11).
+                com.modamod.render.SombreroRenderer.sobreCapucha = GarmentFeatureRenderer.capuchaPuesta(prendas);
                 com.modamod.render.SombreroRenderer.dibujar(be.sombrero(), cuerpo, matrices, vertexConsumers, luz);
+                com.modamod.render.SombreroRenderer.sobreCapucha = false;
             }
             // Máscara y barbijo (2026-10-25): como en el jugador.
             for (ItemStack cara : new ItemStack[]{be.mascara(), be.barbijo()}) {

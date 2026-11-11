@@ -89,6 +89,10 @@ public final class SombreroRenderer {
         if (p != null) out.add(new Armada(p, dy));
     }
 
+    /** Hay una capucha puesta debajo del sombrero que se va a dibujar. */
+    public static boolean sobreCapucha;
+    private static final float SOBRE_CAPUCHA = 1.15F;
+
     public static void dibujar(ItemStack sombrero, BipedEntityModel<?> biped, MatrixStack matrices,
                                VertexConsumerProvider vertexConsumers, int luz) {
         if (!CabezaCaras.visible(biped)) return;
@@ -96,6 +100,8 @@ public final class SombreroRenderer {
         // Sobre una cabeza de CARAS, un 18 % más grande desde el cuello: la copa queda arriba de las que suben ~1,3 px.
         matrices.push();
         CabezaCaras.agrandar(matrices, biped, 1.18F);
+        // Sobre una capucha puesta, más grande desde el cuello para pasarla por fuera (lo avisa GarmentFeatureRenderer).
+        if (sobreCapucha) CabezaCaras.escalar(matrices, biped, SOBRE_CAPUCHA);
 
         // La punta: lo que la inercia le suma a cada tramo (el de arriba también, el doble por ser hijo del de abajo).
         float pitch = 0f, roll = 0f;

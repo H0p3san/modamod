@@ -693,13 +693,23 @@ public final class BustoRender {
     private static final java.util.Map<String, Campo> CAMPOS = new java.util.HashMap<>();
 
     public static Campo campoDelantal(Busto b, float inflado) {
-        String clave = b.talle() + "|" + b.sujecion() + "|" + b.cuadrado() + "|" + inflado;
+        return campoDelantal(b, inflado, 0f, null, 12f);
+    }
+
+    /**
+     * El campo del manto que de verdad se dibujó (2026-11-11, la remera Suelta asomaba por el delantal): con su carpa y
+     * apoyado en la tela de cada fila, que es más ancho que el busto pelado.
+     */
+    public static Campo campoDelantal(Busto b, float inflado, float carpa, @Nullable Tela tela, float fondo) {
+        String clave = b.talle() + "|" + b.sujecion() + "|" + b.cuadrado() + "|" + inflado + "|" + carpa + "|" + fondo
+                + (tela == null ? "" : "|" + java.util.Arrays.hashCode(tela.fila()) + "/" + tela.desde() + "/" + tela.hasta()
+                + "/" + tela.abertura() + "/" + tela.dejaVer());
         Campo c = CAMPOS.get(clave);
         if (c != null) return c;
         if (CAMPOS.size() > 64) CAMPOS.clear();
         // Sin rebote (se arma una vez y se reusa): el delantal ya lleva su margen.
         Busto quieto = new Busto(b.talle(), b.sujecion(), null, b.cuadrado(), b.cola(), null);
-        List<Vert[]> q = malla(quieto, inflado, 0f, false, false, null, 12f);
+        List<Vert[]> q = malla(quieto, inflado, carpa, false, false, tela, fondo);
         float medio = 4f;
         for (Vert[] v : q) for (Vert p : v) medio = Math.max(medio, Math.abs(p.pos().x) + 0.5f);
         medio = (float) Math.ceil(medio * PASO) / PASO;
