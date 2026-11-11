@@ -270,17 +270,30 @@ public final class RelieveRender {
                                    float fu0, float fu1, float fv0, float fv1, int nu, int nv, Vector3f tu, Vector3f tv) {
         float du = (fu1 - fu0) / nu, dv = (fv1 - fv0) / nv;
         Vector3f menosTu = new Vector3f(tu).negate(), menosTv = new Vector3f(tv).negate();
+        float[][] alto = new float[nu][nv];
+        for (int i = 0; i < nu; i++) for (int j = 0; j < nv; j++) alto[i][j] = escalon(ctx, cara, fu0 + du * (i + 0.5f), fv0 + dv * (j + 0.5f));
+        // Tapas: en cada fila, los bloquecitos seguidos de la misma altura van en una sola cara (2026-11-11, medido: un
+        // jugador con voxel fino emitía decenas de miles de vértices por cuadro). La UV es lineal en la cara: se ve igual.
+        for (int j = 0; j < nv; j++) {
+            float t0 = j / (float) nv, t1 = (j + 1) / (float) nv;
+            for (int i = 0; i < nu; ) {
+                float h = alto[i][j];
+                int fin = i + 1;
+                while (fin < nu && alto[fin][j] == h) fin++;
+                float s0 = i / (float) nu, s1 = fin / (float) nu;
+                g.vertice(g.punto(s0, t0, h), s0, t0, g.n());
+                g.vertice(g.punto(s0, t1, h), s0, t1, g.n());
+                g.vertice(g.punto(s1, t1, h), s1, t1, g.n());
+                g.vertice(g.punto(s1, t0, h), s1, t0, g.n());
+                i = fin;
+            }
+        }
         for (int i = 0; i < nu; i++) {
             float s0 = i / (float) nu, s1 = (i + 1) / (float) nu;
             for (int j = 0; j < nv; j++) {
                 float t0 = j / (float) nv, t1 = (j + 1) / (float) nv;
                 float fu = fu0 + du * (i + 0.5f), fv = fv0 + dv * (j + 0.5f);
-                float h = escalon(ctx, cara, fu, fv);
-                // Tapa del bloquecito.
-                g.vertice(g.punto(s0, t0, h), s0, t0, g.n());
-                g.vertice(g.punto(s0, t1, h), s0, t1, g.n());
-                g.vertice(g.punto(s1, t1, h), s1, t1, g.n());
-                g.vertice(g.punto(s1, t0, h), s1, t0, g.n());
+                float h = alto[i][j];
                 // Paredes hacia los vecinos más bajos (la pared la pone el más alto).
                 pared(g, h, escalon(ctx, cara, fu + du, fv), s1, t0, s1, t1, tu);
                 pared(g, h, escalon(ctx, cara, fu - du, fv), s0, t1, s0, t0, menosTu);

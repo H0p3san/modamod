@@ -287,8 +287,9 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
         for (Parte parte : new Parte[]{Parte.TORSO, Parte.BRAZO_DER, Parte.BRAZO_IZQ, Parte.PIERNA_DER, Parte.PIERNA_IZQ}) {
             ModelPart p = com.modamod.render.CuerpoGeometria.delJugador(cuerpo, parte);
             if (!p.visible) continue;
-            com.modamod.render.relieve.RelieveRender.Contexto ctx =
-                    new com.modamod.render.relieve.RelieveRender.Contexto(parte, mapa, null);
+            // Plano debajo de la ropa, como el jugador (2026-11-11, "las rodillas de los maniquies salen agujereadas").
+            com.modamod.render.relieve.RelieveRender.Contexto ctx = new com.modamod.render.relieve.RelieveRender.Contexto(
+                    parte, GarmentFeatureRenderer.relieveBajoRopa(mapa, parte, be.prendasPuestas()), null);
             if (com.modamod.render.relieve.RelieveRender.aplica(ctx)) {
                 com.modamod.render.relieve.RelieveRender.dibujar(p, ctx, 1f, matrices, vc, luz, ov);
             } else {

@@ -274,6 +274,23 @@ public final class MotorPruebas {
             inf.ok("relieve bajo la tela", "cuerpo plano en las filas tapadas, intacto en el resto");
         } catch (Throwable t) { inf.fallo("relieve bajo la tela", t.toString()); }
 
+        // Debajo de una tela con aberturas (2026-11-11, "que la geometria del cuerpo si se pudiera ver cuando hay transparencia
+        // o apertura"): plano solo en los px que la tela tapa; donde deja ver, el relieve sigue.
+        try {
+            com.modamod.render.relieve.MapaRelieve cuerpo = com.modamod.render.relieve.MapaRelieve.generar("prueba-opacos", false,
+                    (parte, cara, fu, fv, ancho) -> 1f);
+            boolean[][] opaco = new boolean[4][];
+            opaco[1] = new boolean[12 * 8];                      // el frente del torso: tapada la mitad izquierda
+            for (int y = 0; y < 12; y++) for (int x = 0; x < 4; x++) opaco[1][y * 8 + x] = true;
+            com.modamod.render.relieve.MapaRelieve bajo = com.modamod.render.relieve.MapaRelieve.sinOpacos(cuerpo, Parte.TORSO, "mitad", opaco);
+            Informe.verificar(bajo.altura(Parte.TORSO, 1, 0.2f, 0.5f) == 0f, "no se aplanó lo tapado");
+            Informe.verificar(bajo.altura(Parte.TORSO, 1, 0.8f, 0.5f) == 1f, "se aplanó la abertura");
+            Informe.verificar(bajo.altura(Parte.TORSO, 3, 0.2f, 0.5f) == 1f, "se aplanó una cara sin máscara");
+            Informe.verificar(bajo.altura(Parte.PIERNA_DER, 1, 0.2f, 0.5f) == 1f, "se aplanó otra parte");
+            Informe.verificar(cuerpo.altura(Parte.TORSO, 1, 0.2f, 0.5f) == 1f, "sinOpacos modificó el mapa original");
+            inf.ok("relieve bajo aberturas", "plano solo donde la tela es opaca");
+        } catch (Throwable t) { inf.fallo("relieve bajo aberturas", t.toString()); }
+
         // Aristas de la tela (2026-11-05, punto 5 "media abierta en una arista"): la tela no se levanta en el borde de una cara
         // más que el cuerpo, o cada cara se empuja por su normal y se despega de la vecina. Cuerpo como RelieveCuerpo: se
         // apaga en los bordes y tiene un bulto cerca de uno (el gemelo).

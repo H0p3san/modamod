@@ -81,7 +81,7 @@ public final class MapaRelieve {
         String clave = base.clave + "|sin " + parte + " " + desde + "-" + hasta;
         MapaRelieve m = SIN_FILAS.get(clave);
         if (m != null) return m;
-        if (SIN_FILAS.size() > 64) SIN_FILAS.clear();
+        if (SIN_FILAS.size() > 512) SIN_FILAS.clear();   // al vaciar cambian las identidades y RelieveRender recalcula: que sea raro
         m = new MapaRelieve(clave, base.slim);
         for (int p = 0; p < base.celdas.length; p++) m.celdas[p] = base.celdas[p].clone();
         for (int cara = 0; cara < 4; cara++) {
@@ -94,6 +94,34 @@ public final class MapaRelieve {
             m.celdas[i][cara] = g;
         }
         SIN_FILAS.put(clave, m);
+        return m;
+    }
+
+    /**
+     * Este relieve plano solo donde {@code opaco} dice que lo de arriba tapa (2026-11-11, "que la geometria del cuerpo si se
+     * pudiera ver cuando hay transparencia o apertura"): por una abertura, un escote o una trama se sigue viendo el volumen
+     * de abajo. {@code opaco[cara][fila * ancho + columna]}, en px de skin de la cara; {@code clave} identifica la máscara.
+     */
+    public static MapaRelieve sinOpacos(MapaRelieve base, Parte parte, String clave, boolean[][] opaco) {
+        int i = indice(parte);
+        if (base == PLANO || i < 0) return base;
+        String k = base.clave + "|op " + parte + " " + clave;
+        MapaRelieve m = SIN_FILAS.get(k);
+        if (m != null) return m;
+        if (SIN_FILAS.size() > 512) SIN_FILAS.clear();
+        m = new MapaRelieve(k, base.slim);
+        for (int p = 0; p < base.celdas.length; p++) m.celdas[p] = base.celdas[p].clone();
+        for (int cara = 0; cara < 4; cara++) {
+            float[] g = base.celdas[i][cara];
+            if (g == null || opaco[cara] == null) continue;
+            g = g.clone();
+            int ancho = anchoPx(parte, cara, base.slim), nx = ancho * R;
+            for (int y = 0; y < FILAS_PX * R; y++) {
+                for (int x = 0; x < nx; x++) if (opaco[cara][(y / R) * ancho + x / R]) g[y * nx + x] = 0f;
+            }
+            m.celdas[i][cara] = g;
+        }
+        SIN_FILAS.put(k, m);
         return m;
     }
 

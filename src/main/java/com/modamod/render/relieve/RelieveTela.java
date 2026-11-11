@@ -45,7 +45,7 @@ public final class RelieveTela {
                 + "/" + (img == null ? "-" : extrusion.toString());
         MapaRelieve m = CACHE.get(clave);
         if (m != null) return m;
-        if (CACHE.size() > 128) CACHE.clear();
+        if (CACHE.size() > 512) CACHE.clear();   // ídem MapaRelieve.SIN_FILAS
         float radio = radio(calce);
         m = MapaRelieve.generar(clave, abajo.slim, (parte, cara, fu, fv, ancho) -> {
             float h = envolver(abajo, parte, cara, fu, fv, ancho, radio);

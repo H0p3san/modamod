@@ -1466,8 +1466,16 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                                 : com.modamod.prenda.Acabado.textura(prenda),
                         prenda == null ? null : com.modamod.render.relieve.RelieveTela.extrusionDe(
                                 net.minecraft.registry.Registries.ITEM.getId(prenda.getItem())));
+                // Lo que queda debajo de otra prenda va plano donde esa prenda lo tapa, como el cuerpo (2026-11-11, "las medias que
+                // estan debajo de un pantalon se dibujan por encima alli donde hay volumen"): la de arriba se dibuja lisa, o con
+                // sus escalones corridos, y el relieve de la de abajo la atravesaba. La de arriba sigue armando su relieve
+                // sobre el de abajo entero ({@code previo} no se toca).
+                com.modamod.render.relieve.MapaRelieve propio = previo;
+                for (int k = indice + 1; k < piezas.size(); k++) {
+                    propio = bajo(propio, parte, piezas.get(k));
+                }
                 com.modamod.render.relieve.RelieveRender.actual =
-                        new com.modamod.render.relieve.RelieveRender.Contexto(parte, previo);
+                        new com.modamod.render.relieve.RelieveRender.Contexto(parte, propio);
             }
 
             if (pieza == conVolumen) {
@@ -2138,7 +2146,28 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             com.modamod.render.relieve.MapaRelieve mapaCuerpo, Parte parte, @Nullable List<Pieza> piezas) {
         if (piezas == null) return mapaCuerpo;
         com.modamod.render.relieve.MapaRelieve m = mapaCuerpo;
-        for (Pieza p : piezas) m = com.modamod.render.relieve.MapaRelieve.sinFilas(m, parte, p.filaDesde(), p.filaHasta());
+        for (Pieza p : piezas) m = bajo(m, parte, p);
+        return m;
+    }
+
+    /**
+     * {@code m} como queda debajo de {@code arriba}: plano donde esa tela es opaca (su textura, px por px), con su relieve
+     * donde deja ver (abertura, escote, trama, translúcida). Sin la imagen de la textura a mano, plano en todas sus filas.
+     */
+    private static com.modamod.render.relieve.MapaRelieve bajo(com.modamod.render.relieve.MapaRelieve m, Parte parte, Pieza arriba) {
+        boolean[][] opaco = com.modamod.render.relieve.MascaraOpaca.de(arriba.textura(), parte, m.slim);
+        return opaco == null ? com.modamod.render.relieve.MapaRelieve.sinFilas(m, parte, arriba.filaDesde(), arriba.filaHasta())
+                : com.modamod.render.relieve.MapaRelieve.sinOpacos(m, parte,
+                        com.modamod.render.relieve.MascaraOpaca.clave(arriba.textura(), m.slim), opaco);
+    }
+
+    /** El relieve del cuerpo de una figura (el maniquí) debajo de {@code prendas}: la misma regla que para el jugador. */
+    public static com.modamod.render.relieve.MapaRelieve relieveBajoRopa(com.modamod.render.relieve.MapaRelieve mapaCuerpo,
+                                                                          Parte parte, List<ItemStack> prendas) {
+        com.modamod.render.relieve.MapaRelieve m = mapaCuerpo;
+        for (ItemStack stack : prendas) {
+            for (Pieza p : PiezasDePrenda.de(stack, null)) if (p.parte() == parte) m = bajo(m, parte, p);
+        }
         return m;
     }
 
