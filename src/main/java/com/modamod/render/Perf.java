@@ -11,7 +11,7 @@ public final class Perf {
     private Perf() {}
 
     public enum Seccion {
-        ROPA("ropa (total)"), POLLERA("pollera"), CAPA("capa"), APLIQUES("apliques"), CORREAS("correas"),
+        ROPA("ropa (total)"), PIEZAS("armar piezas"), PREPARA("preparar"), CUERPO("cuerpo"), TELA("tela"), RELIEVE("  relieve"), MALLA("  malla"), POLLERA("pollera"), CAPA("capa"), APLIQUES("apliques"), CORREAS("correas"),
         TEXTURAS("texturas"), TRIM("acabados");
 
         public final String rotulo;

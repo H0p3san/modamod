@@ -262,7 +262,9 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         profundidad.clear();
         for (int k = 0; k < prendas.size(); k++) {
             ItemStack stack = prendas.get(k);
+            long t0 = Perf.ini();
             List<Pieza> propias = new ArrayList<>(PiezasDePrenda.de(stack, entidad));
+            Perf.fin(Perf.Seccion.PIEZAS, t0);
             propias.sort(Comparator.comparingInt(Pieza::capa));
             for (Pieza pieza : propias) {
                 porParte.computeIfAbsent(pieza.parte(), x -> new ArrayList<>()).add(pieza);
@@ -342,6 +344,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
     private void render1(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz,
                        T entidad, float limbAngle, float limbDistance, float tickDelta,
                        float animationProgress, float headYaw, float headPitch) {
+        long tPrepara = Perf.ini();
 
         if (!(getContextModel() instanceof BipedEntityModel<?> biped)) return;
 
@@ -364,7 +367,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             FisicaApliques.preparar(entidad, entidad, tickDelta, FisicaApliques.Modo.REAL);
         }
         if (capturaPoses != null) {
-            for (Parte parte : Parte.values()) {
+        for (Parte parte : Parte.values()) {
                 ModelPart p = CuerpoGeometria.delJugador(biped, parte);
                 org.joml.Matrix4f m = new org.joml.Matrix4f(matrices.peek().getPositionMatrix());
                 m.translate(p.pivotX / 16f, p.pivotY / 16f, p.pivotZ / 16f);
@@ -426,6 +429,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         // El torso lo dibuja vanilla (ninguna prenda lo gobierna): el busto va con la piel de la skin.
         if (!conCuerpo.contains(Parte.TORSO) || torsoDelCinto) dibujarBustoEnLaSkin(entidad, biped, matrices, vertexConsumers, luz);
 
+        Perf.fin(Perf.Seccion.PREPARA, tPrepara);
         for (Parte parte : Parte.values()) {
             boolean llevaCuerpo = cuerpo != null && conCuerpo.contains(parte)
                     // La cabeza nunca lleva cuerpo base: es la cara del
@@ -445,6 +449,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 conVolumen = piezas.get(piezas.size() - 1);
             }
 
+            long tCuerpo = Perf.ini();
             if (llevaCuerpo && parte == Parte.TORSO && !torsoDelCinto) {
                 // Debajo de una tela holgada el busto lo dibuja la tela (su manto):
                 // el del cuerpo atravesaba el hoodie (2026-10-02, "el hoodie es
@@ -490,9 +495,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 }
             }
             com.modamod.render.relieve.RelieveRender.actual = null;
+            Perf.fin(Perf.Seccion.CUERPO, tCuerpo);
             if (piezas == null) continue;
+            long tTela = Perf.ini();
             dibujarPiezas(parte, slim, piezas, conVolumen, delJugador, matrices, vertexConsumers, luz,
                     llevaCuerpo ? mapaCuerpo : com.modamod.render.relieve.MapaRelieve.PLANO, origen, profundidad);
+            Perf.fin(Perf.Seccion.TELA, tTela);
         }
 
         // Cuello de polera, capucha y cordones del hoodie (2026-09-30).
@@ -1786,11 +1794,14 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
             return;
         }
         VertexConsumer buffer = vertexConsumers.getBuffer(ClothingTextureCache.capaDeRender(textura));
+        long tDibujo = Perf.ini();
         if (relieve != null) {
             com.modamod.render.relieve.RelieveRender.dibujar(nuestra, relieve, superficie.escala,
                     matrices, buffer, luz, OverlayTexture.DEFAULT_UV);
+            Perf.fin(Perf.Seccion.RELIEVE, tDibujo);
         } else {
             renderAMano(nuestra, matrices, buffer, luz, OverlayTexture.DEFAULT_UV);
+            Perf.fin(Perf.Seccion.MALLA, tDibujo);
         }
     }
 

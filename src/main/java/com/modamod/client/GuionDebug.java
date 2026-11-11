@@ -43,6 +43,8 @@ import java.util.List;
  * brazos 0                   esconde los brazos del jugador (1 los vuelve a mostrar)
  * usar 2 0 0                 clic derecho al bloque a esa distancia del jugador (abre máquinas)
  * fotos nombre               las cinco
+ * perf 1                     prende el medidor de rendimiento (0 lo apaga); perflog escribe sus promedios en el log
+ * tercera 1                  cámara en tercera persona con el HUD a la vista (0 vuelve a primera)
  * abierta                    escribe en el log qué pantalla está abierta
  * salir                      cierra el juego
  * </pre>
@@ -261,6 +263,9 @@ public final class GuionDebug {
                 mc.interactionManager.interactBlock(mc.player, net.minecraft.util.Hand.MAIN_HAND,
                         new net.minecraft.util.hit.BlockHitResult(pos.toCenterPos(), net.minecraft.util.math.Direction.UP, pos, false));
             }
+            case "perf" -> { com.modamod.render.Perf.activo = !t[1].equals("0"); }
+            case "tercera" -> mc.options.setPerspective(t[1].equals("0") ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
+            case "perflog" -> log("perf: " + PerfHud.resumen());
             case "abierta" -> log("pantalla abierta: " + (mc.currentScreen == null ? "ninguna" : mc.currentScreen.getClass().getSimpleName()));
             case "salir" -> cerrarAlTerminar = true;
             default -> log("no entiendo '" + linea + "'");

@@ -41,6 +41,14 @@ public final class PerfHud {
                 }))));
     }
 
+    /** Promedio de ms por cuadro de cada sección, en una línea (para el guion de prueba). */
+    public static String resumen() {
+        StringBuilder sb = new StringBuilder(String.format("cuadro %.2f ms", promedioCuadro));
+        for (Perf.Seccion s : Perf.Seccion.values()) sb.append(String.format(" | %s %.3f (%d)", s.rotulo, PROMEDIO[s.ordinal()], LLAMADAS[s.ordinal()]));
+        double[] rel = com.modamod.render.relieve.RelieveRender.estadoCache();
+        return sb.append(String.format(" | relieve guardado %d caras %.1f MB", (int) rel[0], rel[1])).toString();
+    }
+
     private static void reiniciar() {
         java.util.Arrays.fill(PROMEDIO, 0);
         java.util.Arrays.fill(PICO, 0);
@@ -88,6 +96,8 @@ public final class PerfHud {
         lineas.add(String.format("telas compuestas %d  imágenes base %d (%.1f MB)", (int) tela[0], (int) tela[1], tela[2]));
         lineas.add(String.format("acabados %d telas, %d cuadros (~%.0f MB GPU)", trim[0], trim[1], trim[1] * 1.0));
         lineas.add(String.format("texturas dinámicas vivas %d", com.modamod.render.CacheDeTexturas.vivas()));
+        double[] rel = com.modamod.render.relieve.RelieveRender.estadoCache();
+        lineas.add(String.format("relieve guardado %d caras (%.1f MB)", (int) rel[0], rel[1]));
 
         int ancho = 0;
         for (String l : lineas) ancho = Math.max(ancho, mc.textRenderer.getWidth(l));

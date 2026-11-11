@@ -109,10 +109,60 @@ public final class RelieveRender {
         parte.forEachCuboid(matrices, (entry, path, indice, cuboide) -> {
             boolean sinRelieve = path.endsWith(SIN_RELIEVE);
             for (ModelPart.Quad q : cuboide.sides) {
-                if (sinRelieve) plano(entry, q, vc, luz, overlay);
-                else cara(entry, q, ctx, escala, vc, luz, overlay);
+                float[] v = sinRelieve ? null : geometria(q, ctx, escala);
+                if (v == null) plano(entry, q, vc, luz, overlay);
+                else emitir(entry, v, vc, luz, overlay);
             }
         });
+    }
+
+    // ── geometría guardada (2026-11-11, medido: el relieve era 2/3 del costo de la ropa, hasta 2,5 ms por jugador) ──
+    // Los vértices de una cara con relieve solo dependen de la cara, el mapa, la parte, el estilo y la escala: no de la
+    // pose. Se calculan una vez, en el espacio del cuboide, y cada cuadro solo se transforman y se emiten.
+
+    /** Una cara ya calculada: 8 floats por vértice (x, y, z en bloques, u, v, normal); {@code v} null = va plana. */
+    private record Hecha(MapaRelieve mapa, Parte parte, Estilo estilo, float escala, float @Nullable [] v) {}
+
+    /** Por cara (identidad): se van solas cuando CuerpoGeometria suelta la ModelPart. Hasta {@link #POR_CARA} contextos cada una. */
+    private static final java.util.Map<ModelPart.Quad, Hecha[]> HECHAS = new java.util.WeakHashMap<>();
+    private static final int POR_CARA = 4;
+    private static float[] armando = new float[4096];
+    private static int largo;
+
+    @Nullable
+    private static float[] geometria(ModelPart.Quad q, Contexto ctx, float escala) {
+        Hecha[] hechas = HECHAS.computeIfAbsent(q, x -> new Hecha[POR_CARA]);
+        int libre = -1;
+        for (int i = 0; i < POR_CARA; i++) {
+            Hecha h = hechas[i];
+            if (h == null) { if (libre < 0) libre = i; continue; }
+            if (h.mapa == ctx.mapa() && h.parte == ctx.parte() && h.estilo == estilo && h.escala == escala) return h.v;
+        }
+        largo = 0;
+        boolean conRelieve = cara(q, ctx, escala);
+        float[] v = conRelieve ? java.util.Arrays.copyOf(armando, largo) : null;
+        // Sin lugar: se pisa una al azar (una cara compartida por más de 4 cuerpos distintos a la vez es raro).
+        hechas[libre >= 0 ? libre : (int) (System.nanoTime() & (POR_CARA - 1))] = new Hecha(ctx.mapa(), ctx.parte(), estilo, escala, v);
+        return v;
+    }
+
+    private static final Vector3f TMP_P = new Vector3f(), TMP_N = new Vector3f();
+
+    private static void emitir(MatrixStack.Entry e, float[] v, VertexConsumer vc, int luz, int ov) {
+        org.joml.Matrix4f m = e.getPositionMatrix();
+        for (int i = 0; i < v.length; i += 8) {
+            m.transformPosition(v[i], v[i + 1], v[i + 2], TMP_P);
+            e.transformNormal(v[i + 5], v[i + 6], v[i + 7], TMP_N);
+            vc.vertex(TMP_P.x, TMP_P.y, TMP_P.z, 0xFFFFFFFF, v[i + 3], v[i + 4], ov, luz, TMP_N.x, TMP_N.y, TMP_N.z);
+        }
+    }
+
+    /** Caras guardadas y sus MB, para el HUD de rendimiento. */
+    public static double[] estadoCache() {
+        long floats = 0;
+        int caras = 0;
+        for (Hecha[] hs : HECHAS.values()) for (Hecha h : hs) if (h != null && h.v != null) { caras++; floats += h.v.length; }
+        return new double[]{caras, floats * 4 / 1048576.0};
     }
 
     /**
@@ -121,13 +171,10 @@ public final class RelieveRender {
      */
     public static final String SIN_RELIEVE = "sin_relieve";
 
-    private static void cara(MatrixStack.Entry e, ModelPart.Quad q, Contexto ctx, float escala,
-                             VertexConsumer vc, int luz, int ov) {
+    /** Arma en {@link #armando} los vértices de la cara con relieve; false si va plana. */
+    private static boolean cara(ModelPart.Quad q, Contexto ctx, float escala) {
         Vector3f n = q.direction;
-        if (Math.abs(n.y()) > 0.5f) {
-            plano(e, q, vc, luz, ov);
-            return;
-        }
+        if (Math.abs(n.y()) > 0.5f) return false;
         ModelPart.Vertex[] vs = q.vertices;
         float umin = Float.MAX_VALUE, umax = -Float.MAX_VALUE, vmin = Float.MAX_VALUE, vmax = -Float.MAX_VALUE;
         for (ModelPart.Vertex v : vs) {
@@ -138,10 +185,7 @@ public final class RelieveRender {
         MapaRelieve mapa = ctx.mapa();
         boolean slim = mapa.slim;
         int caraIdx = MapaRelieve.caraEn(parte, (umin + umax) * 0.5f * 64f, slim);
-        if (caraIdx < 0 || mapa.plana(parte, caraIdx) || umax - umin < 1e-6f) {
-            plano(e, q, vc, luz, ov);
-            return;
-        }
+        if (caraIdx < 0 || mapa.plana(parte, caraIdx) || umax - umin < 1e-6f) return false;
         // Esquinas: A (umin, vmin), B (umax, vmin), D (umin, vmax).
         ModelPart.Vertex a = null, b = null, d = null;
         for (ModelPart.Vertex v : vs) {
@@ -150,16 +194,10 @@ public final class RelieveRender {
             else if (!uMin && vMin) b = v;
             else if (uMin) d = v;
         }
-        if (a == null || b == null || d == null) {
-            plano(e, q, vc, luz, ov);
-            return;
-        }
+        if (a == null || b == null || d == null) return false;
         Vector3f pa = a.pos, ab = new Vector3f(b.pos).sub(a.pos), ad = new Vector3f(d.pos).sub(a.pos);
         float largoU = ab.length(), largoV = ad.length();
-        if (largoU < 1e-5f || largoV < 1e-5f) {
-            plano(e, q, vc, luz, ov);
-            return;
-        }
+        if (largoU < 1e-5f || largoV < 1e-5f) return false;
         Vector3f tu = new Vector3f(ab).div(largoU), tv = new Vector3f(ad).div(largoV);
 
         int ancho = MapaRelieve.anchoPx(parte, caraIdx, slim);
@@ -173,16 +211,17 @@ public final class RelieveRender {
         // con caída tienen inclinaciones apenas distintas, y empujando cada una por su normal el borde común se abría en una
         // rendija finísima (líneas de puntos). En una caja recta la normal ya es horizontal: no cambia nada.
         Vector3f empuje = new Vector3f(n.x(), 0f, n.z()).normalize();
-        Geo g = new Geo(e, vc, luz, ov, pa, ab, ad, n, empuje, escala, umin, umax, vmin, vmax);
+        Geo g = new Geo(pa, ab, ad, n, empuje, escala, umin, umax, vmin, vmax);
         if (estilo == Estilo.ESCALONADO || estilo == Estilo.ESCALONADO_GRUESO) {
             escalonado(g, ctx, caraIdx, ancho, fu0, fu1, fv0, fv1, nu, nv, tu, tv);
         } else {
             suave(g, ctx, caraIdx, ancho, fu0, fu1, fv0, fv1, nu, nv, tu, tv);
         }
+        return true;
     }
 
     /** Lo que hace falta para emitir vértices de una cara. */
-    private record Geo(MatrixStack.Entry e, VertexConsumer vc, int luz, int ov, Vector3f a, Vector3f ab, Vector3f ad,
+    private record Geo(Vector3f a, Vector3f ab, Vector3f ad,
                        Vector3f n, Vector3f empuje, float escala, float umin, float umax, float vmin, float vmax) {
         /** Punto (s, t) de la cara, salido {@code h} px hacia afuera. */
         Vector3f punto(float s, float t, float h) {
@@ -191,10 +230,11 @@ public final class RelieveRender {
         }
 
         void vertice(Vector3f p, float s, float t, Vector3f normal) {
-            Vector3f w = e.getPositionMatrix().transformPosition(p.x / 16f, p.y / 16f, p.z / 16f, new Vector3f());
-            Vector3f nn = e.transformNormal(normal, new Vector3f());
-            vc.vertex(w.x, w.y, w.z, 0xFFFFFFFF, umin + (umax - umin) * s, vmin + (vmax - vmin) * t,
-                    ov, luz, nn.x, nn.y, nn.z);
+            if (largo + 8 > armando.length) armando = java.util.Arrays.copyOf(armando, armando.length * 2);
+            float[] b = armando;
+            b[largo++] = p.x / 16f; b[largo++] = p.y / 16f; b[largo++] = p.z / 16f;
+            b[largo++] = umin + (umax - umin) * s; b[largo++] = vmin + (vmax - vmin) * t;
+            b[largo++] = normal.x; b[largo++] = normal.y; b[largo++] = normal.z;
         }
     }
 
