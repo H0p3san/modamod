@@ -386,7 +386,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         // Apliques de armaduras y wearables de cualquier mod (2026-10-02).
         dibujarApliquesDeVestibles(entidad, biped, matrices, vertexConsumers, luz);
         // Sombrero de bruja (2026-10-04): no es una prenda de cuerpo, se dibuja siempre que esté puesto.
-        dibujarSombrero(entidad, biped, matrices, vertexConsumers, luz, holguraDeCinto(prendas), prendas);
+        dibujarSombrero(entidad, biped, matrices, vertexConsumers, luz, prendas);
         // Máscara y barbijo (2026-10-24): igual, en la cabeza.
         CaraRenderer.dibujar(entidad, biped, matrices, vertexConsumers, luz);
         if (prendas.isEmpty() && !cuerpoEntero && cintoCompresion == null) {
@@ -1069,16 +1069,37 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         return false;
     }
 
+    /** Los accesorios del jugador (lo puesto en Trinkets, o los de la vista previa) por el camino común. */
     private static void dibujarSombrero(LivingEntity entidad, BipedEntityModel<?> biped, MatrixStack matrices,
-                                        VertexConsumerProvider vertexConsumers, int luz, float dil, List<ItemStack> prendas) {
+                                        VertexConsumerProvider vertexConsumers, int luz, List<ItemStack> prendas) {
+        List<ItemStack> accesorios = new ArrayList<>();
+        if (sombreroOverride != null || calzadoOverride != null) {
+            if (sombreroOverride != null) accesorios.add(sombreroOverride);
+            if (calzadoOverride != null) accesorios.add(calzadoOverride);
+        } else {
+            TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
+                for (var par : c.getAllEquipped()) accesorios.add(par.getRight());
+            });
+        }
+        dibujarAccesorios(accesorios, prendas, entidad instanceof net.minecraft.client.network.AbstractClientPlayerEntity jugador
+                ? jugador.getSkinTextures().texture() : null, biped, matrices, vertexConsumers, luz);
+    }
+
+    /**
+     * Sombrero, cinto, collar, calzado y maletín de quien sea, jugador o figura (2026-11-11: el maniquí los dibujaba por su
+     * cuenta y los arreglos del jugador no le llegaban). {@code prendas} es la ropa puesta: de ahí salen la holgura del cinto,
+     * la capucha que agranda el sombrero y la media que envuelve el pie del calzado abierto. {@code piel}, la de ese pie.
+     */
+    public static void dibujarAccesorios(List<ItemStack> accesorios, List<ItemStack> prendas, @Nullable Identifier piel,
+                                         BipedEntityModel<?> biped, MatrixStack matrices,
+                                         VertexConsumerProvider vertexConsumers, int luz) {
         // La piel de quien lleva el calzado, para el pie de las sandalias y ojotas (2026-10-14).
-        BorcegosRenderer.pielActual = entidad instanceof net.minecraft.client.network.AbstractClientPlayerEntity jugador
-                ? jugador.getSkinTextures().texture() : null;
+        BorcegosRenderer.pielActual = piel;
         // Las medias que llegan hasta el pie lo envuelven (2026-10-18): el pie generado usa su tela.
         BorcegosRenderer.mediaIzq = BorcegosRenderer.mediaDer = null;
         for (ItemStack s : prendas) {
             if (s.getItem() != com.modamod.item.ModamodItems.MEDIAS || com.modamod.item.PatronRed.leer(s) != null) continue;   // la red tiene agujeros
-            for (Pieza pz : PiezasDePrenda.de(s, entidad)) {
+            for (Pieza pz : PiezasDePrenda.de(s, null)) {
                 if (pz.capa() != Capa.MEDIA || pz.filaHasta() < 12) continue;
                 if (pz.parte() == Parte.PIERNA_IZQ) BorcegosRenderer.mediaIzq = pz.textura();
                 else if (pz.parte() == Parte.PIERNA_DER) BorcegosRenderer.mediaDer = pz.textura();
@@ -1086,28 +1107,18 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
         }
         // Con la capucha puesta el sombrero va por fuera de ella (2026-11-11, "la capucha con sombrero tiene atravesamientos").
         SombreroRenderer.sobreCapucha = capuchaPuesta(prendas);
+        float dil = holguraDeCinto(prendas);
         try {
-            dibujarAccesorios(entidad, biped, matrices, vertexConsumers, luz, dil);
+            for (ItemStack puesto : accesorios) {
+                // La máscara y el barbijo los dibuja CaraRenderer (con sus apliques).
+                if (!puesto.isEmpty() && AccesorioRenderer.es(puesto) && !(puesto.getItem() instanceof com.modamod.item.CaraItem)) {
+                    AccesorioRenderer.dibujar(puesto, biped, matrices, vertexConsumers, luz, dil);
+                }
+            }
         } finally {
             BorcegosRenderer.mediaIzq = BorcegosRenderer.mediaDer = null;
             SombreroRenderer.sobreCapucha = false;
         }
-    }
-
-    private static void dibujarAccesorios(LivingEntity entidad, BipedEntityModel<?> biped, MatrixStack matrices,
-                                          VertexConsumerProvider vertexConsumers, int luz, float dil) {
-        if (sombreroOverride != null || calzadoOverride != null) {
-            if (sombreroOverride != null) AccesorioRenderer.dibujar(sombreroOverride, biped, matrices, vertexConsumers, luz, dil);
-            if (calzadoOverride != null) AccesorioRenderer.dibujar(calzadoOverride, biped, matrices, vertexConsumers, luz, dil);
-            return;
-        }
-        TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
-            for (var par : c.getAllEquipped()) {
-                ItemStack puesto = par.getRight();
-                // La máscara y el barbijo los dibuja CaraRenderer (con sus apliques).
-                if (AccesorioRenderer.es(puesto) && !(puesto.getItem() instanceof com.modamod.item.CaraItem)) AccesorioRenderer.dibujar(puesto, biped, matrices, vertexConsumers, luz, dil);
-            }
-        });
     }
 
     /** Cuánto sale del torso la ropa en la cintura (2026-10-05): el cinto va por encima, sin hundirse en un hoodie oversize. */
@@ -2243,7 +2254,12 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
 
     /** {@code m} plano en las filas que tapa la caña del calzado puesto: es opaca, como una tela. */
     private static com.modamod.render.relieve.MapaRelieve bajoLaCana(com.modamod.render.relieve.MapaRelieve m, Parte parte) {
-        if (calzado == null || (parte != Parte.PIERNA_DER && parte != Parte.PIERNA_IZQ)) return m;
+        return bajoLaCana(m, parte, calzado);
+    }
+
+    private static com.modamod.render.relieve.MapaRelieve bajoLaCana(com.modamod.render.relieve.MapaRelieve m, Parte parte,
+                                                                      @Nullable ItemStack calzado) {
+        if (calzado == null || calzado.isEmpty() || (parte != Parte.PIERNA_DER && parte != Parte.PIERNA_IZQ)) return m;
         int cana = com.modamod.item.CalzadoItem.alturaCana(calzado, parte == Parte.PIERNA_IZQ);
         return cana <= 0 ? m : com.modamod.render.relieve.MapaRelieve.sinFilas(m, parte, 12 - cana, 12);
     }
@@ -2259,14 +2275,14 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                         com.modamod.render.relieve.MascaraOpaca.clave(arriba.textura(), m.slim), opaco);
     }
 
-    /** El relieve del cuerpo de una figura (el maniquí) debajo de {@code prendas}: la misma regla que para el jugador. */
+    /** El relieve del cuerpo de una figura (el maniquí) debajo de {@code prendas} y de su {@code calzado}: la misma regla que para el jugador. */
     public static com.modamod.render.relieve.MapaRelieve relieveBajoRopa(com.modamod.render.relieve.MapaRelieve mapaCuerpo,
-                                                                          Parte parte, List<ItemStack> prendas) {
+                                                                          Parte parte, List<ItemStack> prendas, @Nullable ItemStack calzado) {
         com.modamod.render.relieve.MapaRelieve m = mapaCuerpo;
         for (ItemStack stack : prendas) {
             for (Pieza p : PiezasDePrenda.de(stack, null)) if (p.parte() == parte) m = bajo(m, parte, p);
         }
-        return m;
+        return bajoLaCana(m, parte, calzado);
     }
 
     /** Recorta una lista de tramos contiguos [0,12) a la ventana [desde,hasta), partiendo el que cruce el borde. */

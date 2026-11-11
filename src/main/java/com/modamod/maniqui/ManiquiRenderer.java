@@ -216,31 +216,18 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
                 }
             }
             dibujarArmadura(be, cuerpo, matrices, vertexConsumers, luz);
-            if (!be.sombrero().isEmpty()) {
-                // Sobre la capucha puesta, como en el jugador (2026-11-11).
-                com.modamod.render.SombreroRenderer.sobreCapucha = GarmentFeatureRenderer.capuchaPuesta(prendas);
-                com.modamod.render.SombreroRenderer.dibujar(be.sombrero(), cuerpo, matrices, vertexConsumers, luz);
-                com.modamod.render.SombreroRenderer.sobreCapucha = false;
-            }
+            // Sombrero, cinto, collar y calzado por el mismo camino que el jugador (2026-11-11).
+            GarmentFeatureRenderer.dibujarAccesorios(List.of(be.sombrero(), be.cinto(), be.collar(), be.calzado()), prendas,
+                    textura, cuerpo, matrices, vertexConsumers, luz);
             // Máscara y barbijo (2026-10-25): como en el jugador.
             for (ItemStack cara : new ItemStack[]{be.mascara(), be.barbijo()}) {
                 if (!cara.isEmpty()) com.modamod.render.CaraRenderer.dibujar(cara, cuerpo, matrices, vertexConsumers, luz);
-            }
-            // Cinto y collar (2026-10-19): accesorios de cajas como el sombrero; el cinto pasa por fuera de lo de abajo.
-            if (!be.cinto().isEmpty() || !be.collar().isEmpty()) {
-                float holgura = GarmentFeatureRenderer.holguraDeCinto(prendas);
-                if (!be.cinto().isEmpty()) com.modamod.render.AccesorioRenderer.dibujar(be.cinto(), cuerpo, matrices, vertexConsumers, luz, holgura);
-                if (!be.collar().isEmpty()) com.modamod.render.AccesorioRenderer.dibujar(be.collar(), cuerpo, matrices, vertexConsumers, luz, holgura);
             }
             // Lo que tiene en las manos (2026-11-03): como el que lleva un jugador.
             dibujarMano(be.manoDerecha(), cuerpo, net.minecraft.util.Arm.RIGHT, matrices, vertexConsumers, luz, be.getWorld());
             dibujarMano(be.manoIzquierda(), cuerpo, net.minecraft.util.Arm.LEFT, matrices, vertexConsumers, luz, be.getWorld());
             // Calzado (2026-10-08): el pantalón se adapta a los borcegos (los dibuja la misma pasada de tela).
-            if (!be.calzado().isEmpty()) {
-                com.modamod.render.BorcegosRenderer.pielActual = textura;   // el pie de las sandalias, con la piel de la figura
-                com.modamod.render.BorcegosRenderer.dibujar(be.calzado(), cuerpo, matrices, vertexConsumers, luz);
-                GarmentFeatureRenderer.calzadoDeTela = be.calzado();
-            }
+            if (!be.calzado().isEmpty()) GarmentFeatureRenderer.calzadoDeTela = be.calzado();
             if (!prendas.isEmpty()) {
                 GarmentFeatureRenderer.mapaFigura = mapaFigura;
                 GarmentFeatureRenderer.twirlFigura = twirl;
@@ -292,7 +279,7 @@ public class ManiquiRenderer extends GeoBlockRenderer<ManiquiBlockEntity> {
             if (!p.visible) continue;
             // Plano debajo de la ropa, como el jugador (2026-11-11, "las rodillas de los maniquies salen agujereadas").
             com.modamod.render.relieve.RelieveRender.Contexto ctx = new com.modamod.render.relieve.RelieveRender.Contexto(
-                    parte, GarmentFeatureRenderer.relieveBajoRopa(mapa, parte, be.prendasPuestas()), null);
+                    parte, GarmentFeatureRenderer.relieveBajoRopa(mapa, parte, be.prendasPuestas(), be.calzado()), null);
             if (com.modamod.render.relieve.RelieveRender.aplica(ctx)) {
                 com.modamod.render.relieve.RelieveRender.dibujar(p, ctx, 1f, matrices, vc, luz, ov);
             } else {
