@@ -1452,8 +1452,13 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 boolean izqPie = parte == Parte.PIERNA_IZQ;   // cada pie con su caña, suela y botamanga
                 cana = com.modamod.item.CalzadoItem.alturaCana(calzado, izqPie);   // 2026-10-14: la capellada y la suela elegidas
                 botamangaAfuera = pantalonSobreCalzado;   // lo decide el orden de la lista de ropa
-                if (!botamangaAfuera) hasta = Math.max(desde, Math.min(hasta, 12 - cana));
+                // Metida en la bota entra una fila por debajo del borde de la caña (2026-11-11, "con botas hay z fighting"):
+                // cortada justo en el borde quedaba una rendija por la que se veía la media, dentada en voxel.
+                if (!botamangaAfuera) hasta = Math.max(desde, Math.min(hasta, 12 - cana + 1));
             }
+            // Lo que queda dentro de la caña (todo menos el pantalón que va por fuera): plano y más fino que ella.
+            int canaPie = pierna && calzado != null ? com.modamod.item.CalzadoItem.alturaCana(calzado, parte == Parte.PIERNA_IZQ) : 0;
+            boolean dentroDeLaBota = canaPie > 0 && !(botamangaAfuera && pieza.capa() >= Capa.PIERNA_EXTERIOR);
             float base = pieza.dilatacion();
             // Medias tapadas por un pantalon (2026-10-19, "veo con rotura escalonada"): sin volumen (lo apaga el pantalon de encima) la
             // media Suelto/Oversize se dibujaba por filas con toda su holgura y sus escalones asomaban por debajo de la malla del
@@ -1474,6 +1479,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 for (int k = indice + 1; k < piezas.size(); k++) {
                     propio = bajo(propio, parte, piezas.get(k));
                 }
+                if (dentroDeLaBota) propio = com.modamod.render.relieve.MapaRelieve.sinFilas(propio, parte, 12 - canaPie, 12);
                 com.modamod.render.relieve.RelieveRender.actual =
                         new com.modamod.render.relieve.RelieveRender.Contexto(parte, propio);
             }
@@ -1566,6 +1572,7 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                             && f < 12 - com.modamod.item.CalzadoItem.suela(calzado, parte == Parte.PIERNA_IZQ).filas) {
                         d = Math.max(d, com.modamod.render.BorcegosRenderer.T + 0.12F);
                     }
+                    if (dentroDeLaBota && f >= 12 - canaPie) d = Math.min(d, com.modamod.render.BorcegosRenderer.T - 0.15F);
                     if (exterior[f] != Float.NEGATIVE_INFINITY) d = Math.max(d, exterior[f] + SEPARACION_CAPAS);
                     if (sobreArmadura && armaduraEn(parte, f) > 0f) d = Math.max(d, armaduraEn(parte, f) + SEPARACION_CAPAS);
                     // Lo que va encima de la pollera (el hoodie) se abre por fuera de
@@ -2144,10 +2151,17 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      */
     private static com.modamod.render.relieve.MapaRelieve relieveDelCuerpoBajoTela(
             com.modamod.render.relieve.MapaRelieve mapaCuerpo, Parte parte, @Nullable List<Pieza> piezas) {
-        if (piezas == null) return mapaCuerpo;
+        if (piezas == null) return bajoLaCana(mapaCuerpo, parte);
         com.modamod.render.relieve.MapaRelieve m = mapaCuerpo;
         for (Pieza p : piezas) m = bajo(m, parte, p);
-        return m;
+        return bajoLaCana(m, parte);
+    }
+
+    /** {@code m} plano en las filas que tapa la caña del calzado puesto: es opaca, como una tela. */
+    private static com.modamod.render.relieve.MapaRelieve bajoLaCana(com.modamod.render.relieve.MapaRelieve m, Parte parte) {
+        if (calzado == null || (parte != Parte.PIERNA_DER && parte != Parte.PIERNA_IZQ)) return m;
+        int cana = com.modamod.item.CalzadoItem.alturaCana(calzado, parte == Parte.PIERNA_IZQ);
+        return cana <= 0 ? m : com.modamod.render.relieve.MapaRelieve.sinFilas(m, parte, 12 - cana, 12);
     }
 
     /**
