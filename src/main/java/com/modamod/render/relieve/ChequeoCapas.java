@@ -37,7 +37,7 @@ import java.util.Optional;
  * de la skin que para las mallas sueltas (pollera, faldón, delantal, capa). Los brazos van aparte, alrededor de su eje.
  *
  * <p>El orden esperado, de adentro hacia afuera: el cuerpo; las piezas y las polleras por su lugar en la lista de ropa; el
- * faldón de un Top por fuera de las polleras; el delantal, la capa y el cinto por fuera de todo.
+ * faldón de un Top por fuera de las polleras; el delantal y la capa por fuera de todo.
  *
  * <p>Límites: el personaje quieto y sin pose; lo translúcido (se dibuja diferido) puede quedar con la etiqueta de otra
  * prenda; cuello, capucha, apliques, sombrero y calzado no se comparan.
@@ -47,12 +47,15 @@ public final class ChequeoCapas {
     private ChequeoCapas() {}
 
     /** Separación de las muestras que se toman de cada cuadro (px). */
-    private static final float PASO = 0.12f;
+    private static final float PASO = 0.06f;
     /** Lo que una capa de adentro puede pasar a la de afuera sin contar (px). */
     private static final float TOLERANCIA = 0.03f;
     /** Celdas con problema para avisar (menos es ruido de la grilla). */
-    private static final int MINIMO = 8;
-    private static final int ANGULOS = 720, POR_PX = 8;
+    private static final int MINIMO = 4;
+    public static boolean DEPURAR = false;
+    // La celda tiene que ser más grande que PASO en las dos direcciones, o quedan celdas sin muestra y la capa de afuera
+    // "falta" ahí (pasó: el busto del cuerpo parecía asomar 2,6 px sobre la remera). 2° son 0,07 px a 2 px del eje.
+    private static final int ANGULOS = 180, POR_PX = 8;
     private static final float Y0 = -3f, Y1 = 27f;
     private static final int ALTO = Math.round((Y1 - Y0) * POR_PX);
 
@@ -60,6 +63,8 @@ public final class ChequeoCapas {
     private static final String[] ZONA = {"torso", "brazo derecho", "brazo izquierdo", "pierna derecha", "pierna izquierda"};
     /** x del eje de cada zona (px); los brazos, según slim. */
     private static final float EJE_PIERNA = 1.9f;
+    /** Desde acá (px bajo el hombro) es el pie. */
+    private static final float PIE_DESDE = 21f;
 
     /** Graba los vértices que le llegan: 5 floats cada uno (x, y, z en px; u, v de 0 a 1). */
     private static final class Grabador implements VertexConsumer {
@@ -127,7 +132,8 @@ public final class ChequeoCapas {
             float rango;
             boolean deSkin;   // usa el layout de la skin: se sabe de qué parte es cada cuadro
             if (textura != null && cuerpo.contains(textura)) {
-                nombre = "el cuerpo"; rango = -1f; deSkin = true;
+                // El cuerpo elegido y la skin del jugador, por separado: se dibujan con reglas distintas.
+                nombre = textura.equals(jugador.getSkinTextures().texture()) ? "la skin" : "el cuerpo"; rango = -1f; deSkin = true;
             } else if (prenda == null || prenda.isEmpty()) {
                 continue;
             } else {
@@ -141,12 +147,12 @@ public final class ChequeoCapas {
                 else if (k >= 0 && Prendas.es(prenda, CategoriaDePrenda.REMERA)) { nombre = "faldón de " + item + " (" + (k + 1) + "ª de adentro)"; rango = Math.max(k, ultimaPollera) + 0.5f; deSkin = false; }
                 else if (Prendas.es(prenda, CategoriaDePrenda.DELANTAL)) { nombre = "delantal"; rango = prendas.size() + 1; deSkin = false; }
                 else if (Prendas.es(prenda, CategoriaDePrenda.CAPA)) { nombre = "capa"; rango = prendas.size() + 2; deSkin = false; }
-                // El cinto va sobre el delantal y bajo la capa; el collar no envuelve nada: no se compara.
-                else if (Prendas.es(prenda, CategoriaDePrenda.BANDA) && com.modamod.item.BandaItem.zona(prenda) == com.modamod.item.BandaZona.CINTURA) {
-                    nombre = "cinto"; rango = prendas.size() + 1.5f; deSkin = false;
-                }
+                // El cinto va a la holgura de su calce, por diseño (puede quedar bajo la ropa o el delantal), y el collar no
+                // envuelve nada: no se comparan.
                 else continue;
             }
+            if (DEPURAR) volcarArchivo(nombre, e.getValue());
+            if (DEPURAR) org.slf4j.LoggerFactory.getLogger("modamod").info("[capasdbg] " + nombre + " <- " + (prenda == null ? "-" : Registries.ITEM.getId(prenda.getItem()).getPath()) + " " + textura + " cuadros=" + e.getValue().n / 20);
             Capa capa = capas.computeIfAbsent(nombre, x -> new Capa(nombre, rango, deSkin));
             NativeImage img = textura == null ? null : imagenes.computeIfAbsent(textura, t ->
                     MinecraftClient.getInstance().getTextureManager().getOrDefault(t, null) instanceof NativeImageBackedTexture nt
@@ -165,6 +171,8 @@ public final class ChequeoCapas {
                     // Una malla (pollera, faldón) que está más adentro en la lista que una pieza: la pieza de torso se abre
                     // por fuera de ella, pero las piernas van siempre por dentro de la pollera. Solo se compara el torso.
                     if (!adentro.deSkin && afuera.deSkin && z != 0) continue;
+                    // Y la pollera va siempre por fuera del pantalón, también de su cintura, esté donde esté en la lista.
+                    if (!adentro.deSkin && afuera.nombre.startsWith("pantalon")) continue;
                     float[] ra = adentro.lejos[z], rb = afuera.lejos[z];
                     if (ra == null || rb == null) continue;
                     int malas = 0, peorEn = 0;
@@ -183,6 +191,20 @@ public final class ChequeoCapas {
             }
         }
         return avisos;
+    }
+
+    /** Depuración: agrega los cuadros grabados (4 vértices: x y z u v) a modamod_debug/capas_dump.txt. */
+    private static void volcarArchivo(String nombre, Grabador g) {
+        StringBuilder sb = new StringBuilder();
+        for (int q = 0; q + 20 <= g.n; q += 20) {
+            sb.append(nombre);
+            for (int k = 0; k < 20; k++) sb.append(' ').append(g.v[q + k]);
+            sb.append((char) 10);
+        }
+        try {
+            java.nio.file.Files.writeString(java.nio.file.Path.of("modamod_debug", "capas_dump.txt"), sb.toString(),
+                    java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+        } catch (java.io.IOException ignorado) { }
     }
 
     /** Hacia dónde mira ese ángulo (atan2(z, x)): el frente del modelo es −z. */
@@ -226,6 +248,9 @@ public final class ChequeoCapas {
                     int iy = (int) Math.floor((y - Y0) * POR_PX);
                     if (iy < 0 || iy >= ALTO) continue;
                     // Las mallas sueltas no son de una parte: arriba de la cadera rodean el torso; abajo, las dos piernas.
+                    // El pie no se compara: la punta de la media y la del cuerpo usan otra zona de la textura y no se
+                    // reconocen como de la pierna, así que una de las dos faltaría siempre.
+                    if (zonaSkin >= 3 && y > PIE_DESDE) continue;
                     if (zonaSkin >= 0) anotar(capa, zonaSkin, ejes[zonaSkin], x, z, iy);
                     else if (y <= 12f) anotar(capa, 0, 0f, x, z, iy);
                     else { anotar(capa, 3, ejes[3], x, z, iy); anotar(capa, 4, ejes[4], x, z, iy); }
@@ -242,7 +267,7 @@ public final class ChequeoCapas {
 
     private static int pasos(float[] v, int q, int a, int b) {
         float dx = v[q + a * 5] - v[q + b * 5], dy = v[q + a * 5 + 1] - v[q + b * 5 + 1], dz = v[q + a * 5 + 2] - v[q + b * 5 + 2];
-        return Math.max(1, Math.min(240, (int) Math.ceil(Math.sqrt(dx * dx + dy * dy + dz * dz) / PASO)));
+        return Math.max(1, Math.min(600, (int) Math.ceil(Math.sqrt(dx * dx + dy * dy + dz * dz) / PASO)));
     }
 
     private static float mezcla(float[] v, int q, int c, float s, float t) {

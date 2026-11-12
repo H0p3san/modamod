@@ -267,6 +267,7 @@ public final class GuionDebug {
             case "perf" -> { com.modamod.render.Perf.activo = !t[1].equals("0"); }
             case "tercera" -> mc.options.setPerspective(t[1].equals("0") ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
             case "capas" -> {
+                com.modamod.render.relieve.ChequeoCapas.DEPURAR = t.length > 1 && t[1].endsWith("_dbg");
                 var avisos = com.modamod.render.relieve.ChequeoCapas.revisar(mc.player);
                 log("capas " + (t.length > 1 ? t[1] : "") + ": " + (avisos == null ? "no se pudo dibujar"
                         : avisos.isEmpty() ? "en orden" : avisos.size() + " avisos"));

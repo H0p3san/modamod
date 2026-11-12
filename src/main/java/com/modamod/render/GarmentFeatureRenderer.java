@@ -103,7 +103,8 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
      * ninguna si el calzado abierto dibuja el pie, y ninguna si la media no llega al pie.
      */
     private static boolean conPuntaDeMedia(Pieza p, Parte parte) {
-        if (pieDelCalzado(parte)) return false;
+        // Con calzado el pie lo tapa o lo dibuja él (2026-11-11: la punta de la media Suelta salía por delante de la bota).
+        if (calzado != null) return false;
         // Rediseño ("el cubo de pie se empieza a pintar antes de que el largo llegue hasta el cubo"): la punta es del pie, así
         // que solo va cuando la media llega hasta la última fila; una media cortada más arriba no la tiene.
         if (p.filaHasta() < 12) return false;
@@ -1577,7 +1578,11 @@ public class GarmentFeatureRenderer<T extends LivingEntity, M extends EntityMode
                 ModelPart fruncida = pieza.fruncido() || pieza.fruncidoSup()
                         ? CuerpoGeometria.telaFruncidaVolumen(parte, base, desde, hasta, pieza.fruncido(), pieza.fruncidoSup(),
                                 conPuntaDeMedia(pieza, parte)) : null;
-                float[] dilMedia = filasDeMedia(pieza, base, desde, hasta);
+                float[] dilMedia = filasDeMedia(pieza, base, desde, hasta).clone();
+                // Dentro de la caña la media no es más gruesa que la bota (2026-11-11, la Oversize asomaba alrededor).
+                for (int f = Math.max(0, 12 - canaPie); canaPie > 0 && f < dilMedia.length; f++) {
+                    dilMedia[f] = Math.min(dilMedia[f], com.modamod.render.BorcegosRenderer.T - 0.15F);
+                }
                 dibujarModelPart(fruncida != null ? fruncida
                                 : CuerpoGeometria.telaConVolumenDePierna(parte, dilMedia, conPuntaDeMedia(pieza, parte), desde, hasta),
                         CuerpoGeometria.Superficie.TELA, pieza.textura(), delModelo, matrices, vertexConsumers, luz);
