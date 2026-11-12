@@ -24,6 +24,7 @@ public class ModamodClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(
                 c -> com.modamod.render.IconoAccesorioImagen.procesar());
         // Falla al arrancar si la columna de la Estilista tiene controles superpuestos (2026-10-13, infraestructura de chequeo).
+        ApliquesCustomCliente.init();
         DisposicionEstilista.autoverificar();
         DisposicionSublimadora.autoverificar();
         // Acabado con trim (2026-10-06): la prenda lo dice en su descripción.

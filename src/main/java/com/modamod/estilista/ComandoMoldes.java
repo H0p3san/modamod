@@ -76,7 +76,7 @@ public final class ComandoMoldes {
         Aplique p = molde.getItem() instanceof MoldeApliquePersonalizadoItem ? MoldeApliquePersonalizadoItem.plantilla(molde) : null;
         if (p == null) return Text.empty();
         if (p.objeto() != null) return p.objeto().item().getName();
-        return Text.translatable("modamod.moldes.modelo." + p.modelo().clave);
+        return Text.translatableWithFallback("modamod.moldes.modelo." + p.modelo().clave, p.modelo().clave);
     }
 
     private static int listar(ServerCommandSource fuente, UUID autor, String nombre) {

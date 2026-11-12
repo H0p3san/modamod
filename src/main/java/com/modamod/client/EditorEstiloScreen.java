@@ -449,7 +449,7 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
 
     /** La Estilista no usa el slot de prenda de la Mesa (2026-10-08): se tapa el marco que trae el fondo. */
     boolean sinSlotPrenda() { return false; }
-    private ButtonWidget btnPaginaColocacion, btnPaginaMovimiento, btnRestablecer, btnPivote, btnEje, btnCrearMolde;
+    private ButtonWidget btnPaginaColocacion, btnPaginaMovimiento, btnRestablecer, btnPivote, btnEje, btnCrearMolde, btnSubirAplique;
     /** El slider de blandura de la Mesa normal (2026-10-04): como estaba antes del panel lateral. */
     private SliderAjuste sliderNormal;
     /** El nombre del molde que se va a fabricar (2026-10-04, "me falta un casillero para ponerle el nombre al aplique"). */
@@ -617,6 +617,12 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         }
         btnBiblioAnt = botonPanel(6, 232, 34, Text.literal("<"), null, () -> paginaBiblio = 0);
         btnBiblioSig = botonPanel(44, 232, 34, Text.literal(">"), null, () -> paginaBiblio = 1);
+        // Aplique custom (2026-11-12): sube al servidor los archivos con el nombre escrito en el casillero.
+        btnSubirAplique = botonPanel(82, 232, 72, Text.translatable("modamod.estilado.panel.subir_aplique"),
+                "modamod.estilado.tooltip.subir_aplique", () -> {
+                    ApliquesCustomCliente.subir(handler.be.getPos(), txtNombreMolde.getText().strip());
+                    txtNombreMolde.setText("");
+                });
 
         // Página Colocación: cara de contacto (solo objetos), profundidad, desplazamiento, rotación, escala.
         for (int i = 0; i < 6; i++) {
@@ -688,7 +694,7 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         if (!cre) {
             // La Mesa normal no tiene panel lateral.
             for (var w : new ButtonWidget[] { btnPaginaColocacion, btnPaginaMovimiento, btnPaginaMoldes, btnRestablecer, btnPivote, btnEje,
-                    btnCrearMolde, btnBiblioAnt, btnBiblioSig }) w.visible = false;
+                    btnCrearMolde, btnBiblioAnt, btnBiblioSig, btnSubirAplique }) w.visible = false;
             for (int i = 0; i < FILAS_BIBLIO; i++) btnBiblioDar[i].visible = btnBiblioBorrar[i].visible = false;
             txtNombreMolde.visible = false;
             for (SliderAjuste sl : slidersColocacion) sl.visible = false;
@@ -706,7 +712,7 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         btnPaginaMoldes.active = paginaPanel != 2;
         // La biblioteca (página 2): una fila por molde guardado en esta Mesa.
         boolean biblio = paginaPanel == 2;
-        btnBiblioAnt.visible = btnBiblioSig.visible = biblio;
+        btnBiblioAnt.visible = btnBiblioSig.visible = btnSubirAplique.visible = biblio;
         btnBiblioAnt.active = paginaBiblio != 0;
         btnBiblioSig.active = paginaBiblio != 1;
         for (int i = 0; i < FILAS_BIBLIO; i++) {

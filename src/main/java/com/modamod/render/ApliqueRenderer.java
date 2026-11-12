@@ -65,7 +65,17 @@ public final class ApliqueRenderer {
 
     @org.jetbrains.annotations.Nullable
     public static Map<Integer, Captura> capturaApliques;
-    private static final int ANCHO_ZONA = 32;
+
+    /** Los modelos custom que mandó el servidor (ver {@code client.ApliquesCustomCliente}); GeckoLib rearma su caché en cada recarga. */
+    public static final Map<Identifier, BakedGeoModel> MODELOS_CUSTOM = new HashMap<>();
+
+    /** La textura propia (gris, 3 zonas en tercios del ancho) de los custom que la traen; los demás usan el atlas. */
+    public static final Map<Identifier, NativeImage> TEXTURAS_CUSTOM = new HashMap<>();
+
+    private static BakedGeoModel horneado(Aplique a) {
+        BakedGeoModel m = MODELOS_CUSTOM.get(a.modelo().geo());
+        return m != null ? m : GeckoLibCache.getBakedModels().get(a.modelo().geo());
+    }
 
     /** Los apliques de todas las prendas de {@code prendas} (los de caja; pollera y capa van en su malla). */
     public static void dibujar(List<ItemStack> prendas, BipedEntityModel<?> biped, MatrixStack matrices,
@@ -291,7 +301,7 @@ public final class ApliqueRenderer {
      */
     private static float grosorMaximo(Aplique a) {
         if (espacioSobre == Float.MAX_VALUE || a.parte() != Parte.TORSO || a.objeto() != null || a.modelo() == null) return 1f;
-        BakedGeoModel modelo = GeckoLibCache.getBakedModels().get(a.modelo().geo());
+        BakedGeoModel modelo = horneado(a);
         if (modelo == null) return 1f;
         float[][] caja = limitesGeo(modelo);
         Colocacion c = a.colocacion();
@@ -310,7 +320,7 @@ public final class ApliqueRenderer {
                     Blando.de(a, matrices.peek().getNormalMatrix(), marco), marco);
             return;
         }
-        BakedGeoModel modelo = GeckoLibCache.getBakedModels().get(a.modelo().geo());
+        BakedGeoModel modelo = horneado(a);
         if (modelo == null) return;
         Matrix4f pm = colocarGeo(a, matrices);
         // Los huesos leen el marco con la rotación del usuario ya aplicada.
@@ -784,16 +794,18 @@ public final class ApliqueRenderer {
     /** El atlas gris con cada columna de zona multiplicada por su color (las tramas van aparte, ver {@link #dibujarTramas}). */
     private static Identifier textura(Aplique a) {
         String key = Integer.toHexString(a.color(0)) + "_" + Integer.toHexString(a.color(1)) + "_" + Integer.toHexString(a.color(2));
+        NativeImage propia = TEXTURAS_CUSTOM.get(a.modelo().geo());
+        // La identidad de la imagen en la clave: si el servidor manda otra textura, no vale la teñida de antes.
+        if (propia != null) key = a.modelo().clave + "_" + System.identityHashCode(propia) + "_" + key;
         Identifier id = CACHE.get(key);
         if (id != null) return id;
-        NativeImage base = ClothingTextureCache.imagenBase(ATLAS);
+        NativeImage base = propia != null ? propia : ClothingTextureCache.imagenBase(ATLAS);
         if (base == null) return ATLAS;
         NativeImage img = new NativeImage(base.getWidth(), base.getHeight(), true);
         img.copyFrom(base);
-        int escala = Math.max(1, base.getWidth() / 96);
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
-                int zona = Math.min(2, x / (ANCHO_ZONA * escala));
+                int zona = Math.min(2, x * 3 / img.getWidth());   // tercios del ancho: en el atlas de 96, columnas de 32
                 int c = img.getColor(x, y);            // ABGR
                 int rgb = a.color(zona);
                 int r = ((c & 0xFF) * ((rgb >> 16) & 0xFF)) / 255;

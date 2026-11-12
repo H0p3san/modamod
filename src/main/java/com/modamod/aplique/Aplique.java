@@ -135,7 +135,7 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
     public static final Codec<Parte> CODEC_PARTE = Codec.STRING.xmap(Parte::valueOf, Parte::name);
 
     public static final Codec<Aplique> CODEC = RecordCodecBuilder.create(i -> i.group(
-            net.minecraft.util.StringIdentifiable.createCodec(ModeloAplique::values).fieldOf("modelo").forGetter(Aplique::modelo),
+            ModeloAplique.CODEC.fieldOf("modelo").forGetter(Aplique::modelo),
             CODEC_PARTE.fieldOf("parte").forGetter(Aplique::parte),
             Codec.FLOAT.fieldOf("x").forGetter(Aplique::x),
             Codec.FLOAT.fieldOf("y").forGetter(Aplique::y),

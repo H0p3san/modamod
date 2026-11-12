@@ -264,6 +264,11 @@ public final class GuionDebug {
                 mc.interactionManager.interactBlock(mc.player, net.minecraft.util.Hand.MAIN_HAND,
                         new net.minecraft.util.hit.BlockHitResult(pos.toCenterPos(), net.minecraft.util.math.Direction.UP, pos, false));
             }
+            // subir <nombre> dx dy dz: el botón "Subir aplique" de la Estilista creativa que está a esa distancia.
+            case "subir" -> {
+                String[] d = linea.split(" ");
+                ApliquesCustomCliente.subir(mc.player.getBlockPos().add(Integer.parseInt(d[2]), Integer.parseInt(d[3]), Integer.parseInt(d[4])), d[1]);
+            }
             case "perf" -> { com.modamod.render.Perf.activo = !t[1].equals("0"); }
             case "tercera" -> mc.options.setPerspective(t[1].equals("0") ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
             case "capas" -> {
@@ -272,6 +277,23 @@ public final class GuionDebug {
                 log("capas " + (t.length > 1 ? t[1] : "") + ": " + (avisos == null ? "no se pudo dibujar"
                         : avisos.isEmpty() ? "en orden" : avisos.size() + " avisos"));
                 if (avisos != null) for (String aviso : avisos) log("  capas: " + aviso);
+            }
+            case "acepta" -> {
+                var cats = com.modamod.modelado.ModeladoBlockEntity.Categoria.values();
+                for (var molde : new net.minecraft.item.Item[]{com.modamod.modelado.ModeladoMod.MOLDE_RUEDO_CERRADO, com.modamod.modelado.ModeladoMod.MOLDE_RUEDO_FRUNCIDO,
+                        com.modamod.modelado.ModeladoMod.MOLDE_RUEDO_PIEL}) {
+                    StringBuilder sb = new StringBuilder();
+                    for (var c : cats) sb.append(c).append('=').append(com.modamod.modelado.ModeladoBlockEntity.aceptaMolde(c, molde) ? "si" : "no").append(' ');
+                    // Y casillero por casillero, que es lo que lista la bolsa de la Modeladora (pinAcepta).
+                    for (var c : java.util.List.of(com.modamod.modelado.ModeladoBlockEntity.Categoria.POLLERA, com.modamod.modelado.ModeladoBlockEntity.Categoria.DELANTAL, com.modamod.modelado.ModeladoBlockEntity.Categoria.REMERA)) {
+                        int n = 0;
+                        for (int pin = 0; pin < com.modamod.modelado.ModeladoBlockEntity.PINES_POR_CATEGORIA; pin++) {
+                            if (com.modamod.modelado.ModeladoBlockEntity.pinAcepta(c, pin, new net.minecraft.item.ItemStack(molde))) n++;
+                        }
+                        sb.append("| pines de ").append(c).append(": ").append(n).append(' ');
+                    }
+                    log("acepta " + net.minecraft.registry.Registries.ITEM.getId(molde).getPath() + ": " + sb);
+                }
             }
             case "perflog" -> log("perf: " + PerfHud.resumen());
             case "abierta" -> log("pantalla abierta: " + (mc.currentScreen == null ? "ninguna" : mc.currentScreen.getClass().getSimpleName()));
