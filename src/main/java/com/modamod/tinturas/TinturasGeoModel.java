@@ -123,6 +123,7 @@ public class TinturasGeoModel extends GeoModel<TinturasBlockEntity> {
         // salida > entrada+borrador > representativo, ver su javadoc.
         Identifier id = com.modamod.render.PantallaMaquina.con(com.modamod.util.MaquinaCreativa.textura(TEX, com.modamod.util.MaquinaCreativa.es(be)), com.modamod.render.PantallaMaquina.PANEL_TINTURAS, be.vistaPreviaPersistente(), be.getPos());
         pintarViales(be, id);
+        pintarLeds(be, id);
         return id;
     }
 
@@ -155,6 +156,34 @@ public class TinturasGeoModel extends GeoModel<TinturasBlockEntity> {
         if (usado1) pintarRect(img, VIAL_2_UV, actual[1]);
         nibt.upload();
         ULTIMO_COLOR_VIAL.put(be.getPos(), actual);
+    }
+
+    private static final java.util.Map<net.minecraft.util.math.BlockPos, int[]> ULTIMO_LED = new java.util.HashMap<>();
+
+    /**
+     * Los LED prendidos también en la textura base (2026-11-12, "la estacion de tintes tiene las luces apagadas cuando esta
+     * activada la linea"): esta es la única máquina translúcida (por los tubos) y con Sodium + Iris lo translúcido se dibuja
+     * en una pasada posterior que tapa el brillo de {@code LedGlowLayer}. Pintado acá el LED se ve prendido igual; apagado
+     * vuelve el arte del atlas. Comparar antes de pintar, como {@link #pintarViales}.
+     */
+    private static void pintarLeds(TinturasBlockEntity be, Identifier texturaId) {
+        int[] actual = coloresLed(be);
+        if (java.util.Arrays.equals(ULTIMO_LED.get(be.getPos()), actual)) return;
+        net.minecraft.client.texture.AbstractTexture tex =
+                net.minecraft.client.MinecraftClient.getInstance().getTextureManager().getTexture(texturaId);
+        net.minecraft.client.texture.NativeImage arte = com.modamod.render.ClothingTextureCache.imagenBase(
+                com.modamod.util.MaquinaCreativa.textura(TEX, com.modamod.util.MaquinaCreativa.es(be)));
+        if (!(tex instanceof net.minecraft.client.texture.NativeImageBackedTexture nibt) || nibt.getImage() == null || arte == null) return;
+        for (int i = 0; i < LEDS.length; i++) {
+            com.modamod.render.PantallaLed.Rect r = LEDS[i];
+            for (int y = r.v(); y < r.v() + r.alto(); y++) {
+                for (int x = r.u(); x < r.u() + r.ancho(); x++) {
+                    nibt.getImage().setColor(x, y, actual[i] != 0 ? actual[i] : arte.getColor(x, y));
+                }
+            }
+        }
+        nibt.upload();
+        ULTIMO_LED.put(be.getPos(), actual);
     }
 
     /** Color plano de {@code stack} — mismos 5 tipos que {@code TinturasBlockEntity.Categoria}, 0 si no es ninguno. */

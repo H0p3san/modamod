@@ -15,7 +15,8 @@ public class TinturasRenderer extends GeoBlockRenderer<TinturasBlockEntity> {
         // el giro. Solo mientras tiñe.
         // Pantallita siempre iluminada (2026-09-29).
         addRenderLayer(new com.modamod.render.PantallaGlowLayer<>(this,
-                be -> com.modamod.render.PantallaMaquina.glow(TinturasGeoModel.TEX,
+                be -> com.modamod.render.PantallaMaquina.glow(
+                        com.modamod.util.MaquinaCreativa.textura(TinturasGeoModel.TEX, com.modamod.util.MaquinaCreativa.es(be)),
                         com.modamod.render.PantallaMaquina.PANEL_TINTURAS, be.getPos())));
         addRenderLayer(new com.modamod.render.PrendaEnMaquinaLayer<>(this, "prenda_remera",
                 // Sigue en el rodillo mientras espera en la Salida (2026-09-29,

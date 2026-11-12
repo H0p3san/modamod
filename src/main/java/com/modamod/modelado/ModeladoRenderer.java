@@ -13,7 +13,8 @@ public class ModeladoRenderer extends GeoBlockRenderer<ModeladoBlockEntity> {
         // "reemplazar esos huesos por el item nuevo") — centro del hueso REMERA.
         // Pantallita siempre iluminada (2026-09-29).
         addRenderLayer(new com.modamod.render.PantallaGlowLayer<>(this,
-                be -> com.modamod.render.PantallaMaquina.glow(ModeladoGeoModel.TEX,
+                be -> com.modamod.render.PantallaMaquina.glow(
+                        com.modamod.util.MaquinaCreativa.textura(ModeladoGeoModel.TEX, com.modamod.util.MaquinaCreativa.es(be)),
                         com.modamod.render.PantallaMaquina.PANEL_128, be.getPos())));
         addRenderLayer(new com.modamod.render.PrendaEnMaquinaLayer<>(this, "REMERA",
                 be -> be.prendaVisible(), -0.4f, 11.85f, -0.95f, 10f,

@@ -43,7 +43,8 @@ public class SublimadoraRenderer extends GeoBlockRenderer<SublimadoraBlockEntity
         // huesos por el item nuevo"), debajo de las fotos (Y_FOTO 11.9).
         // Pantallita siempre iluminada (2026-09-29).
         addRenderLayer(new com.modamod.render.PantallaGlowLayer<>(this,
-                be -> com.modamod.render.PantallaMaquina.glow(SublimadoraGeoModel.TEX,
+                be -> com.modamod.render.PantallaMaquina.glow(
+                        com.modamod.util.MaquinaCreativa.textura(SublimadoraGeoModel.TEX, com.modamod.util.MaquinaCreativa.es(be)),
                         com.modamod.render.PantallaMaquina.PANEL_128, be.getPos())));
         addRenderLayer(new com.modamod.render.PrendaEnMaquinaLayer<>(this, "REMERA",
                 be -> !be.getPrenda().isEmpty() ? be.getPrenda() : be.getSalida(), 0f, 11.85f, -0.6f, 10f,
