@@ -83,4 +83,13 @@ public enum Ruedo implements StringIdentifiable {
 
     /** Si vale para una zona que no es la pollera (el borde decorativo hoy solo existe ahí). */
     public boolean valeEnTela() { return borde() == null && !esDeCapa(); }
+
+    /**
+     * Si este ruedo hace algo en ese borde (2026-11-12, "hay moldes que aparecen cuando no hacen nada como molde cerrado en
+     * pollera"): la malla de la pollera y del delantal no tiene tapa que cerrar ni tela que fruncir, así que Cerrado y
+     * Fruncido no cambian nada ahí y no se ofrecen. Los demás bordes, como siempre.
+     */
+    public boolean valeEn(ZonaRuedo zona) {
+        return !((this == CERRADO || this == FRUNCIDO) && (zona == ZonaRuedo.POLLERA || zona == ZonaRuedo.DELANTAL));
+    }
 }

@@ -35,7 +35,7 @@ public class MoldeRuedoItem extends Item {
         } else if (valor == Ruedo.FRUNCIDO) {
             PrendaLore.molde(tooltip, "ruedo", PrendaLore.Maquina.MODELADORA, "medias", "calientabrazos");
         } else if (valor == Ruedo.CERRADO) {
-            PrendaLore.molde(tooltip, "ruedo", PrendaLore.Maquina.MODELADORA, "remera", "medias", "calientabrazos");
+            PrendaLore.molde(tooltip, "ruedo", PrendaLore.Maquina.MODELADORA, "remera", "pantalon", "medias", "calientabrazos");
         } else if (valor == Ruedo.PIEL) {
             PrendaLore.molde(tooltip, "ruedo", PrendaLore.Maquina.MODELADORA, "remera", "chaqueta", "pantalon", "medias", "calientabrazos");
         } else if (valor.valeEnTela()) {

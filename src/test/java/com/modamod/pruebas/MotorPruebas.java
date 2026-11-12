@@ -274,6 +274,22 @@ public final class MotorPruebas {
             inf.ok("relieve bajo la tela", "cuerpo plano en las filas tapadas, intacto en el resto");
         } catch (Throwable t) { inf.fallo("relieve bajo la tela", t.toString()); }
 
+        // Moldes que no hacen nada (2026-11-12, "molde cerrado en pollera"): Cerrado y Fruncido no se ofrecen en la pollera ni el
+        // delantal; en el resto de los bordes siguen valiendo, y los demás ruedos valen donde siempre.
+        try {
+            for (var r : new com.modamod.item.Ruedo[]{com.modamod.item.Ruedo.CERRADO, com.modamod.item.Ruedo.FRUNCIDO}) {
+                Informe.verificar(com.modamod.modelado.Molde.ruedo(com.modamod.item.ZonaRuedo.POLLERA, r, false).vacio(), r + " en la pollera");
+                Informe.verificar(com.modamod.modelado.Molde.ruedo(com.modamod.item.ZonaRuedo.DELANTAL, r, false).vacio(), r + " en el delantal");
+                Informe.verificar(!com.modamod.modelado.Molde.ruedo(com.modamod.item.ZonaRuedo.PUNO_DER, r, false).vacio(), r + " en el puño");
+                Informe.verificar(!com.modamod.modelado.Molde.ruedo(com.modamod.item.ZonaRuedo.INF_IZQ, r, true).vacio(), r + " en la media");
+            }
+            for (var r : new com.modamod.item.Ruedo[]{com.modamod.item.Ruedo.RECTO, com.modamod.item.Ruedo.AJUSTADO, com.modamod.item.Ruedo.CAMPANA,
+                    com.modamod.item.Ruedo.PIEL, com.modamod.item.Ruedo.VOLADO_RECTO}) {
+                Informe.verificar(!com.modamod.modelado.Molde.ruedo(com.modamod.item.ZonaRuedo.POLLERA, r, false).vacio(), r + " dejó de valer en la pollera");
+            }
+            inf.ok("moldes de ruedo por zona", "Cerrado y Fruncido fuera de pollera y delantal; el resto sigue");
+        } catch (Throwable t) { inf.fallo("moldes de ruedo por zona", t.toString()); }
+
         // Debajo de una tela con aberturas (2026-11-11, "que la geometria del cuerpo si se pudiera ver cuando hay transparencia
         // o apertura"): plano solo en los px que la tela tapa; donde deja ver, el relieve sigue.
         try {

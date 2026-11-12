@@ -523,14 +523,15 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
                     || (item instanceof MoldeRuedoItem r && r.valor.valeEnTela());
             case PANTALON, MEDIAS, CALIENTABRAZOS -> false;
             case POLLERA -> item instanceof MoldePolleraItem || item instanceof MoldeVoladoItem
-                    || (item instanceof MoldeRuedoItem q && !q.valor.esDeCapa());
+                    || (item instanceof MoldeRuedoItem q && !q.valor.esDeCapa() && q.valor.valeEn(com.modamod.item.ZonaRuedo.POLLERA));
             case CAPA -> item instanceof MoldeCapaItem || (item instanceof MoldeRuedoItem q && q.valor.esDeCapa());
             case SOMBRERO -> item instanceof MoldeSombreroItem;
             case BANDA -> item instanceof MoldeBandaItem;
             case CALZADO -> item instanceof MoldeBorcegoItem || (item instanceof MoldeSombreroItem s && s.tipo.esEstilo());
             case DELANTAL -> item instanceof MoldeFormaDelantalItem || item instanceof MoldeTirantesDelantalItem
                     || item instanceof MoldeCoberturaDelantalItem || item instanceof MoldeVoladoItem
-                    || (item instanceof MoldeRuedoItem q && q.valor != com.modamod.item.Ruedo.COLA);
+                    || (item instanceof MoldeRuedoItem q && q.valor != com.modamod.item.Ruedo.COLA
+                            && q.valor.valeEn(com.modamod.item.ZonaRuedo.DELANTAL));
         };
     }
 
@@ -1255,6 +1256,9 @@ public class ModeladoBlockEntity extends MaquinaBlockEntity implements SidedInve
             }
             default -> { }
         }
+        // Un molde de ruedo que no hace nada en ese borde (Molde.ruedo da VACIO): el casillero no lo acepta, que es lo que
+        // mira pinAcepta y, por eso, lo que lista la bolsa de la Modeladora (la creativa tiene todos adentro).
+        if (c != null && c.vacio() && item instanceof MoldeRuedoItem) return null;
         return c == null ? null : c.conIcono(net.minecraft.registry.Registries.ITEM.getId(item));
     }
 

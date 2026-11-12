@@ -264,7 +264,10 @@ public final class BandaRenderer {
                 k.add(cubito(-0.7f, 2.4f, -0.7f, 0.7f, 2.7f, -0.1f));
             }
         }
-        c = new ModelPart(k, Map.of());
+        // Dentro de un padre vacío (2026-11-12, "los accesorios de los chokers no funcionaban"): dibujarModelPart le copia al
+        // que dibuja la pose del torso, y eso le pisaba el pivote de anclaje y el balanceo (el colgante quedaba enterrado en el
+        // cuerpo). El anclaje y el balanceo van en la hija; el padre recibe la pose del torso.
+        c = new ModelPart(List.of(), Map.of("colgante", new ModelPart(k, Map.of())));
         COLGANTES.put(h, c);
         return c;
     }
@@ -275,7 +278,8 @@ public final class BandaRenderer {
      */
     private static void dibujarColgante(BandaHerraje h, float yAnclaje, float zAnclaje, net.minecraft.util.Identifier tela,
                                         ModelPart marco, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int luz) {
-        ModelPart parte = colgante(h);
+        ModelPart raiz = colgante(h);
+        ModelPart parte = raiz.getChild("colgante");
         parte.setPivot(0f, yAnclaje, zAnclaje);
         float pitch = 0f, roll = 0f;
         FisicaApliques.Desplazamiento d = FisicaApliques.actual;
@@ -285,7 +289,7 @@ public final class BandaRenderer {
         }
         parte.pitch = pitch;
         parte.roll = roll;
-        GarmentFeatureRenderer.dibujarModelPart(parte, CuerpoGeometria.Superficie.CUERPO, tela, marco, matrices, vertexConsumers, luz);
+        GarmentFeatureRenderer.dibujarModelPart(raiz, CuerpoGeometria.Superficie.CUERPO, tela, marco, matrices, vertexConsumers, luz);
     }
 
     /**

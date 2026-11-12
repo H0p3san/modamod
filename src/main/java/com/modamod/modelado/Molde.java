@@ -50,6 +50,7 @@ public record Molde(Corte corte, Lado lado, Optional<Identifier> icono) {
 
     /** El ruedo de un borde; {@code espejo} lo pone también en el borde del otro lado. */
     public static Molde ruedo(ZonaRuedo zona, Ruedo ruedo, boolean espejo) {
+        if (!ruedo.valeEn(zona)) return VACIO;   // no hace nada en ese borde: se rechaza como cualquier combo vacío
         Map<ZonaRuedo, Ruedo> m = new EnumMap<>(ZonaRuedo.class);
         m.put(zona, ruedo);
         if (espejo) m.put(zona.opuesta(), ruedo);
