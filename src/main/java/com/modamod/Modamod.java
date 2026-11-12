@@ -238,6 +238,7 @@ public class Modamod implements ModInitializer {
             entries.add(ModamodItems.ANTIFAZ);
             entries.add(ModamodItems.MEDIA_MASCARA);
             entries.add(ModamodItems.MASCARA_COMPLETA);
+            entries.add(ModamodItems.CASCO_APLIQUES);
             entries.add(ModamodItems.BARBIJO);
             // El Traje de Maid de armadura, jubilado igual (2026-10-23): no pasaba por las máquinas.
             // El Buzo Oversize viejo (armadura) se reemplazó por el hoodie

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WWW",
+    "WHW",
+    "S S"
+  ],
+  "key": {
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "S": {
+      "item": "minecraft:string"
+    },
+    "H": {
+      "item": "minecraft:leather_helmet"
+    }
+  },
+  "result": {
+    "id": "modamod:casco_apliques",
+    "count": 1
+  }
+}

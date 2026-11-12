@@ -14,6 +14,13 @@ public class CaraItem extends com.modamod.prenda.PrendaItem {
     public final String modelo;
     public final boolean barbijo;
 
+    /**
+     * El modelo del casco para apliques (2026-11-12, "una mascara mas que sea tipo casco y cubra toda la cabeza
+     * especificamente para apliques"): una caja alrededor de toda la cabeza para apoyar apliques en cualquier lado. Sin
+     * teñir ni foto no dibuja su tela, y nunca borra el relieve de la cabeza de abajo (no está en {@code ComposedSkin.TAPA}).
+     */
+    public static final String CASCO = "casco";
+
     public CaraItem(Settings settings, String modelo, boolean barbijo) {
         super(settings);
         this.modelo = modelo;

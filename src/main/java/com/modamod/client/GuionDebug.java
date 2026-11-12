@@ -269,6 +269,23 @@ public final class GuionDebug {
                 String[] d = linea.split(" ");
                 ApliquesCustomCliente.subir(mc.player.getBlockPos().add(Integer.parseInt(d[2]), Integer.parseInt(d[3]), Integer.parseInt(d[4])), d[1]);
             }
+            // boton <id>: un botón de la pantalla abierta, por su id (los BTN_ de cada máquina).
+            case "boton" -> mc.interactionManager.clickButton(mc.player.currentScreenHandler.syncId, Integer.parseInt(t[1].strip()));
+            // muestra <ítem>: lo pone como prenda de muestra en el editor de la Estilista que está 2 bloques al este.
+            case "muestra" -> {
+                String item = linea.substring(8).strip();
+                enServidor(server, uuid, p -> {
+                    try {
+                        ItemStringReader.ItemResult r = new ItemStringReader(server.getRegistryManager()).consume(new StringReader(item));
+                        var editor = com.modamod.estilista.EditorEstilo.en(p.getWorld(), p.getBlockPos().add(2, 0, 0));
+                        if (editor == null) { log("muestra: no hay Estilista ahí"); return; }
+                        editor.setStack(com.modamod.estilista.EditorEstilo.SLOT_PRENDA, new ItemStackArgument(r.item(), r.components()).createStack(1, false));
+                    } catch (Exception e) {
+                        log("ERROR muestra '" + item + "': " + e);
+                    }
+                });
+                espera = 10;
+            }
             case "perf" -> { com.modamod.render.Perf.activo = !t[1].equals("0"); }
             case "tercera" -> mc.options.setPerspective(t[1].equals("0") ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
             case "capas" -> {

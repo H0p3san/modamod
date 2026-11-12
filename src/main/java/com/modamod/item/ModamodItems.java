@@ -69,6 +69,8 @@ public final class ModamodItems {
     public static final CaraItem ANTIFAZ = register("antifaz", new CaraItem(new Item.Settings().maxCount(16), "antifaz", false));
     public static final CaraItem MEDIA_MASCARA = register("media_mascara", new CaraItem(new Item.Settings().maxCount(16), "media_mascara", false));
     public static final CaraItem MASCARA_COMPLETA = register("mascara_completa", new CaraItem(new Item.Settings().maxCount(16), "mascara_completa", false));
+    /** Casco para apliques (2026-11-12): rodea toda la cabeza y sin teñir no se ve; ver {@link CaraItem#CASCO}. */
+    public static final CaraItem CASCO_APLIQUES = register("casco_apliques", new CaraItem(new Item.Settings().maxCount(16), CaraItem.CASCO, false));
     public static final CaraItem BARBIJO = register("barbijo", new CaraItem(new Item.Settings().maxCount(16), "barbijo", true));
 
     /** Borcegos (2026-10-08, "un slot de calzado"), slot {@code socks/calzado}. */

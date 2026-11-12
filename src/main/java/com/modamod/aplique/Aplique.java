@@ -175,6 +175,11 @@ public record Aplique(ModeloAplique modelo, Parte parte, float x, float y, float
         return zona < colores.size() ? colores.get(zona) : 0xFFFFFF;
     }
 
+    /** El mismo aplique apoyado en otro punto (2026-11-12, mover sin sacarlo y volver a ponerlo). */
+    public Aplique conLugar(Parte p, float nx, float ny, float nz, Direction c, Superficie s, int nuevoPadre) {
+        return new Aplique(modelo, p, nx, ny, nz, c, giro, escala, colores, s, blandura, objeto, colocacion, oscilacion, nuevoPadre, fila, capas);
+    }
+
     public Aplique conGiro(float g) {
         return new Aplique(modelo, parte, x, y, z, cara, g, escala, colores, superficie, blandura, objeto, colocacion, oscilacion, padre, fila, capas);
     }

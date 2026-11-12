@@ -64,6 +64,18 @@ public class EditorEstilo implements Inventory {
             BTN_CORREA_MODO_BASE = 700, BTN_CORREA_LARGO_BASE = 760;
     public static final int BTN_SELECCIONAR_BASE = 100;        // + 0..11 (antes 0..5: chocaba con el resto al subir a 12 apliques)
     public static final int BTN_GIRO = 10, BTN_GIRO_ATRAS = 11;
+    /** De a 1° (Shift sobre las flechas del giro, 2026-11-12). */
+    public static final int BTN_GIRO_FINO = 17, BTN_GIRO_FINO_ATRAS = 18;
+    /**
+     * Ajuste fino del aplique elegido con el teclado (2026-11-12, "mas herramientas... para reposicionar y girar"), en las dos
+     * Estilistas: cada botón suma un paso a un campo de su {@link Colocacion} (índice de {@code conCampo}, paso). Correr sobre
+     * la tela ←→↑↓ (un cuarto de px), inclinar de costado ←→ y hacia adelante ↑↓ (5°), y sacar o meter (un cuarto de px).
+     */
+    public static final int BTN_AJUSTE_BASE = 70;
+    private static final float[][] AJUSTES = {
+            {1, -0.25f}, {1, 0.25f}, {2, 0.25f}, {2, -0.25f},
+            {5, -5f}, {5, 5f}, {4, -5f}, {4, 5f},
+            {0, 0.25f}, {0, -0.25f}};
     public static final int BTN_ESCALA = 12, BTN_ESCALA_ATRAS = 13;
     /** Lo atiende el ScreenHandler: necesita al jugador para devolverle el retazo. */
     public static final int BTN_QUITAR = 14;
@@ -169,6 +181,19 @@ public class EditorEstilo implements Inventory {
      * es el índice del aplique que lo lleva y x, y, z el punto de su caja (px, centrado en su espacio de objeto).
      */
     public boolean poner(Parte parte, float x, float y, float z, Direction cara, Aplique.Superficie superficie, int padre) {
+        return poner(parte, x, y, z, cara, superficie, padre, false);
+    }
+
+    /**
+     * {@code mover} (2026-11-12, "mas herramientas en la estiladora para reposicionar"): en vez de poner uno nuevo, el aplique
+     * elegido pasa a ese punto con todo lo demás igual (y lo que lleva encima lo sigue). No pide molde ni retazo.
+     */
+    public boolean poner(Parte parte, float x, float y, float z, Direction cara, Aplique.Superficie superficie, int padre, boolean mover) {
+        if (mover) {
+            // Sobre otro aplique solo si ese va antes en la lista (un padre siempre tiene índice menor que su hijo).
+            if (seleccionado < 0 || seleccionado >= apliques().size()
+                    || (superficie == Aplique.Superficie.APLIQUE && padre >= seleccionado)) return false;
+        }
         ItemStack prenda = items.get(SLOT_PRENDA), molde = items.get(SLOT_MOLDE), retazo = items.get(SLOT_RETAZO);
         ItemStack objeto = items.get(SLOT_OBJETO);
         // El editor no gasta nada (el costo real, hilo y cuero, se paga al aplicar el diseño): sin retazo, sale blanco.
@@ -181,7 +206,9 @@ public class EditorEstilo implements Inventory {
         // Un molde personalizado (2026-10-04): trae el modelo u objeto y su colocación; no se gasta nada de él.
         Aplique plantilla = !esObjeto && molde.getItem() instanceof com.modamod.aplique.MoldeApliquePersonalizadoItem
                 ? com.modamod.aplique.MoldeApliquePersonalizadoItem.plantilla(molde) : null;
-        if (esObjeto) {
+        if (mover) {
+            if (prenda.isEmpty()) return false;
+        } else if (esObjeto) {
             if (prenda.isEmpty() || !ObjetoAplique.admite(objeto)) return false;
         } else if (plantilla != null) {
             // Un objeto del molde se tiñe con la muestra (opcional); un modelo del mod pide su retazo.
@@ -191,7 +218,7 @@ public class EditorEstilo implements Inventory {
         }
         if (!admite(prenda) || !Float.isFinite(x) || !Float.isFinite(y) || !Float.isFinite(z)) return false;
         List<Aplique> actuales = new ArrayList<>(apliques());
-        if (actuales.size() >= Aplique.MAXIMO_POR_PRENDA) return false;
+        if (!mover && actuales.size() >= Aplique.MAXIMO_POR_PRENDA) return false;
         switch (superficie) {
             case POLLERA -> {
                 if (!(com.modamod.prenda.Prendas.es(prenda, com.modamod.prenda.CategoriaDePrenda.POLLERA))) return false;
@@ -240,6 +267,19 @@ public class EditorEstilo implements Inventory {
                     z = MathHelper.clamp(z, -6, 6);
                 }
             }
+        }
+        if (mover) {
+            actuales.set(seleccionado, actuales.get(seleccionado).conLugar(parte, x, y, z, cara, superficie,
+                    superficie == Aplique.Superficie.APLIQUE ? padre : -1));
+            // Lo que lleva encima guarda la parte del cuerpo de su padre: se la actualiza (los hijos van después del padre).
+            for (int i = seleccionado + 1; i < actuales.size(); i++) {
+                Aplique h = actuales.get(i);
+                if (h.superficie() == Aplique.Superficie.APLIQUE && h.padre() >= 0 && h.padre() < i) {
+                    actuales.set(i, h.conLugar(actuales.get(h.padre()).parte(), h.x(), h.y(), h.z(), h.cara(), h.superficie(), h.padre()));
+                }
+            }
+            guardarApliques(actuales);
+            return true;
         }
         if (esObjeto) {
             ItemStack muestra = retazo.getItem() instanceof com.modamod.item.MuestraColorItem ? retazo : ItemStack.EMPTY;
@@ -437,7 +477,16 @@ public class EditorEstilo implements Inventory {
             guardarApliques(actuales);
             return true;
         }
+        if (id >= BTN_AJUSTE_BASE && id < BTN_AJUSTE_BASE + AJUSTES.length) {
+            float[] aj = AJUSTES[id - BTN_AJUSTE_BASE];
+            Colocacion c = a.colocacion();
+            actuales.set(seleccionado, a.conColocacion(c.conCampo((int) aj[0], c.campo((int) aj[0]) + aj[1])));
+            guardarApliques(actuales);
+            return true;
+        }
         switch (id) {
+            case BTN_GIRO_FINO -> actuales.set(seleccionado, a.conGiro((Math.round(a.giro()) + 1) % 360));
+            case BTN_GIRO_FINO_ATRAS -> actuales.set(seleccionado, a.conGiro((Math.round(a.giro()) + 359) % 360));
             case BTN_GIRO -> actuales.set(seleccionado, a.conGiro((Math.round(a.giro()) + 15) % 360));
             case BTN_GIRO_ATRAS -> actuales.set(seleccionado, a.conGiro((Math.round(a.giro()) + 345) % 360));
             case BTN_ESCALA -> actuales.set(seleccionado, a.conEscala(Math.min(ESCALA_MAX, a.escala() + PASO_ESCALA)));

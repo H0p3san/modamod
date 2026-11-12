@@ -88,7 +88,7 @@ public final class EstilistaMod {
                     if (EditorEstilo.en(context.player().getWorld(), payload.pos()) instanceof EditorEstilo be
                             && be.canPlayerUse(context.player())) {
                         be.poner(partes[payload.parte()], payload.x(), payload.y(), payload.z(), caras[payload.cara()],
-                                superficies[payload.superficie()], payload.padre());
+                                superficies[payload.superficie()], payload.padre(), payload.mover());
                     }
                 }));
 

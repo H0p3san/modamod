@@ -28,6 +28,17 @@ public final class CaraRenderer {
     /** La que muestra la vista previa de Tintes o de la Sublimadora: reemplaza a la puesta del mismo tipo. */
     @Nullable public static ItemStack override;
 
+    /**
+     * La de la vista previa: la que puso Tintes o la Sublimadora, o el accesorio que muestran la Estilista y la Modeladora
+     * ({@code sombreroOverride}) cuando es una máscara o un barbijo: el camino de los accesorios no las dibuja, así que sin
+     * esto no se veían ahí.
+     */
+    @Nullable
+    static ItemStack vista() {
+        ItemStack v = override != null ? override : GarmentFeatureRenderer.sombreroOverride;
+        return v != null && v.getItem() instanceof CaraItem ? v : null;
+    }
+
     static void dibujar(LivingEntity entidad, BipedEntityModel<?> biped, MatrixStack matrices,
                         VertexConsumerProvider vcp, int luz) {
         if (!biped.head.visible) return;
@@ -35,9 +46,11 @@ public final class CaraRenderer {
         TrinketsApi.getTrinketComponent(entidad).ifPresent(c -> {
             for (var par : c.getAllEquipped()) if (par.getRight().getItem() instanceof CaraItem) puestas.add(par.getRight());
         });
-        if (override != null && override.getItem() instanceof CaraItem o) {
-            puestas.removeIf(s -> ((CaraItem) s.getItem()).barbijo == o.barbijo);
-            puestas.add(override);
+        ItemStack vista = vista();
+        if (vista != null) {
+            boolean barbijo = ((CaraItem) vista.getItem()).barbijo;
+            puestas.removeIf(s -> ((CaraItem) s.getItem()).barbijo == barbijo);
+            puestas.add(vista);
         }
         for (ItemStack s : puestas) dibujarUna(s, biped, matrices, vcp, luz);
     }
@@ -57,9 +70,11 @@ public final class CaraRenderer {
     private static void dibujarUna(ItemStack stack, BipedEntityModel<?> biped, MatrixStack matrices, VertexConsumerProvider vcp, int luz) {
         ModelPart cabeza = biped.head;
         CaraItem item = (CaraItem) stack.getItem();
-        Identifier tela = ZonaTextura.plana(BLANCO,
-                stack.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.of()), false);
-        CapuchaArchivo.cara(item.modelo, tela, cabeza, matrices, vcp, luz);
+        var capas = stack.getOrDefault(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.<com.modamod.region.RegionResolver.CapaPatron>of());
+        // El casco para apliques sin teñir es solo un soporte: no dibuja tela, se ve la cabeza de abajo.
+        if (!(CaraItem.CASCO.equals(item.modelo) && capas.isEmpty())) {
+            CapuchaArchivo.cara(item.modelo, ZonaTextura.plana(BLANCO, capas, false), cabeza, matrices, vcp, luz);
+        }
         Identifier foto = com.modamod.sublimadora.BannerHD.foto(com.modamod.sublimadora.BannerHD.Forma.CARA,
                 com.modamod.sublimadora.Estampas.frente(stack));
         if (foto != null) CapuchaArchivo.cara(item.modelo, foto, cabeza, matrices, vcp, luz);

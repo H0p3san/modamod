@@ -14,11 +14,17 @@ import net.minecraft.util.math.BlockPos;
  * o, en la pollera y la capa ({@code superficie}), el punto (u, v) de su tela.
  * Lleva floats, así que no entra en un clickButton.
  */
-public record PonerApliquePayload(BlockPos pos, int parte, float x, float y, float z, int cara, int superficie, int padre)
+public record PonerApliquePayload(BlockPos pos, int parte, float x, float y, float z, int cara, int superficie, int padre,
+                                  boolean mover)
         implements CustomPayload {
 
     public static final Id<PonerApliquePayload> ID = new Id<>(Identifier.of(Modamod.MOD_ID, "poner_aplique"));
-    /** A mano: son 8 campos y {@code PacketCodec.tuple} llega hasta 6. */
+    /** Poner uno nuevo (lo de siempre). {@code mover}: llevar ahí el aplique elegido (Shift + click, 2026-11-12). */
+    public PonerApliquePayload(BlockPos pos, int parte, float x, float y, float z, int cara, int superficie, int padre) {
+        this(pos, parte, x, y, z, cara, superficie, padre, false);
+    }
+
+    /** A mano: son 9 campos y {@code PacketCodec.tuple} llega hasta 6. */
     public static final PacketCodec<RegistryByteBuf, PonerApliquePayload> CODEC = PacketCodec.of(
             (p, buf) -> {
                 buf.writeBlockPos(p.pos());
@@ -29,9 +35,10 @@ public record PonerApliquePayload(BlockPos pos, int parte, float x, float y, flo
                 buf.writeVarInt(p.cara());
                 buf.writeVarInt(p.superficie());
                 buf.writeVarInt(p.padre() + 1);
+                buf.writeBoolean(p.mover());
             },
             buf -> new PonerApliquePayload(buf.readBlockPos(), buf.readVarInt(), buf.readFloat(), buf.readFloat(),
-                    buf.readFloat(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt() - 1));
+                    buf.readFloat(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt() - 1, buf.readBoolean()));
 
     @Override
     public Id<? extends CustomPayload> getId() { return ID; }

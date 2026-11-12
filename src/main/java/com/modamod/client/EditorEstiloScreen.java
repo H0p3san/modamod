@@ -291,11 +291,14 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
                     "modamod.estilado.tooltip.aplique", () -> clickBoton(id));
             grupoAplique.add(btnApliques[i]);
         }
-        btnGiroAtras = boton(X_DER, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.giro", () -> clickBoton(EditorEstilo.BTN_GIRO_ATRAS));
+        btnGiroAtras = boton(X_DER, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.giro",
+                () -> clickBoton(hasShiftDown() ? EditorEstilo.BTN_GIRO_FINO_ATRAS : EditorEstilo.BTN_GIRO_ATRAS));
         grupoAplique.add(btnGiroAtras);
-        btnGiro = boton(X_DER + 15, 88, 64, Text.empty(), "modamod.estilado.tooltip.giro", () -> clickBoton(EditorEstilo.BTN_GIRO));
+        btnGiro = boton(X_DER + 15, 88, 64, Text.empty(), "modamod.estilado.tooltip.giro",
+                () -> clickBoton(hasShiftDown() ? EditorEstilo.BTN_GIRO_FINO : EditorEstilo.BTN_GIRO));
         grupoAplique.add(btnGiro);
-        btnGiroAdelante = boton(X_DER + 80, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.giro", () -> clickBoton(EditorEstilo.BTN_GIRO));
+        btnGiroAdelante = boton(X_DER + 80, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.giro",
+                () -> clickBoton(hasShiftDown() ? EditorEstilo.BTN_GIRO_FINO : EditorEstilo.BTN_GIRO));
         grupoAplique.add(btnGiroAdelante);
         btnEscalaAtras = boton(X_DER, 108, 14, Text.literal("<"), "modamod.estilado.tooltip.escala", () -> clickBoton(EditorEstilo.BTN_ESCALA_ATRAS));
         grupoAplique.add(btnEscalaAtras);
@@ -1279,6 +1282,16 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
             if (button == 0) {
                 Toque t = tocar(mx, my);
                 EditorEstilo be = handler.be;
+                // Shift + click: el aplique elegido se muda a ese punto (no pide molde ni retazo).
+                if (hasShiftDown() && be.seleccionado() >= 0) {
+                    if (t == null) aviso = Text.translatable("modamod.estilado.aviso.fuera");
+                    else {
+                        aviso = null;
+                        ClientPlayNetworking.send(new PonerApliquePayload(be.getPos(), t.parte().ordinal(),
+                                t.x(), t.y(), t.z(), t.cara().ordinal(), t.superficie().ordinal(), t.padre(), true));
+                    }
+                    return true;
+                }
                 boolean objeto = !be.getStack(EditorEstilo.SLOT_OBJETO).isEmpty();
                 if (be.getStack(EditorEstilo.SLOT_PRENDA).isEmpty()) aviso = Text.translatable("modamod.estilado.aviso.prenda");
                 else if (!objeto && be.getStack(EditorEstilo.SLOT_MOLDE).getItem() instanceof com.modamod.item.MoldeTexturaItem)
@@ -1341,6 +1354,24 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (txtNombreMolde != null && txtNombreMolde.visible
                 && (txtNombreMolde.keyPressed(keyCode, scanCode, modifiers) || txtNombreMolde.isActive())) return true;
+        // Ajuste fino del aplique elegido (EditorEstilo.AJUSTES): flechas = correr sobre la tela, Ctrl + flechas = inclinar,
+        // Re Pág / Av Pág = sacar o meter. Con Shift, cuatro pasos de una.
+        if (handler.be.seleccionado() >= 0) {
+            int k = switch (keyCode) {
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT -> 0;
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT -> 1;
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_UP -> 2;
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN -> 3;
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_UP -> 8;
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_DOWN -> 9;
+                default -> -1;
+            };
+            if (k >= 0) {
+                if (k < 4 && hasControlDown()) k += 4;
+                for (int i = hasShiftDown() ? 4 : 1; i > 0; i--) clickBoton(EditorEstilo.BTN_AJUSTE_BASE + k);
+                return true;
+            }
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 

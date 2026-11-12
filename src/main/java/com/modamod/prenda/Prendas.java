@@ -46,7 +46,7 @@ public final class Prendas {
         registrar(ModamodItems.BANDA, new DefinicionDePrenda(CategoriaDePrenda.BANDA, FormaDeDibujo.ACCESORIO,
                 s -> com.modamod.item.BandaItem.reemplazaLaPiel(s) ? java.util.Set.of(Parte.TORSO) : java.util.Set.of()));
         registrar(ModamodItems.CALZADO, new DefinicionDePrenda(CategoriaDePrenda.CALZADO, FormaDeDibujo.ACCESORIO));
-        for (Item cara : List.of(ModamodItems.ANTIFAZ, ModamodItems.MEDIA_MASCARA, ModamodItems.MASCARA_COMPLETA)) {
+        for (Item cara : List.of(ModamodItems.ANTIFAZ, ModamodItems.MEDIA_MASCARA, ModamodItems.MASCARA_COMPLETA, ModamodItems.CASCO_APLIQUES)) {
             registrar(cara, new DefinicionDePrenda(CategoriaDePrenda.CARA, FormaDeDibujo.ACCESORIO));
         }
         registrar(ModamodItems.BARBIJO, new DefinicionDePrenda(CategoriaDePrenda.CARA, FormaDeDibujo.ACCESORIO));

@@ -180,6 +180,7 @@ public final class ComposedSkin {
      * Las filas de la cabeza (0 = arriba, 8 = el mentón) que tapa cada modelo de {@code docs/modelo_cara/cara.bbmodel}:
      * desde/hasta en el frente y los costados, desde/hasta atrás (la cinta). Sacadas de sus cajas (fila = 32 − y_blockbench).
      */
+    // El casco para apliques (CaraItem.CASCO) no figura a propósito: no borra nada, el relieve de la cabeza queda como está.
     private static final Map<String, int[]> TAPA = Map.of(
             "antifaz", new int[]{2, 6, 4, 5},
             "media_mascara", new int[]{0, 7, 3, 4},
@@ -189,7 +190,7 @@ public final class ComposedSkin {
     /** Los modelos de máscara y barbijo puestos (o el de la vista previa de Tintes o de la Sublimadora). */
     private static List<String> carasPuestas(AbstractClientPlayerEntity player) {
         List<String> out = new ArrayList<>();
-        ItemStack ov = CaraRenderer.override;
+        ItemStack ov = CaraRenderer.vista();
         if (ov != null && ov.getItem() instanceof com.modamod.item.CaraItem c) out.add(c.modelo);
         TrinketsApi.getTrinketComponent(player).ifPresent(comp -> {
             for (var par : comp.getAllEquipped()) {
