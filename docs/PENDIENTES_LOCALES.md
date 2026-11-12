@@ -55,7 +55,8 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 - La imagen sublimada se mueve sobre la prenda (al usuario no le molesta).
 - La tapa de la mano del guante Cerrado no sale espejada entre los dos brazos (se copia la última fila del frente igual en
   los dos). Decidido dejarlo así; si molesta, en el brazo izquierdo se copia la fila al revés (`pintarTapaDeAbajo`).
-- Por los agujeros de una red o encaje se ve el cuerpo plano (efecto de 6ef1113; no se notó en la prueba).
+- ~~Por los agujeros de una red o encaje se ve el cuerpo plano~~: resuelto el 2026-11-11 (5c68272, el cuerpo se aplana
+  solo donde la tela de arriba es opaca).
 
 ## 8. Sin verificar todavía
 - (2026-11-08) Descartados por falta de datos: "ruedo a distancia fija" de la Modeladora y "detalles de la vista previa
@@ -64,3 +65,45 @@ Orden sugerido: primero lo que puede romper (1–3), después lo visual.
 ## Pendiente de diseño (no son bugs)
 - Accesorios (capa, cinto, sombrero) dibujados en el orden de la lista en vez de posiciones fijas.
 - Puño de piel de la bota: falta una pieza nueva en el catálogo JSON `assets/modamod/calzado`.
+
+## Pendiente de la sesión del 2026-11-11 (geometría y capas)
+
+Se cortó acá a propósito: el mod quedó bien y lo que sigue es pulido. Nada de esto se vio como defecto jugando.
+
+### Cómo retomar barato
+- **Chequeo de capas**: en `run/modamod_debug/guion.txt`, vestir al jugador con `poner <lugar> <item con componentes>` y
+  correr `capas <nombre>` (`ChequeoCapas`). Escribe en el log qué prenda asoma sobre cuál, cuánto y dónde. Con un nombre
+  terminado en `_dbg` lista las capas y vuelca la geometría a `run/modamod_debug/capas_dump.txt`.
+- **Fotos de los maniquíes del usuario**: copiar `saves/ModaMod Salon` de la instancia a `run/saves/Salon Usuario`, lanzar con
+  `--quickPlaySingleplayer "Salon Usuario" --width 1920 --height 1080` y en el guion usar `cmd gamemode spectator`,
+  `cmd tp @s x y z yaw pitch`, `esperar 25`, `pantalla <nombre>`. Los maniquíes miran al norte. El maniquí tiene su propio
+  camino de dibujo para el cuerpo: lo que se arregla en el jugador hay que verlo también ahí.
+- **Rendimiento**: `perf 1`, `tercera 1`, `esperar 200`, `perflog` en el guion (secciones de `Perf`).
+- La parte mecánica (correr el cliente, recortar fotos, sacar líneas del log) se puede delegar a un agente más barato.
+
+### Avisos del chequeo sin resolver (todos chicos, sin verificar en fotos)
+- La skin (la cola) asoma 0,2 a 0,5 px sobre el pantalón o la remera a la altura de la cadera, a los costados.
+- El cuerpo asoma hasta 1,26 px sobre la remera cerca del escote con busto 5 (24 celdas).
+- La pollera asoma 0,38 px por la capa, atrás, a media pierna (no se ve en las fotos).
+- Una rayita azul de media entre las dos piernas, arriba, en vista diagonal con botas (vista una vez, sin investigar).
+
+### Decidido dejar así
+- **Cinto con delantal**: el cinto de cintura va a la holgura de su calce (Oversize sin elegir), no a la de la ropa. Si
+  el delantal sale más (busto grande, pollera muy abierta) lo tapa de frente. Se probó agrandar el cinto (queda un aro
+  que atraviesa los brazos) y ceñir el delantal (se mezclan en rayas y asoma la ropa de abajo); ninguna sirvió. Para
+  hacerlo bien el cinto tendría que ceñir también la ropa de abajo.
+- **Remera oversize sobre la cintura del pantalón** y **pollera por fuera del pantalón**: cuelgan por fuera aunque la
+  lista diga que van adentro.
+- **Cuerpo del maniquí por su propio camino**: usa el modelo de vanilla achicado según el calce, y el mod CARAS inyecta
+  en `dibujarCuerpoConRelieve` por nombre. Los accesorios y las reglas de aplanado sí son compartidos.
+
+### Ideas que quedaron sin hacer
+- **No dibujar lo totalmente tapado** (filas de una prenda bajo otra opaca): ahorra vértices; `MascaraOpaca` ya da el dato.
+- **Armado de la geometría por pieza**: después de guardar el relieve (caa8334) es lo que más pesa en `dibujarPiezas`,
+  unos 0,5 ms por jugador. Guardar las piezas armadas no rinde (medido: 0,03 ms) y choca con `CacheDeTexturas`, que
+  exige volver a pedir cada textura.
+- **Chequeo de capas automático sobre todos los maniquíes del Salón**, y que compare también capucha, cuello y calzado.
+- **Partir los archivos gigantes** (`ModeladoBlockEntity`, `TinturasBlockEntity`, `GarmentFeatureRenderer`,
+  `SublimadoraBlockEntity`).
+- Descartado: las llamadas a `.render()` de `ManiquiRenderer` dibujan partes de vanilla, no fallan con Sodium.
+
