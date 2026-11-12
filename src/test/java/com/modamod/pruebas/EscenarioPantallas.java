@@ -15,12 +15,14 @@ import com.modamod.telar.TelarMod;
 import com.modamod.telar.TelarPrenda;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameMode;
 
 import static com.modamod.pruebas.Corrida.enServidor;
 import static com.modamod.pruebas.Corrida.jugador;
@@ -96,6 +98,26 @@ public final class EscenarioPantallas {
         r.mundoPlano();
         r.hacer("limpiar corrida anterior", 0, Corrida::limpiar);
         r.hacer("GUI a escala 2x", 5, Corrida::guiDos);
+        r.hacer("cambiar a supervivencia", 0, c -> enServidor(c, () -> jugador(c).changeGameMode(GameMode.SURVIVAL)));
+        r.paso("esperar modo supervivencia", c -> !c.interactionManager.hasCreativeInventory());
+        r.hacer("abrir inventario con widget solo visual", 0, c -> {
+            c.setScreen(new InventoryScreen(c.player) {
+                @Override
+                protected void init() {
+                    super.init();
+                    addDrawable(ButtonWidget.builder(Text.literal("Widget visual"), button -> {})
+                            .dimensions(0, 0, 80, 20).build());
+                }
+            });
+            long botonesRopa = c.currentScreen.children().stream()
+                    .filter(ButtonWidget.class::isInstance).map(ButtonWidget.class::cast)
+                    .filter(button -> button.getMessage().equals(Text.translatable("modamod.ropa.boton")))
+                    .count();
+            verificar(botonesRopa == 1, "el inventario debe tener un solo botón Ropa interactivo");
+            c.setScreen(null);
+        });
+        r.hacer("volver a creativo", 0, c -> enServidor(c, () -> jugador(c).changeGameMode(GameMode.CREATIVE)));
+        r.paso("esperar modo creativo", c -> c.interactionManager.hasCreativeInventory());
         r.hacer("colocar Modeladora y Telar creativas", 10, c -> {
             BlockPos base = jugador(c).getBlockPos();
             posModeladora = base.add(2, 0, 0);

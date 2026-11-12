@@ -1,12 +1,12 @@
 package com.modamod.client;
 
 import com.modamod.mixin.HandledScreenAccessor;
+import com.modamod.mixin.ScreenInvoker;
 import com.modamod.ropa.RedRopa;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
-import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.KeyBinding;
@@ -34,7 +34,7 @@ public final class RopaCliente {
         ScreenEvents.AFTER_INIT.register((client, screen, ancho, alto) -> {
             if (!(screen instanceof InventoryScreen inv)) return;
             HandledScreenAccessor a = (HandledScreenAccessor) inv;
-            Screens.getButtons(screen).add(ButtonWidget.builder(Text.translatable("modamod.ropa.boton"),
+            ((ScreenInvoker) screen).modamod$addDrawableChild(ButtonWidget.builder(Text.translatable("modamod.ropa.boton"),
                             b -> ClientPlayNetworking.send(new RedRopa.Abrir()))
                     .dimensions(a.modamod$getX() + 126, a.modamod$getY() + 61, 44, 18).build());
         });

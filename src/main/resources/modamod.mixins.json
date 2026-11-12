@@ -25,6 +25,7 @@
     "RopaOcultaEnInventarioMixin",
     "TrinketScreenManagerMixin",
     "HandledScreenAccessor",
+    "ScreenInvoker",
     "BannerRendererMixin",
     "BuiltinModelItemRendererMixin",
     "ClientPlayerEntityCintaMixin",
