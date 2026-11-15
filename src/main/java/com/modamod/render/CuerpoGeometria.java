@@ -1315,9 +1315,24 @@ public final class CuerpoGeometria {
         return cuadro(p, texW, tapa ? -1F : 0F, r);
     }
 
+    /** ¿La cruz de las diagonales del cuadro apunta hacia adentro (o, en una tapa, al revés de {@code nyTapa})? */
+    private static boolean giroAlReves(float[][] p, float nyTapa, Rect r) {
+        float ax = p[2][0] - p[0][0], ay = p[2][1] - p[0][1], az = p[2][2] - p[0][2];
+        float bx = p[3][0] - p[1][0], by = p[3][1] - p[1][1], bz = p[3][2] - p[1][2];
+        float nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+        if (nyTapa != 0F) return ny * nyTapa < 0F;
+        float mx = (p[0][0] + p[1][0] + p[2][0] + p[3][0]) / 4F - (r.xmin + r.xmax) / 2F;
+        float mz = (p[0][2] + p[1][2] + p[2][2] + p[3][2]) / 4F - (r.zmin + r.zmax) / 2F;
+        return nx * mx + nz * mz < 0F;
+    }
+
     /** {@code nyTapa}: 0 = cara de costado (la normal sale del cuadro), −1 = tapa de arriba, +1 = tapa de abajo. */
     private static ModelPart.Cuboid cuadro(float[][] p, float texW, float nyTapa, Rect r) {
         ModelPart.Vertex[] vs = new ModelPart.Vertex[4];
+        // El giro de los vértices del lado de la normal (2026-11-15, "las normales están al revés" con LITE shaders): antes
+        // se daba vuelta la normal y el orden quedaba como viniera; un shader que decide la cara por el orden le invertía la
+        // luz. Ahora se da vuelta el orden, como en los cubos de vanilla.
+        if (giroAlReves(p, nyTapa, r)) p = new float[][]{p[3], p[2], p[1], p[0]};
         for (int i = 0; i < 4; i++) vs[i] = new ModelPart.Vertex(p[i][0], p[i][1], p[i][2], p[i][3], p[i][4]);
         // El constructor remapea las UV de los vértices que recibe: se le pasa una copia y después se ponen los nuestros.
         ModelPart.Quad q = new ModelPart.Quad(vs.clone(), 0F, 0F, 0F, 0F, 1F, 1F, false, net.minecraft.util.math.Direction.NORTH);

@@ -337,10 +337,13 @@ public final class PolleraMalla {
                 if (hueco > 0 && Math.abs(c + 0.5f - COL_FRENTE) < hueco) continue;
                 // Delantal: solo el arco del frente.
                 if (colDesde >= 0 && (c < colDesde || c >= colHasta)) continue;
-                emitir(vc, e, p, f, c, luz, ov);
+                // La cara de adelante del lado de afuera, como los cubos de vanilla (2026-11-15, "las normales están al
+                // revés" con LITE shaders): con (c, c+1, ...) el giro quedaba hacia adentro del tubo y un shader que mira el
+                // orden de los vértices le daba vuelta la luz (por debajo se veía iluminada).
                 emitir(vc, e, p, f, c + 1, luz, ov);
-                emitir(vc, e, p, f + 1, c + 1, luz, ov);
+                emitir(vc, e, p, f, c, luz, ov);
                 emitir(vc, e, p, f + 1, c, luz, ov);
+                emitir(vc, e, p, f + 1, c + 1, luz, ov);
             }
         }
         if (adorno != null) adornar(p, adorno, e, vc, luz, ov);

@@ -445,8 +445,31 @@ public final class BustoRender {
         Matrix4f m = matrices.peek().getPositionMatrix();
         Matrix3f n = matrices.peek().getNormalMatrix();
         for (Vert[] q : malla) {
-            for (Vert v : q) vertice(m, n, vc, luz, ov, color, v.pos(), uv.u(v.ux()), uv.v(v.uy()), v.normal());
+            // El orden de los vértices tiene que dar la cara de adelante del lado de la normal, como los cubos de vanilla
+            // (2026-11-15, "las normales están al revés" con LITE shaders): las cúpulas se armaban giradas hacia adentro, y
+            // un shader que decide qué cara se ve por el orden (gl_FrontFacing) les daba vuelta la luz.
+            if (alRevesDeLaNormal(q)) {
+                for (int i = q.length - 1; i >= 0; i--) {
+                    Vert v = q[i];
+                    vertice(m, n, vc, luz, ov, color, v.pos(), uv.u(v.ux()), uv.v(v.uy()), v.normal());
+                }
+            } else {
+                for (Vert v : q) vertice(m, n, vc, luz, ov, color, v.pos(), uv.u(v.ux()), uv.v(v.uy()), v.normal());
+            }
         }
+    }
+
+    /**
+     * ¿El sentido de giro del cuadrilátero (cruz de sus diagonales, la misma convención que los cubos de vanilla) apunta al
+     * revés de la normal que lleva? Los triángulos traen el último vértice repetido: la cruz sale igual.
+     */
+    static boolean alRevesDeLaNormal(Vert[] q) {
+        Vector3f d1 = new Vector3f(q[2].pos()).sub(q[0].pos());
+        Vector3f d2 = new Vector3f(q[3].pos()).sub(q[1].pos());
+        Vector3f cruz = d1.cross(d2);
+        Vector3f media = new Vector3f();
+        for (Vert v : q) media.add(v.normal());
+        return cruz.dot(media) < 0f;
     }
 
     // ── cúpulas ──────────────────────────────────────────────────────────
