@@ -3,7 +3,7 @@
 *Human-designed, AI-crafted parametric clothing mod for Minecraft: fabricate, shape, dye, sublimate and style your clothes.*
 
 Mod de ropa para **Minecraft 1.21.1 (Fabric)**: ropa que se viste pegada al cuerpo, en capas, en slots de Trinkets, y
-máquinas para cortarla, teñirla, estamparle fotos y decorarla con apliques. Versión **0.1.0-alpha**: puede tener bugs y
+máquinas para cortarla, teñirla, estamparle fotos y decorarla con apliques. Versión **0.2.0-alpha**: puede tener bugs y
 los mundos de una alpha pueden no cargar bien en versiones futuras.
 
 **Bajalo en [CurseForge](https://www.curseforge.com/minecraft/mc-mods/modamod)** · Download it on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/modamod).
@@ -38,7 +38,7 @@ Todo está explicado en el [manual](docs/manual/MANUAL.md).
 ./gradlew.bat build -x test
 ```
 
-El jar queda en `build/libs/modamod-0.1.0-alpha.jar`.
+El jar queda en `build/libs/modamod-0.2.0-alpha.jar`.
 
 Para el cliente de desarrollo (`./gradlew.bat runClient`) con Camerapture y 3D Skin Layers, hay que sacar de sus jars
 (`META-INF/jars`) `webp4j-1.3.0.jar`, `TRansition-1.0.21-1.21.1-fabric-SNAPSHOT.jar` y
