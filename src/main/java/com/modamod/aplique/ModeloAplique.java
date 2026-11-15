@@ -68,6 +68,12 @@ public final class ModeloAplique implements StringIdentifiable {
         return Identifier.of(Modamod.MOD_ID, "geo/aplique_" + clave + ".geo.json");
     }
 
+    /** El nombre para mostrar: el traducido, o en un custom (sin traduccion) el nombre de su archivo. */
+    public net.minecraft.text.Text nombre() {
+        return net.minecraft.text.Text.translatableWithFallback(traduccion(),
+                clave.startsWith(ApliquesCustom.PREFIJO) ? clave.substring(ApliquesCustom.PREFIJO.length()) : clave);
+    }
+
     public String traduccion() {
         return "modamod.aplique." + clave;
     }

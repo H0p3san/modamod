@@ -73,6 +73,9 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
     private final ButtonWidget[] btnApliques = new ButtonWidget[Aplique.MAXIMO_POR_PRENDA];
     private ButtonWidget btnGiro, btnEscala, btnQuitar, btnSacudir, btnVistaIzq, btnVistaDer;
     private ButtonWidget btnGiroAtras, btnGiroAdelante, btnEscalaAtras, btnEscalaAdelante;
+    /** El eje de los controles de giro y de posición (2026-11-12): 0 = Z (el giro de siempre; sacar o meter), 1 = X, 2 = Y. */
+    private int ejeAjuste = 0;
+    private ButtonWidget btnEjeAjuste, btnPos, btnPosAtras, btnPosAdelante;
     /** Fila del aplique (2026-10-22, botonera): cantidad en la fila del giro, separación en la de la escala. */
     private ButtonWidget btnFilaAtras, btnFila, btnFilaAdelante, btnSepAtras, btnSep, btnSepAdelante;
     /** Dónde quedó cada control de la columna (solo la Estilista; 2026-10-13, ver {@link DisposicionEstilista}). */
@@ -145,6 +148,21 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
     /** La Estilista baja los controles para dejar arriba el selector de zona y las pestañas (2026-10-13). */
     private int dyEstilista() { return 0; }
 
+    /** El giro del aplique elegido alrededor del eje elegido: de a 15°, o de a 1° con Shift. En Z es el giro de siempre. */
+    private void girar(int signo) {
+        if (ejeAjuste == 0) {
+            clickBoton(hasShiftDown() ? (signo > 0 ? EditorEstilo.BTN_GIRO_FINO : EditorEstilo.BTN_GIRO_FINO_ATRAS)
+                    : (signo > 0 ? EditorEstilo.BTN_GIRO : EditorEstilo.BTN_GIRO_ATRAS));
+        } else {
+            clickBoton(EditorEstilo.btnAjuste(ejeAjuste == 1 ? 4 : 5, signo * (hasShiftDown() ? 1f : 15f)));
+        }
+    }
+
+    /** Corre el aplique elegido sobre el eje elegido: de a 1 px, o de a un cuarto con Shift. En Z lo saca o lo mete. */
+    private void correr(int signo) {
+        clickBoton(EditorEstilo.btnAjuste(ejeAjuste, signo * (hasShiftDown() ? 0.25f : 1f)));
+    }
+
     private void poner(ButtonWidget b, String clave) {
         if (b == null) return;
         DisposicionEstilista.R r = disp.get(clave);
@@ -172,6 +190,10 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         poner(btnGiro, "giro");
         poner(btnGiroAdelante, "giroAdelante");
         poner(btnQuitar, "quitar");
+        poner(btnEjeAjuste, "eje");
+        poner(btnPosAtras, "posAtras");
+        poner(btnPos, "pos");
+        poner(btnPosAdelante, "posAdelante");
         for (int z = 0; z < 3; z++) poner(btnAsignar[z], "asignar" + z);
         poner(btnTenirElegido, "tenirElegido");
         poner(btnEscalaAtras, "escalaAtras");
@@ -291,14 +313,16 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
                     "modamod.estilado.tooltip.aplique", () -> clickBoton(id));
             grupoAplique.add(btnApliques[i]);
         }
-        btnGiroAtras = boton(X_DER, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.giro",
-                () -> clickBoton(hasShiftDown() ? EditorEstilo.BTN_GIRO_FINO_ATRAS : EditorEstilo.BTN_GIRO_ATRAS));
+        btnGiroAtras = boton(X_DER, 88, 14, Text.literal("<"), "modamod.estilado.tooltip.giro", () -> girar(-1));
+        btnEjeAjuste = boton(X_DER + 98, 150, 36, Text.empty(), "modamod.estilado.tooltip.eje_ajuste", () -> ejeAjuste = (ejeAjuste + 1) % 3);
+        btnPosAtras = boton(X_DER + 136, 150, 14, Text.literal("<"), "modamod.estilado.tooltip.pos", () -> correr(-1));
+        btnPos = boton(X_DER + 151, 150, 66, Text.empty(), "modamod.estilado.tooltip.pos", () -> correr(1));
+        btnPosAdelante = boton(X_DER + 218, 150, 14, Text.literal(">"), "modamod.estilado.tooltip.pos", () -> correr(1));
+        for (ButtonWidget b : new ButtonWidget[] { btnEjeAjuste, btnPosAtras, btnPos, btnPosAdelante }) grupoAplique.add(b);
         grupoAplique.add(btnGiroAtras);
-        btnGiro = boton(X_DER + 15, 88, 64, Text.empty(), "modamod.estilado.tooltip.giro",
-                () -> clickBoton(hasShiftDown() ? EditorEstilo.BTN_GIRO_FINO : EditorEstilo.BTN_GIRO));
+        btnGiro = boton(X_DER + 15, 88, 64, Text.empty(), "modamod.estilado.tooltip.giro", () -> girar(1));
         grupoAplique.add(btnGiro);
-        btnGiroAdelante = boton(X_DER + 80, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.giro",
-                () -> clickBoton(hasShiftDown() ? EditorEstilo.BTN_GIRO_FINO : EditorEstilo.BTN_GIRO));
+        btnGiroAdelante = boton(X_DER + 80, 88, 14, Text.literal(">"), "modamod.estilado.tooltip.giro", () -> girar(1));
         grupoAplique.add(btnGiroAdelante);
         btnEscalaAtras = boton(X_DER, 108, 14, Text.literal("<"), "modamod.estilado.tooltip.escala", () -> clickBoton(EditorEstilo.BTN_ESCALA_ATRAS));
         grupoAplique.add(btnEscalaAtras);
@@ -395,7 +419,7 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         int bx0 = conBolsas() ? X_DER : PX1 + 4, bpaso = conBolsas() ? 54 : 60;
         // Con la Estilista creativa, Item y Variante van en su panel, junto al casillero de objeto (2026-10-14).
         boolean enPanel = conBolsas() && handler.be.creativa();
-        if (enPanel) { bx0 = ANCHO + 4 + panelExtra() + 54; by = 301; bpaso = 20; }
+        if (enPanel) { bx0 = -(PW + 4) + 54; by = 301; bpaso = 20; }   // el panel va a la izquierda de la ventana
         btnObjModo = boton(bx0, by, enPanel ? 100 : conBolsas() ? 53 : 58, Text.empty(), "modamod.estilado.tooltip.obj_modo",
                 () -> clickBoton(EditorEstilo.BTN_OBJ_MODO));
         btnObjVariante = boton(bx0 + (enPanel ? 0 : bpaso), enPanel ? by + bpaso : by, enPanel ? 100 : conBolsas() ? 53 : 58, Text.empty(), "modamod.estilado.tooltip.obj_variante",
@@ -598,8 +622,9 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
 
     private void crearPanel() {
         // A la derecha de la ventana; si no hay lugar, a la izquierda.
-        panelX = this.x + ANCHO + 4 + panelExtra();
-        if (panelX + PW > this.width && this.x - PW - 4 >= 0) panelX = this.x - PW - 4;
+        // (2026-11-12, "mudar la pantalla creativa... para la izquierda del panel central asi no choca con jei"). Siempre a
+        // la izquierda: el casillero de objeto del panel tiene su lugar fijo en el handler (EstilistaScreenHandler.X_OBJETO).
+        panelX = this.x - PW - 4;
         slidersColocacion.clear();
         slidersMovimiento.clear();
         btnPaginaColocacion = botonPanel(6, 6, 48, Text.translatable("modamod.estilado.panel.pagina.colocacion"),
@@ -620,10 +645,10 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         }
         btnBiblioAnt = botonPanel(6, 232, 34, Text.literal("<"), null, () -> paginaBiblio = 0);
         btnBiblioSig = botonPanel(44, 232, 34, Text.literal(">"), null, () -> paginaBiblio = 1);
-        // Aplique custom (2026-11-12): sube al servidor los archivos con el nombre escrito en el casillero.
+        // Aplique custom (2026-11-12): abre el explorador para elegir los archivos y los sube al servidor.
         btnSubirAplique = botonPanel(82, 232, 72, Text.translatable("modamod.estilado.panel.subir_aplique"),
                 "modamod.estilado.tooltip.subir_aplique", () -> {
-                    ApliquesCustomCliente.subir(handler.be.getPos(), txtNombreMolde.getText().strip());
+                    ApliquesCustomCliente.elegirYSubir(handler.be.getPos(), txtNombreMolde.getText().strip());
                     txtNombreMolde.setText("");
                 });
 
@@ -1355,20 +1380,21 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         if (txtNombreMolde != null && txtNombreMolde.visible
                 && (txtNombreMolde.keyPressed(keyCode, scanCode, modifiers) || txtNombreMolde.isActive())) return true;
         // Ajuste fino del aplique elegido (EditorEstilo.AJUSTES): flechas = correr sobre la tela, Ctrl + flechas = inclinar,
-        // Re Pág / Av Pág = sacar o meter. Con Shift, cuatro pasos de una.
+        // Re Pág / Av Pág = sacar o meter. Con Shift, el paso grande.
         if (handler.be.seleccionado() >= 0) {
-            int k = switch (keyCode) {
-                case org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT -> 0;
-                case org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT -> 1;
-                case org.lwjgl.glfw.GLFW.GLFW_KEY_UP -> 2;
-                case org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN -> 3;
-                case org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_UP -> 8;
-                case org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_DOWN -> 9;
+            boolean ctrl = hasControlDown(), shift = hasShiftDown();
+            float corre = shift ? 1f : 0.25f, inclina = shift ? 15f : 5f;
+            int id = switch (keyCode) {
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT -> ctrl ? EditorEstilo.btnAjuste(5, -inclina) : EditorEstilo.btnAjuste(1, -corre);
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT -> ctrl ? EditorEstilo.btnAjuste(5, inclina) : EditorEstilo.btnAjuste(1, corre);
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_UP -> ctrl ? EditorEstilo.btnAjuste(4, -inclina) : EditorEstilo.btnAjuste(2, corre);
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN -> ctrl ? EditorEstilo.btnAjuste(4, inclina) : EditorEstilo.btnAjuste(2, -corre);
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_UP -> EditorEstilo.btnAjuste(0, corre);
+                case org.lwjgl.glfw.GLFW.GLFW_KEY_PAGE_DOWN -> EditorEstilo.btnAjuste(0, -corre);
                 default -> -1;
             };
-            if (k >= 0) {
-                if (k < 4 && hasControlDown()) k += 4;
-                for (int i = hasShiftDown() ? 4 : 1; i > 0; i--) clickBoton(EditorEstilo.BTN_AJUSTE_BASE + k);
+            if (id >= 0) {
+                clickBoton(id);
                 return true;
             }
         }
@@ -1445,7 +1471,7 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
         }
         btnEspejo.visible = !enPrenda.isEmpty();
         btnEspejo.setMessage(Text.translatable(espejarPie ? "modamod.estilado.espejo.si" : "modamod.estilado.espejo.no"));
-        btnGiro.active = btnEscala.active = btnQuitar.active = hay;
+        btnGiro.active = btnEscala.active = btnQuitar.active = btnPos.active = hay;
         // La fila es de los apliques de modelo; los de objeto la ignoran.
         boolean conFila = hay && apliques.get(sel).objeto() == null;
         for (ButtonWidget b : new ButtonWidget[] { btnFilaAtras, btnFila, btnFilaAdelante, btnSepAtras, btnSep, btnSepAdelante }) b.active = conFila;
@@ -1465,7 +1491,12 @@ public class EditorEstiloScreen extends HandledScreen<EditorEstiloScreenHandler>
                     Math.floorMod(obj.variante(), obj.cantidadDeVariantes()) + 1, obj.cantidadDeVariantes()));
         }
         btnSacudir.setMessage(Text.translatable(sacudiendo ? "modamod.estilado.sacudir.parar" : "modamod.estilado.sacudir"));
-        btnGiro.setMessage(Text.translatable("modamod.estilado.giro", hay ? Math.round(apliques.get(sel).giro()) : 0));
+        // El giro y la posición muestran el valor del eje elegido.
+        com.modamod.aplique.Colocacion col = hay ? apliques.get(sel).colocacion() : com.modamod.aplique.Colocacion.DEFECTO;
+        btnGiro.setMessage(Text.translatable("modamod.estilado.giro",
+                !hay ? 0 : ejeAjuste == 0 ? Math.round(apliques.get(sel).giro()) : Math.round(col.campo(ejeAjuste == 1 ? 4 : 5))));
+        btnEjeAjuste.setMessage(Text.translatable("modamod.estilado.eje_ajuste", "ZXY".substring(ejeAjuste, ejeAjuste + 1)));
+        btnPos.setMessage(Text.translatable("modamod.estilado.pos", String.format(java.util.Locale.ROOT, "%.2f", col.campo(ejeAjuste))));
         btnEscala.setMessage(Text.translatable("modamod.estilado.escala",
                 hay ? Math.round(apliques.get(sel).escala() * 100) : 100));
 

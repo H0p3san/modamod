@@ -44,6 +44,10 @@ import java.util.stream.Stream;
  * <p>Opcional, {@code <nombre>.textura.png}: la textura propia del modelo, en gris y con las 3 zonas una al lado de la otra
  * (cada tercio del ancho es una zona, como el atlas del mod). Se tiñe por zona con el retazo, así que lo que sale de la
  * estación de tintes le llega igual que a los apliques del mod. Sin ese archivo el modelo usa el atlas del mod.
+ *
+ * <p>Opcional también, {@code <nombre>.animation.json} (2026-11-12, "si quiero hacer unas orejitas de gato animadas"): el
+ * archivo de animación de Blockbench. La primera animación del archivo se reproduce en bucle sobre los huesos del modelo
+ * (ver {@code render.ApliqueRenderer#animar}).
  */
 public final class ApliquesCustom {
 
@@ -54,20 +58,30 @@ public final class ApliquesCustom {
     /** Los custom nunca pisan un modelo del mod: su clave lleva este prefijo. */
     public static final String PREFIJO = "custom_";
     // Juntos entran holgados en el MiB de un paquete del servidor.
-    private static final int MAX_GEO = 512 * 1024, MAX_TEXTURA = 256 * 1024, MAX_ICONO = 128 * 1024;
+    private static final int MAX_GEO = 512 * 1024, MAX_TEXTURA = 256 * 1024, MAX_ANIMACION = 128 * 1024, MAX_ICONO = 64 * 1024;
     /** Los archivos de un aplique, en el orden en que se suben: el ícono va último y cierra la subida. */
-    public static final int GEO = 0, TEXTURA = 1, ICONO = 2;
-    private static final int[] MAXIMOS = { MAX_GEO, MAX_TEXTURA, MAX_ICONO };
-    private static final String EXT_TEXTURA = ".textura.png";
-    private static final String EXT = ".geo.json";
+    public static final int GEO = 0, TEXTURA = 1, ANIMACION = 2, ICONO = 3;
+    private static final int[] MAXIMOS = { MAX_GEO, MAX_TEXTURA, MAX_ANIMACION, MAX_ICONO };
+    /** Cómo termina el nombre de cada archivo, en ese mismo orden. La textura y la animación son opcionales. */
+    public static final String[] EXTENSIONES = { ".geo.json", ".textura.png", ".animation.json", ".png" };
+    private static final String EXT = EXTENSIONES[GEO];
 
-    /** Un aplique custom entero, del servidor al cliente. {@code clave} ya con el prefijo; {@code textura} vacía = el atlas del mod. */
-    public record Payload(String clave, byte[] geo, byte[] textura, byte[] icono) implements CustomPayload {
+    /** El peso máximo (bytes) de ese archivo ({@link #GEO}, {@link #TEXTURA}, {@link #ANIMACION} o {@link #ICONO}). */
+    public static int maximo(int archivo) {
+        return MAXIMOS[archivo];
+    }
+
+    /**
+     * Un aplique custom entero, del servidor al cliente. {@code clave} ya con el prefijo; {@code textura} vacía = el atlas del
+     * mod; {@code animacion} vacía = sin animación propia.
+     */
+    public record Payload(String clave, byte[] geo, byte[] textura, byte[] animacion, byte[] icono) implements CustomPayload {
         public static final Id<Payload> ID = new Id<>(Identifier.of(Modamod.MOD_ID, "aplique_custom"));
         public static final PacketCodec<RegistryByteBuf, Payload> CODEC = PacketCodec.tuple(
                 PacketCodecs.string(48), Payload::clave,
                 PacketCodecs.byteArray(MAX_GEO), Payload::geo,
                 PacketCodecs.byteArray(MAX_TEXTURA), Payload::textura,
+                PacketCodecs.byteArray(MAX_ANIMACION), Payload::animacion,
                 PacketCodecs.byteArray(MAX_ICONO), Payload::icono,
                 Payload::new);
 
@@ -77,7 +91,7 @@ public final class ApliquesCustom {
 
     /**
      * Un trozo de un archivo que sube el cliente desde la Estilista creativa (botón "Subir aplique"): un paquete del
-     * cliente no pasa de 32 KB, así que va de a partes, en el orden {@link #GEO}, {@link #TEXTURA} (si hay), {@link #ICONO}. {@code parte} 0 empieza el
+     * cliente no pasa de 32 KB, así que va de a partes, en el orden {@link #GEO}, {@link #TEXTURA} y {@link #ANIMACION} (si hay), {@link #ICONO}. {@code parte} 0 empieza el
      * archivo; {@code ultimo} lo cierra. El servidor lo guarda en su carpeta, recarga y entrega el molde. Solo operadores.
      */
     public record Subir(net.minecraft.util.math.BlockPos pos, String nombre, int archivo, int parte, boolean ultimo, byte[] trozo)
@@ -102,7 +116,7 @@ public final class ApliquesCustom {
         String nombre;
         int archivo;
         final java.io.ByteArrayOutputStream actual = new java.io.ByteArrayOutputStream();
-        final byte[][] listos = new byte[3][];
+        final byte[][] listos = new byte[EXTENSIONES.length][];
     }
 
     private static final Map<java.util.UUID, Subida> SUBIDAS = new java.util.HashMap<>();
@@ -136,11 +150,11 @@ public final class ApliquesCustom {
         SUBIDAS.remove(jugador.getUuid());
         try {
             Files.createDirectories(carpeta());
-            Files.write(carpeta().resolve(s.nombre + EXT), s.listos[GEO]);
-            Files.write(carpeta().resolve(s.nombre + ".png"), s.listos[ICONO]);
-            // Sin textura en esta subida, no queda la de una versión anterior.
-            if (s.listos[TEXTURA] != null) Files.write(carpeta().resolve(s.nombre + EXT_TEXTURA), s.listos[TEXTURA]);
-            else Files.deleteIfExists(carpeta().resolve(s.nombre + EXT_TEXTURA));
+            for (int i = 0; i < EXTENSIONES.length; i++) {
+                // Lo opcional que no vino en esta subida no queda de una versión anterior.
+                if (s.listos[i] != null) Files.write(carpeta().resolve(s.nombre + EXTENSIONES[i]), s.listos[i]);
+                else Files.deleteIfExists(carpeta().resolve(s.nombre + EXTENSIONES[i]));
+            }
         } catch (IOException e) {
             LOG.warn("No se pudo guardar el aplique custom {}", s.nombre, e);
             return;
@@ -212,18 +226,21 @@ public final class ApliquesCustom {
                     String archivo = geo.getFileName().toString();
                     if (!archivo.endsWith(EXT)) continue;
                     String nombre = archivo.substring(0, archivo.length() - EXT.length());
-                    Path icono = dir.resolve(nombre + ".png"), textura = dir.resolve(nombre + EXT_TEXTURA);
-                    boolean conTextura = Files.isRegularFile(textura);
+                    Path icono = dir.resolve(nombre + EXTENSIONES[ICONO]), textura = dir.resolve(nombre + EXTENSIONES[TEXTURA]),
+                            animacion = dir.resolve(nombre + EXTENSIONES[ANIMACION]);
+                    boolean conTextura = Files.isRegularFile(textura), conAnimacion = Files.isRegularFile(animacion);
                     if (!nombre.matches("[a-z0-9_]{1,32}")) {
                         LOG.warn("Aplique custom {}: el nombre solo puede llevar a-z, 0-9 y _ (hasta 32)", archivo);
                     } else if (!Files.isRegularFile(icono)) {
                         LOG.warn("Aplique custom {}: falta el icono {}.png", archivo, nombre);
-                    } else if (Files.size(geo) > MAX_GEO || Files.size(icono) > MAX_ICONO || (conTextura && Files.size(textura) > MAX_TEXTURA)) {
-                        LOG.warn("Aplique custom {}: muy pesado (modelo hasta {} KB, textura hasta {} KB, icono hasta {} KB)", archivo,
-                                MAX_GEO / 1024, MAX_TEXTURA / 1024, MAX_ICONO / 1024);
+                    } else if (Files.size(geo) > MAX_GEO || Files.size(icono) > MAX_ICONO || (conTextura && Files.size(textura) > MAX_TEXTURA)
+                            || (conAnimacion && Files.size(animacion) > MAX_ANIMACION)) {
+                        LOG.warn("Aplique custom {}: muy pesado (modelo hasta {} KB, textura hasta {} KB, animacion hasta {} KB, icono hasta {} KB)",
+                                archivo, MAX_GEO / 1024, MAX_TEXTURA / 1024, MAX_ANIMACION / 1024, MAX_ICONO / 1024);
                     } else {
                         CARGADOS.put(nombre, new Payload(PREFIJO + nombre, Files.readAllBytes(geo),
-                                conTextura ? Files.readAllBytes(textura) : new byte[0], Files.readAllBytes(icono)));
+                                conTextura ? Files.readAllBytes(textura) : new byte[0],
+                                conAnimacion ? Files.readAllBytes(animacion) : new byte[0], Files.readAllBytes(icono)));
                     }
                 }
             }

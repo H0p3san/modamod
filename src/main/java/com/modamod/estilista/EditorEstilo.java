@@ -67,15 +67,24 @@ public class EditorEstilo implements Inventory {
     /** De a 1° (Shift sobre las flechas del giro, 2026-11-12). */
     public static final int BTN_GIRO_FINO = 17, BTN_GIRO_FINO_ATRAS = 18;
     /**
-     * Ajuste fino del aplique elegido con el teclado (2026-11-12, "mas herramientas... para reposicionar y girar"), en las dos
-     * Estilistas: cada botón suma un paso a un campo de su {@link Colocacion} (índice de {@code conCampo}, paso). Correr sobre
-     * la tela ←→↑↓ (un cuarto de px), inclinar de costado ←→ y hacia adelante ↑↓ (5°), y sacar o meter (un cuarto de px).
+     * Ajuste fino del aplique elegido (2026-11-12, "mas herramientas... para reposicionar y girar" y "un boton con el cual se
+     * vaya ciclando el eje del control de giro y de un control de posicion"), en las dos Estilistas: cada botón suma un paso a
+     * un campo de su {@link Colocacion}. Lo usan el teclado y los controles de giro y de posición de la columna.
+     * {campo de {@code conCampo}, paso}: 0 sacar/meter, 1 y 2 correr sobre la tela (px), 4 y 5 inclinar (grados).
      */
     public static final int BTN_AJUSTE_BASE = 70;
     private static final float[][] AJUSTES = {
-            {1, -0.25f}, {1, 0.25f}, {2, 0.25f}, {2, -0.25f},
-            {5, -5f}, {5, 5f}, {4, -5f}, {4, 5f},
-            {0, 0.25f}, {0, -0.25f}};
+            {0, 0.25f}, {0, -0.25f}, {0, 1f}, {0, -1f},
+            {1, 0.25f}, {1, -0.25f}, {1, 1f}, {1, -1f},
+            {2, 0.25f}, {2, -0.25f}, {2, 1f}, {2, -1f},
+            {4, 1f}, {4, -1f}, {4, 5f}, {4, -5f}, {4, 15f}, {4, -15f},
+            {5, 1f}, {5, -1f}, {5, 5f}, {5, -5f}, {5, 15f}, {5, -15f}};
+
+    /** El id del botón que suma {@code paso} a ese campo, o -1 si ese paso no existe. */
+    public static int btnAjuste(int campo, float paso) {
+        for (int i = 0; i < AJUSTES.length; i++) if (AJUSTES[i][0] == campo && AJUSTES[i][1] == paso) return BTN_AJUSTE_BASE + i;
+        return -1;
+    }
     public static final int BTN_ESCALA = 12, BTN_ESCALA_ATRAS = 13;
     /** Lo atiende el ScreenHandler: necesita al jugador para devolverle el retazo. */
     public static final int BTN_QUITAR = 14;

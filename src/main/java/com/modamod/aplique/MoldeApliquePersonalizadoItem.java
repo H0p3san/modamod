@@ -34,7 +34,7 @@ public class MoldeApliquePersonalizadoItem extends Item {
         PrendaLore.molde(tooltip, "aplique", PrendaLore.Maquina.ESTILISTA, "todas");
         Aplique a = plantilla(stack);
         if (a == null) return;
-        Text que = a.objeto() != null ? a.objeto().item().getName() : Text.translatableWithFallback(a.modelo().traduccion(), a.modelo().clave);
+        Text que = a.objeto() != null ? a.objeto().item().getName() : a.modelo().nombre();
         tooltip.add(que.copy().formatted(Formatting.GOLD));
         if (a.objeto() != null) {
             tooltip.add(Text.translatable("modamod.aplique.molde_personalizado.cara",

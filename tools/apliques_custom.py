@@ -1,13 +1,14 @@
-"""Apliques custom de ejemplo: peluca de dos colitas y lentes de sol.
+"""Apliques custom de ejemplo: peluca de dos colitas, lentes de sol y orejitas de gato animadas.
 
     python tools/apliques_custom.py [carpeta de salida]     (por defecto run/config/modamod/apliques)
 
-Escribe por cada uno <nombre>.geo.json, <nombre>.textura.png y <nombre>.png (ícono), listos para
+Escribe por cada uno <nombre>.geo.json, <nombre>.textura.png, <nombre>.png (ícono) y, las orejas,
+<nombre>.animation.json, listos para
 `/modamod apliques recargar` o el botón "Subir aplique" de la Estilista creativa.
 
 Medidas en px de skin. El origen es el punto donde se hace click: x a la derecha, y arriba, -z hacia afuera de la tela.
-Los dos van sobre el FRENTE de la cabeza (la cabeza queda en x -4..4, z 0..8): la peluca con el click en el centro de
-la cara (cabeza en y -4..4) y los lentes entre los ojos.
+Los tres van sobre el FRENTE de la cabeza (la cabeza queda en x -4..4, z 0..8): la peluca con el click en el centro de
+la cara (cabeza en y -4..4), las orejas igual, y los lentes entre los ojos.
 """
 import json
 import random
@@ -94,6 +95,27 @@ def lentes():
             hueso("brillos", "root", (0, 0, 0), brillo + [espejo(c) for c in brillo])]
 
 
+def orejas():
+    """Orejitas de gato sobre la cabeza (click en el centro de la cara, como la peluca). Cada oreja es un hueso con el pivote
+    en su base: los mueve la animación de `animacion_orejas`, no el nombre del hueso."""
+    escalones = [(1.2, 4.2, 4.4, 5.4), (1.6, 3.8, 5.4, 6.3), (2.1, 3.3, 6.3, 7.1), (2.5, 2.9, 7.1, 7.7)]
+    oreja = [cubo(x0, y0, 2.5, x1, y1, 3.5, 0) for x0, x1, y0, y1 in escalones]
+    oreja += [cubo(1.9, 4.6, 2.4, 3.5, 5.4, 2.5, 1), cubo(2.3, 5.4, 2.4, 3.1, 6.2, 2.5, 1)]   # el rosa de adentro
+    return [hueso("root", None, (0, 0, 0), None),
+            hueso("oreja_izq", "root", (2.7, 4.4, 3.0), oreja),
+            hueso("oreja_der", "root", (-2.7, 4.4, 3.0), [espejo(c) for c in oreja])]
+
+
+def animacion_orejas():
+    """Un tic de cada oreja, a destiempo, en un bucle de 3 segundos. Formato de Blockbench (giros en grados)."""
+    return {"format_version": "1.8.0", "animations": {"animation.orejas_gato.idle": {
+        "loop": True, "animation_length": 3.0, "bones": {
+            "oreja_izq": {"rotation": {"0.0": [0, 0, 0], "2.3": [0, 0, 0], "2.45": [0, 0, -20], "2.6": [0, 0, 4],
+                                       "2.75": [0, 0, -12], "3.0": [0, 0, 0]}},
+            "oreja_der": {"rotation": {"0.0": [0, 0, 0], "0.9": [0, 0, 0], "1.05": [0, 0, 20], "1.2": [0, 0, -4],
+                                       "1.4": [0, 0, 0], "3.0": [0, 0, 0]}}}}}}
+
+
 def textura(mechones):
     """Gris con las 3 zonas en tercios; el color lo pone el retazo. `mechones`: rayas a lo largo, como pelo."""
     azar = random.Random(7)
@@ -126,7 +148,7 @@ def icono(huesos):
     return img
 
 
-def escribir(carpeta, nombre, huesos, mechones):
+def escribir(carpeta, nombre, huesos, mechones, animacion=None):
     geo = {"format_version": "1.12.0", "minecraft:geometry": [{
         "description": {"identifier": "geometry." + nombre, "texture_width": TEX_W, "texture_height": TEX_H,
                         "visible_bounds_width": 2, "visible_bounds_height": 2, "visible_bounds_offset": [0, 0, 0]},
@@ -134,6 +156,8 @@ def escribir(carpeta, nombre, huesos, mechones):
     (carpeta / (nombre + ".geo.json")).write_text(json.dumps(geo, indent=1), encoding="utf-8")
     textura(mechones).save(carpeta / (nombre + ".textura.png"))
     icono(huesos).save(carpeta / (nombre + ".png"))
+    if animacion:
+        (carpeta / (nombre + ".animation.json")).write_text(json.dumps(animacion, indent=1), encoding="utf-8")
 
 
 if __name__ == "__main__":
@@ -141,4 +165,5 @@ if __name__ == "__main__":
     salida.mkdir(parents=True, exist_ok=True)
     escribir(salida, "peluca_miku", peluca(), True)
     escribir(salida, "lentes_sol", lentes(), False)
+    escribir(salida, "orejas_gato", orejas(), False, animacion_orejas())
     print("escritos en", salida)

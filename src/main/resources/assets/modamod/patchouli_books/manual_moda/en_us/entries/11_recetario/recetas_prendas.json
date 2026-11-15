@@ -45,6 +45,11 @@
       "recipe": "modamod:mascara_completa",
       "title": "Prendas",
       "recipe2": "modamod:barbijo"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modamod:casco_apliques",
+      "title": "Prendas"
     }
   ]
 }

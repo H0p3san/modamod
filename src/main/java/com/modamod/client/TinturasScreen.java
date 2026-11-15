@@ -673,7 +673,7 @@ public class TinturasScreen extends HandledScreen<TinturasScreenHandler> {
         } else if (nApliques > 0 && be.apliqueElegido() >= 0 && be.apliqueElegido() < nApliques) {
             com.modamod.aplique.Aplique a = be.getPrendaEntrada().get(com.modamod.item.ModamodComponents.APLIQUES).get(be.apliqueElegido());
             Text nombre = a.objeto() != null ? Text.translatable("modamod.tinturas.aplique.objeto")
-                    : Text.translatable("modamod.aplique." + a.modelo().asString());
+                    : a.modelo().nombre();
             btnCategoria.setMessage(Text.translatable("modamod.tinturas.aplique.n", be.apliqueElegido() + 1, nApliques, nombre));
         } else if (nApliques > 0) {
             btnCategoria.setMessage(Text.translatable("modamod.tinturas.aplique.prenda",

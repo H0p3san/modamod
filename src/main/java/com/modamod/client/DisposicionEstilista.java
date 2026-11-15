@@ -76,7 +76,12 @@ public final class DisposicionEstilista {
                 m.put("sep", new R(X + 181, y, 36, H_FILA));
                 m.put("sepAdelante", new R(X + 218, y, 14, H_FILA));
                 y += H_FILA + SEP;
-                m.put("blandura", new R(X, y, ANCHO, H_FILA));
+                // Blandura, y a su derecha el eje y la posición (2026-11-12): el eje vale para el giro y para la posición.
+                m.put("blandura", new R(X, y, 94, H_FILA));
+                m.put("eje", new R(X + 98, y, 36, H_FILA));
+                m.put("posAtras", new R(X + 136, y, 14, H_FILA));
+                m.put("pos", new R(X + 151, y, 66, H_FILA));
+                m.put("posAdelante", new R(X + 218, y, 14, H_FILA));
                 y += H_FILA + SEP;
                 for (int z = 0; z < 3; z++) m.put("asignar" + z, new R(X + z * 48, y, 46, H_FILA));
                 m.put("tenirElegido", new R(X + 146, y, 86, H_FILA));

@@ -407,6 +407,17 @@ public final class GuionDebug {
                         log("tintes: teñir -> " + (motivo == null ? "arrancó" : motivo.getString()));
                     }
                 }
+                case "cadena" -> {
+                    // La prenda del lugar 0 llega como por la cinta (2026-11-14, apliques en línea).
+                    if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
+                        TrinketInventory inv = ListaDeRopa.de(p);
+                        ItemStack prenda = inv == null ? ItemStack.EMPTY : inv.getStack(0).copy();
+                        be.cargarEntradaSinArrancar(ItemStack.EMPTY);
+                        ItemStack resto = com.modamod.util.InventarioUtil.empujarA(mundo, posTintes, net.minecraft.util.math.Direction.UP, prenda);
+                        log("tintes: cadena linea=" + be.linea() + " entro=" + resto.isEmpty() + " estado=" + be.estado()
+                                + " antes=" + prenda.get(com.modamod.item.ModamodComponents.APLIQUES));
+                    }
+                }
                 case "sacar" -> {
                     if (posTintes != null && mundo.getBlockEntity(posTintes) instanceof com.modamod.tinturas.TinturasBlockEntity be) {
                         ItemStack s = be.getSalida();

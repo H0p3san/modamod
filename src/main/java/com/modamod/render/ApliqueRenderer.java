@@ -72,6 +72,60 @@ public final class ApliqueRenderer {
     /** La textura propia (gris, 3 zonas en tercios del ancho) de los custom que la traen; los demás usan el atlas. */
     public static final Map<Identifier, NativeImage> TEXTURAS_CUSTOM = new HashMap<>();
 
+    /** La animación propia (la primera de su {@code .animation.json}) de los custom que la traen. */
+    public static final Map<Identifier, software.bernie.geckolib.animation.Animation> ANIMACIONES_CUSTOM = new HashMap<>();
+    /** El giro con que cada hueso viene del modelo: la animación se suma a ese, como hace GeckoLib. */
+    private static final Map<GeoBone, float[]> GIRO_BASE = new java.util.IdentityHashMap<>();
+
+    /**
+     * Pone los huesos del modelo en el cuadro actual de su animación, en bucle (2026-11-12, "si quiero hacer unas orejitas
+     * de gato animadas"). Los apliques no pasan por los controladores de GeckoLib (se dibujan a mano), así que acá se leen
+     * los cuadros clave igual que {@code AnimationController}: la curva de cada tramo, y los giros con expresiones (no
+     * constantes) en grados y con X e Y invertidos. Después {@code RenderUtil.prepMatrixForBone} los aplica al dibujar.
+     */
+    // shortcut: todas las copias de un aplique van en fase y las expresiones de Molang que dependen del tiempo de la
+    // animación (query.anim_time) no avanzan; alcanza para cuadros clave. Si hace falta, darle un controlador por aplique.
+    private static void animar(Aplique a, BakedGeoModel modelo) {
+        software.bernie.geckolib.animation.Animation anim = ANIMACIONES_CUSTOM.get(a.modelo().geo());
+        if (anim == null || anim.length() <= 0) return;
+        double tick = (System.nanoTime() / 1e9 * 20.0) % anim.length();
+        for (software.bernie.geckolib.animation.keyframe.BoneAnimation ba : anim.boneAnimations()) {
+            GeoBone hueso = modelo.getBone(ba.boneName()).orElse(null);
+            if (hueso == null) continue;
+            float[] base = GIRO_BASE.computeIfAbsent(hueso, h -> new float[] { h.getRotX(), h.getRotY(), h.getRotZ() });
+            var r = ba.rotationKeyFrames();
+            hueso.updateRotation(base[0] + cuadro(r.xKeyframes(), tick, 1, 0f), base[1] + cuadro(r.yKeyframes(), tick, 1, 0f),
+                    base[2] + cuadro(r.zKeyframes(), tick, 2, 0f));
+            var p = ba.positionKeyFrames();
+            hueso.updatePosition(cuadro(p.xKeyframes(), tick, 0, 0f), cuadro(p.yKeyframes(), tick, 0, 0f), cuadro(p.zKeyframes(), tick, 0, 0f));
+            var s = ba.scaleKeyFrames();
+            hueso.updateScale(cuadro(s.xKeyframes(), tick, 0, 1f), cuadro(s.yKeyframes(), tick, 0, 1f), cuadro(s.zKeyframes(), tick, 0, 1f));
+        }
+    }
+
+    /** El valor de un eje en ese tick. {@code giro}: 0 no es un giro, 1 giro en X o Y, 2 giro en Z. Sin cuadros, {@code sinCuadros}. */
+    private static float cuadro(List<software.bernie.geckolib.animation.keyframe.Keyframe<software.bernie.geckolib.loading.math.MathValue>> cuadros,
+                                double tick, int giro, float sinCuadros) {
+        if (cuadros.isEmpty()) return sinCuadros;
+        double desde = 0;
+        software.bernie.geckolib.animation.keyframe.Keyframe<software.bernie.geckolib.loading.math.MathValue> k = null;
+        for (var c : cuadros) {
+            if (tick < desde + c.length()) { k = c; break; }
+            desde += c.length();
+        }
+        // Pasado el último cuadro (o un tramo sin duración): queda en su valor final.
+        if (k == null) return (float) valor(cuadros.get(cuadros.size() - 1).endValue(), giro);
+        return (float) software.bernie.geckolib.animation.EasingType.lerpWithOverride(
+                new software.bernie.geckolib.animation.keyframe.AnimationPoint(k, tick - desde, k.length(),
+                        valor(k.startValue(), giro), valor(k.endValue(), giro)), null);
+    }
+
+    private static double valor(software.bernie.geckolib.loading.math.MathValue v, int giro) {
+        double d = v.get();
+        if (giro == 0 || v instanceof software.bernie.geckolib.loading.math.value.Constant) return d;
+        return giro == 1 ? -Math.toRadians(d) : Math.toRadians(d);
+    }
+
     private static BakedGeoModel horneado(Aplique a) {
         BakedGeoModel m = MODELOS_CUSTOM.get(a.modelo().geo());
         return m != null ? m : GeckoLibCache.getBakedModels().get(a.modelo().geo());
@@ -322,6 +376,7 @@ public final class ApliqueRenderer {
         }
         BakedGeoModel modelo = horneado(a);
         if (modelo == null) return;
+        animar(a, modelo);
         Matrix4f pm = colocarGeo(a, matrices);
         // Los huesos leen el marco con la rotación del usuario ya aplicada.
         Matrix3f local = new Matrix3f(matrices.peek().getNormalMatrix()).mul(pm.normal(new Matrix3f()));

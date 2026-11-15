@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "patchouli:spotlight",
-      "item": "modamod:antifaz,modamod:media_mascara,modamod:mascara_completa,modamod:barbijo",
+      "item": "modamod:antifaz,modamod:media_mascara,modamod:mascara_completa,modamod:barbijo,modamod:casco_apliques",
       "title": "Máscaras y barbijo",
       "link_recipe": true,
       "text": "$(l)Para esconder la cara con estilo.$()$(br2)Tres máscaras y un barbijo que se usan juntos o por separado."
@@ -26,6 +26,10 @@
     {
       "type": "patchouli:text",
       "text": "$(l)Y el 3D Skin Layers?$() Si lo usás, la máscara y el barbijo le apagan el volumen justo donde tapan, como hace el sombrero. Nada de pelos de la skin atravesando el antifaz como si fuera una puerta giratoria."
+    },
+    {
+      "type": "patchouli:text",
+      "text": "$(l)Casco para apliques.$() Rodea toda la cabeza y va en el lugar $(o)Máscara$(). Sin teñir no se ve: es la base para pelucas, orejas y lentes puestos en la Estilista. A diferencia de las máscaras, no le apaga el relieve a la cabeza.$(br2)Receta: cinco lanas rodeando un casco de cuero, con dos hilos abajo. Está en el Recetario."
     }
   ]
 }

@@ -35,7 +35,9 @@ public class EstilistaScreenHandler extends EditorEstiloScreenHandler {
     private static final int BASE = EditorEstilo.TAMANO, INV_FIN = BASE + 36;
 
     /** Casillero de objeto de la Estilista creativa. */
-    public static final int X_OBJETO = 583, Y_OBJETO = 310;   // en grande, abajo del panel de la creativa (2026-10-14)
+    // En grande, abajo del panel de la creativa (2026-10-14). El panel va a la izquierda de la ventana (2026-11-12, a la
+    // derecha chocaba con JEI): x = -(ancho del panel 160 + 4) + 19.
+    public static final int X_OBJETO = -145, Y_OBJETO = 310;
     public final EstilistaBlockEntity host;
     /** La pestaña Bolsas está abierta (solo del cliente): vuelve visible el depósito. */
     public boolean verBolsas = false;

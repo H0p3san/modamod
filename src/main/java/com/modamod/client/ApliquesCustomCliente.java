@@ -33,35 +33,125 @@ public final class ApliquesCustomCliente {
                 var horneado = BakedModelFactory.getForNamespace(Modamod.MOD_ID).constructGeoModel(GeometryTree.fromModel(crudo));
                 NativeImage icono = NativeImage.read(payload.icono());
                 NativeImage textura = payload.textura().length == 0 ? null : NativeImage.read(payload.textura());
+                // La primera animación del archivo, leída como lo hace GeckoLib con un recurso (solo la sección "animations").
+                // Todo se lee antes de guardar nada: un archivo roto no deja el aplique a medias.
+                var animaciones = payload.animacion().length == 0 ? null : KeyFramesAdapter.GEO_GSON.fromJson(
+                        com.google.gson.JsonParser.parseString(new String(payload.animacion(), StandardCharsets.UTF_8))
+                                .getAsJsonObject().getAsJsonObject("animations"),
+                        software.bernie.geckolib.loading.object.BakedAnimations.class);
                 Identifier geo = ModeloAplique.de(clave).geo();
                 ApliqueRenderer.MODELOS_CUSTOM.put(geo, horneado);
                 // La anterior no se cierra: puede quedar un teñido a medio armar leyéndola (una imagen chica por recarga).
                 if (textura != null) ApliqueRenderer.TEXTURAS_CUSTOM.put(geo, textura);
                 else ApliqueRenderer.TEXTURAS_CUSTOM.remove(geo);
+                if (animaciones != null && !animaciones.animations().isEmpty()) {
+                    ApliqueRenderer.ANIMACIONES_CUSTOM.put(geo, animaciones.animations().values().iterator().next());
+                } else {
+                    ApliqueRenderer.ANIMACIONES_CUSTOM.remove(geo);
+                }
                 context.client().getTextureManager().registerTexture(
                         Identifier.of(Modamod.MOD_ID, "textures/item/molde_aplique_" + clave + ".png"), new NativeImageBackedTexture(icono));
             } catch (Exception e) {
-                org.slf4j.LoggerFactory.getLogger("modamod").warn("Aplique custom {}: el modelo o el icono no se pudo leer", clave, e);
+                org.slf4j.LoggerFactory.getLogger("modamod").warn("Aplique custom {}: el modelo, la animación o el icono no se pudo leer", clave, e);
             }
         }));
     }
 
+    private static boolean eligiendo;
+
     /**
-     * Sube {@code <nombre>.geo.json}, {@code <nombre>.textura.png} (si está) y {@code <nombre>.png} de {@code config/modamod/apliques/} de ESTE cliente al servidor,
-     * en trozos (ver {@link ApliquesCustom.Subir}). El servidor decide si los acepta y contesta por el chat.
+     * El botón "Subir aplique" (2026-11-12, "que despliegue un explorador de archivos para elegir los archivos"): abre el
+     * explorador en otro hilo, como el escáner de estampas. Se elige el modelo ({@code .json}) y, si se quiere, el ícono y la
+     * textura ({@code .png}; la textura es la que termina en {@code .textura.png}). Lo que no se elige se busca al lado del
+     * modelo con su mismo nombre. El aplique se llama como lo escrito en el casillero o, si está vacío, como el archivo.
+     * La animación ({@code .animation.json}) también se puede elegir o dejar al lado.
      */
+    public static void elegirYSubir(net.minecraft.util.math.BlockPos pos, String nombreEscrito) {
+        if (eligiendo) return;
+        eligiendo = true;
+        java.nio.file.Path dir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("modamod").resolve("apliques");
+        Thread hilo = new Thread(() -> {
+            try {
+                java.nio.file.Files.createDirectories(dir);
+                String elegido;
+                try (org.lwjgl.system.MemoryStack pila = org.lwjgl.system.MemoryStack.stackPush()) {
+                    org.lwjgl.PointerBuffer filtros = pila.mallocPointer(2);
+                    filtros.put(pila.UTF8("*.json")).put(pila.UTF8("*.png")).flip();
+                    elegido = org.lwjgl.util.tinyfd.TinyFileDialogs.tinyfd_openFileDialog(
+                            net.minecraft.text.Text.translatable("modamod.apliques.subir.titulo").getString(), dir + java.io.File.separator,
+                            filtros, net.minecraft.text.Text.translatable("modamod.apliques.subir.archivos").getString(), true);
+                }
+                if (elegido == null) return;
+                java.nio.file.Path geo = null, textura = null, animacion = null, icono = null;
+                for (String ruta : elegido.split("\\|")) {
+                    java.nio.file.Path a = java.nio.file.Path.of(ruta);
+                    String n = a.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
+                    if (n.endsWith(".animation.json")) animacion = a;
+                    else if (n.endsWith(".json")) geo = a;
+                    else if (n.endsWith(".textura.png")) textura = a;
+                    else if (icono == null) icono = a;
+                    else { avisar("modamod.apliques.subir.dos_png"); return; }
+                }
+                if (geo == null) { avisar("modamod.apliques.subir.sin_modelo"); return; }
+                String base = geo.getFileName().toString().replaceFirst("(?i)(\\.geo)?\\.json$", "");
+                if (icono == null) icono = geo.resolveSibling(base + ".png");
+                if (textura == null && java.nio.file.Files.isRegularFile(geo.resolveSibling(base + ".textura.png"))) {
+                    textura = geo.resolveSibling(base + ".textura.png");
+                }
+                if (animacion == null && java.nio.file.Files.isRegularFile(geo.resolveSibling(base + ".animation.json"))) {
+                    animacion = geo.resolveSibling(base + ".animation.json");
+                }
+                String nombre = nombreEscrito.isEmpty() ? base.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9_]", "_") : nombreEscrito;
+                if (nombre.length() > 32) nombre = nombre.substring(0, 32);
+                java.nio.file.Path g = geo, t = textura, an = animacion, ic = icono;
+                String n = nombre;
+                net.minecraft.client.MinecraftClient.getInstance().execute(() -> subir(pos, n, g, t, an, ic));
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger("modamod").warn("No se pudo elegir el aplique custom", e);
+            } finally {
+                eligiendo = false;
+            }
+        }, "modamod-aplique-custom");
+        hilo.setDaemon(true);
+        hilo.start();
+    }
+
+    private static void avisar(String clave, Object... args) {
+        var cliente = net.minecraft.client.MinecraftClient.getInstance();
+        cliente.execute(() -> {
+            if (cliente.player != null) cliente.player.sendMessage(net.minecraft.text.Text.translatable(clave, args), false);
+        });
+    }
+
+    /** Los archivos de {@code config/modamod/apliques/} de este cliente que llevan ese nombre (lo usa el guion de pruebas). */
     public static void subir(net.minecraft.util.math.BlockPos pos, String nombre) {
         java.nio.file.Path dir = net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("modamod").resolve("apliques");
+        java.nio.file.Path textura = dir.resolve(nombre + ".textura.png"), animacion = dir.resolve(nombre + ".animation.json");
+        subir(pos, nombre, dir.resolve(nombre + ".geo.json"), java.nio.file.Files.isRegularFile(textura) ? textura : null,
+                java.nio.file.Files.isRegularFile(animacion) ? animacion : null, dir.resolve(nombre + ".png"));
+    }
+
+    /**
+     * Sube el modelo, la textura (o null), la animación (o null) y el ícono al servidor, en trozos (ver {@link ApliquesCustom.Subir}). El servidor
+     * decide si los acepta y contesta por el chat; lo que acá ya se sabe que va a rechazar (nombre, peso) se avisa sin mandar.
+     */
+    public static void subir(net.minecraft.util.math.BlockPos pos, String nombre, java.nio.file.Path geo,
+                             @org.jetbrains.annotations.Nullable java.nio.file.Path textura,
+                             @org.jetbrains.annotations.Nullable java.nio.file.Path animacion, java.nio.file.Path icono) {
         int max = ApliquesCustom.Subir.TROZO;
+        if (!nombre.matches("[a-z0-9_]{1,32}")) { avisar("modamod.apliques.subir.nombre", nombre); return; }
         try {
-            java.nio.file.Files.createDirectories(dir);
-            if (!nombre.matches("[a-z0-9_]{1,32}")) throw new java.io.IOException("nombre");
-            java.nio.file.Path textura = dir.resolve(nombre + ".textura.png");
-            // En el orden de ApliquesCustom: GEO, TEXTURA, ICONO.
-            byte[][] archivos = { java.nio.file.Files.readAllBytes(dir.resolve(nombre + ".geo.json")),
-                    java.nio.file.Files.isRegularFile(textura) ? java.nio.file.Files.readAllBytes(textura) : null,
-                    java.nio.file.Files.readAllBytes(dir.resolve(nombre + ".png")) };
-            for (int a = 0; a < 3; a++) {
+            // En el orden de ApliquesCustom: GEO, TEXTURA, ANIMACION, ICONO.
+            byte[][] archivos = { java.nio.file.Files.readAllBytes(geo),
+                    textura == null ? null : java.nio.file.Files.readAllBytes(textura),
+                    animacion == null ? null : java.nio.file.Files.readAllBytes(animacion), java.nio.file.Files.readAllBytes(icono) };
+            for (int a = 0; a < archivos.length; a++) {
+                if (archivos[a] != null && archivos[a].length > ApliquesCustom.maximo(a)) {
+                    avisar("modamod.apliques.subir.muy_pesado", ApliquesCustom.maximo(a) / 1024);
+                    return;
+                }
+            }
+            for (int a = 0; a < archivos.length; a++) {
                 byte[] b = archivos[a];
                 if (b == null) continue;
                 int partes = Math.max(1, (b.length + max - 1) / max);
@@ -71,9 +161,7 @@ public final class ApliquesCustomCliente {
                 }
             }
         } catch (java.io.IOException e) {
-            var jugador = net.minecraft.client.MinecraftClient.getInstance().player;
-            if (jugador != null) jugador.sendMessage(
-                    net.minecraft.text.Text.translatable("modamod.apliques.subir.no_estan", nombre, dir.toString()), false);
+            avisar("modamod.apliques.subir.no_estan", geo.getFileName().toString(), icono.getFileName().toString(), String.valueOf(geo.getParent()));
         }
     }
 }
