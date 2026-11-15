@@ -791,6 +791,12 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
                 be.registrarColorUsado(capas.get(capas.size() - 1).color() & 0xFFFFFF);
             }
         }
+        // En línea, la prenda teñida se lleva también sus apliques pintados.
+        // shortcut: esta segunda pintada no gasta tinta aparte; cobrarla si la línea tiene que costar por aplique.
+        if (be.apliqueEnCurso == -1 && be.lineaTineApliques(resultado)) {
+            resultado = resultado.copy();
+            be.pintar(resultado, Categoria.APLIQUE, false, TODOS);
+        }
         be.salida = resultado;
         be.prendaEntrada = ItemStack.EMPTY;
         be.estado = Estado.REPOSO;
@@ -1735,7 +1741,12 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
 
     /** Slot de Entrada de la GUI: deja la prenda cruda esperando el botón Teñir, sin arrancar el ciclo. */
     public void cargarEntradaSinArrancar(ItemStack stack) {
+        // La misma prenda otra vez (el cliente recibe el casillero de nuevo cada vez que se abre la pantalla): no es otra
+        // prenda, así que el aplique elegido sigue. Sin esto el cliente volvía a "la prenda" y el servidor seguía en el
+        // aplique: la pantalla mostraba una cosa y los botones pintaban otra ("las orejas no se pintan", 2026-11-13).
+        boolean misma = !stack.isEmpty() && ItemStack.areItemsAndComponentsEqual(prendaEntrada, stack);
         prendaEntrada = stack.isEmpty() ? ItemStack.EMPTY : stack.copyWithCount(1);
+        if (misma) return;
         apliqueElegido = -1;   // otra prenda: se vuelve a pintar la prenda
         Categoria entra = prendaEntrada.isEmpty() ? null : categoriaDe(prendaEntrada);
         if (entra != null) categoria = entra;   // la GUI sigue a la prenda que entra (2026-10-04)
@@ -1753,7 +1764,25 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
      */
     @Nullable
     private Text motivoParaNoTenir(ItemStack stack) {
-        return motivoParaNoTenir(stack, categoriaDe(stack));
+        return motivoParaNoTenir(stack, soloApliquesEnLinea(stack) ? Categoria.APLIQUE : categoriaDe(stack));
+    }
+
+    /**
+     * Con la línea encendida, los apliques de la prenda que llega se tiñen con el diseño fijado de Aplique, todos a la
+     * vez ("los apliques no se tiñen cuando el casco pasa por una maquina en estado de linea", 2026-11-14): en línea no
+     * hay nadie para elegir el aplique con las flechas.
+     */
+    private boolean lineaTineApliques(ItemStack stack) {
+        List<com.modamod.aplique.Aplique> l = stack.get(com.modamod.item.ModamodComponents.APLIQUES);
+        return linea() && l != null && !l.isEmpty()
+                && !com.modamod.prenda.Prendas.es(stack, com.modamod.prenda.CategoriaDePrenda.APLIQUE)
+                && hayFijadas(Categoria.APLIQUE) && !capasDe(Categoria.APLIQUE, false).isEmpty();
+    }
+
+    /** {@link #lineaTineApliques} y a la prenda en sí no hay nada que teñirle: el ciclo es solo de apliques. */
+    private boolean soloApliquesEnLinea(ItemStack stack) {
+        Categoria cat = categoriaDe(stack);
+        return lineaTineApliques(stack) && (cat == null || capasDe(cat, false).isEmpty());
     }
 
     @Nullable
@@ -1796,12 +1825,13 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
     private boolean pasaDeLargo(ItemStack stack) {
         Categoria cat = categoriaDe(stack);
         return com.modamod.util.InventarioUtil.enCadena && linea() && estado == Estado.REPOSO
-                && prendaEntrada.isEmpty() && salida.isEmpty() && (cat == null || capasDe(cat, false).isEmpty());
+                && prendaEntrada.isEmpty() && salida.isEmpty() && (cat == null || capasDe(cat, false).isEmpty())
+                && !lineaTineApliques(stack);
     }
 
     @Nullable
     private Text iniciarTenidoInterno(ItemStack stack) {
-        return iniciarTenidoInterno(stack, -1);
+        return iniciarTenidoInterno(stack, soloApliquesEnLinea(stack) ? TODOS : -1);
     }
 
     /** {@code aplique} ≥ 0 o {@link #TODOS}: tiñe ese aplique (o todos) de la prenda con la categoría Aplique, no la prenda. */
@@ -1862,7 +1892,9 @@ public class TinturasBlockEntity extends MaquinaBlockEntity
             else stack.set(com.modamod.item.ModamodComponents.CAPAS_TINTE, List.copyOf(capas));
             return;
         }
-        if (stack.getItem() instanceof com.modamod.item.ZonasTenibles zt) {
+        // Con un aplique elegido se pinta el aplique, tambien en sombrero, cinto y calzado: antes este camino pintaba las
+        // zonas de la prenda con los cuadraditos del aplique y el aplique quedaba igual.
+        if (cat != Categoria.APLIQUE && stack.getItem() instanceof com.modamod.item.ZonasTenibles zt) {
             pintarZonas(stack, zt, capasDe(cat, borrador));
             return;
         }

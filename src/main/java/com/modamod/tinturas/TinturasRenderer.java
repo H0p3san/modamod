@@ -7,6 +7,26 @@ import software.bernie.geckolib.renderer.GeoBlockRenderer;
 public class TinturasRenderer extends GeoBlockRenderer<TinturasBlockEntity> {
     public TinturasRenderer() {
         super(new TinturasGeoModel());
+        // Los tubos de nivel y su vidrio, translúcidos (alfa parcial en el atlas), en una pasada propia: el resto del modelo va en la capa
+        // común de las máquinas, que es la que deja ver el brillo de LED y pantallita con Sodium + Iris (2026-11-14).
+        addRenderLayer(new software.bernie.geckolib.renderer.layer.GeoRenderLayer<>(this) {
+            @Override
+            public void render(net.minecraft.client.util.math.MatrixStack matrices, TinturasBlockEntity be,
+                               software.bernie.geckolib.cache.object.BakedGeoModel modelo,
+                               @org.jetbrains.annotations.Nullable net.minecraft.client.render.RenderLayer tipo,
+                               net.minecraft.client.render.VertexConsumerProvider buffers,
+                               @org.jetbrains.annotations.Nullable net.minecraft.client.render.VertexConsumer buffer,
+                               float parcial, int luz, int overlay) {
+                net.minecraft.client.render.RenderLayer capa =
+                        net.minecraft.client.render.RenderLayer.getEntityTranslucent(getTextureLocation(be));
+                soloTubos = true;
+                try {
+                    reRender(modelo, matrices, buffers, be, capa, buffers.getBuffer(capa), parcial, luz, overlay, -1);
+                } finally {
+                    soloTubos = false;
+                }
+            }
+        });
         addRenderLayer(new LedGlowLayer<>(this, TinturasGeoModel.ANCHO_ATLAS, TinturasGeoModel.ALTO_ATLAS,
                 TinturasGeoModel.LEDS, TinturasGeoModel::coloresLed));
         // La prenda enrollada en el rodillo con su ícono real (2026-09-29,
@@ -32,5 +52,49 @@ public class TinturasRenderer extends GeoBlockRenderer<TinturasBlockEntity> {
         addRenderLayer(new com.modamod.render.PrendaEnMaquinaLayer<>(this, "cargo",
                 be -> be.getSalida(), -5.6f, 5.08f, 0f, 2.4f,
                 com.modamod.render.PrendaEnMaquinaLayer.Apoyo.ACOSTADA_CUELLO_MENOS_Z));
+    }
+
+    /** La pasada de los tubos está en curso: solo se dibujan ellos. */
+    private boolean soloTubos;
+    /** La pasada en curso es una capa (tubos o brillo) y no la principal. */
+    private boolean esCapa;
+
+    @Override
+    public void renderRecursively(net.minecraft.client.util.math.MatrixStack matrices, TinturasBlockEntity be,
+                                  software.bernie.geckolib.cache.object.GeoBone hueso, net.minecraft.client.render.RenderLayer tipo,
+                                  net.minecraft.client.render.VertexConsumerProvider buffers, net.minecraft.client.render.VertexConsumer buffer,
+                                  boolean isReRender, float parcial, int luz, int overlay, int color) {
+        esCapa = isReRender;
+        super.renderRecursively(matrices, be, hueso, tipo, buffers, buffer, isReRender, parcial, luz, overlay, color);
+    }
+
+    /** Qué píxeles del atlas son translúcidos (alfa parcial): el líquido de los tubos y su vidrio. */
+    private static boolean[] translucido;
+
+    private static boolean esTranslucida(software.bernie.geckolib.cache.object.GeoQuad cara) {
+        if (translucido == null) {
+            net.minecraft.client.texture.NativeImage atlas = com.modamod.render.ClothingTextureCache.imagenBase(TinturasGeoModel.TEX);
+            if (atlas == null) return false;
+            boolean[] m = new boolean[TinturasGeoModel.ANCHO_ATLAS * TinturasGeoModel.ALTO_ATLAS];
+            for (int k = 0; k < m.length; k++) {
+                int alfa = atlas.getColor(k % TinturasGeoModel.ANCHO_ATLAS, k / TinturasGeoModel.ANCHO_ATLAS) >>> 24;
+                m[k] = alfa > 0 && alfa < 255;
+            }
+            translucido = m;
+        }
+        float u = 0f, v = 0f;
+        for (var vertice : cara.vertices()) { u += vertice.texU(); v += vertice.texV(); }
+        int x = Math.min(TinturasGeoModel.ANCHO_ATLAS - 1, Math.max(0, (int) (u / cara.vertices().length * TinturasGeoModel.ANCHO_ATLAS)));
+        int y = Math.min(TinturasGeoModel.ALTO_ATLAS - 1, Math.max(0, (int) (v / cara.vertices().length * TinturasGeoModel.ALTO_ATLAS)));
+        return translucido[y * TinturasGeoModel.ANCHO_ATLAS + x];
+    }
+
+    @Override
+    public void createVerticesOfQuad(software.bernie.geckolib.cache.object.GeoQuad cara, org.joml.Matrix4f pose, org.joml.Vector3f normal,
+                                     net.minecraft.client.render.VertexConsumer buffer, int luz, int overlay, int color) {
+        boolean tubo = esTranslucida(cara);
+        // Lo translúcido sale solo en su pasada; en la principal se saltea y en la suya se saltea todo lo demás.
+        if (soloTubos ? !tubo : tubo && !esCapa) return;
+        super.createVerticesOfQuad(cara, pose, normal, buffer, luz, overlay, color);
     }
 }
