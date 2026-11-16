@@ -16,6 +16,7 @@ Rediseño grande por dentro y una tanda larga de arreglos de cómo se ve la ropa
 - **Traje de Papá Noel**: apliques pompón, hebilla, barba y bigote; ribete de piel en torso, puños, botamangas, medias,
   pollera y sombrero; solapa de piel para la chaqueta; textura de felpa.
 - **Molde de ruedo Cerrado**: tapa la punta del guante, la media o la manga.
+- **Cuellos caídos**: de hombros (parejo de los dos lados) o de un solo hombro (izquierdo o derecho, en diagonal). La remera y la manga empiezan por debajo del hombro.
 - Máscaras y barbijo en una sola categoría, con apliques.
 - La capa del mod tapa los élitros.
 - El faldón sigue al Top; el largo de la remera corta donde dice y las mangas respetan su largo.

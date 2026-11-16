@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modamod:molde_cuello_hombro_der"
+    }
+  ],
+  "result": {
+    "id": "modamod:molde_cuello_hombros",
+    "count": 1
+  }
+}

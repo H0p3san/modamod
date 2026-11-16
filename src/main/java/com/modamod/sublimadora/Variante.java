@@ -109,7 +109,12 @@ public record Variante(Largo largo, Manga manga, Cuello cuello) {
          * el frente entero, sin escote (solo la tapa de arriba abierta). El REDONDO pasó a ser el escote en U con su
          * molde. Al FINAL: el cuello viaja por red y se guarda por ordinal. Usa los archivos del redondo.
          */
-        CERRADO("cerrado");
+        CERRADO("cerrado"),
+        /**
+         * Caídos de hombros (2026-11-16, "prendas que caigan por debajo de los hombros... parejo que caiga de los dos
+         * hombros y que caiga para uno o el otro"): recortados en runtime del redondo, ver CuelloRecorte. Al FINAL.
+         */
+        HOMBROS("hombros"), HOMBRO_IZQ("hombro_izq"), HOMBRO_DER("hombro_der");
 
         public final String clave;
 
@@ -165,7 +170,7 @@ public record Variante(Largo largo, Manga manga, Cuello cuello) {
     public String claveBase() {
         // La camisa no tiene sprites ni modelos propios (2026-10-07): usa los del cuello en V.
         return largo.base().clave + "_" + manga.clave + "_" + (cuello == Cuello.CAMISA ? Cuello.V
-                : cuello == Cuello.CERRADO ? Cuello.REDONDO : cuello).clave;
+                : cuello == Cuello.CERRADO || CuelloRecorte.deHombros(cuello) ? Cuello.REDONDO : cuello).clave;
     }
 
     public boolean tieneMangas() {

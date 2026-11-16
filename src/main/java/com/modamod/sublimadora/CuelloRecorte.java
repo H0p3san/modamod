@@ -27,7 +27,77 @@ public final class CuelloRecorte {
 
     public static boolean recortaEnRuntime(Variante.Cuello cuello) {
         return cuello == Variante.Cuello.CUADRADO || cuello == Variante.Cuello.CORAZON || cuello == Variante.Cuello.CAMISA
-                || cuello == Variante.Cuello.REDONDO;
+                || cuello == Variante.Cuello.REDONDO || deHombros(cuello);
+    }
+
+    public static boolean deHombros(Variante.Cuello cuello) {
+        return cuello == Variante.Cuello.HOMBROS || cuello == Variante.Cuello.HOMBRO_IZQ
+                || cuello == Variante.Cuello.HOMBRO_DER;
+    }
+
+    /** Cuántas filas por debajo del hombro empieza la tela en los caídos (torso, costado y manga). */
+    private static final float HOMBROS_HONDO = 2f;
+    /** En los de un solo hombro, a qué parte del ancho (desde el hombro caído) la diagonal llega al hombro tapado. */
+    private static final float HOMBRO_DIAGONAL = 0.85f;
+
+    /** Hondo del corte del torso en {@code u} (0 = hombro derecho del jugador, 1 = izquierdo). */
+    private static float hondoTorso(Variante.Cuello c, float u) {
+        return switch (c) {
+            case HOMBROS -> HOMBROS_HONDO;
+            case HOMBRO_DER -> HOMBROS_HONDO * Math.max(0f, 1f - u / HOMBRO_DIAGONAL);
+            case HOMBRO_IZQ -> HOMBROS_HONDO * Math.max(0f, 1f - (1f - u) / HOMBRO_DIAGONAL);
+            default -> 0f;
+        };
+    }
+
+    /** ¿Se saca la tapa de arriba del torso en {@code u}? El de un hombro deja la mitad del hombro tapado. */
+    private static boolean tapaTorso(Variante.Cuello c, float u) {
+        return c == Variante.Cuello.HOMBROS || (c == Variante.Cuello.HOMBRO_DER ? u < 0.6f : u > 0.4f);
+    }
+
+    /**
+     * Recorta una caja del layout de la skin (origen {@code u0, v0}, ancho {@code w}, fondo {@code d}): saca la tapa
+     * de arriba donde {@code tapa(u)} y, en las 4 caras, las filas de arriba hasta {@code hondo(u)}. {@code u} va de
+     * la derecha del jugador (0) a la izquierda (1) en todas las caras.
+     */
+    private static void caja(NativeImage img, float k, int u0, int v0, int w, int d,
+                             java.util.function.DoublePredicate tapa, java.util.function.DoubleUnaryOperator hondo) {
+        // Tapa: (u0+d, v0), w x d; su x va como el frente.
+        for (int y = Math.round(v0 * k); y < Math.round((v0 + d) * k); y++) {
+            for (int x = Math.round((u0 + d) * k); x < Math.round((u0 + d + w) * k); x++) {
+                if (tapa.test(((x + 0.5f) / k - u0 - d) / w)) img.setColor(x, y, 0);
+            }
+        }
+        // Caras, en la fila v0+d: costado derecho (u=0), frente, costado izquierdo (u=1), espalda (u al revés).
+        int[][] caras = {{u0, d, 0}, {u0 + d, w, 1}, {u0 + d + w, d, 2}, {u0 + 2 * d + w, w, 3}};
+        int fy = v0 + d;
+        for (int[] c : caras) {
+            for (int x = Math.round(c[0] * k); x < Math.round((c[0] + c[1]) * k); x++) {
+                float t = ((x + 0.5f) / k - c[0]) / c[1];
+                float u = c[2] == 0 ? 0f : c[2] == 2 ? 1f : c[2] == 1 ? t : 1f - t;
+                float h = (float) hondo.applyAsDouble(u);
+                for (int y = Math.round(fy * k); y < Math.round((fy + h) * k) && y < img.getHeight(); y++) {
+                    img.setColor(x, y, 0);
+                }
+            }
+        }
+    }
+
+    /** Los caídos de hombros: torso (base y capa de afuera) y la manga del hombro que queda al aire. */
+    private static void recortarHombros(NativeImage img, Variante.Cuello c, float k) {
+        for (int v : new int[]{16, 32}) caja(img, k, 16, v, 8, 4, u -> tapaTorso(c, (float) u), u -> hondoTorso(c, (float) u));
+        // shortcut: la tapa del brazo es la de 4 de ancho; en brazos finos (3) se lleva 1 columna del puño, que en la
+        // manga no se ve. Si alguna vez se nota, pasar el ancho del brazo desde quien compone la textura.
+        java.util.function.DoublePredicate todo = u -> true;
+        java.util.function.DoubleUnaryOperator parejo = u -> HOMBROS_HONDO;
+        if (c != Variante.Cuello.HOMBRO_IZQ) {   // brazo derecho
+            caja(img, k, 40, 16, 4, 4, todo, parejo);
+            caja(img, k, 40, 32, 4, 4, todo, parejo);
+        }
+        if (c != Variante.Cuello.HOMBRO_DER) {   // brazo izquierdo
+            caja(img, k, 32, 48, 4, 4, todo, parejo);
+            caja(img, k, 48, 48, 4, 4, todo, parejo);
+        }
     }
 
     /** x, y en texeles del frente: ¿ese punto queda recortado? */
@@ -66,6 +136,10 @@ public final class CuelloRecorte {
     public static void aplicar(NativeImage img, Variante.Cuello cuello) {
         if (!recortaEnRuntime(cuello)) return;
         float k = img.getWidth() / 64f;                // píxeles por texel de la skin
+        if (deHombros(cuello)) {
+            recortarHombros(img, cuello, k);
+            return;
+        }
         int x0 = Math.round(20 * k), y0 = Math.round(20 * k);   // esquina del frente del torso
         int ancho = Math.round(8 * k);
         // La tapa de arriba: x como el frente, y de 16 a 20 (el redondo ya trae la suya, de 2 filas).

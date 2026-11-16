@@ -91,6 +91,8 @@ public final class IconoPrenda {
             if (cuello == com.modamod.sublimadora.Variante.Cuello.CAMISA) cuello = com.modamod.sublimadora.Variante.Cuello.V;
             // El cerrado de fábrica usa la plantilla del redondo (2026-10-12).
             if (cuello == com.modamod.sublimadora.Variante.Cuello.CERRADO) cuello = com.modamod.sublimadora.Variante.Cuello.REDONDO;
+            // Los caídos de hombros usan la del cuadrado (el escote ancho más parecido).
+            if (com.modamod.sublimadora.CuelloRecorte.deHombros(cuello)) cuello = com.modamod.sublimadora.Variante.Cuello.CUADRADO;
             return "remera_" + cuello.asString();
         }
         if (item == com.modamod.item.ModamodItems.PANTALON) return "pantalon";

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "modamod:molde_cuello_hombro_izq"
+      }
+    },
+    "has_molde": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "modamod:molde_cuello_hombros"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_molde"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "modamod:molde_cuello_hombro_izq"
+    ]
+  }
+}

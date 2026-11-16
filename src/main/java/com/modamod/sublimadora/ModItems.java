@@ -128,6 +128,12 @@ public final class ModItems {
             moldeCuello("molde_cuello_corazon", Variante.Cuello.CORAZON);
     public static final MoldeCuelloItem MOLDE_CUELLO_CAMISA =
             moldeCuello("molde_cuello_camisa", Variante.Cuello.CAMISA);
+    public static final MoldeCuelloItem MOLDE_CUELLO_HOMBROS =
+            moldeCuello("molde_cuello_hombros", Variante.Cuello.HOMBROS);
+    public static final MoldeCuelloItem MOLDE_CUELLO_HOMBRO_IZQ =
+            moldeCuello("molde_cuello_hombro_izq", Variante.Cuello.HOMBRO_IZQ);
+    public static final MoldeCuelloItem MOLDE_CUELLO_HOMBRO_DER =
+            moldeCuello("molde_cuello_hombro_der", Variante.Cuello.HOMBRO_DER);
 
     private static MoldeCuelloItem moldeCuello(String id, Variante.Cuello valor) {
         return Registry.register(Registries.ITEM,

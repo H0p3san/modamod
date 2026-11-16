@@ -278,6 +278,9 @@ public class Modamod implements ModInitializer {
             entries.add(com.modamod.sublimadora.ModItems.MOLDE_CUELLO_CUADRADO);
             entries.add(com.modamod.sublimadora.ModItems.MOLDE_CUELLO_CORAZON);
             entries.add(com.modamod.sublimadora.ModItems.MOLDE_CUELLO_CAMISA);
+            entries.add(com.modamod.sublimadora.ModItems.MOLDE_CUELLO_HOMBROS);
+            entries.add(com.modamod.sublimadora.ModItems.MOLDE_CUELLO_HOMBRO_IZQ);
+            entries.add(com.modamod.sublimadora.ModItems.MOLDE_CUELLO_HOMBRO_DER);
             // Los 8 presets de combo directo (cobertura de torso/extremidad)
             // se sacaron de la pestaña — traen los anclajes horneados de
             // fábrica e ignoran Anclaje/Lado por completo, lo que generaba
