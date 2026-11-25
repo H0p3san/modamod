@@ -27,7 +27,7 @@ public final class CuelloRecorte {
 
     public static boolean recortaEnRuntime(Variante.Cuello cuello) {
         return cuello == Variante.Cuello.CUADRADO || cuello == Variante.Cuello.CORAZON || cuello == Variante.Cuello.CAMISA
-                || cuello == Variante.Cuello.REDONDO || deHombros(cuello);
+                || cuello == Variante.Cuello.REDONDO || cuello == Variante.Cuello.TIRADORES || deHombros(cuello);
     }
 
     public static boolean deHombros(Variante.Cuello cuello) {
@@ -62,6 +62,14 @@ public final class CuelloRecorte {
      */
     private static void caja(NativeImage img, float k, int u0, int v0, int w, int d,
                              java.util.function.DoublePredicate tapa, java.util.function.DoubleUnaryOperator hondo) {
+        caja(img, k, u0, v0, w, d, tapa, (cara, u) -> (float) hondo.applyAsDouble(u));
+    }
+
+    /** Hondo del corte según la cara (0 costado derecho, 1 frente, 2 costado izquierdo, 3 espalda) y {@code u}. */
+    private interface HondoCara { float de(int cara, float u); }
+
+    private static void caja(NativeImage img, float k, int u0, int v0, int w, int d,
+                             java.util.function.DoublePredicate tapa, HondoCara hondo) {
         // Tapa: (u0+d, v0), w x d; su x va como el frente.
         for (int y = Math.round(v0 * k); y < Math.round((v0 + d) * k); y++) {
             for (int x = Math.round((u0 + d) * k); x < Math.round((u0 + d + w) * k); x++) {
@@ -75,7 +83,7 @@ public final class CuelloRecorte {
             for (int x = Math.round(c[0] * k); x < Math.round((c[0] + c[1]) * k); x++) {
                 float t = ((x + 0.5f) / k - c[0]) / c[1];
                 float u = c[2] == 0 ? 0f : c[2] == 2 ? 1f : c[2] == 1 ? t : 1f - t;
-                float h = (float) hondo.applyAsDouble(u);
+                float h = hondo.de(c[2], u);
                 for (int y = Math.round(fy * k); y < Math.round((fy + h) * k) && y < img.getHeight(); y++) {
                     img.setColor(x, y, 0);
                 }
@@ -98,6 +106,38 @@ public final class CuelloRecorte {
             caja(img, k, 32, 48, 4, 4, todo, parejo);
             caja(img, k, 48, 48, 4, 4, todo, parejo);
         }
+    }
+
+    // --- Tiradores (jardinera): peto con curva del delantal, una tira de 2 texeles por hombro ---
+    /** Escote del medio (media anchura) y su hondo en el frente y en la espalda (la espalda abre más). */
+    private static final float TIR_ESCOTE = 1f, TIR_HONDO_FRENTE = 3f, TIR_HONDO_ESPALDA = 6f;
+    /** Hasta dónde llegan las tiras (media anchura desde el centro) y filas de la sisa en los costados. */
+    private static final float TIR_TIRA_FUERA = 3f, TIR_SISA = 5f;
+
+    /** Media anchura del peto a la altura {@code y}: la curva de {@code DelantalForma.PETO}, tope en 4 (el torso). */
+    private static float tiradoresMedio(float y) {
+        float yb = Math.min(10f, Math.max(3.5f, 12f * 0.32f));
+        float t = Math.max(0f, Math.min(1f, (y - yb) / 2.2f));
+        return Math.min(4f, 2.9f + (4f - 2.9f) * t * t * (3f - 2f * t));
+    }
+
+    /** Hondo del corte de los tiradores en la cara {@code cara} y {@code u}: costados con sisa, frente y espalda con peto. */
+    private static float hondoTiradores(int cara, float u) {
+        if (cara == 0 || cara == 2) return TIR_SISA;
+        float s = Math.abs(u - 0.5f) * 8f;
+        if (s < TIR_ESCOTE) return cara == 1 ? TIR_HONDO_FRENTE : TIR_HONDO_ESPALDA;
+        if (s <= tiradoresMedio(0f)) return 0f;      // la tira
+        float y = 0f;                                 // la sisa: filas hasta que el peto llega a esta columna
+        while (y < 12f && tiradoresMedio(y) < s) y += 0.05f;
+        return y;
+    }
+
+    private static void recortarTiradores(NativeImage img, float k) {
+        java.util.function.DoublePredicate tapa = u -> {
+            float s = Math.abs((float) u - 0.5f) * 8f;
+            return s < TIR_ESCOTE || s > TIR_TIRA_FUERA;   // solo quedan las dos tiras
+        };
+        for (int v : new int[]{16, 32}) caja(img, k, 16, v, 8, 4, tapa, CuelloRecorte::hondoTiradores);
     }
 
     /** x, y en texeles del frente: ¿ese punto queda recortado? */
@@ -138,6 +178,10 @@ public final class CuelloRecorte {
         float k = img.getWidth() / 64f;                // píxeles por texel de la skin
         if (deHombros(cuello)) {
             recortarHombros(img, cuello, k);
+            return;
+        }
+        if (cuello == Variante.Cuello.TIRADORES) {
+            recortarTiradores(img, k);
             return;
         }
         int x0 = Math.round(20 * k), y0 = Math.round(20 * k);   // esquina del frente del torso

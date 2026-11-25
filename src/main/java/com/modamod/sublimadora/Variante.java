@@ -114,7 +114,12 @@ public record Variante(Largo largo, Manga manga, Cuello cuello) {
          * Caídos de hombros (2026-11-16, "prendas que caigan por debajo de los hombros... parejo que caiga de los dos
          * hombros y que caiga para uno o el otro"): recortados en runtime del redondo, ver CuelloRecorte. Al FINAL.
          */
-        HOMBROS("hombros"), HOMBRO_IZQ("hombro_izq"), HOMBRO_DER("hombro_der");
+        HOMBROS("hombros"), HOMBRO_IZQ("hombro_izq"), HOMBRO_DER("hombro_der"),
+        /**
+         * Tiradores de jardinera (2026-11-25): peto con una tira por hombro, recortado en runtime del redondo (ver
+         * CuelloRecorte). La espalda abre más hondo que el frente. Al FINAL: viaja por red y se guarda por ordinal.
+         */
+        TIRADORES("tiradores");
 
         public final String clave;
 
@@ -170,7 +175,7 @@ public record Variante(Largo largo, Manga manga, Cuello cuello) {
     public String claveBase() {
         // La camisa no tiene sprites ni modelos propios (2026-10-07): usa los del cuello en V.
         return largo.base().clave + "_" + manga.clave + "_" + (cuello == Cuello.CAMISA ? Cuello.V
-                : cuello == Cuello.CERRADO || CuelloRecorte.deHombros(cuello) ? Cuello.REDONDO : cuello).clave;
+                : cuello == Cuello.CERRADO || cuello == Cuello.TIRADORES || CuelloRecorte.deHombros(cuello) ? Cuello.REDONDO : cuello).clave;
     }
 
     public boolean tieneMangas() {

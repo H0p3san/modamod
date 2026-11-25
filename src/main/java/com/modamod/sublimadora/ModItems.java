@@ -134,6 +134,8 @@ public final class ModItems {
             moldeCuello("molde_cuello_hombro_izq", Variante.Cuello.HOMBRO_IZQ);
     public static final MoldeCuelloItem MOLDE_CUELLO_HOMBRO_DER =
             moldeCuello("molde_cuello_hombro_der", Variante.Cuello.HOMBRO_DER);
+    public static final MoldeCuelloItem MOLDE_CUELLO_TIRADORES =
+            moldeCuello("molde_cuello_tiradores", Variante.Cuello.TIRADORES);
 
     private static MoldeCuelloItem moldeCuello(String id, Variante.Cuello valor) {
         return Registry.register(Registries.ITEM,

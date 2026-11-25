@@ -1,5 +1,9 @@
 # Changelog
 
+## Sin publicar
+
+- **Cuello Tiradores**: peto de jardinera con una tira por hombro y la espalda más baja que el frente. Molde nuevo (molde en blanco + tijeras + remera + 2 cuero). Ícono provisorio (el del cuadrado).
+
 ## 0.2.0-alpha (2026-11-15)
 
 Rediseño grande por dentro y una tanda larga de arreglos de cómo se ve la ropa. Sigue siendo una alpha.

@@ -93,6 +93,8 @@ public final class IconoPrenda {
             if (cuello == com.modamod.sublimadora.Variante.Cuello.CERRADO) cuello = com.modamod.sublimadora.Variante.Cuello.REDONDO;
             // Los caídos de hombros usan la del cuadrado (el escote ancho más parecido).
             if (com.modamod.sublimadora.CuelloRecorte.deHombros(cuello)) cuello = com.modamod.sublimadora.Variante.Cuello.CUADRADO;
+            // Los tiradores usan la del cuadrado, provisoria hasta tener su dibujo (2026-11-25).
+            if (cuello == com.modamod.sublimadora.Variante.Cuello.TIRADORES) cuello = com.modamod.sublimadora.Variante.Cuello.CUADRADO;
             return "remera_" + cuello.asString();
         }
         if (item == com.modamod.item.ModamodItems.PANTALON) return "pantalon";
